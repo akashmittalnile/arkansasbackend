@@ -1,0 +1,133 @@
+.pmu-filter-section {display: flex; justify-content: space-between; margin-bottom: 1rem; }
+
+.pmu-filter-heading h2 {font-size:24px; font-weight: 600; margin: 0; padding: 0; color:var(--lightblack); }
+
+.pmu-search-filter input.form-control {background: var(--white, #FFF); border-radius: 5px; font-size: 13px; border: 1px solid var(--white, #FFF); font-weight: 400; height: auto; padding: 0.6rem 0.6rem; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; display: inline-block; color: var(--light-black, #6A6A6A); }
+.pmu-search-filter select.form-control {background: var(--white, #FFF); border-radius: 5px; font-size: 14px; border: 1px solid var(--white, #FFF); font-weight: 400; height: auto; padding: 0.8rem 0.6rem; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; color: var(--light-black, #6A6A6A); appearance: revert; }
+.pmu-search-filter textarea.form-control {background: var(--white, #FFF); border-radius: 5px; font-size: 14px; border: 1px solid var(--white, #FFF); font-weight: 400; height: auto; padding: 0.8rem 0.94rem; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; display: inline-block; color: var(--light-black, #6A6A6A); }
+.pmu-search-filter .form-control:focus {border: 1px solid var(--yellow); }
+.search-form-group {position: relative; } 
+.search-form-group input.form-control {padding-right: 2rem; } 
+.search-form-group span.search-icon {position: absolute; right: 10px; top: 7px; }
+a.Create-btn {border-radius: 5px; background: var(--brown, #261313); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); padding: 15px 20px; color: var(--white, #FFF); text-align: center; font-size: 14px; font-style: normal; font-weight: 500; line-height: normal; text-transform: uppercase; width: 100%; display: inline-block; position: relative; outline: none; }
+
+.pmu-course-item{position: relative; background:var(--white); border-radius: 10px; box-shadow: 0px 4px 13px 0px rgba(0, 0, 0, 0.05); margin-bottom: 1rem; }
+.pmu-course-media{width: 100%; height: 215px; position: relative; overflow: hidden; border-radius: 15px 15px 0 0; } 
+.pmu-course-media img {width: 100%; height: 100%; object-fit: cover; }
+.pmu-video-icon {position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto; background: rgb(0 0 0 / 30%); display: flex; align-items: center; }
+
+.pmu-video-icon img{width: 42px;height:42px;margin: auto;}
+.pmu-course-content{padding: 1rem; }
+.pmu-course-content h2{color: var(--lightblack, #6A6A6A);font-size: 18px;font-style: normal;font-weight: 500;line-height: 22px;margin: 0 0 10px 0;padding: 0;}
+.pmu-course-content p{color: var(--lightblack, #6A6A6A);font-size: 14px;font-style: normal;font-weight: 400;line-height: 24px;text-align: justify;}
+.coursestatus {background: var(--yellow);color: var(--white);display: inline-block;padding: 8px 10px;border-radius: 5px;line-height: normal;margin-bottom: 10px;}
+.coursestatus img {margin-right: 5px; vertical-align: text-bottom; }
+.pmu-course-price{color: var(--yellow, #E0B220);font-size: 18px;font-style: normal;font-weight: 700;line-height: 100%;}
+
+a.btn-go {width: 42px; height: 42px; border: 1px solid var(--yellow); display: inline-block; text-align: center; line-height: 40px; border-radius: 5px; background: var(--yellow); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); color: var(--white, #FFF); }
+
+.notification-tag h3 {font-size: 14px; font-weight: 600; margin: 0; padding: 0; color: #455A64; line-height: normal; } 
+.tags-list {width: 100%; position: relative; margin-top: 10px; } 
+.Tags-text {display: inline-block; border-radius: 50px; padding: 8px 15px; line-height: normal; font-size: 12px; color: #455A64; background: var(--body); margin-bottom: 2px; }
+
+
+
+
+
+
+.pmu-overview-section {margin-bottom: 1rem; }
+.pmu-overview-item {border-radius: 10px; background: #FFF; box-shadow: 0px 4px 13px 0px rgba(0, 0, 0, 0.05); position: relative; padding: 1rem; display: flex; align-items: center; border-bottom: 2px solid var(--brown); } 
+.pmu-overview-content {flex: 1; } 
+.pmu-overview-price{color: var(--yellow); font-size: 18px; font-style: normal; font-weight: 500; line-height: 22px; margin: 0; padding: 0; } 
+.pmu-overview-value{color: var(--yellow); font-size: 18px; font-style: normal; font-weight: 500; line-height: 22px; margin: 0; padding: 0; } 
+.pmu-overview-price{color: var(--yellow); font-size: 18px; font-style: normal; font-weight: 500; line-height: 22px; margin: 0; padding: 0; } 
+.pmu-overview-content h2{color: var(--lightblack, #6A6A6A); font-size: 14px; font-style: normal; font-weight: 400; line-height: 24px; text-align: justify; margin: 0; padding: 0; }
+.pmu-overview-rating {display: inline-block; padding: 5px; background: var(--yellow); color: #fff; border-radius: 5px; line-height: normal; text-transform: uppercase; font-weight: 600; }
+.pmu-overview-rating img{vertical-align: bottom;}
+.pmu-overview-date {color: var(--lightblack, #6A6A6A); font-size: 14px; font-style: normal; font-weight: 400; line-height: 24px; text-align: justify; }
+
+
+.pmu-course-details-item {position: relative; background: var(--white); border-radius: 10px; box-shadow: 0px 4px 13px 0px rgba(0, 0, 0, 0.05); margin-bottom: 1rem; display: flex; padding: 10px; }
+.pmu-course-details-media {width: 300px; height: 215px; position: relative; overflow: hidden; border-radius: 10px; }
+.pmu-course-details-media img {width: 100%; height: 100%; object-fit: cover; } 
+.pmu-video-icon {position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto; background: rgb(0 0 0 / 30%); display: flex; align-items: center; }
+.pmu-video-icon img {width: 42px; height: 42px; margin: auto; }
+.pmu-course-details-content {padding: 1rem; }
+.coursestatus {background: var(--yellow); color: var(--white); display: inline-block; padding: 8px 10px; border-radius: 5px; line-height: normal; margin-bottom: 10px; }
+.pmu-course-details-content h2 {color: var(--lightblack, #6A6A6A); font-size: 18px; font-style: normal; font-weight: 500; line-height: 22px; margin: 0 0 10px 0; padding: 0; }
+.pmu-course-details-price { color: var(--yellow, #E0B220); font-size: 18px; font-style: normal; font-weight: 700; line-height: 100%; }
+.pmu-course-details-content p {color: var(--lightblack, #6A6A6A); font-size: 14px; font-style: normal; font-weight: 400; line-height: 24px; text-align: justify; }
+.chapter-text {color: var(--lightblack, #6A6A6A); background: var(--graylight); font-size: 14px; font-style: normal; font-weight: 400; line-height: 24px; padding: 5px 30px; border-radius: 50px; text-align: center; display: inline-block; }
+
+.course-tag h3 {font-size: 14px; font-weight: 600; margin: 0; padding: 0; color: #455A64; line-height: normal; }
+.tags-list {width: 100%; position: relative; margin-top: 10px; } 
+.Tags-text {display: inline-block; border-radius: 50px; padding: 10px 15px; line-height: normal; font-size: 12px; color: #455A64; background: var(--body); }
+
+
+
+.pmu-comment-box-head{margin-bottom: 1rem;display: flex;justify-content: space-between;align-items: center;}
+.pmu-comment-box-head h1 {font-size: 18px; margin: 0; padding: 0; color: var(--black); }
+a.addcomment-btn {border-radius: 5px; background: var(--brown, #261313); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); padding: 12px 20px; color: var(--white, #FFF); text-align: center; font-size: 14px; font-style: normal; font-weight: 500; line-height: normal; text-transform: uppercase; width: 100%; display: inline-block; position: relative; outline: none; }
+.pmu-comment-item {display: flex; padding: 1rem; border-bottom: 2px solid var(--yellow); position: relative; background: var(--white); border-radius: 10px; box-shadow: 0px 4px 13px 0px rgba(0, 0, 0, 0.05); margin-bottom: 1rem; }
+.pmu-comment-profile {width: 50px; height: 50px; border-radius: 50%; position: relative; overflow: hidden; margin-right: 20px; }
+.pmu-comment-profile img {width: 100%; height: 100%; object-fit: cover; }
+.pmu-comment-content {flex: 1; } 
+.pmu-comment-head{margin-bottom: 0px;display: flex;justify-content: space-between;align-items: center;}
+.pmu-comment-head h2 {font-size: 15px; font-weight: 600; margin: 0; padding: 0; color: #455A64; } 
+.pmu-date{font-size: 13px; margin: 0; color: #8C9AA1; line-height: 24px; font-weight: normal;} 
+.pmu-date i {font-size: 20px; vertical-align: middle; color: #f18420; }
+.pmu-comment-descr,
+.pmu-comment-descr p {margin: 0;font-weight: normal;font-size: 14px;letter-spacing: -0.01em;color: #455A64;line-height: 22px;}
+.pmu-comment-rating {display: inline-block; padding: 5px; background: var(--yellow); color: #fff; border-radius: 5px; line-height: normal; text-transform: uppercase; font-weight: 600; } 
+.pmu-comment-rating img {vertical-align: bottom; }
+
+
+
+.manage-coupon-card {padding: 1rem;position: relative;margin-bottom: 1rem;width: 100%;border-radius: 10px;background: #fff;display: flex;justify-content: space-between;align-items: center;}
+
+.coupon-code-value {font-size: 20px; font-weight: 600; margin: 0; padding: 0; color: var(--yellow); }
+.manage-coupon-content p {font-size: 14px; margin: 0 0 0px 0; color: var(--yellow); line-height: 24px; font-weight: normal; }
+
+
+ a.edit-btn {background:var(--brown);    display: inline-block; border-radius: 5px; width: 32px; height: 32px; line-height: 32px; text-align: center; margin-right: 5px; }
+a.delete-btn {background: var(--brown);    display: inline-block; border-radius: 5px; width: 32px; height: 32px; line-height: 32px; text-align: center; margin-right: 5px; }
+
+.manage-coupon-content {border-right: 2px dashed var(--body); }
+.manage-point-card-action {width: 35%; position: relative; text-align: center; }
+.manage-point-card-action:before, 
+.manage-point-card-action:after {content: ""; display: block; width: 30px; height: 30px; background-color: var(--body); position: absolute; top: -65px; left: -15px; z-index: 1; border-radius: 50%; }
+.manage-point-card-action:after {top: auto; bottom: -65px; }
+.manage-coupon-list ul {list-style: none; padding: 0; margin: 0; }
+.manage-coupon-list ul li{ display:inline-block; margin-right:20px;font-size: 12px;  color:var(--black); line-height: 24px; font-weight: normal;}
+.manage-coupon-list ul li span{ font-weight: 600;}
+
+
+
+.CreateCoupon-modal-form h2 {font-size: 16px; font-weight: 600; margin: 0 0 1rem 0; padding: 0; text-align: center; }
+.CreateCoupon-modal-form .form-group{margin-bottom: 1rem;}
+.CreateCoupon-modal-form .form-group select.form-control {background: #fff; border-radius: 5px; font-size: 13px; border: 1px solid #e7e9eb; font-weight: 400; height: auto; padding: 10px 10px; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; display: inline-block; color: #455A64; appearance: revert; }
+.CreateCoupon-modal-form .form-group input.form-control {background: #fff; border-radius: 5px; font-size: 13px; border: 1px solid #e7e9eb; font-weight: 400; height: auto; padding: 10px 10px; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; display: inline-block; color: #455A64; }
+.CreateCoupon-modal-form .form-group textarea.form-control {background: #fff; border-radius: 5px; font-size: 13px; border: 1px solid #e7e9eb; font-weight: 400; height: auto; padding: 10px 10px; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; display: inline-block; color: #455A64; }
+.CreateCoupon-modal-form .form-group .form-control:focus {border: 1px solid #4a95cf; } 
+.cancel-btn{border-radius: 5px; background: var(--brown, #261313); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); padding: 15px 20px; color: var(--white, #FFF); text-align: center; font-size: 14px; font-style: normal; font-weight: 500; line-height: normal; text-transform: uppercase;  border: none;display: inline-block; position: relative; outline: none; }
+.save-btn{border-radius: 5px; background: var(--brown, #261313); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); padding: 15px 20px; color: var(--white, #FFF); text-align: center; font-size: 14px; font-style: normal; font-weight: 500; line-height: normal; text-transform: uppercase;border: none; display: inline-block; position: relative; outline: none; }
+
+
+.pmu-orders-item {position: relative; background: var(--white); border-radius: 10px; box-shadow: 0px 4px 13px 0px rgba(0, 0, 0, 0.05); margin-bottom: 1rem; padding: 10px; display: flex; }
+.pmu-orders-item-media {width: 200px; height: 160px; position: relative; overflow: hidden; border-radius: 15px; margin-right: 15px }
+.pmu-orders-item-media img {width: 100%; height: 100%; object-fit: cover; }
+.pmu-orders-item-content {flex: 1; } 
+.pmu-orders-user-image{width: 40px; height: 40px; position: relative; overflow: hidden; border-radius: 50px; margin-right: 15px }
+.pmu-orders-user-image img {width: 100%; height: 100%; object-fit: cover; }
+.pmu-orders-item-content h2 {color: var(--lightblack, #6A6A6A); font-size: 18px; font-style: normal; font-weight: 500; line-height: 22px; margin: 0 0 10px 0; padding: 0; }
+.pmu-orders-price{color: var(--yellow, #E0B220); margin-bottom: 5px; font-size: 18px; font-style: normal; font-weight: 700; line-height: 100%; }
+.Orderid {background: var(--yellow); color: var(--white); display: inline-block; padding: 8px 10px; border-radius: 5px; line-height: normal; margin-bottom: 10px; }
+.orders-Status-box {font-size: 14px; font-weight: 500; margin-bottom: 0; padding: 0; color: #212529; }
+.orders-Status-box span{color: var(--yellow);}
+.pmu-orders-user-avtar {display: flex; align-items:center; }
+.pmu-orders-user-text{flex: 1}
+.pmu-orders-user-text h4{font-size: 16px; font-weight: 600; margin: 0 0 0px 0; padding: 0; color: var(--lightblack); }
+.pmu-orders-contact-text {display: flex; } 
+.pmu-orders-contact-text>*{margin-right: 20px;}
+.contact-text {font-size: 14px; font-weight: 500; margin-bottom: 0; padding: 0; color: #212529; }
+.contact-text span{color:#8C9AA1;}
