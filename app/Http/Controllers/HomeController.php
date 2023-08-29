@@ -231,11 +231,12 @@ class HomeController extends Controller
                 
                 // }
 
+            // dd($request->all());
+
             if(array_has_dupes($request->queue)) {
                 return response()->json(['status' => 200, 'message' => "Queue number must be different from another queue number."]);
             }
 
-            // dd($request->all());
 
                 
             if(isset($type) && count($type) > 0){
@@ -294,11 +295,12 @@ class HomeController extends Controller
                                     $ChapterQuiz->step_id = 1;
                                     $ChapterQuiz->save();
                                     $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
-                                    foreach ($valueQVal['options'] as $optionText) {
+                                    foreach ($valueQVal['options'] as $keyOp => $optionText) {
                                         // dd($optionText);
                                         $option = new ChapterQuizOption;
                                         $option->quiz_id = $quiz_id->id;
                                         $option->answer_option_key = $optionText;
+                                        $option->is_correct = $valueQVal['correct'][$keyOp] ?? '0';
                                         $option->created_date = date('Y-m-d H:i:s');
                                         $option->status = 1;
                                         $option->save();

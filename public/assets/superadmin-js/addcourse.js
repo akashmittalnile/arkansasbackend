@@ -40,6 +40,7 @@ updateRemoveButtonVisibility();
 $(document).on('click', '.add-question-create', function () {
     let id = ($(this).attr('id').split('-'))[1];
     questionCounter++;
+    let oplength = $('.options .pmu-answer-option-list .hidden'+id+questionCounter).length;
     var html = `<div class="question">
             <div class="pmu-edit-questionnaire-box">
                 <div class="pmu-edit-label">
@@ -52,10 +53,12 @@ $(document).on('click', '.add-question-create', function () {
             </div>
             <div class="options">
                 <div class="pmu-answer-option-list">
+                    <input type="hidden" class="hidden${id}${questionCounter}" value="0">
                     <div class="pmu-answer-box">
                         <div class="pmu-edit-questionnaire-ans">
                             <div class="pmu-edit-questionnaire-text">
                                 <input type="text" class="form-control" placeholder="Type Here..." name="questions[${id}][${questionCounter}][options][]" required>
+                                <input type="checkbox" class="" name="questions[${id}][${questionCounter}][correct][${oplength}]" value="1">
                             </div>
                         </div>
                     </div>
@@ -75,12 +78,15 @@ let optionsCount = 0;
 
 $(document).on('click', '.add-option', function () {
     let id = ($(this).attr('id').split('-'));
+    let oplength = $('.options .pmu-answer-option-list .hidden'+id[1]+questionCounter).length;
     var op_html = `<div class="options">
                         <div class="pmu-answer-option-list">
+                        <input type="hidden" class="hidden${id[1]}${questionCounter}" value="0">
                             <div class="pmu-answer-box">
                                 <div class="pmu-edit-questionnaire-ans">
                                     <div class="pmu-edit-questionnaire-text">
                                         <input type="text" class="form-control" placeholder="Type Here..." name="questions[${id[1]}][${id[2] ?? questionCounter}][options][]" required>
+                                        <input type="checkbox" class="" name="questions[${id[1]}][${id[2] ?? questionCounter}][correct][${oplength}]" value="1">
                                     </div>
                                 </div>
                             </div>
@@ -304,7 +310,7 @@ $(document).ready(function () {
                         </div>`;
             countForm += 1;
         } else if (div_type == 'Quiz') {
-            let len = $('#quiz_div').length;
+            let oplength = $('.options .pmu-answer-option-list .hidden'+countForm+questionCounter).length;
             htmlForm = `<div class="edit-pmu-form-item" id="quiz_div">
                             <input type="hidden" name="type[${countForm}]" id="quiz" value="quiz" />
                             <div class="edit-pmu-heading">
@@ -345,10 +351,12 @@ $(document).ready(function () {
                                     </div>
                                     <div class="options">
                                         <div class="pmu-answer-option-list">
+                                        <input type="hidden" class="hidden${countForm}${questionCounter}" value="0">
                                             <div class="pmu-answer-box">
                                                 <div class="pmu-edit-questionnaire-ans">
                                                     <div class="pmu-edit-questionnaire-text">
                                                         <input type="text" class="form-control" placeholder="Type Here..." name="questions[${countForm}][${questionCounter}][options][]" required>
+                                                        <input type="checkbox" class="" name="questions[${countForm}][${questionCounter}][correct][${oplength}]" value="1">
                                                     </div>
                                                 </div>
                                             </div>

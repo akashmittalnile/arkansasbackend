@@ -137,7 +137,7 @@
                                                         <?php $s_no = 'A'; ?>
                                                         @foreach ($options as $item)
                                                             <div class="pmu-answer-box">
-                                                                <div class="pmu-edit-questionnaire-ans">
+                                                                <div class="pmu-edit-questionnaire-ans" @if($item->is_correct == '1')style="border: 1.5px solid #39dd39; background: #39dd391f" @endif>
                                                                     <div class="pmu-edit-ans-label">
                                                                         <div class="a-badge">{{ $s_no }}</div>
                                                                     </div>
@@ -167,7 +167,7 @@
                                                         </div>
                                                     </div>
 
-                                                    <div class="pmu-answer-option-action">
+                                                    <!-- <div class="pmu-answer-option-action">
                                                         <div class="pmu-answer-form-select">
                                                             <form method="POST" action="{{ route('SaveAnswer') }}"
                                                                 id="SaveAnswer">
@@ -198,7 +198,7 @@
                                                                 </div>
                                                             </form>
                                                         </div>
-                                                    </div>
+                                                    </div> -->
                                                 </div>
                                                 <?php $v = 'AA'; ?>
                                             @endforeach
