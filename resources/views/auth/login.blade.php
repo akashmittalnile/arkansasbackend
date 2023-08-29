@@ -110,7 +110,7 @@
         $('#LoginCheck').on('click', function() {
             var admin_email = $('input[name="email"]').val();
             $.ajax({
-                url: 'http://127.0.0.1:8000/check_status',
+                url: "{{ route('check_status') }}",
                 method: 'GET',
                 data: {
                     admin_email: admin_email,

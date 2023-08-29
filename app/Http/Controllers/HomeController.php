@@ -10,6 +10,8 @@ use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+
+
 class HomeController extends Controller
 {
     public function index() 
@@ -69,9 +71,9 @@ class HomeController extends Controller
         $courseID = encrypt_decrypt('decrypt',$courseID);
         $chapterID = encrypt_decrypt('decrypt',$chapterID);
         $chapters = CourseChapter::where('course_id',$courseID)->get();
-        $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
-        $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
-        return view('home.addcourse2',compact('quizes','datas','chapters','courseID','chapterID'));
+        $quizes = ChapterQuiz::orderBy('ordering')->where('type','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
+        $datas = ChapterQuiz::orderBy('ordering')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
+        return view('home.addcourse2-new',compact('quizes','datas','chapters','courseID','chapterID'));
     }
 
     public function delete_question($id) 
@@ -117,118 +119,202 @@ class HomeController extends Controller
     public function submitquestion(Request $request) 
     {
         try {
-            $options = $request->option;
-            $question = $request->question;
-            if ($request->video) {
-                $videoName = time().'.'.$request->video->extension();  
-                $request->video->move(public_path('upload/course'), $videoName);
-            }
+            $type = array_unique($request->type);
+            
+            // $options = $request->option;
+            // $question = $request->question;
+            // if ($request->video) {
+            //     $videoName = time().'.'.$request->video->extension();  
+            //     $request->video->move(public_path('upload/course'), $videoName);
+            // }
 
-            if ($request->pdf) {
-                $pdfName = time().'.'.$request->pdf->extension();  
-                $request->pdf->move(public_path('upload/course'), $pdfName);
-            }
+            // if ($request->pdf) {
+            //     $pdfName = time().'.'.$request->pdf->extension();  
+            //     $request->pdf->move(public_path('upload/course'), $pdfName);
+            // }
 
             
-            if($request->type == 'video'){
-                $ChapterQuiz = new ChapterQuiz;
-                $ChapterQuiz->title = 'video';
-                $ChapterQuiz->type = 'video';
-                $ChapterQuiz->desc = $request->input('video_decription');
-                $ChapterQuiz->file = $videoName;
-                $ChapterQuiz->chapter_id = $request->chapter_id;
-                $ChapterQuiz->course_id = $request->courseID;
-                $ChapterQuiz->save();
-            }elseif($request->type == 'pdf'){
-                $ChapterQuiz = new ChapterQuiz;
-                $ChapterQuiz->title = 'pdf';
-                $ChapterQuiz->type = 'pdf';
-                $ChapterQuiz->desc = $request->input('PDF_decription');
-                $ChapterQuiz->file = $pdfName;
-                $ChapterQuiz->chapter_id = $request->chapter_id;
-                $ChapterQuiz->course_id = $request->courseID;
-                $ChapterQuiz->save();
-            }elseif($request->type == 'quiz'){
+            // if($request->type == 'video'){
+            //     $ChapterQuiz = new ChapterQuiz;
+            //     $ChapterQuiz->title = 'video';
+            //     $ChapterQuiz->type = 'video';
+            //     $ChapterQuiz->desc = $request->input('video_decription');
+            //     $ChapterQuiz->file = $videoName;
+            //     $ChapterQuiz->chapter_id = $request->chapter_id;
+            //     $ChapterQuiz->course_id = $request->courseID;
+            //     $ChapterQuiz->save();
+            // }elseif($request->type == 'pdf'){
+            //     $ChapterQuiz = new ChapterQuiz;
+            //     $ChapterQuiz->title = 'pdf';
+            //     $ChapterQuiz->type = 'pdf';
+            //     $ChapterQuiz->desc = $request->input('PDF_decription');
+            //     $ChapterQuiz->file = $pdfName;
+            //     $ChapterQuiz->chapter_id = $request->chapter_id;
+            //     $ChapterQuiz->course_id = $request->courseID;
+            //     $ChapterQuiz->save();
+            // }elseif($request->type == 'quiz'){
 
-                // if ($request->input('prerequisite') == 'on') {
-                //     $prerequisite = 1;
-                // } else {
-                //     $prerequisite = 0;
+                // // if ($request->input('prerequisite') == 'on') {
+                // //     $prerequisite = 1;
+                // // } else {
+                // //     $prerequisite = 0;
+                // // }
+
+                // $questionsData = $request->input('questions');
+                // //dd($questionsData[1]);
+                // foreach ($questionsData as $questionData) {
+                //     $ChapterQuiz = new ChapterQuiz;
+                //     $ChapterQuiz->title = $questionData['text'];
+                //     $ChapterQuiz->type = 'quiz';
+                //     $ChapterQuiz->chapter_id = $request->chapter_id;
+                //     $ChapterQuiz->course_id = $request->courseID;
+                //     $ChapterQuiz->step_id = 1;
+                //     $ChapterQuiz->save();
+                //     $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
+                //     //dd($questionData['options']);
+                //     foreach ($questionData['options'] as $optionText) {
+                //         $option = new ChapterQuizOption;
+                //         $option->quiz_id = $quiz_id->id;
+                //         $option->answer_option_key = $optionText;
+                //         $option->created_date = date('Y-m-d H:i:s');
+                //         $option->status = 1;
+                //         $option->save();
+                //     }
+                //     //dd($questionData['options']);
+                // }
+            // }elseif($request->type == 'survey'){
+            //     $ChapterQuiz = new ChapterQuiz;
+            //     if ($request->input('required_fied') == 'on') {
+            //         $required_fied = 1;
+            //     } else {
+            //         $required_fied = 0;
+            //     }
+            //     $option = $request->option;
+                
+            //     $ChapterQuiz->title = $request->input('survey_question');
+            //     $ChapterQuiz->type = 'survey';
+            //     $ChapterQuiz->chapter_id = $request->chapter_id;
+            //     $ChapterQuiz->course_id = $request->courseID;
+            //     $ChapterQuiz->step_id = $required_fied;
+            //     $ChapterQuiz->save();
+            //     $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
+
+            //     if(isset($options))
+            //     {
+            //         if(count($options)>0)
+            //         {
+            //             foreach ($options as $key => $value) {
+            //                 if(!empty($value))
+            //                 {
+            //                     $option = new ChapterQuizOption;
+            //                     $option->quiz_id = $quiz_id->id;
+            //                     $points_value = $request->option[$key];
+            //                     $option->answer_option_key = $points_value;
+            //                     $option->created_date = date('Y-m-d H:i:s');
+            //                     $option->status = 1;
+            //                     $option->save();
+            //                 }else{
+            //                     $d_json = 0;
+            //                     return $d_json;
+            //                 }
+            //             }
+            //         }
+            //     }
+            // }elseif($request->type == 'assignment'){
+            //     $ChapterQuiz = new ChapterQuiz;
+            //     $ChapterQuiz->title = 'assignment';
+            //     $ChapterQuiz->type = 'assignment';
+            //     $ChapterQuiz->chapter_id = $request->chapter_id;
+            //     $ChapterQuiz->course_id = $request->courseID;
+            //     $ChapterQuiz->save();
+            // }else{
+                
                 // }
 
-                $questionsData = $request->input('questions');
-                //dd($questionsData[1]);
-                foreach ($questionsData as $questionData) {
-                    $ChapterQuiz = new ChapterQuiz;
-                    $ChapterQuiz->title = $questionData['text'];
-                    $ChapterQuiz->type = 'quiz';
-                    $ChapterQuiz->chapter_id = $request->chapter_id;
-                    $ChapterQuiz->course_id = $request->courseID;
-                    $ChapterQuiz->step_id = 1;
-                    $ChapterQuiz->save();
-                    $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
-                    //dd($questionData['options']);
-                    foreach ($questionData['options'] as $optionText) {
-                        $option = new ChapterQuizOption;
-                        $option->quiz_id = $quiz_id->id;
-                        $option->answer_option_key = $optionText;
-                        $option->created_date = date('Y-m-d H:i:s');
-                        $option->status = 1;
-                        $option->save();
-                    }
-                    //dd($questionData['options']);
-                }
-            }elseif($request->type == 'survey'){
-                $ChapterQuiz = new ChapterQuiz;
-                if ($request->input('required_fied') == 'on') {
-                    $required_fied = 1;
-                } else {
-                    $required_fied = 0;
-                }
-                $option = $request->option;
-                
-                $ChapterQuiz->title = $request->input('survey_question');
-                $ChapterQuiz->type = 'survey';
-                $ChapterQuiz->chapter_id = $request->chapter_id;
-                $ChapterQuiz->course_id = $request->courseID;
-                $ChapterQuiz->step_id = $required_fied;
-                $ChapterQuiz->save();
-                $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
+            if(array_has_dupes($request->queue)) {
+                return response()->json(['status' => 200, 'message' => "Queue number must be different from another queue number."]);
+            }
 
-                if(isset($options))
-                {
-                    if(count($options)>0)
-                    {
-                        foreach ($options as $key => $value) {
-                            if(!empty($value))
-                            {
-                                $option = new ChapterQuizOption;
-                                $option->quiz_id = $quiz_id->id;
-                                $points_value = $request->option[$key];
-                                $option->answer_option_key = $points_value;
-                                $option->created_date = date('Y-m-d H:i:s');
-                                $option->status = 1;
-                                $option->save();
-                            }else{
-                                $d_json = 0;
-                                return $d_json;
+            // dd($request->all());
+
+                
+            if(isset($type) && count($type) > 0){
+                foreach($type as $key => $value){
+                    if($type[$key] == 'video'){
+                        if(count($request->video) > 0){
+                            foreach($request->video as $keyVideo => $valueVideo){
+                                $videoName = time().'.'.$request->video[$keyVideo]->extension();  
+                                $request->video[$keyVideo]->move(public_path('upload/course'), $videoName); 
+
+                                $ChapterQuiz = new ChapterQuiz;
+                                $ChapterQuiz->title = 'video';
+                                $ChapterQuiz->ordering = $request->queue[$keyVideo] ?? -1;
+                                $ChapterQuiz->type = $type[$key];
+                                $ChapterQuiz->desc = $request->video_description[$keyVideo] ?? null;
+                                $ChapterQuiz->file = $videoName;
+                                $ChapterQuiz->chapter_id = $request->chapter_id;
+                                $ChapterQuiz->course_id = $request->courseID;
+                                $ChapterQuiz->save();
+                            }
+                        }
+                    }
+                    else if($type[$key] == 'pdf'){
+                        if(count($request->pdf) > 0){
+                            foreach($request->pdf as $keyPdf => $valuePdf){
+                                $pdfName = time().'.'.$request->pdf[$keyPdf]->extension();  
+                                $request->pdf[$keyPdf]->move(public_path('upload/course'), $pdfName);
+
+                                $ChapterQuiz = new ChapterQuiz;
+                                $ChapterQuiz->title = 'pdf';
+                                $ChapterQuiz->ordering = $request->queue[$keyPdf] ?? -1;
+                                $ChapterQuiz->type = $type[$key];
+                                $ChapterQuiz->desc = $request->PDF_description[$keyPdf] ?? null;
+                                $ChapterQuiz->file = $pdfName;
+                                $ChapterQuiz->chapter_id = $request->chapter_id;
+                                $ChapterQuiz->course_id = $request->courseID;
+                                $ChapterQuiz->save();
+                            }
+                        }
+                    }
+                    else if($type[$key] == 'quiz'){
+                        if(count($request->questions) > 0){
+                            foreach($request->questions as $keyQ => $valueQ){
+                                foreach($valueQ as $keyQVal => $valueQVal){
+                                    // dd($valueQVal['text']);
+                                    // if ($request->prerequisite[$keyQ] == 'on')
+                                    //     $prerequisite = 1;
+                                    // else 
+                                    //     $prerequisite = 0;
+                                    $ChapterQuiz = new ChapterQuiz;
+                                    $ChapterQuiz->title = $valueQVal['text'];
+                                    $ChapterQuiz->ordering = $request->queue[$keyQ] ?? -1;
+                                    $ChapterQuiz->type = 'quiz';
+                                    $ChapterQuiz->chapter_id = $request->chapter_id;
+                                    $ChapterQuiz->course_id = $request->courseID;
+                                    $ChapterQuiz->step_id = 1;
+                                    $ChapterQuiz->save();
+                                    $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
+                                    foreach ($valueQVal['options'] as $optionText) {
+                                        // dd($optionText);
+                                        $option = new ChapterQuizOption;
+                                        $option->quiz_id = $quiz_id->id;
+                                        $option->answer_option_key = $optionText;
+                                        $option->created_date = date('Y-m-d H:i:s');
+                                        $option->status = 1;
+                                        $option->save();
+                                    }
+                                    
+                                }
                             }
                         }
                     }
                 }
-            }elseif($request->type == 'assignment'){
-                $ChapterQuiz = new ChapterQuiz;
-                $ChapterQuiz->title = 'assignment';
-                $ChapterQuiz->type = 'assignment';
-                $ChapterQuiz->chapter_id = $request->chapter_id;
-                $ChapterQuiz->course_id = $request->courseID;
-                $ChapterQuiz->save();
-            }else{
-
             }
+
             $courseID = encrypt_decrypt('encrypt',$request->courseID);
             $chapter_id = encrypt_decrypt('encrypt',$request->chapter_id);
-            return redirect('admin/addcourse2/'.$courseID.'/'.$chapter_id)->with('message','Question saved successfully');
+            return response()->json(['status' => 201, 'message' => 'Question saved successfully']);
+            // return redirect('admin/addcourse2/'.$courseID.'/'.$chapter_id)->with('message','Question saved successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -392,6 +478,25 @@ class HomeController extends Controller
                 'correct_answer' => $request['answerID'],
                     ]);
             return redirect('admin/addcourse2/'.$courseID.'/'.$chapterID)->with('message','Answer saved successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function addOption(Request $request) 
+    {
+        try {
+            if($request->filled('option_val') && count($request['option_val'])){
+                foreach($request['option_val'] as $val){
+                    $option = new ChapterQuizOption;
+                    $option->quiz_id = $request['quiz_id'];
+                    $option->answer_option_key = $val;
+                    $option->created_date = date('Y-m-d H:i:s');
+                    $option->status = 1;
+                    $option->save();
+                }
+            }
+            return 1;
         } catch (\Exception $e) {
             return $e->getMessage();
         }

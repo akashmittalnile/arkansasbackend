@@ -96,6 +96,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/admin/delete-chapter/{id}', 'HomeController@deleteCourseChapter')->name('admin.DeleteChapter');
         Route::get('/admin/delete-quiz/{id}', 'HomeController@deleteQuiz')->name('admin.DeleteQuiz');
         Route::post('/admin/save-answer', 'HomeController@SaveAnswer')->name('SaveAnswer');
+        Route::get('/admin/add-option', 'HomeController@addOption')->name('admin.add-option');
 
     });
 });
