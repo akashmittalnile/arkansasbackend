@@ -181,6 +181,9 @@ $(document).on('change', 'input[type="file"]',function (e) {
 
 // Submit form And Mange all Hide and Show field(Append)
 $(document).ready(function () {
+
+    $("#chapterName").html( "Chapter" + ' ' + $(".chapter-item.active").attr('data-index'));
+
     $.ajaxSetup({
         headers: {
             'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')

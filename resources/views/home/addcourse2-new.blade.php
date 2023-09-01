@@ -33,10 +33,10 @@
                                 </tr>
                             @else
                                 <?php $v = 1; ?>
-                                @foreach ($chapters as $chapter)
+                                @foreach ($chapters as $chapterKey => $chapter)
                                     <div class="chapter-list">
                                         @if ($chapter->id == $chapterID)
-                                            <div class="chapter-item active">
+                                            <div class="chapter-item active" data-index="{{ $chapterKey + 1 }}">
                                         @else
                                             <div class="chapter-item">
                                         @endif
@@ -67,7 +67,7 @@
                             </div>
                         @endif
                         <div class="pmu-courses-form-section pmu-addcourse-form">
-                            <h2>Chapter </h2>
+                            <h2 id="chapterName">Chapter </h2>
                             {{-- <p>Chapter 1 Video: What Is Permanent Cosmetics?</p> --}}
                             <div class="pmu-courses-form">
                                 @if ($datas->isEmpty())
