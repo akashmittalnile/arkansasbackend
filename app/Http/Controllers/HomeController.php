@@ -8,9 +8,10 @@ use App\Models\User;
 use App\Models\CourseChapter;
 use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
+use App\Models\CourseChapterStep;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
-
+use PDO;
 
 class HomeController extends Controller
 {
@@ -70,10 +71,12 @@ class HomeController extends Controller
     {
         $courseID = encrypt_decrypt('decrypt',$courseID);
         $chapterID = encrypt_decrypt('decrypt',$chapterID);
+        // dd($chapterID);
         $chapters = CourseChapter::where('course_id',$courseID)->get();
-        $quizes = ChapterQuiz::orderBy('ordering')->where('type','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
-        $datas = ChapterQuiz::orderBy('ordering')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
-        return view('home.addcourse2-new',compact('quizes','datas','chapters','courseID','chapterID'));
+        // $quizes = ChapterQuiz::orderBy('ordering')->where('type','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
+        // $datas = ChapterQuiz::orderBy('ordering')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
+        $datas = CourseChapterStep::where('course_chapter_id', $chapterID)->orderBy('sort_order')->get();
+        return view('home.addcourse2-new',compact('datas','chapters','courseID','chapterID'));
     }
 
     public function delete_question($id) 
@@ -87,23 +90,33 @@ class HomeController extends Controller
         return redirect('admin/addcourse2/'.$courseID.'/'.$chapterID)->with('message', 'Question deleted successfully');
     }
 
-    // public function deleteQuiz($id) 
-    // {
-    //     // $id =  encrypt_decrypt('decrypt',$id);
-    //     $datas = ChapterQuiz::where('chapter_id',$id)->where('type','quiz')->get();
-    //     if ($datas) {
-    //         foreach ($datas as $key => $value) {
-    //             ChapterQuizOption::where('quiz_id',$value->id)->delete();
-    //         }
-            
-    //     } else {
-    //         # code...
-    //     }
-        
-    //     ChapterQuiz::where('chapter_id',$id)->where('type','quiz')->delete();
-        
-    //     return redirect('addcourse2')->with('message', 'Quiz deleted successfully');
-    // }
+    public function delete_section($id) 
+    {
+        $value = ChapterQuiz::where('id',$id)->first();
+        // $courseID = encrypt_decrypt('encrypt',$value->course_id);
+        // $chapterID = encrypt_decrypt('encrypt',$value->chapter_id);
+        // $question_id = $id; /*question_id*/
+
+        $step = CourseChapterStep::where('id',$id)->first();
+        $msg = ucwords($step->type);
+        CourseChapterStep::where('id',$id)->delete();
+        return redirect()->back()->with('message', $msg.' deleted successfully');
+    }
+
+    public function deleteQuiz($id) 
+    {
+        // $id =  encrypt_decrypt('decrypt',$id);
+        $step = CourseChapterStep::where('id', $id)->where('type', 'quiz')->first();
+        if($step->type == 'quiz'){
+            $question = ChapterQuiz::where('step_id',$id)->get();
+            foreach($question as $val){
+                ChapterQuizOption::where('quiz_id',$val->id)->delete();
+                ChapterQuiz::where('id',$val->id)->delete();
+            }
+        }
+        CourseChapterStep::where('id', $id)->where('type', 'quiz')->delete();
+        return redirect()->back()->with('message', 'Quiz deleted successfully');
+    }
 
     public function delete_option2($id) 
     {
@@ -234,7 +247,7 @@ class HomeController extends Controller
             // dd($request->all());
 
             if(array_has_dupes($request->queue)) {
-                return response()->json(['status' => 200, 'message' => "Queue number must be different from another queue number."]);
+                return response()->json(['status' => 200, 'message' => "Two sections cannot have the same serial order please check and change the serial order."]);
             }
 
 
@@ -247,14 +260,13 @@ class HomeController extends Controller
                                 $videoName = time().'.'.$request->video[$keyVideo]->extension();  
                                 $request->video[$keyVideo]->move(public_path('upload/course'), $videoName); 
 
-                                $ChapterQuiz = new ChapterQuiz;
-                                $ChapterQuiz->title = 'video';
-                                $ChapterQuiz->ordering = $request->queue[$keyVideo] ?? -1;
-                                $ChapterQuiz->type = $type[$key];
-                                $ChapterQuiz->desc = $request->video_description[$keyVideo] ?? null;
-                                $ChapterQuiz->file = $videoName;
-                                $ChapterQuiz->chapter_id = $request->chapter_id;
-                                $ChapterQuiz->course_id = $request->courseID;
+                                $ChapterQuiz = new CourseChapterStep;
+                                $ChapterQuiz->type = 'video';
+                                $ChapterQuiz->sort_order = $request->queue[$keyVideo] ?? -1;
+                                $ChapterQuiz->title = $type[$key];
+                                $ChapterQuiz->description = $request->video_description[$keyVideo] ?? null;
+                                $ChapterQuiz->details = $videoName;
+                                $ChapterQuiz->course_chapter_id = $request->chapter_id;
                                 $ChapterQuiz->save();
                             }
                         }
@@ -265,14 +277,13 @@ class HomeController extends Controller
                                 $pdfName = time().'.'.$request->pdf[$keyPdf]->extension();  
                                 $request->pdf[$keyPdf]->move(public_path('upload/course'), $pdfName);
 
-                                $ChapterQuiz = new ChapterQuiz;
-                                $ChapterQuiz->title = 'pdf';
-                                $ChapterQuiz->ordering = $request->queue[$keyPdf] ?? -1;
-                                $ChapterQuiz->type = $type[$key];
-                                $ChapterQuiz->desc = $request->PDF_description[$keyPdf] ?? null;
-                                $ChapterQuiz->file = $pdfName;
-                                $ChapterQuiz->chapter_id = $request->chapter_id;
-                                $ChapterQuiz->course_id = $request->courseID;
+                                $ChapterQuiz = new CourseChapterStep;
+                                $ChapterQuiz->type = 'pdf';
+                                $ChapterQuiz->sort_order = $request->queue[$keyPdf] ?? -1;
+                                $ChapterQuiz->title = $type[$key];
+                                $ChapterQuiz->description = $request->PDF_description[$keyPdf] ?? null;
+                                $ChapterQuiz->details = $pdfName;
+                                $ChapterQuiz->course_chapter_id = $request->chapter_id;
                                 $ChapterQuiz->save();
                             }
                         }
@@ -280,19 +291,21 @@ class HomeController extends Controller
                     else if($type[$key] == 'quiz'){
                         if(count($request->questions) > 0){
                             foreach($request->questions as $keyQ => $valueQ){
+                                $Step = new CourseChapterStep;
+                                $Step->title = 'Quiz';
+                                $Step->sort_order = $request->queue[$keyQ] ?? -1;
+                                $Step->type = 'quiz';
+                                $Step->prerequisite = $request->prerequisite[$keyQ] ?? 0;
+                                $Step->course_chapter_id = $request->chapter_id;
+                                $Step->save();
                                 foreach($valueQ as $keyQVal => $valueQVal){
-                                    // dd($valueQVal['text']);
-                                    // if ($request->prerequisite[$keyQ] == 'on')
-                                    //     $prerequisite = 1;
-                                    // else 
-                                    //     $prerequisite = 0;
                                     $ChapterQuiz = new ChapterQuiz;
                                     $ChapterQuiz->title = $valueQVal['text'];
-                                    $ChapterQuiz->ordering = $request->queue[$keyQ] ?? -1;
                                     $ChapterQuiz->type = 'quiz';
                                     $ChapterQuiz->chapter_id = $request->chapter_id;
                                     $ChapterQuiz->course_id = $request->courseID;
-                                    $ChapterQuiz->step_id = 1;
+                                    $ChapterQuiz->step_id = $Step['id '];
+                                    $ChapterQuiz->marks = $valueQVal['marks'] ?? 0;
                                     $ChapterQuiz->save();
                                     $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
                                     foreach ($valueQVal['options'] as $keyOp => $optionText) {
@@ -383,7 +396,8 @@ class HomeController extends Controller
             $course->course_id = $courseID;
             $course->save();
             $encrypt = encrypt_decrypt('encrypt',$courseID);
-            return redirect('admin/addcourse2/'.$encrypt)->with('message','Chapter created successfully');
+            $encryptChapter = encrypt_decrypt('encrypt',$course['id ']);
+            return redirect()->route('Home.CourseList', ['courseID'=> $encrypt, 'chapterID'=> $encryptChapter])->with('message', 'Chapter created successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -498,6 +512,34 @@ class HomeController extends Controller
                     $option->save();
                 }
             }
+            return 1;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function changeOrdering($chapterid, $id, $val) 
+    {
+        try {
+            $chapter = CourseChapterStep::where('course_chapter_id', $chapterid)->where('id', $id)->first();
+            $orderingNum = $chapter->sort_order;
+            // return $orderingNum;
+            CourseChapterStep::where('id',$id)->where('course_chapter_id', $chapterid)->update([
+                'sort_order' => $val,
+                    ]);
+            CourseChapterStep::where('sort_order', $val)->where('course_chapter_id', $chapterid)->where('id', '!=', $id)->update([
+                        'sort_order' => $orderingNum,
+                            ]);
+            return 1;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function changeAnswerOption($id, $val) 
+    {
+        try {
+            $chapter = ChapterQuizOption::where('id', $id)->update(['is_correct' => $val]);
             return 1;
         } catch (\Exception $e) {
             return $e->getMessage();

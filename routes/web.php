@@ -88,6 +88,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/submitquestion', 'HomeController@submitquestion')->name('Home.SaveQuestion');
         Route::get('/delete_option2/{id}', 'HomeController@delete_option2')->name('admin.DeleteOption2');
         Route::get('/admin/delete-question/{id}', 'HomeController@delete_question')->name('admin.DeleteQuestion');
+        Route::get('/admin/delete-section/{id}', 'HomeController@delete_section')->name('admin.DeleteSection');
         Route::get('/admin/delete-video/{id}', 'HomeController@delete_video')->name('admin.DeleteVideo');
         Route::get('/admin/update_option_list', 'HomeController@update_option_list')->name('admin.UpdateOptionList');
         Route::get('/admin/update_question_list', 'HomeController@update_question_list')->name('admin.update_question_list');
@@ -97,6 +98,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/admin/delete-quiz/{id}', 'HomeController@deleteQuiz')->name('admin.DeleteQuiz');
         Route::post('/admin/save-answer', 'HomeController@SaveAnswer')->name('SaveAnswer');
         Route::get('/admin/add-option', 'HomeController@addOption')->name('admin.add-option');
+        Route::get('/admin/change-ordering/{chapterid}/{id}/{val}', 'HomeController@changeOrdering')->name('admin.change-answer');
+        Route::get('/admin/change-answer-option/{id}/{val}', 'HomeController@changeAnswerOption')->name('admin.change-answer.option');
 
     });
 });

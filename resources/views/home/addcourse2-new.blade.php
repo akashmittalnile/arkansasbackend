@@ -77,132 +77,11 @@
                                         </td>
                                     </tr>
                                 @else
-                                    @if ($quizes->isEmpty())
+                                    @if ($datas->isEmpty())
                                     @else
                                         @php
                                             $randomNums = rand(0000, 9999);
                                         @endphp
-                                        <div class="edit-pmu-form-item">
-                                            <div class="edit-pmu-heading">
-                                                <div class="edit-pmu-text">
-                                                    <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample">
-                                                        Quiz<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
-                                                    <div class="edit-pmu-checkbox-list">
-                                                        <ul>
-                                                            <li>
-                                                                <div class="pmucheckbox">
-                                                                    <input type="checkbox" id="Prerequisite"
-                                                                        name="prerequisite" value="">
-                                                                    <label for="Prerequisite">
-                                                                        Prerequisite
-                                                                    </label>
-                                                                </div>
-                                                            </li>
-                                                        </ul>
-                                                    </div>
-                                                </div>
-                                                {{-- <div class="edit-pmu-action">
-                                                    <a href="{{ url('admin/delete-quiz/' . '1') }}"
-                                                        onclick="return confirm('Are you sure you want to delete this quiz?');">
-                                                        Delete Quiz</a>
-                                                </div> --}}
-                                            </div>
-                                            <?php $v = 'AA'; ?>
-                                            @foreach ($quizes as $quiz)
-                                                <div class="collapse" id="collapseExample">
-                                                    <div class="pmu-edit-questionnaire-box">
-                                                        <div class="pmu-edit-label">
-                                                            <div class="pmu-q-badge">Q</div>
-                                                        </div>
-                                                        <div class="pmu-edit-questionnaire-content">
-                                                            <input type="text" class="form-control {{ $v . $quiz->id }}"
-                                                                placeholder="Enter Question Title" name="quiz_question"
-                                                                value="{{ $quiz->title }}">
-                                                        </div>
-                                                        <div class="edit-pmu-action">
-                                                            <a class="edit-question-first" data-id="{{ $quiz->id }}"
-                                                                data-param="{{ $v }}">Update
-                                                                Question</a>
-                                                            <a href="{{ url('admin/delete-question/' . $quiz->id) }}"
-                                                                onclick="return confirm('Are you sure you want to delete this question?');">Delete
-                                                                Question</a>
-                                                        </div>
-                                                    </div>
-
-
-                                                    <div class="pmu-answer-option-list">
-                                                        <?php
-                                                        $options = \App\Models\ChapterQuizOption::where('quiz_id', $quiz->id)->get();
-                                                        ?>
-                                                        <?php $s_no = 'A'; ?>
-                                                        @foreach ($options as $item)
-                                                            <div class="pmu-answer-box">
-                                                                <div class="pmu-edit-questionnaire-ans" @if($item->is_correct == '1')style="border: 1.5px solid #39dd39; background: #39dd391f" @endif>
-                                                                    <div class="pmu-edit-ans-label">
-                                                                        <div class="a-badge">{{ $s_no }}</div>
-                                                                    </div>
-                                                                    <div class="pmu-edit-questionnaire-text">
-                                                                        <input type="text"
-                                                                            class="form-control {{ $s_no . $item->id }}"
-                                                                            placeholder="Type Here..." name="answer"
-                                                                            value="{{ $item->answer_option_key }}">
-                                                                        <div class="update-remove-action">
-                                                                            <a class="update-text edit-option"
-                                                                                id="edit-option"
-                                                                                data-id="{{ $item->id }}"
-                                                                                data-param="{{ $s_no }}">Update</a>
-                                                                            <a class="remove-text"
-                                                                                href="{{ url('delete_option2/' . $item->id) }}"
-                                                                                onclick="return confirm('Are you sure you want to delete this option?');">Remove</a>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </div>
-                                                            <?php $s_no++; ?>
-                                                        @endforeach
-                                                        <div id="newinputquizListing{{ $quiz->id }}"></div>
-                                                        <div class="pmu-add-answer-info">
-                                                            <a class="add-answer SaveOption" data-quiz-id="{{ $quiz->id }}" id="SaveOption{{ $quiz->id }}">Save</a>
-                                                            <a class="add-answer" data-id="{{ $quiz->id }}" id="addListingOption">Add Answer</a>
-                                                        </div>
-                                                    </div>
-
-                                                    <!-- <div class="pmu-answer-option-action">
-                                                        <div class="pmu-answer-form-select">
-                                                            <form method="POST" action="{{ route('SaveAnswer') }}"
-                                                                id="SaveAnswer">
-                                                                <input type="hidden" name="_token"
-                                                                    value="{{ csrf_token() }}" />
-                                                                <input type="hidden" name="questionID"
-                                                                    value="{{ $quiz->id }}" />
-                                                                <div class="row">
-                                                                    <div class="col-md-7">
-                                                                        <div class="form-group">
-                                                                            <select class="form-control" name="answerID">
-                                                                                <option>Choose Correct Answer</option>
-                                                                                @foreach ($options as $item)
-                                                                                    <option value="{{ $item->id }}"
-                                                                                        @if ($item->id == $quiz->correct_answer) selected='selected'
-                                                                            @else @endif>
-                                                                                        {{ $item->answer_option_key }}
-                                                                                    </option>
-                                                                                @endforeach
-                                                                            </select>
-                                                                        </div>
-                                                                    </div>
-                                                                    <div class="col-md-2">
-                                                                        <div class="form-group">
-                                                                            <button class="add-answer">Save</button>
-                                                                        </div>
-                                                                    </div>
-                                                                </div>
-                                                            </form>
-                                                        </div>
-                                                    </div> -->
-                                                </div>
-                                                <?php $v = 'AA'; ?>
-                                            @endforeach
-                                        </div>
                                     @endif
 
                                     @foreach ($datas as $data)
@@ -217,8 +96,19 @@
                                                         <h3 data-bs-toggle="collapse"
                                                             data-bs-target="#{{ 'CPDIV' . $randomNum }}">Video<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
                                                     </div>
+                                                    <div class="edit-pmu-text">
+                                                        <div class="pmu-edit-questionnaire-ans">
+                                                            <div class="pmu-edit-questionnaire-text">
+                                                                <select name="changeAnswerOption" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" id="" class="form-control ordering-select-function">
+                                                                    @foreach ($datas as $keydata => $valuedata)
+                                                                    <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="edit-pmu-action">
-                                                        <a href="{{ url('admin/delete-question/' . $data->id) }}"
+                                                        <a href="{{ url('admin/delete-section/' . $data->id) }}"
                                                             onclick="return confirm('Are you sure you want to delete this question?');">
                                                             Delete Section</a>
                                                     </div>
@@ -229,7 +119,7 @@
                                                             <div class="form-group">
                                                                 <h4>Uploaded Video</h4>
                                                                 <div class="upload-signature">
-                                                                    @if ($data->file)
+                                                                    @if ($data->details)
                                                                         <div class="upload-file-item">
                                                                             <div class="upload-file-icon">
                                                                                 <img src="{!! url('assets/website-images/video-icon.svg') !!}">
@@ -254,7 +144,7 @@
                                                                         </tr>
                                                                     @endif
 
-                                                                    {{-- <video src="{!! url('assets/upload/course/' . $data->file) !!}" controls>
+                                                                    {{-- <video src="{!! url('assets/upload/course/' . $data->details) !!}" controls>
                                                                     </video> --}}
                                                                 </div>
                                                             </div>
@@ -263,12 +153,129 @@
                                                         <div class="col-md-12">
                                                             <div class="form-group">
                                                                 <h4>Video Description</h4>
-                                                                <textarea type="text" class="form-control" name="video_description" placeholder="Video Description" disabled>{{ $data->desc ?: '' }}</textarea>
+                                                                <textarea type="text" class="form-control" name="video_description" placeholder="Video Description" disabled>{{ $data->description ?: '' }}</textarea>
                                                             </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                             </div>
+                                        @elseif($data->type == 'quiz')
+                                        @php
+                                            $randomNum = rand(0000, 9999);
+                                        @endphp
+                                        <div class="edit-pmu-form-item">
+                                            <div class="edit-pmu-heading">
+                                                <div class="edit-pmu-text">
+                                                    <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample{{ $data->id }}">
+                                                        Quiz<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                                    <div class="edit-pmu-checkbox-list">
+                                                        <ul>
+                                                            <li>
+                                                                <div class="pmucheckbox">
+                                                                    <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
+                                                                        name="prerequisite" value="">
+                                                                    <label for="Prerequisite{{$data->id}}">
+                                                                        Prerequisite
+                                                                    </label>
+                                                                </div>
+                                                            </li>
+                                                        </ul>
+                                                    </div>
+                                                </div>
+                                                <div class="edit-pmu-text">
+                                                    <div class="pmu-edit-questionnaire-ans">
+                                                        <div class="pmu-edit-questionnaire-text">
+                                                            <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
+                                                                @foreach ($datas as $keydata => $valuedata)
+                                                                <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{$valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
+                                                                @endforeach
+                                                            </select>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="edit-pmu-action">
+                                                    <a href="{{ url('admin/delete-quiz/' . $data->id) }}"
+                                                        onclick="return confirm('Are you sure you want to delete this quiz?');">
+                                                        Delete Quiz</a>
+                                                </div>
+                                            </div>
+                                            <?php $v = 'AA'; ?>
+                                            @foreach ($data->quiz as $quiz)
+                                                <div class="collapse" id="collapseExample{{ $data->id }}">
+                                                    <div class="pmu-edit-questionnaire-box">
+                                                        <div class="pmu-edit-label">
+                                                            <div class="pmu-q-badge">Q</div>
+                                                        </div>
+                                                        <div class="pmu-edit-questionnaire-content">
+                                                            <input type="text" class="form-control {{ $v . $quiz->id }}"
+                                                                placeholder="Enter Question Title" name="quiz_question"
+                                                                value="{{ $quiz->title }}">
+                                                        </div>
+                                                        <div class="edit-pmu-action">
+                                                            <a class="edit-question-first" data-id="{{ $quiz->id }}"
+                                                                data-param="{{ $v }}">Update
+                                                                Question</a>
+                                                            <a href="{{ url('admin/delete-question/' . $quiz->id) }}"
+                                                                onclick="return confirm('Are you sure you want to delete this question?');">Delete
+                                                                Question</a>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="pmu-edit-questionnaire-box">
+                                                        <div class="pmu-edit-label">
+                                                            <div class="pmu-q-badge">M</div>
+                                                        </div>
+                                                        <div class="pmu-edit-questionnaire-content">
+                                                            <input type="number" class="form-control"
+                                                                placeholder="Enter Marks" name="marks_question"
+                                                                value="{{ $quiz->marks }}">
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="pmu-answer-option-list">
+                                                        
+                                                        <?php $s_no = 'A'; ?>
+                                                        @foreach ($quiz->quizOption as $item)
+                                                            <div class="pmu-answer-box">
+                                                                <div class="pmu-edit-questionnaire-ans">
+                                                                    <div class="pmu-edit-ans-label">
+                                                                        <div class="a-badge">{{ $s_no }}</div>
+                                                                    </div>
+                                                                    <div class="pmu-edit-questionnaire-text d-flex">
+                                                                        <input type="text"
+                                                                            class="form-control {{ $s_no . $item->id }}"
+                                                                            placeholder="Type Here..." name="answer"
+                                                                            value="{{ $item->answer_option_key }}">
+                                                                        <div class="update-remove-action mx-5">
+                                                                            <a class="update-text edit-option"
+                                                                                id="edit-option"
+                                                                                data-id="{{ $item->id }}"
+                                                                                data-param="{{ $s_no }}">Update</a>
+                                                                            <a class="remove-text"
+                                                                                href="{{ url('delete_option2/' . $item->id) }}"
+                                                                                onclick="return confirm('Are you sure you want to delete this option?');">Remove</a>
+                                                                        </div>
+                                                                        <div class="pmucheckbox">
+                                                                            <input type="checkbox" class="answerEditCheckbox" data-answer-id="{{ $item->id }}" name="answer" id="answer-option-{{ $item->id }}" @if($item->is_correct) checked @endif value="1">
+                                                                            <label for="answer-option-{{ $item->id }}"></label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <?php $s_no++; ?>
+                                                        @endforeach
+                                                        <div id="newinputquizListing{{ $quiz->id }}"></div>
+                                                        <div class="pmu-add-answer-info">
+                                                            <a class="add-answer SaveOption" data-quiz-id="{{ $quiz->id }}" id="SaveOption{{ $quiz->id }}">Save</a>
+                                                            <a class="add-answer" data-id="{{ $quiz->id }}" id="addListingOption">Add Answer</a>
+                                                        </div>
+                                                    </div>
+
+                                                   
+                                                </div>
+                                                <?php $v = 'AA'; ?>
+                                            @endforeach
+                                        </div>
                                         @elseif($data->type == 'pdf')
                                             @php
                                                 $randomNum = rand(0000, 9999);
@@ -279,8 +286,19 @@
                                                         <h3 data-bs-toggle="collapse"
                                                             data-bs-target="#{{ 'CPDIV' . $randomNum }}">PDF<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
                                                     </div>
+                                                    <div class="edit-pmu-text">
+                                                        <div class="pmu-edit-questionnaire-ans">
+                                                            <div class="pmu-edit-questionnaire-text">
+                                                                <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
+                                                                    @foreach ($datas as $keydata => $valuedata)
+                                                                    <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                    </div>
                                                     <div class="edit-pmu-action">
-                                                        <a href="{{ url('admin/delete-question/' . $data->id) }}"
+                                                        <a href="{{ url('admin/delete-section/' . $data->id) }}"
                                                             onclick="return confirm('Are you sure you want to delete this question?');">
                                                             Delete Section</a>
                                                     </div>
@@ -290,7 +308,7 @@
                                                         <div class="col-md-6">
                                                             <div class="form-group">
                                                                 <h4>Uploaded PDF</h4>
-                                                                @if ($data->file)
+                                                                @if ($data->details)
                                                                     <div class="upload-file-item">
                                                                         <div class="upload-file-icon">
                                                                             <img src="{!! url('assets/website-images/document-text.svg') !!}">
@@ -320,7 +338,7 @@
                                                         <div class="col-md-12">
                                                             <div class="form-group">
                                                                 <h4>PDF Description</h4>
-                                                                <textarea type="text" class="form-control" name="PDF_description" placeholder="PDF Description" disabled>{{ $data->desc ?: '' }}</textarea>
+                                                                <textarea type="text" class="form-control" name="PDF_description" placeholder="PDF Description" disabled>{{ $data->description ?: '' }}</textarea>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -345,7 +363,7 @@
                                                             </h3>
                                                         </div>
                                                         <div class="edit-pmu-action">
-                                                            <a href="{{ url('admin/delete-question/' . $data->id) }}"
+                                                            <a href="{{ url('admin/delete-section/' . $data->id) }}"
                                                                 onclick="return confirm('Are you sure you want to delete this question?');">
                                                                 Delete Section</a>
                                                         </div>
@@ -436,7 +454,7 @@
                                                         </div>
                                                     </div>
                                                     <div class="edit-pmu-action">
-                                                        <a href="{{ url('admin/delete-question/' . $data->id) }}"
+                                                        <a href="{{ url('admin/delete-section/' . $data->id) }}"
                                                             onclick="return confirm('Are you sure you want to delete this question?');">
                                                             Delete Section</a>
                                                     </div>
