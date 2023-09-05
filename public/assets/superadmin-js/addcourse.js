@@ -157,12 +157,18 @@ $(document).on('click', '.SaveOption', function () {
     var option_val = $(".newop"+quiz_id).map(function() {
         return this.value;
     }).get();
+    var answer_val = $(`input[class="answerAddCheckbox${quiz_id}"]`).map(function() {
+        if($(this).is(":checked")) return 1;
+        else return 0;
+    }).get();
+    console.log(answer_val);
     $.ajax({
         url: arkansasUrl + '/admin/add-option',
         method: 'GET',
         data: {
             quiz_id,
-            option_val
+            option_val,
+            answer_val
         },
         dataType: 'json',
         headers: {
@@ -278,6 +284,16 @@ $(document).ready(function () {
                                 <div class="edit-pmu-heading">
                                     <div class="edit-pmu-text">
                                         <h3>Video</h3>
+                                        <div class="edit-pmu-checkbox-list">
+                                            <ul>
+                                                <li>
+                                                    <div class="pmucheckbox">
+                                                        <input type="checkbox" id="Prerequisite-${countForm}" value="1" name="prerequisite[${countForm}]">
+                                                        <label for="Prerequisite-${countForm}">Prerequisite</label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
                                     </div>
                                     <div class="edit-pmu-text">
                                         <div class="pmu-edit-questionnaire-ans">
@@ -324,6 +340,16 @@ $(document).ready(function () {
                             <div class="edit-pmu-heading">
                                 <div class="edit-pmu-text">
                                     <h3>PDF</h3>
+                                    <div class="edit-pmu-checkbox-list">
+                                        <ul>
+                                            <li>
+                                                <div class="pmucheckbox">
+                                                    <input type="checkbox" id="Prerequisite-${countForm}" value="1" name="prerequisite[${countForm}]">
+                                                    <label for="Prerequisite-${countForm}">Prerequisite</label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
                                 </div>
                                 <div class="edit-pmu-text">
                                     <div class="pmu-edit-questionnaire-ans">
@@ -444,16 +470,36 @@ $(document).ready(function () {
             countForm += 1;
         } else if (div_type == 'Assignment') {
             htmlForm = `<div class="edit-pmu-form-item" id="assignment_div">
-                                        <input type="hidden" name="type[]" id="assignment" value="assignment" />
-                                        <div class="edit-pmu-heading">
-                                            <div class="edit-pmu-text">
-                                                <h3>Assignment</h3>
-                                            </div>
-                                            <div class="edit-pmu-action">
-                                                <a href="javascript:void(0)" class="dlt-div" data-id="assignment_div" data-type="Assignment"> Delete Section</a>
-                                            </div>
+                            <input type="hidden" name="type[${countForm}]" id="assignment" value="assignment" />
+                            <div class="edit-pmu-heading">
+                                <div class="edit-pmu-text">
+                                    <h3>Assignment</h3>
+                                    <div class="edit-pmu-checkbox-list">
+                                        <ul>
+                                            <li>
+                                                <div class="pmucheckbox">
+                                                    <input type="checkbox" id="Prerequisite-${countForm}" value="1" name="prerequisite[${countForm}]">
+                                                    <label for="Prerequisite-${countForm}">Prerequisite</label>
+                                                </div>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+
+                                <div class="edit-pmu-text">
+                                    <div class="pmu-edit-questionnaire-ans">
+                                        <div class="pmu-edit-questionnaire-text">
+                                            <input type="number" class="form-control" min="1" step="0" placeholder="Assign serial order" name="queue[${countForm}]" required>
                                         </div>
-                                    </div>`;
+                                    </div>
+                                </div>
+                                <input type="hidden" name="assignment[${countForm}]" id="assignment-${countForm}">
+
+                                <div class="edit-pmu-action">
+                                    <a href="javascript:void(0)" class="dlt-div" data-id="assignment_div" data-type="Assignment"> Delete Section</a>
+                                </div>
+                            </div>
+                        </div>`;
             countForm += 1;
         } else if (div_type == 'Survey') {
             htmlForm = `<div class="edit-pmu-form-item" id="survey_div">
@@ -614,10 +660,11 @@ $(document).ready(function () {
         newRowAdd =
             '<div class="pmu-answer-box" id="' + possible +
             '" > <div class="pmu-edit-questionnaire-ans">' +
-            '<div class="pmu-edit-questionnaire-text">' +
+            '<div class="pmu-edit-questionnaire-text d-flex">' +
             '<input type="text" class="form-control newop'+id+'" placeholder="Type Here..." name="option[' +
             possible + ']">' +
-            '<span class="remove-text remove_newoption" data-remove-id="' + id + '" id="' + possible + '">Remove</span>' +
+            '<span class="remove-text remove_newoption mx-5" data-remove-id="' + id + '" id="' + possible + '">Remove</span>' +
+            '<div class="pmucheckbox"> <input type="checkbox" class="answerAddCheckbox'+id+'" name="answer[' + possible + ']" id="answer-option-'+possible+'" value="1"> <label for="answer-option-'+possible+'"></label> </div>' +
             '</div>' +
             '</div>' + '</div>';
         $('#newinputquizListing'+id).append(newRowAdd);

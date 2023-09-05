@@ -263,9 +263,10 @@ class HomeController extends Controller
                                 $ChapterQuiz = new CourseChapterStep;
                                 $ChapterQuiz->type = 'video';
                                 $ChapterQuiz->sort_order = $request->queue[$keyVideo] ?? -1;
-                                $ChapterQuiz->title = $type[$key];
+                                $ChapterQuiz->title = ucwords($type[$key]);
                                 $ChapterQuiz->description = $request->video_description[$keyVideo] ?? null;
                                 $ChapterQuiz->details = $videoName;
+                                $ChapterQuiz->prerequisite = $request->prerequisite[$keyVideo] ?? 0;
                                 $ChapterQuiz->course_chapter_id = $request->chapter_id;
                                 $ChapterQuiz->save();
                             }
@@ -280,9 +281,25 @@ class HomeController extends Controller
                                 $ChapterQuiz = new CourseChapterStep;
                                 $ChapterQuiz->type = 'pdf';
                                 $ChapterQuiz->sort_order = $request->queue[$keyPdf] ?? -1;
-                                $ChapterQuiz->title = $type[$key];
+                                $ChapterQuiz->title = ucwords($type[$key]);
                                 $ChapterQuiz->description = $request->PDF_description[$keyPdf] ?? null;
                                 $ChapterQuiz->details = $pdfName;
+                                $ChapterQuiz->prerequisite = $request->prerequisite[$keyPdf] ?? 0;
+                                $ChapterQuiz->course_chapter_id = $request->chapter_id;
+                                $ChapterQuiz->save();
+                            }
+                        }
+                    }
+                    else if($type[$key] == 'assignment'){
+                        if(count($request->assignment) > 0){
+                            foreach($request->assignment as $keyAssignment => $valueAssignment){
+                                $ChapterQuiz = new CourseChapterStep;
+                                $ChapterQuiz->type = 'assignment';
+                                $ChapterQuiz->sort_order = $request->queue[$keyAssignment] ?? -1;
+                                $ChapterQuiz->title = ucwords($type[$key]);
+                                $ChapterQuiz->description = null;
+                                $ChapterQuiz->details = null;
+                                $ChapterQuiz->prerequisite = $request->prerequisite[$keyAssignment] ?? 0;
                                 $ChapterQuiz->course_chapter_id = $request->chapter_id;
                                 $ChapterQuiz->save();
                             }
@@ -292,7 +309,7 @@ class HomeController extends Controller
                         if(count($request->questions) > 0){
                             foreach($request->questions as $keyQ => $valueQ){
                                 $Step = new CourseChapterStep;
-                                $Step->title = 'Quiz';
+                                $Step->title = ucwords($type[$key]);
                                 $Step->sort_order = $request->queue[$keyQ] ?? -1;
                                 $Step->type = 'quiz';
                                 $Step->prerequisite = $request->prerequisite[$keyQ] ?? 0;
@@ -502,11 +519,13 @@ class HomeController extends Controller
     public function addOption(Request $request) 
     {
         try {
+            // dd($request->all());
             if($request->filled('option_val') && count($request['option_val'])){
-                foreach($request['option_val'] as $val){
+                foreach($request['option_val'] as $key => $val){
                     $option = new ChapterQuizOption;
                     $option->quiz_id = $request['quiz_id'];
                     $option->answer_option_key = $val;
+                    $option->is_correct = $request['answer_val'][$key] ?? 0;
                     $option->created_date = date('Y-m-d H:i:s');
                     $option->status = 1;
                     $option->save();
