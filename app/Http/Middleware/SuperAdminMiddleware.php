@@ -15,11 +15,11 @@ class SuperAdminMiddleware
      */
     public function handle($request, Closure $next)
     {
-        if (auth()->check() && auth()->user()->isAdmin()) {
+        if (auth()->user()) {
             return $next($request);
         }
 
-        return redirect()->route('home')->with('error', 'Unauthorized access.');
+        return redirect()->route('SA.LoginShow')->with('error', 'Unauthorized access.');
     }
 
 }
