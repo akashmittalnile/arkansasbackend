@@ -355,7 +355,7 @@ class HomeController extends Controller
                             }
                         }
                     }
-                }*/
+                }
             }elseif($request->type == 'survey'){
                 $questionsData = $request->input('questions_survey');
                 foreach ($questionsData as $questionData) {
