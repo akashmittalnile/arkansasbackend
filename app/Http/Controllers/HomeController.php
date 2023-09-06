@@ -14,6 +14,24 @@ use PDO;
 
 class HomeController extends Controller
 {
+    public function check_status(Request $request) 
+    {
+        $user = User::where('email',$request['admin_email'])->first();
+        if(!empty($user))
+        {
+            if($user->status == 0)
+            {
+                $status = 1;
+            }else{
+                $status = 0;
+            }
+            
+        }else{
+            $status = 0;
+        }
+        return $status;
+    }
+
     public function index() 
     {
         $admin_id = Auth::user()->id;
@@ -355,7 +373,7 @@ class HomeController extends Controller
                             }
                         }
                     }
-                }*/
+                }
             }elseif($request->type == 'survey'){
                 $questionsData = $request->input('questions_survey');
                 foreach ($questionsData as $questionData) {
