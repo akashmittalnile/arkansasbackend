@@ -1,0 +1,213 @@
+@extends('super-admin-layouts.app-master')
+@section('title', 'Makeup University - Add Product')
+@section('content')
+    <div class="body-main-content">
+        <div class="pmu-filter-section">
+            <div class="pmu-filter-heading">
+                <h2>Products</h2>
+            </div>
+            <div class="pmu-filter">
+                <div class="row">
+                    <div class="col-md-12">
+                        <a href="{{ url('super-admin/products') }}" class="add-more">Back</a>
+                        <a href="#" id="SaveProduct" class="add-more">Save & Continue</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="pmu-content-list">
+            <div class="pmu-content">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="pmu-courses-form-section">
+                            <h2>Product Details</h2>
+                            <div class="pmu-courses-form">
+                                <form method="post" action="{{ route('SA.SubmitProduct') }}" id="AddProduct" enctype="multipart/form-data">
+                                    <input type="hidden" name="_token" value="{{ csrf_token() }}" />
+                                    <input type="hidden" name="status" value="1" />
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <h4>Title</h4>
+                                                <input type="text" class="form-control" name="title" placeholder="Title" id="title" required>
+                                                @if ($errors->has('title'))
+                                                    <span class="text-danger text-left">{{ $errors->first('title') }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <h4>Description</h4>
+                                                <textarea type="text" class="form-control" name="description" placeholder="Description" required></textarea>
+                                                @if ($errors->has('description'))
+                                                    <span class="text-danger text-left">{{ $errors->first('description') }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <h4>Price</h4>
+                                                <input type="number" class="form-control" name="price"
+                                                    placeholder="Enter Price" min="0" required>
+                                                @if ($errors->has('price'))
+                                                    <span class="text-danger text-left">{{ $errors->first('price') }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <h4>Quantity</h4>
+                                                <input type="number" class="form-control" name="qnt" min="0" placeholder="Product Quantity" required>
+                                                @if ($errors->has('qnt'))
+                                                    <span class="text-danger text-left">{{ $errors->first('qnt') }}</span>
+                                                @endif
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <h4>Upload Product Image(jpg,jpeg,png only|Size:2048)</h4>
+                                                <div class="upload-signature">
+                                                    <input type="file" name="image[]" id="PDF/JPEG Or PNG"
+                                                        class="uploadsignature addsignature" multiple required accept="image/*">
+                                                    <label for="PDF/JPEG Or PNG">
+                                                        <div class="signature-text">
+                                                            <span id="image_name"><img src="{!! url('assets/website-images/upload.svg') !!}"> Click here to Upload</span>
+                                                        </div>
+                                                    </label>
+                                                    @if ($errors->has('image'))
+                                                        <span class="text-danger text-left">{{ $errors->first('image') }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>
+                                        
+
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <h4>Tags With Comma</h4>
+                                                <select class="form-control livesearch form-control p-3" name="livesearch[]" multiple="multiple" required></select>
+                                            </div>
+                                        </div> 
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-alpha1/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
+    <!-- JQuery Search Tags -->
+    <script type="text/javascript">
+        $('.livesearch').select2({
+            placeholder: 'Select tags',
+            ajax: {
+                url: 'http://127.0.0.1:8000/load-sectors',
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                text: item.tag_name,
+                                id: item.tag_name
+                            }
+                        })
+                    };
+                },
+                cache: true
+            }
+        });
+    </script>
+    
+    <!-- Include jQuery Validation Plugin -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+
+    <!-- Style of h2 tag and error message  jQuery Validation -->
+    <style>
+        .error {
+            color: red;
+        }
+        h2 {
+            color: white;
+        },
+    </style>
+
+     <!-- Include jQuery Validation -->
+    <script>
+        $(document).ready(function() {
+            $('#AddProduct').validate({
+                rules: {
+                    title: {
+                        required: true,
+                    },
+                    description: {
+                        required: true,
+                    },
+                    price: {
+                        required: true,
+                    },
+                    qnt: {
+                        required:true,
+                    },
+                    livesearch: {
+                        required: true,
+                    },
+                },
+                messages: {
+                    title: {
+                        required: 'Please enter title',
+                    },
+                    description: {
+                        required: 'Please enter description',
+                    },
+                    price: {
+                        required: 'Please enter price fee',
+                    },
+                    qnt: {
+                        required: 'Please enter quantity',
+                    },
+                    livesearch: {
+                        required: 'Please enter tags',
+                    },
+                },
+
+                submitHandler: function(form) {
+                    // This function will be called when the form is valid and ready to be submitted
+                    form.submit();
+                }
+            });
+        });
+    </script>
+
+    <!-- Submit form using Jquery -->
+    <script>
+        $(document).ready(function() {
+            $('#SaveProduct').click(function() {
+                $('#AddProduct').submit();
+            });
+        });
+    </script>
+
+    <!-- Append File name -->
+    <script>
+        $(document).ready(function() {
+            $('input[name="image"]').change(function(e) {
+                var geekss = e.target.files[0].name;
+                $("#image_name").text(geekss);
+            });
+        });
+    </script>
+
+@endsection
