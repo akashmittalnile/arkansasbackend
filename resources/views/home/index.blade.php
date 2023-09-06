@@ -43,8 +43,11 @@
                                         <a data-fancybox data-type="iframe"
                                             data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0"
                                             href="javascript:;">
-                                            <img src="{!! url('assets/website-images/1.png') !!}">
-                                            <div class="pmu-video-icon"><img src="{!! url('assets/website-images/video.svg') !!}"></div>
+                                            <video width="415" height="240" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
+                                                <source src="{{ url( 'upload/disclaimers-introduction/' . $data->introduction_image) }}" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            <!-- <div class="pmu-video-icon"><img src="{!! url('assets/website-images/video.svg') !!}"></div> -->
                                         </a>
                                     </div> 
                                     <a href="{{ url('admin/addcourse2/'.encrypt_decrypt('encrypt',$data->id))}}">   

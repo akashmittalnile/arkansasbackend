@@ -84,4 +84,32 @@
         </div>
     </div> --}}
     </div>
-@endsection
+
+    <!-- Submit Form with ajax -->
+    <script>
+        $('#LoginCheck').on('click', function() {
+            var admin_email = $('input[name="email"]').val();
+            $.ajax({
+                url: "{{ route('check_status') }}",
+                method: 'GET',
+                data: {
+                    admin_email: admin_email,
+                },
+                dataType: 'json',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                success: function(data) {
+                    if (data == 1) {
+                        $('#becomeacreator_login').modal('show');
+                        e.preventDefault();
+                    } else {
+                        $('#Form_Login').submit();
+                    }
+                }
+            });
+        });
+    </script>
+    
+</body>
+</html>
