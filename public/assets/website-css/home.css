@@ -310,6 +310,17 @@ a.edit-icon-btn {border-radius: 50px; margin-right:10px;background: var(--brown,
     display: inline-block;
 }
 
+.pmucheckbox-radio label {padding-left: 31px; position: relative; display: inline-block; line-height: 20px; padding: 0 0 0 2em; margin-bottom: 0px;color: var(--black); cursor: pointer; font-size: 14px; } 
+.pmucheckbox-radio label::before, 
+.pmucheckbox-radio label::after {position: absolute; top: 0; left: 0; display: block; width: 18px; height: 18px; } 
+.pmucheckbox-radio label::before {content: " "; border: 1px solid var(--black); -webkit-border-radius: 50%; -moz-border-radius: 50%; -ms-border-radius: 50%; -o-border-radius: 50%; border-radius: 50%; } 
+.pmucheckbox-radio input[type="radio"] {position: absolute; opacity: 0; z-index: -1; margin: 0; } 
+.pmucheckbox-radio input[type="radio"] + label::after {    content: "\25CF"; color: #FFF; line-height: 1.48; text-align: center; border: none; font-size: 12px; }
+.pmucheckbox-radio input[type="radio"]:checked + label::before {background:var(--yellow); border-color: var(--yellow); } 
+.pmucheckbox-radio input[type="radio"] + label::after {-webkit-transform: scale(0); -moz-transform: scale(0); -ms-transform: scale(0); -o-transform: scale(0); transform: scale(0); } 
+.pmucheckbox-radio input[type="radio"]:checked + label::after {-webkit-transform: scale(1); -moz-transform: scale(1); -ms-transform: scale(1); -o-transform: scale(1); transform: scale(1); }
+
+
 .add-pmu-section,
 .add-course-form,
 .collapse-course-form{position: relative; padding: 1rem; border-radius: 0 0 10px 10px; background: #fff; border: 1px solid #fdf6ff; }
