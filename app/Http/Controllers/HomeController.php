@@ -340,6 +340,40 @@ class HomeController extends Controller
                             }
                         }
                     }
+                    else if($type[$key] == 'survey'){
+                        if(count($request->survey_question) > 0){
+                            foreach($request->survey_question as $keyS => $valueQ){
+                                $Step = new CourseChapterStep;
+                                $Step->title = ucwords($type[$key]);
+                                $Step->sort_order = $request->queue[$keyS] ?? -1;
+                                $Step->type = 'survey';
+                                $Step->duration = $request->required_field[$keyS] ?? 0;
+                                $Step->prerequisite = $request->prerequisite[$keyS] ?? 0;
+                                $Step->course_chapter_id = $request->chapter_id;
+                                $Step->save();
+                                foreach($valueQ as $keyQVal => $valueQVal){
+                                    $ChapterQuiz = new ChapterQuiz;
+                                    $ChapterQuiz->title = $valueQVal['text'];
+                                    $ChapterQuiz->type = 'quiz';
+                                    $ChapterQuiz->chapter_id = $request->chapter_id;
+                                    $ChapterQuiz->course_id = $request->courseID;
+                                    $ChapterQuiz->step_id = $Step['id '];
+                                    $ChapterQuiz->save();
+                                    $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
+                                    foreach ($valueQVal['options'] as $keyOp => $optionText) {
+                                        // dd($optionText);
+                                        $option = new ChapterQuizOption;
+                                        $option->quiz_id = $quiz_id->id;
+                                        $option->answer_option_key = $optionText;
+                                        $option->created_date = date('Y-m-d H:i:s');
+                                        $option->status = 1;
+                                        $option->save();
+                                    }
+                                    
+                                }
+                            }
+                        }
+                    }
                 }
             }
 

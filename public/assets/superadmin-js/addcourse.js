@@ -503,7 +503,7 @@ $(document).ready(function () {
             countForm += 1;
         } else if (div_type == 'Survey') {
             htmlForm = `<div class="edit-pmu-form-item" id="survey_div">
-                                <input type="hidden" name="type[]" id="survey" value="survey" />
+                                <input type="hidden" name="type[${countForm}]" id="survey" value="survey" />
                                 <div class="edit-pmu-heading">
                                     <div class="edit-pmu-text">
                                         <h3>Survey</h3>
@@ -511,19 +511,28 @@ $(document).ready(function () {
                                             <ul>
                                                 <li>
                                                     <div class="pmucheckbox">
-                                                        <input type="checkbox" id="Optional" value="off"
-                                                            name="required_fied">
-                                                        <label for="Optional">
+                                                        <input type="checkbox" id="Prerequisite-${countForm}" value="1" name="prerequisite[${countForm}]">
+                                                        <label for="Prerequisite-${countForm}">Prerequisite</label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="edit-pmu-checkbox-list">
+                                            <ul>
+                                                <li>
+                                                    <div class="pmucheckbox-radio">
+                                                        <input type="radio" id="Optional-${countForm}" value="0"
+                                                            name="required_field[${countForm}]">
+                                                        <label for="Optional-${countForm}">
                                                             Optional
                                                         </label>
                                                     </div>
                                                 </li>
-
                                                 <li>
-                                                    <div class="pmucheckbox">
-                                                        <input type="checkbox" id="Mandatory" value="on"
-                                                            name="required_fied">
-                                                        <label for="Mandatory">
+                                                    <div class="pmucheckbox-radio">
+                                                        <input type="radio" id="Mandatory-${countForm}" value="1"
+                                                            name="required_field[${countForm}]">
+                                                        <label for="Mandatory-${countForm}">
                                                             Mandatory
                                                         </label>
                                                     </div>
@@ -531,50 +540,59 @@ $(document).ready(function () {
                                             </ul>
                                         </div>
                                     </div>
+                                    <div class="edit-pmu-text">
+                                        <div class="pmu-edit-questionnaire-ans">
+                                            <div class="pmu-edit-questionnaire-text">
+                                                <input type="number" class="form-control" min="1" step="0" placeholder="Assign serial order" name="queue[${countForm}]" required>
+                                            </div>
+                                        </div>
+                                    </div>
                                     <div class="edit-pmu-action">
                                         <a href="javascript:void(0)" class="dlt-div" data-id="survey_div" data-type="Survey"> Delete Section</a>
                                     </div>
                                 </div>
-                                <div class="pmu-edit-questionnaire-box">
-                                    <div class="pmu-edit-label">
-                                        <div class="pmu-q-badge">Q</div>
+                                <div class="surveyQuestion-${countForm}">
+                                    <div class="pmu-edit-questionnaire-box">
+                                        <div class="pmu-edit-label">
+                                            <div class="pmu-q-badge">Q</div>
+                                        </div>
+                                        <div class="pmu-edit-questionnaire-content">
+                                            <input type="text" class="form-control"
+                                                placeholder="Enter Question Title" name="survey_question[${countForm}][${questionSurveyCounter}][text]"
+                                                value="">
+                                        </div>
                                     </div>
-                                    <div class="pmu-edit-questionnaire-content">
-                                        <input type="text" class="form-control"
-                                            placeholder="Enter Question Title" name="survey_question"
-                                            value="">
+                                    <div class="pmu-answer-option-list">
+                                        <div class="pmu-answer-box">
+                                            <div class="pmu-edit-questionnaire-ans">
+                                                <div class="pmu-edit-ans-label">
+                                                    <div class="a-badge">A</div>
+                                                </div>
+                                                <div class="pmu-edit-questionnaire-text">
+                                                    <input type="text" class="form-control"
+                                                        placeholder="Type Here..." name="survey_question[${countForm}][${questionSurveyCounter}][options][]" value=""
+                                                        required>
+                                                    <span class="remove-text">Remove</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="pmu-answer-box">
+                                            <div class="pmu-edit-questionnaire-ans">
+                                                <div class="pmu-edit-ans-label">
+                                                    <div class="a-badge">B</div>
+                                                </div>
+                                                <div class="pmu-edit-questionnaire-text">
+                                                    <input type="text" class="form-control"
+                                                        placeholder="Type Here..." name="survey_question[${countForm}][${questionSurveyCounter}][options][]" value=""
+                                                        required>
+                                                    <span class="remove-text">Remove</span>
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="pmu-answer-option-list">
-                                    <div class="pmu-answer-box">
-                                        <div class="pmu-edit-questionnaire-ans">
-                                            <div class="pmu-edit-ans-label">
-                                                <div class="a-badge">A</div>
-                                            </div>
-                                            <div class="pmu-edit-questionnaire-text">
-                                                <input type="text" class="form-control"
-                                                    placeholder="Type Here..." name="option[5]" value=""
-                                                    required>
-                                                <span class="remove-text">Remove</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="pmu-answer-box">
-                                        <div class="pmu-edit-questionnaire-ans">
-                                            <div class="pmu-edit-ans-label">
-                                                <div class="a-badge">B</div>
-                                            </div>
-                                            <div class="pmu-edit-questionnaire-text">
-                                                <input type="text" class="form-control"
-                                                    placeholder="Type Here..." name="option[4]" value=""
-                                                    required>
-                                                <span class="remove-text">Remove</span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="pmu-add-answer-info">
-                                        <a class="add-answer" href="">Add more Question</a>
-                                    </div>
+                                <div class="pmu-add-answer-info">
+                                    <a class="add-answer addSurveyQuestion" id="addSurvey-${countForm}">Add more Question</a>
                                 </div>
                             </div>`;
             countForm += 1;
@@ -633,6 +651,55 @@ $(document).ready(function () {
             }
         });
     });
+});
+
+var questionSurveyCounter = 0;
+
+$(document).on('click', '.addSurveyQuestion', function () {
+    let id = ($(this).attr('id').split('-'))[1];
+    questionSurveyCounter++;
+    let oplength = $('.options .pmu-answer-option-list .hidden'+id+questionSurveyCounter).length;
+    var html = `<div class="pmu-edit-questionnaire-box">
+                    <div class="pmu-edit-label">
+                        <div class="pmu-q-badge">Q</div>
+                    </div>
+                    <div class="pmu-edit-questionnaire-content">
+                        <input type="text" class="form-control"
+                            placeholder="Enter Question Title" name="survey_question[${id}][${questionSurveyCounter}][text]"
+                            value="">
+                    </div>
+                </div>
+                <div class="pmu-answer-option-list">
+                    <div class="pmu-answer-box">
+                        <div class="pmu-edit-questionnaire-ans">
+                            <div class="pmu-edit-ans-label">
+                                <div class="a-badge">A</div>
+                            </div>
+                            <div class="pmu-edit-questionnaire-text">
+                                <input type="text" class="form-control"
+                                    placeholder="Type Here..." name="survey_question[${id}][${questionSurveyCounter}][options][]" value=""
+                                    required>
+                                <span class="remove-text">Remove</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="pmu-answer-box">
+                        <div class="pmu-edit-questionnaire-ans">
+                            <div class="pmu-edit-ans-label">
+                                <div class="a-badge">B</div>
+                            </div>
+                            <div class="pmu-edit-questionnaire-text">
+                                <input type="text" class="form-control"
+                                    placeholder="Type Here..." name="survey_question[${id}][${questionSurveyCounter}][options][]" value=""
+                                    required>
+                                <span class="remove-text">Remove</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>`;
+
+    $('.surveyQuestion-'+id).append(html);
+    
 });
 
 // Add New input Form field(Append)
