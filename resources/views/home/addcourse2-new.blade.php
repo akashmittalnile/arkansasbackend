@@ -623,9 +623,31 @@
             margin-top: 10px;
             /* Add top margin */
         }
+        
+        .remove-survey-option {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            margin-top: 10px;
+            /* Add top margin */
+        }
 
         /* Style for the Add Option button */
         .add-option {
+            margin-top: 5px;
+            /* Add some top margin to separate from options */
+            /* background: var(--yellow);
+            color: var(--white); */
+            background-color: var(--yellow);
+            color: var(--white);
+            border: none;
+            padding: 5px 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .add-survey-option {
             margin-top: 5px;
             /* Add some top margin to separate from options */
             /* background: var(--yellow);

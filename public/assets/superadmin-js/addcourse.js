@@ -67,8 +67,8 @@ $(document).on('click', '.add-question-create', function () {
                             <div class="pmu-edit-questionnaire-text d-flex">
                                 <input type="text" class="form-control" placeholder="Type Here..." name="questions[${id}][${questionCounter}][options][]" required>
                                 <div class="pmucheckbox">
-                                    <input type="checkbox" id="answer-option-${oplength}-${questionCounter}" class="" name="questions[${id}][${questionCounter}][correct][${oplength}]" value="1">
-                                    <label for="answer-option-${oplength}-${questionCounter}"></label>
+                                    <input type="checkbox" id="answer-option-${oplength}-${questionCounter}-${id}" class="" name="questions[${id}][${questionCounter}][correct][${oplength}]" value="1">
+                                    <label for="answer-option-${oplength}-${questionCounter}-${id}"></label>
                                 </div>
                             </div>
                         </div>
@@ -98,8 +98,8 @@ $(document).on('click', '.add-option', function () {
                                     <div class="pmu-edit-questionnaire-text d-flex">
                                         <input type="text" class="form-control" placeholder="Type Here..." name="questions[${id[1]}][${id[2] ?? questionCounter}][options][]" required>
                                         <div class="pmucheckbox">
-                                            <input type="checkbox" class="" name="questions[${id[1]}][${id[2] ?? questionCounter}][correct][${oplength}]" id="answer-option-${oplength}-${id[2] ?? questionCounter}" value="1">
-                                            <label for="answer-option-${oplength}-${id[2] ?? questionCounter}"></label>
+                                            <input type="checkbox" class="" name="questions[${id[1]}][${id[2] ?? questionCounter}][correct][${oplength}]" id="answer-option-${oplength}-${id[2] ?? questionCounter}-${id[1]}" value="1">
+                                            <label for="answer-option-${oplength}-${id[2] ?? questionCounter}-${id[1]}"></label>
                                         </div>
                                     </div>
                                 </div>
@@ -107,9 +107,22 @@ $(document).on('click', '.add-option', function () {
                         </div>
                         <button type="button" class="remove-option" style="margin-bottom: 5px;">Remove Option</button>
                     </div>`;
-
     $(this).siblings('.options').append(op_html);
-    
+});
+
+$(document).on('click', '.add-survey-option', function () {
+    let id = ($(this).attr('id').split('-'));
+    var op_html = `<div class="pmu-answer-box">
+            <div class="pmu-edit-questionnaire-ans">
+                <div class="pmu-edit-questionnaire-text">
+                    <input type="text" class="form-control"
+                        placeholder="Type Here..." name="survey_question[${id[1]}][${questionSurveyCounter}][options][]" value=""
+                        required>
+                </div>
+            </div>
+            <button type="button" class="remove-survey-option" style="margin-bottom: 5px;">Remove Option</button>
+        </div>`;
+        $(this).siblings(".survey-op-"+id[1] + '-' + id[2]).append(op_html);
 });
 
 // Remove question field
@@ -123,6 +136,11 @@ $(document).on('click', '.remove-option', function () {
     var optionsContainer = $(this).closest('.options').remove();
     // optionsContainer.find('input[type="text"]').last().remove(); // Remove the last option input
     // $(this).remove(); // Remove the "Remove Option" button
+});
+
+// Remove survey option field
+$(document).on('click', '.remove-survey-option', function () {
+    $(this).closest('.pmu-answer-box').remove();
 });
 
 // EditOption ajax
@@ -450,8 +468,8 @@ $(document).ready(function () {
                                                     <div class="pmu-edit-questionnaire-text d-flex">
                                                         <input type="text" class="form-control" placeholder="Type Here..." name="questions[${countForm}][${questionCounter}][options][]" required>
                                                         <div class="pmucheckbox">
-                                                            <input type="checkbox" class="" name="questions[${countForm}][${questionCounter}][correct][${oplength}]" id="answer-option-${oplength}-${questionCounter}" value="1">
-                                                            <label for="answer-option-${oplength}-${questionCounter}"></label>
+                                                            <input type="checkbox" class="" name="questions[${countForm}][${questionCounter}][correct][${oplength}]" id="answer-option-${oplength}-${questionCounter}-${countForm}" value="1">
+                                                            <label for="answer-option-${oplength}-${questionCounter}-${countForm}"></label>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -562,34 +580,27 @@ $(document).ready(function () {
                                                 value="">
                                         </div>
                                     </div>
-                                    <div class="pmu-answer-option-list">
+                                    <div class="pmu-answer-option-list survey-op-${countForm}-${questionSurveyCounter}">
                                         <div class="pmu-answer-box">
                                             <div class="pmu-edit-questionnaire-ans">
-                                                <div class="pmu-edit-ans-label">
-                                                    <div class="a-badge">A</div>
-                                                </div>
                                                 <div class="pmu-edit-questionnaire-text">
                                                     <input type="text" class="form-control"
                                                         placeholder="Type Here..." name="survey_question[${countForm}][${questionSurveyCounter}][options][]" value=""
                                                         required>
-                                                    <span class="remove-text">Remove</span>
                                                 </div>
                                             </div>
                                         </div>
                                         <div class="pmu-answer-box">
                                             <div class="pmu-edit-questionnaire-ans">
-                                                <div class="pmu-edit-ans-label">
-                                                    <div class="a-badge">B</div>
-                                                </div>
                                                 <div class="pmu-edit-questionnaire-text">
                                                     <input type="text" class="form-control"
                                                         placeholder="Type Here..." name="survey_question[${countForm}][${questionSurveyCounter}][options][]" value=""
                                                         required>
-                                                    <span class="remove-text">Remove</span>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
+                                    <button type="button" class="add-survey-option" id="addOption-${countForm}-${questionSurveyCounter}">Add Option</button>
                                 </div>
                                 <div class="pmu-add-answer-info">
                                     <a class="add-answer addSurveyQuestion" id="addSurvey-${countForm}">Add more Question</a>
@@ -669,34 +680,27 @@ $(document).on('click', '.addSurveyQuestion', function () {
                             value="">
                     </div>
                 </div>
-                <div class="pmu-answer-option-list">
+                <div class="pmu-answer-option-list survey-op-${id}-${questionSurveyCounter}">
                     <div class="pmu-answer-box">
                         <div class="pmu-edit-questionnaire-ans">
-                            <div class="pmu-edit-ans-label">
-                                <div class="a-badge">A</div>
-                            </div>
                             <div class="pmu-edit-questionnaire-text">
                                 <input type="text" class="form-control"
                                     placeholder="Type Here..." name="survey_question[${id}][${questionSurveyCounter}][options][]" value=""
                                     required>
-                                <span class="remove-text">Remove</span>
                             </div>
                         </div>
                     </div>
                     <div class="pmu-answer-box">
                         <div class="pmu-edit-questionnaire-ans">
-                            <div class="pmu-edit-ans-label">
-                                <div class="a-badge">B</div>
-                            </div>
                             <div class="pmu-edit-questionnaire-text">
                                 <input type="text" class="form-control"
                                     placeholder="Type Here..." name="survey_question[${id}][${questionSurveyCounter}][options][]" value=""
                                     required>
-                                <span class="remove-text">Remove</span>
                             </div>
                         </div>
                     </div>
-                </div>`;
+                </div>
+                <button type="button" class="add-survey-option" id="addOption-${id}-${questionSurveyCounter}">Add Option</button>`;
 
     $('.surveyQuestion-'+id).append(html);
     
