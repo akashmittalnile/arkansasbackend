@@ -104,7 +104,7 @@ a.add-chapter-btn{background: var(--brown); color: var(--white);    line-height:
 .pmu-edit-label {min-width: 35px; background: var(--yellow); margin-right: 8px; height: 35px; position: relative; float: left; text-align: center; font-weight: 600; color: var(--white); font-size: 12px; border-radius: 50px; line-height: 30px; }
 .pmu-q-badge {background-color: transparent; min-width: 35px; height: 35px; padding-top: 4px; } 
 
-.edit-pmu-heading {display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--black); margin-bottom: 1rem;padding:0 0 10px 0 }
+.edit-pmu-heading {display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--white); margin-bottom: 0rem;padding:10px}
 .edit-pmu-heading h3 {cursor:pointer; font-size: 18px; font-weight: 600; margin: 0; padding: 0;color: var(--black); } 
 .edit-pmu-action a{cursor: pointer; color: var(--red); padding: 5px 15px; border-radius: 4px; font-weight: 600; text-transform: uppercase;font-size: 13px; position: relative; background: var(--redlight); box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%); display: inline-block; }
 
@@ -132,7 +132,7 @@ a.add-answer {cursor:pointer; font-weight: 600; position: relative; background: 
 .pmu-answer-form-select select.form-control {font-size: 14px; background: #fff; border: 1px solid #e5eaed; border-radius: 4px; position: relative; font-weight: 500; padding: 11px 10px; outline: none; box-shadow: none; outline: 0; width: 100%; display: inline-block; /* color: #febf33; */ appearance: auto; }
 .pmu-answer-form-select .add-answer {color: #fff; padding: 8px 15px; border-radius: 4px; font-weight: 600; font-size: 13px; position: relative; background:var(--brown); box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%); display: inline-block; border: none; }
 
-.edit-pmu-form-item {padding: 1rem; background: var(--body); position: relative; margin-bottom: 1rem; border-radius: 10px; }
+.edit-pmu-form-item {padding: 0rem; background: var(--body); position: relative; margin-bottom: 1rem; border-radius: 10px; }
 
 
 .edit-pmu-checkbox-list ul {margin: 0; padding: 0; list-style: none; }
@@ -147,17 +147,6 @@ a.add-answer {cursor:pointer; font-weight: 600; position: relative; background: 
 .pmucheckbox input[type="checkbox"]:checked + label::before {background:var(--yellow); border-color: var(--yellow); } 
 .pmucheckbox input[type="checkbox"] + label::after {-webkit-transform: scale(0); -moz-transform: scale(0); -ms-transform: scale(0); -o-transform: scale(0); transform: scale(0); } 
 .pmucheckbox input[type="checkbox"]:checked + label::after {-webkit-transform: scale(1); -moz-transform: scale(1); -ms-transform: scale(1); -o-transform: scale(1); transform: scale(1); }
-
-
-.pmucheckbox-radio label {padding-left: 31px; position: relative; display: inline-block; line-height: 20px; padding: 0 0 0 2em; margin-bottom: 0px;color: var(--black); cursor: pointer; font-size: 14px; } 
-.pmucheckbox-radio label::before, 
-.pmucheckbox-radio label::after {position: absolute; top: 0; left: 0; display: block; width: 18px; height: 18px; } 
-.pmucheckbox-radio label::before {content: " "; border: 1px solid var(--black); -webkit-border-radius: 50%; -moz-border-radius: 50%; -ms-border-radius: 50%; -o-border-radius: 50%; border-radius: 50%; } 
-.pmucheckbox-radio input[type="radio"] {position: absolute; opacity: 0; z-index: -1; margin: 0; } 
-.pmucheckbox-radio input[type="radio"] + label::after {    content: "\25CF"; color: #FFF; line-height: 1.48; text-align: center; border: none; font-size: 12px; }
-.pmucheckbox-radio input[type="radio"]:checked + label::before {background:var(--yellow); border-color: var(--yellow); } 
-.pmucheckbox-radio input[type="radio"] + label::after {-webkit-transform: scale(0); -moz-transform: scale(0); -ms-transform: scale(0); -o-transform: scale(0); transform: scale(0); } 
-.pmucheckbox-radio input[type="radio"]:checked + label::after {-webkit-transform: scale(1); -moz-transform: scale(1); -ms-transform: scale(1); -o-transform: scale(1); transform: scale(1); }
 
 .edit-pmu-section .form-group{margin-bottom: 1rem}
 .edit-pmu-section .form-group h4 {font-size: 14px; font-weight: 600; margin: 0 0 0px 0; padding: 0; color: var(--lightblack, #6A6A6A); }
@@ -265,3 +254,101 @@ a.edit-icon-btn {border-radius: 50px; margin-right:10px;background: var(--brown,
 
 
 .becomeacreator-form-info{text-align: center;}
+
+
+.add-pmu-checkbox-list ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    gap: 10px
+}
+
+.pmu-add-questionnaire-ans {border-radius: 5px; display: flex; align-items: center; background: var(--body); border: 1px solid #ffffff; padding: 0px 5px; }
+.pmu-add-questionnaire-ans .form-control {border: none; box-shadow: none; outline: none; padding: 5px 10px 5px 10px; background: none; }
+
+.pmu-add-questionnaire-ans .form-control:focus{border: none; box-shadow: none; outline: none;}
+
+
+.add-pmu-form-item {
+    
+    background: var(--body);
+    position: relative;
+    margin-bottom: 1rem;
+    border-radius: 10px;
+}
+
+.add-pmu-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 2px solid #fff;
+    padding: 8px 10px;
+    border-radius: 10px 10px 0 0;
+}
+
+.add-pmu-heading h3 {
+    cursor: pointer;
+    font-size: 18px;
+    font-weight: 600;
+    margin: 0;
+    padding: 0;
+    color: var(--black);
+}
+
+.add-pmu-action a {
+    cursor: pointer;
+    color: var(--red);
+    padding: 5px 15px;
+    border-radius: 4px;
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 13px;
+    position: relative;
+    background: var(--redlight);
+    box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%);
+    display: inline-block;
+}
+
+.add-pmu-section,
+.add-course-form,
+.collapse-course-form{position: relative; padding: 1rem; border-radius: 0 0 10px 10px; background: #fff; border: 1px solid #fdf6ff; }
+
+
+.pmu-edit-questionnaire-ans1 {border-radius: 5px; display: flex; align-items: center; background: var(--body); border: 1px solid #ffffff;padding:0 5px }
+.pmu-edit-questionnaire-input .form-control {border: none; box-shadow: none; outline: none; padding:9px 10px 9px 10px; background: none;     appearance: auto;}
+.pmu-edit-questionnaire-input .form-control:focus{border: none; box-shadow: none; outline: none;}
+
+a.red-btn-text{    cursor: pointer;
+    color: var(--red);
+    padding: 10px 15px;
+    border-radius: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    background: var(--redlight);
+    box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%);
+    display: inline-block;
+    line-height: normal;}
+
+.pmucheckbox1{position: relative;}
+.pmucheckbox1 label { position: relative; display: inline-block; line-height: 15px; padding: 0 0 0 1.2rem; margin-bottom: 0px;color: var(--black); cursor: pointer; font-size: 14px; }
+.pmucheckbox1 label::before, 
+.pmucheckbox1 label::after {position: absolute; top: 0; left: 0; display: block; width: 18px; height: 18px; } 
+.pmucheckbox1 label::before {content: " "; border: 1px solid var(--black); -webkit-border-radius: 3px; -moz-border-radius: 3px; -ms-border-radius: 3px; -o-border-radius: 3px; border-radius: 3px; } 
+.pmucheckbox1 input[type="checkbox"] {position: absolute; opacity: 0; z-index: -1; margin: 0; } 
+.pmucheckbox1 input[type="checkbox"] + label::after {    content: "\2714"; color: #FFF; line-height: 1.8; text-align: center; border: none; font-size: 12px; }
+.pmucheckbox1 input[type="checkbox"]:checked + label::before {background:var(--yellow); border-color: var(--yellow); } 
+.pmucheckbox1 input[type="checkbox"] + label::after {-webkit-transform: scale(0); -moz-transform: scale(0); -ms-transform: scale(0); -o-transform: scale(0); transform: scale(0); } 
+.pmucheckbox1 input[type="checkbox"]:checked + label::after {-webkit-transform: scale(1); -moz-transform: scale(1); -ms-transform: scale(1); -o-transform: scale(1); transform: scale(1); }
+
+.update-remove-action1 {display: flex; align-items: center; gap: 5px; }
+.pmu-answer-check-item {border-radius: 5px; display: flex; align-items: center; background: var(--body); border: 1px solid #ffffff; padding: 0 5px ; margin-left: 5px; }
+
+.remove-option1 {cursor: pointer; color: var(--red) !important; padding: 5px 15px !important; border-radius: 4px; font-weight: 600; text-transform: uppercase; font-size: 13px; position: relative; background: var(--redlight) !important; box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%); display: inline-block; white-space: nowrap; margin: 0 !important; }
+
+.remove-question1 {cursor: pointer; border: none; color: var(--red) !important; padding: 5px 15px !important; border-radius: 4px; font-weight: 600; text-transform: uppercase; font-size: 13px; position: relative; background: var(--redlight) !important; box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%); display: inline-block; white-space: nowrap; margin: 0 !important; }
+.add-option1 {cursor: pointer; border: none; color:var(--white) !important; padding: 5px 15px !important; border-radius: 4px; font-weight: 600; text-transform: uppercase; font-size: 13px; position: relative; background: var(--yellow) !important; box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%); display: inline-block; white-space: nowrap; margin: 0 !important; }
+
+
+.pmu-edit-questionnaire-marks input.form-control {border: 2px solid #fff; padding: 6px 10px 6px; background: #fff0c1; border-radius: 5px; font-size: 14px; }
+.pmu-edit-questionnaire-marks input.form-control:focus{box-shadow: none; outline: none;}

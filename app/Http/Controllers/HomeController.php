@@ -365,6 +365,7 @@ class HomeController extends Controller
                                         $option = new ChapterQuizOption;
                                         $option->quiz_id = $quiz_id->id;
                                         $option->answer_option_key = $optionText;
+                                        $option->is_correct = '0';
                                         $option->created_date = date('Y-m-d H:i:s');
                                         $option->status = 1;
                                         $option->save();
@@ -559,7 +560,7 @@ class HomeController extends Controller
                     $option = new ChapterQuizOption;
                     $option->quiz_id = $request['quiz_id'];
                     $option->answer_option_key = $val;
-                    $option->is_correct = $request['answer_val'][$key] ?? 0;
+                    $option->is_correct = $request['answer_val'][$key] ?? '0';
                     $option->created_date = date('Y-m-d H:i:s');
                     $option->status = 1;
                     $option->save();

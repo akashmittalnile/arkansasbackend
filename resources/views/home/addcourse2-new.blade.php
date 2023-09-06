@@ -481,9 +481,11 @@
                                             </div>
                                             <?php $sno++; ?>
                                             @endforeach
-                                            <!-- <div class="pmu-add-answer-info">
-                                                <a class="add-answer" href="">Add more Question</a>
-                                            </div> -->
+                                            <div id="newinputSurveyListing{{ $survey->id }}"></div>
+                                            <div class="pmu-add-answer-info">
+                                                <a class="add-answer SaveOption" data-quiz-id="{{ $survey->id }}" id="SaveOption{{ $survey->id }}">Save</a>
+                                                <a class="add-answer" data-id="{{ $survey->id }}" id="addListingSurveyOption">Add Answer</a>
+                                            </div>
                                         </div>
                                     </div>
                                     <?php $sur = 'SSS'; ?>
@@ -623,7 +625,7 @@
             margin-top: 10px;
             /* Add top margin */
         }
-        
+
         .remove-survey-option {
             background-color: #f44336;
             color: white;

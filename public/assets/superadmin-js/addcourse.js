@@ -179,7 +179,6 @@ $(document).on('click', '.SaveOption', function () {
         if($(this).is(":checked")) return 1;
         else return 0;
     }).get();
-    console.log(answer_val);
     $.ajax({
         url: arkansasUrl + '/admin/add-option',
         method: 'GET',
@@ -195,6 +194,7 @@ $(document).on('click', '.SaveOption', function () {
         success: function (data) {
             if (data == 1) {
                 location.reload();
+                toastr.success('New answer added successfully.');
             }
         }
     });
@@ -724,6 +724,7 @@ $(document).ready(function () {
             '</div>' + '</div>';
         $('#newinputquiz').append(newRowAdd);
     });
+
     $(document).on('click', "#addListingOption", function () {
         let id = $(this).attr('data-id');
         $("#SaveOption"+id).show();
@@ -741,12 +742,38 @@ $(document).ready(function () {
         $('#newinputquizListing'+id).append(newRowAdd);
     });
 
+    $(document).on('click', "#addListingSurveyOption", function () {
+        let id = $(this).attr('data-id');
+        $("#SaveOption"+id).show();
+        var possible = 'AB' + Math.floor(Math.random() * (100 - 1) + 1);
+        newRowAdd =
+            '<div class="pmu-answer-box" id="' + possible +
+            '" > <div class="pmu-edit-questionnaire-ans">' +
+            '<div class="pmu-edit-questionnaire-text">' +
+            '<input type="text" class="form-control newop'+id+'" placeholder="Type Here..." name="option[' +
+            possible + ']">' +
+            '<span class="remove-text remove_surveyoption" data-remove-id="' + id + '" id="' + possible + '">Remove</span>' +
+            '</div>' +
+            '</div>' + '</div>';
+        $('#newinputSurveyListing'+id).append(newRowAdd);
+    });
+
     $(document).on('click', '.remove_newoption', function () {
         var let_id = '#' + $(this).attr('id');
         let save_btn_remove_id = $(this).attr('data-remove-id');
         $(let_id).remove();
         let lengthAnswerInput = $(`#newinputquizListing${save_btn_remove_id} .pmu-answer-box`).length;
         if(lengthAnswerInput == 0){
+            $('#SaveOption'+save_btn_remove_id).hide();
+        }
+    });
+
+    $(document).on('click', '.remove_surveyoption', function () {
+        var let_id = '#' + $(this).attr('id');
+        let save_btn_remove_id = $(this).attr('data-remove-id');
+        $(let_id).remove();
+        let lengthAnswerSurInput = $(`#newinputSurveyListing${save_btn_remove_id} .pmu-answer-box`).length;
+        if(lengthAnswerSurInput == 0){
             $('#SaveOption'+save_btn_remove_id).hide();
         }
     });
