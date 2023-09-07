@@ -26,7 +26,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
          */
         Route::get('/register', 'RegisterController@show')->name('register.show');
         Route::post('/register', 'RegisterController@register')->name('register.perform');
-        Route::get('/check_status', 'HomeController@check_status')->name('check_status');
+        Route::get('/check_status', 'HomeController@check_status')->name('admin.check_status');
 
         /**
          * Login Routes
@@ -89,6 +89,22 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/performance', 'SuperAdminController@performance')->name('SA.Performance');
         Route::get('/super-admin/content-creators', 'SuperAdminController@content_creators')->name('SA.ContentCreators');
         Route::get('/super-admin/course', 'SuperAdminController@course')->name('SA.Course');
+        Route::get('/super-admin/course/{courseID}/{chapterID?}', 'SuperAdminController@courseChapter')->name('SA.Course.Chapter');
+        Route::post('/super-admin/add-chapter', 'SuperAdminController@addChapter')->name('SA.Course.Addchapter');
+        Route::get('/super-admin/submit-chapter/{courseID}', 'SuperAdminController@newCourseChapter')->name('SA.SubmitChapter');
+        Route::get('/super-admin/delete-chapter/{id}', 'SuperAdminController@deleteCourseChapter')->name('SA.DeleteChapter');
+        Route::get('/super-admin/delete-quiz/{id}', 'SuperAdminController@deleteChapterQuiz')->name('SA.DeleteQuiz');
+        Route::get('/super-admin/delete-section/{id}', 'SuperAdminController@deleteChapterSection')->name('SA.DeleteSection');
+        Route::get('/super-admin/delete-question/{id}', 'SuperAdminController@deleteChapterQuestion')->name('SA.DeleteQuestion');
+        Route::get('/super-admin/delete-option/{id}', 'SuperAdminController@deleteOption')->name('SA.DeleteOption');
+        Route::post('/super-admin/save-answer', 'SuperAdminController@SaveAnswer')->name('SA.SaveAnswer');
+        Route::get('/super-admin/add-option', 'SuperAdminController@addOption')->name('SA.add-option');
+        Route::get('/super-admin/change-ordering/{chapterid}/{id}/{val}', 'SuperAdminController@changeOrdering')->name('SA.change-answer');
+        Route::get('/super-admin/change-answer-option/{id}/{val}', 'SuperAdminController@changeAnswerOption')->name('SA.change-answer.option');
+        Route::get('/super-admin/delete-video/{id}', 'SuperAdminController@deleteVideo')->name('SA.DeleteVideo');
+        Route::get('/super-admin/delete-pdf/{id}', 'SuperAdminController@deletePdf')->name('SA.DeletePDF');
+        Route::get('/super-admin/update-option-list', 'SuperAdminController@updateOptionList')->name('SA.UpdateOptionList');
+        Route::get('/super-admin/update-question-list', 'SuperAdminController@updateQuestionList')->name('SA.UpdateQuestionList');
         
         Route::get('/super-admin/earnings', 'SuperAdminController@earnings')->name('SA.Earnings');
         Route::get('/super-admin/products', 'SuperAdminController@products')->name('SA.Products');

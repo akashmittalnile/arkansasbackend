@@ -99,4 +99,9 @@
     </div>
 </body>
 
+<script type="text/javascript">
+    let arkansasUrl = "{{ url('/') }}";
+    console.log("url => ", arkansasUrl);
+</script>
+
 </html>

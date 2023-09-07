@@ -7,29 +7,36 @@
                 <h2>Manage Course</h2>
             </div>
             <div class="pmu-search-filter wd70">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group search-form-group">
-                            <input type="text" class="form-control" name="Start Date"
-                                placeholder="Search by course name, Tags Price">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg')!!}"></span>
+                <form action="">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group search-form-group">
+                                <input type="text" class="form-control" name="course"
+                                    placeholder="Search by course name" value="{{request()->course}}">
+                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg')!!}"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control" name="status">
+                                    <option @if(request()->status == '') selected @endif value="">Select Course Type</option>
+                                    <option @if(request()->status == '1') selected @endif value="1">Published</option>
+                                    <option @if(request()->status == '0') selected @endif value="0">Unpublished</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <button class="add-more py-2" type="">Search</button>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <a class="Create-btn" href="{{ route('SA.AddCourse')}}">Create New Course</a>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <select class="form-control">
-                                <option>Select Course Type!</option>
-                                <option>Published</option>
-                                <option>Deleted</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <a class="Create-btn" href="{{ route('SA.AddCourse')}}">Create New Course</a>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -37,11 +44,9 @@
             <div class="pmu-content">
                 <div class="row">
                     @if($courses->isEmpty())
-                        <tr>
-                            <td colspan="11" class="text-center">
-                                No record found
-                            </td>
-                        </tr>
+                        <div class="d-flex justify-content-center mt-5">
+                            No record found
+                        </div>
                     @elseif(!$courses->isEmpty())
                         @foreach($courses as $data)
                             <div class="col-md-4">
@@ -50,8 +55,11 @@
                                         <a data-fancybox data-type="iframe"
                                             data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0"
                                             href="javascript:;">
-                                            <img src="{!! url('assets/website-images/1.png') !!}">
-                                            <div class="pmu-video-icon"><img src="{!! url('assets/website-images/video.svg') !!}"></div>
+                                            <video width="415" height="240" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
+                                                <source src="{{ url( 'upload/disclaimers-introduction/' . $data->introduction_image) }}" type="video/mp4">
+                                                Your browser does not support the video tag.
+                                            </video>
+                                            <!-- <div class="pmu-video-icon"><img src="{!! url('assets/website-images/video.svg') !!}"></div> -->
                                         </a>
                                     </div>
                                     <div class="pmu-course-content">
@@ -62,21 +70,10 @@
                                                 Published 
                                             @endif
                                         </div>
-                                        <form action="{{ route('SaveStatusCourse') }}" method="POST">
-                                            <input type="hidden" name="_token" value="{{ csrf_token() }}" />
-                                            <input type="hidden" name="course_id" value="{{$data->id}}" />
-                                            <label for="user_id">Select Status</label>
-                                            <select name="status" id="status">
-                                                <option disabled>Select Status</option>
-                                                <option value="1" @if ($data->status == 1) selected='selected' @else @endif>Published</option>
-                                                <option value="0" @if ($data->status == 0) selected='selected' @else @endif>Unpublished</option> 
-                                            </select>
-                                        
-                                            <button type="submit">Save</button>
-                                        </form>
                                         <h2>{{ ($data->title) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->course_fee,2) ? : 0}}</div>
                                         <p>{{ ($data->description) ? : ''}}</p>
+                                        <a href="{{ route('SA.Course.Chapter', ['courseID' => encrypt_decrypt('encrypt',$data->id)] )}}">
                                             <?php
                                                 $chapter_count = \App\Models\CourseChapter::where('course_id',$data->id)->count();
                                             ?>
@@ -87,6 +84,7 @@
                                             @else
                                                 <div class="chapter-text">Chapter 1-{{$chapter_count}}</div>
                                             @endif
+                                        </a>
                                     </div>
                                 </div>
                             </div>

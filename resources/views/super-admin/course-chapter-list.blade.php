@@ -1,5 +1,5 @@
-@extends('layouts.app-master')
-
+@extends('super-admin-layouts.app-master')
+@section('title', 'Makeup University - Course Chapter')
 @section('content')
 <input type="hidden" name="courseID" value="{{ $courseID }}" />
 <div class="body-main-content">
@@ -10,7 +10,7 @@
         <div class="pmu-filter">
             <div class="row">
                 <div class="col-md-12">
-                    <a href="{{ route('home.index') }}" class="add-more">Back</a>
+                    <a href="{{ route('SA.Course') }}" class="add-more">Back</a>
                     {{-- <a class="add-more" data-bs-toggle="modal" data-bs-target="#SaveContinue">Save &
                             Continue</a> --}}
                     {{-- <a class="add-more" id="form">Save & Continue</a> --}}
@@ -37,19 +37,19 @@
                         <div class="chapter-list">
                             @if ($chapter->id == $chapterID)
                             <div class="chapter-item active" data-index="{{ $chapterKey + 1 }}">
-                            @else
-                            <div class="chapter-item">
-                            @endif
-                            <a href="{{ url('admin/addcourse2/' . encrypt_decrypt('encrypt',$chapter->course_id).'/'.encrypt_decrypt('encrypt',$chapter->id)) }}"><span>Chapter {{ $v }}</span></a>
-                            <a href="{{ url('admin/delete-chapter/' . $chapter->id) }}" onclick="return confirm('Are you sure you want to delete this chapter?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}">
-                            </a>
-                            </div>
+                                @else
+                                <div class="chapter-item">
+                                    @endif
+                                    <a href="{{ route('SA.Course.Chapter', ['courseID'=>encrypt_decrypt('encrypt',$chapter->course_id), 'chapterID'=> encrypt_decrypt('encrypt',$chapter->id)] ) }}"><span>Chapter {{ $v }}</span></a>
+                                    <a href="{{ url('super-admin/delete-chapter/' . $chapter->id) }}" onclick="return confirm('Are you sure you want to delete this chapter?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}">
+                                    </a>
+                                </div>
                             </div>
                             <?php $v++; ?>
                             @endforeach
                             @endif
                             <div class="chapter-action">
-                                <a class="add-chapter-btn" href="{{ url('admin/submit-chapter/'.$courseID) }}">Add Chapter</a>
+                                <a class="add-chapter-btn" href="{{ url('super-admin/submit-chapter/'.$courseID) }}">Add Chapter</a>
                             </div>
                         </div>
                     </div>
@@ -117,7 +117,7 @@
                                             </div>
                                         </div>
                                         <div class="edit-pmu-action">
-                                            <a href="{{ url('admin/delete-section/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">
+                                            <a href="{{ url('super-admin/delete-section/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">
                                                 Delete Section</a>
                                         </div>
                                     </div>
@@ -137,7 +137,7 @@
                                                                 {{-- <h5>10 kb</h5> --}}
                                                             </div>
                                                             <div class="upload-file-action">
-                                                                <a class="delete-btn" href="{{ url('admin/delete-video/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this video?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
+                                                                <a class="delete-btn" href="{{ url('super-admin/delete-video/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this video?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
                                                             </div>
                                                         </div>
                                                         @else
@@ -199,7 +199,7 @@
                                             </div>
                                         </div>
                                         <div class="edit-pmu-action">
-                                            <a href="{{ url('admin/delete-quiz/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this quiz?');">
+                                            <a href="{{ url('super-admin/delete-quiz/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this quiz?');">
                                                 Delete Section</a>
                                         </div>
                                     </div>
@@ -216,7 +216,7 @@
                                             <div class="edit-pmu-action">
                                                 <a class="edit-question-first" data-id="{{ $quiz->id }}" data-param="{{ $v }}">Update
                                                     Question</a>
-                                                <a href="{{ url('admin/delete-question/' . $quiz->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">Delete
+                                                <a href="{{ url('super-admin/delete-question/' . $quiz->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">Delete
                                                     Question</a>
                                             </div>
                                         </div>
@@ -243,7 +243,7 @@
                                                         <input type="text" class="form-control {{ $s_no . $item->id }}" placeholder="Type Here..." name="answer" value="{{ $item->answer_option_key }}">
                                                         <div class="update-remove-action mx-5">
                                                             <a class="update-text edit-option" id="edit-option" data-id="{{ $item->id }}" data-param="{{ $s_no }}">Update</a>
-                                                            <a class="remove-text" href="{{ url('delete_option2/' . $item->id) }}" onclick="return confirm('Are you sure you want to delete this option?');">Remove</a>
+                                                            <a class="remove-text" href="{{ url('super-admin/delete-option/' . $item->id) }}" onclick="return confirm('Are you sure you want to delete this option?');">Remove</a>
                                                         </div>
                                                         <div class="pmucheckbox">
                                                             <input type="checkbox" class="answerEditCheckbox" data-answer-id="{{ $item->id }}" name="answer" id="answer-option-{{ $item->id }}" @if($item->is_correct) checked @endif value="1">
@@ -300,7 +300,7 @@
                                             </div>
                                         </div>
                                         <div class="edit-pmu-action">
-                                            <a href="{{ url('admin/delete-section/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">
+                                            <a href="{{ url('super-admin/delete-section/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">
                                                 Delete Section</a>
                                         </div>
                                     </div>
@@ -319,7 +319,7 @@
                                                             {{-- <h5>2 KB</h5> --}}
                                                         </div>
                                                         <div class="upload-file-action">
-                                                            <a class="delete-btn" href="{{ url('admin/delete-pdf/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this pdf?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
+                                                            <a class="delete-btn" href="{{ url('super-admin/delete-pdf/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this pdf?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
                                                         </div>
                                                     </div>
                                                     @else
@@ -377,7 +377,7 @@
                                             </div>
                                         </div>
                                         <div class="edit-pmu-action">
-                                            <a href="{{ url('admin/delete-section/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">
+                                            <a href="{{ url('super-admin/delete-section/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">
                                                 Delete Section</a>
                                         </div>
                                     </div>
@@ -437,7 +437,7 @@
                                             </div>
                                         </div>
                                         <div class="edit-pmu-action">
-                                            <a href="{{ url('admin/delete-quiz/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this survey?');">
+                                            <a href="{{ url('super-admin/delete-quiz/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this survey?');">
                                                 Delete Section</a>
                                         </div>
                                     </div>
@@ -454,7 +454,7 @@
                                             <div class="edit-pmu-action">
                                                 <a class="edit-question-first" data-id="{{ $survey->id }}" data-param="{{ $sur }}">Update
                                                     Question</a>
-                                                <a href="{{ url('admin/delete-question/' . $survey->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">Delete
+                                                <a href="{{ url('super-admin/delete-question/' . $survey->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">Delete
                                                     Question</a>
                                             </div>
                                         </div>
@@ -474,7 +474,7 @@
                                                        
                                                         <div class="update-remove-action">
                                                             <a class="update-text edit-option" id="edit-option" data-id="{{ $item->id }}" data-param="{{ $sno }}">Update</a>
-                                                            <a class="remove-text" href="{{ url('delete_option2/' . $item->id) }}" onclick="return confirm('Are you sure you want to delete this option?');">Remove</a>
+                                                            <a class="remove-text" href="{{ url('super-admin/delete-option/' . $item->id) }}" onclick="return confirm('Are you sure you want to delete this option?');">Remove</a>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -498,7 +498,7 @@
                                 @endforeach
                                 @endif
 
-                                <form method="POST" action="{{ route('Home.SaveQuestion') }}" class="pt-4 frm-submi" id="formAddCourse" enctype="multipart/form-data">
+                                <form method="POST" action="{{ route('SA.Course.Addchapter') }}" class="pt-4 frm-submi" id="formAddCourse" enctype="multipart/form-data">
                                     @csrf
                                     <input type="hidden" name="courseID" value="{{ $courseID }}" />
                                     <input type="hidden" name="chapter_id" id="chapter_id" value="{{$chapterID}}" />
@@ -598,7 +598,10 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
-    <script type="text/javascript" src="{{ asset('assets/website-js/addcourse.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('assets/superadmin-js/addcourse.js') }}"></script>
+    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
+    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">
+    <script src="{!! url('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>
 
     <!-- Style of Remove button -->
     <style>
