@@ -1,6 +1,26 @@
-@extends('layouts.auth-master')
+<!DOCTYPE html>
+<html>
 
-@section('content')
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Arkanasas</title>
+    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/header-footer.css') !!}">
+    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/iconsax/iconsax.css') !!}">
+    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/auth.css') !!}">
+    <script src="{!! url('assets/website-js/jquery-3.7.0.min.js') !!}" type="text/javascript"></script>
+    <script src="{!! url('assets/website-plugins/bootstrap/js/bootstrap.bundle.min.js') !!}" type="text/javascript"></script>
+    <script src="{!! url('assets/website-js/function.js') !!}" type="text/javascript"></script>
+</head>
+
+<body>
+    <div class="header">
+        <div class="container">
+            <div class="logo">
+                <a href="#"><img src="{!! url('assets/website-images/logo-2.png') !!}" /></a>
+            </div>
+        </div>
+    </div>
     <div class="auth-form-section">
         <div class="container">
             <div class="auth-form-card">
@@ -64,25 +84,25 @@
             </div>
         </div>
     </div>
-    {{-- <!-- Add card -->
-	<div class="modal ro-modal fade" id="becomeacreator" tabindex="-1" aria-labelledby="exampleModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="becomeacreator-form-info">
-                    <img src="{!! url('assets/website-images/tick-circle.svg') !!}">
-                    <h2>Great!! We have receive your Creator Enrollment request</h2>
-                    <p>Your creator Account is in under review process it will be ready once the System
-                        Administrator approve your account.. </p>
-                    <div class="becomeacreator-btn-action">
-                        <a href="#" class="close-btn" data-bs-dismiss="modal" aria-label="Close">Close</a>
-                        <a href="#" class="Login-btn">Login as Creator</a>
+    <!-- Add card -->
+    <div class="modal ro-modal fade" id="becomeacreator" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="becomeacreator-form-info">
+                        <img src="{!! url('assets/website-images/tick-circle.svg') !!}">
+                        <h2>Great!! We have receive your Creator Enrollment request</h2>
+                        <p>Your creator Account is in under review process it will be ready once the System
+                            Administrator approve your account.. </p>
+                        <div class="becomeacreator-btn-action">
+                            <a href="#" class="close-btn" data-bs-dismiss="modal" aria-label="Close">Close</a>
+                            <a href="#" class="Login-btn">Login as Creator</a>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div> --}}
     </div>
 
     <!-- Submit Form with ajax -->
@@ -110,6 +130,7 @@
             });
         });
     </script>
-    
-</body>
-</html>
+
+    </body>
+
+    </html>

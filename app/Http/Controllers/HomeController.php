@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Models\User;
 use App\Models\CourseChapter;
 use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
