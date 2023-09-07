@@ -26,7 +26,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
          */
         Route::get('/register', 'RegisterController@show')->name('register.show');
         Route::post('/register', 'RegisterController@register')->name('register.perform');
-        Route::get('/check_status', 'HomeController@check_status')->name('admin.check_status');
+        Route::get('/check_status', 'HomeController@check_status')->name('check_status');
 
         /**
          * Login Routes

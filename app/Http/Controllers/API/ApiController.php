@@ -54,7 +54,7 @@ class ApiController extends Controller
                 }else{
                     $b1['introduction_image'] = '';
                 }
-                $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 1)->first();
+                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 1)->first();
                 if(isset($exists))
                 {
                     $b1['isLike']  = 1;
@@ -109,7 +109,7 @@ class ApiController extends Controller
                 }else{
                     $b3['introduction_image'] = '';
                 }
-                $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 1)->first();
+                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 1)->first();
                 if(isset($exists))
                 {
                     $b3['isLike']  = 1;
@@ -139,7 +139,7 @@ class ApiController extends Controller
                     $b4['Product_image'] = '';
                 }
                 
-                $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 2)->first();
+                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 2)->first();
                 if(isset($exists))
                 {
                     $b4['isLike']  = 1;
@@ -168,7 +168,7 @@ class ApiController extends Controller
                 }else{
                     $b5['Product_image'] = '';
                 }
-                $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 2)->first();
+                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 2)->first();
                 if(isset($exists))
                 {
                     $b5['isLike']  = 1;
@@ -244,7 +244,7 @@ class ApiController extends Controller
                         }else{
                             $temp['introduction_image'] = '';
                         }
-                        $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
+                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
                         if(isset($exists))
                         {
                             $temp['isLike']  = 1;
@@ -260,7 +260,7 @@ class ApiController extends Controller
                         }else{
                             $temp['Product_image'] = '';
                         }
-                        $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
+                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
                         if(isset($exists))
                         {
                             $temp['isLike']  = 1;
@@ -333,7 +333,7 @@ class ApiController extends Controller
                     }
                     $temp['status'] = $item->status;
                     $temp['rating'] = 4.6;
-                    $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 1)->first();
+                    $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 1)->first();
                     if(isset($exists))
                     {
                         $temp['isLike']  = 1;
@@ -439,7 +439,7 @@ class ApiController extends Controller
                         }else{
                             $temp['introduction_image'] = '';
                         }
-                        $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
+                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
                         if(isset($exists))
                         {
                             $temp['isLike']  = 1;
@@ -455,7 +455,7 @@ class ApiController extends Controller
                         }else{
                             $temp['Product_image'] = '';
                         }
-                        $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
+                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
                         if(isset($exists))
                         {
                             $temp['isLike']  = 1;
@@ -523,7 +523,7 @@ class ApiController extends Controller
                         }else{
                             $temp['introduction_image'] = '';
                         }
-                        $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
+                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
                         if(isset($exists))
                         {
                             $temp['isLike']  = 1;
@@ -538,7 +538,7 @@ class ApiController extends Controller
                         }else{
                             $temp['Product_image'] = '';
                         }
-                        $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
+                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
                         if(isset($exists))
                         {
                             $temp['isLike']  = 1;
@@ -606,7 +606,7 @@ class ApiController extends Controller
                         }else{
                             $temp['introduction_image'] = '';
                         }
-                        $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 1)->first();
+                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 1)->first();
                         if(isset($exists))
                         {
                             $temp['isLike']  = 1;
@@ -621,7 +621,7 @@ class ApiController extends Controller
                         }else{
                             $temp['Product_image'] = '';
                         }
-                        $exists = Like::where('user_id', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 2)->first();
+                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 2)->first();
                         if(isset($exists))
                         {
                             $temp['isLike']  = 1;
@@ -676,22 +676,22 @@ class ApiController extends Controller
                 $item_id = $request->id;
                 $item_type = $request->type;
                 $status = $request->status;
-                $exist = Like::where('user_id', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->first();
+                $exist = Like::where('reaction_by', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->first();
                 /* Status check for liked post 1 = Already liked , 2 = Create new liked post */
                 if ($exist){
                     if($status == 1)
                     {
                         return response()->json(['status'=> 0,'Message'=>'Already favourites',]);
                     }else{
-                        DB::table('likes')->where('user_id', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->delete();
+                        DB::table('user_reaction')->where('reaction_by', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->delete();
                         return response()->json(['status'=> 1,'Message'=>'Removed to favourites',]);
                     }
                 }else{
-                    $data = DB::table('likes')->insert([
+                    $data = DB::table('user_reaction')->insert([
                         'object_id' => (int) $item_id,
                         'object_type' => (int) $item_type,
-                        'user_id' => (int) $u_id,
-                        'status' => $status,
+                        'reaction_by' => (int) $u_id,
+                        'reaction_type' => $status,
                     ]);
                     return response()->json(['status'=> 1,'Message'=>'Added to favourites',]);
                 }

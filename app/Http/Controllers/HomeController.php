@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Models\User;
 use App\Models\CourseChapter;
 use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
@@ -14,6 +15,24 @@ use PDO;
 
 class HomeController extends Controller
 {
+    public function check_status(Request $request) 
+    {
+        $user = User::where('email',$request['admin_email'])->first();
+        if(!empty($user))
+        {
+            if($user->status == 0)
+            {
+                $status = 1;
+            }else{
+                $status = 0;
+            }
+            
+        }else{
+            $status = 0;
+        }
+        return $status;
+    }
+
     public function index() 
     {
         $admin_id = Auth::user()->id;
