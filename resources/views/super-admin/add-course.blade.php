@@ -1,5 +1,5 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Makeup University - Add Course')
+@section('title', 'Permanent Makeup University - Add Course')
 @section('content')
     <div class="body-main-content">
         <div class="pmu-filter-section">
@@ -51,7 +51,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Valid Up-To</h4>
-                                                <input type="month" class="form-control" name="valid_upto" placeholder="4 Month" required>
+                                                <input type="date" class="form-control" name="valid_upto" placeholder="4 Month" required>
                                             </div>
                                         </div>
                                         
@@ -59,13 +59,13 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Tags With Comma</h4>
-                                                <select class="form-control livesearch p-3" name="tags[]" name="livesearch" multiple="multiple" required></select>
+                                                <select class="form-control livesearch p-3" name="tags[]" multiple="multiple" required></select>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Upload Course Certificate(jpg,jpeg,png only|Size:2048)</h4>
+                                                <h4>Upload Course Certificate (jpg,jpeg,png only | Size:2048)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="certificates" accept="image/png, image/jpg, image/jpeg" id="PDF/JPEG Or PNG"
                                                         class="uploadsignature addsignature" required>
@@ -83,7 +83,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Introduction Video(mp4 only|Size:2048)</h4>
+                                                <h4>Introduction Video (mp4 only | Size:2048)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction" accept="video/mp4"
                                                         id="Upload Training Video Or PDF / Paste Video URL Here…"
@@ -176,7 +176,7 @@
                     valid_upto: {
                         required:true,
                     },
-                    livesearch: {
+                    "tags[]": {
                         required: true,
                     },
                     certificates: {
@@ -199,7 +199,7 @@
                     valid_upto: {
                         required: 'Please enter valid upto',
                     },
-                    livesearch: {
+                    "tags[]": {
                         required: 'Please enter tags',
                     },
                 },

@@ -1,5 +1,5 @@
 @extends('layouts.app-master')
-
+@section('title', 'Permanent Makeup University - Add Course')
 @section('content')
     <div class="body-main-content">
         <div class="pmu-filter-section">
@@ -18,30 +18,6 @@
         <div class="pmu-content-list">
             <div class="pmu-content">
                 <div class="row">
-                    {{-- <div class="col-md-3">
-                        <div class="chapter-card disabled">
-                            <h3>Chapter list</h3>
-                            @if($CourseChapters->isEmpty())
-                                <tr>
-                                    <td colspan="11" class="text-center">
-                                        No record found
-                                    </td>
-                                </tr>
-                            @elseif(!$CourseChapters->isEmpty())
-                                @foreach($CourseChapters as $data)
-                                    <div class="chapter-list">
-                                        <div class="chapter-item">
-                                            <span>Chapter 1</span> <a href="#"><img src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
-                                        </div>
-                                    </div>
-                                @endforeach
-                            @endif
-                            <div class="chapter-action">
-                                <a class="add-chapter-btn" href="#">Add Chapter</a>
-                            </div>
-                        </div>
-                    </div> --}}
-
                     <div class="col-md-12">
                         <div class="pmu-courses-form-section">
                             <h2>Course Details</h2>
@@ -101,33 +77,23 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Valid Up-To</h4>
-                                                <input type="month" class="form-control" name="valid_upto" placeholder="4 Month" required>
+                                                <input type="date" class="form-control" name="valid_upto" placeholder="4 Month" required>
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Tags With Comma</h4>
-                                                <input type="text" class="form-control" name="tags"
-                                                    placeholder="Enter Tags With Comma" required>
-                                                {{-- <div class="tags-list">
-                                                    <div class="Tags-text">Tattoo Course <img src="{!! url('assets/website-images/close-circle.svg') !!}">
-                                                    </div>
-                                                    <div class="Tags-text">Body Piercing <img src="{!! url('assets/website-images/close-circle.svg') !!}">
-                                                    </div>
-                                                    <div class="Tags-text">Tattoo <img src="{!! url('assets/website-images/close-circle.svg') !!}"></div>
-                                                    <div class="Tags-text">Tattoos 2023 <img src="{!! url('assets/website-images/close-circle.svg') !!}">
-                                                    </div>
-                                                </div> --}}
+                                                <select class="form-control livesearch p-3" name="tags[]" multiple="multiple" required></select>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Upload Course Certificates</h4>
+                                                <h4>Upload Course Certificate (jpg,jpeg,png only | Size:2048)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="certificates" id="certificates"
-                                                        class="uploadsignature addsignature" required>
+                                                        class="uploadsignature addsignature" required accept="image/png, image/jpg, image/jpeg">
                                                     <label for="certificates">
                                                         <div class="signature-text">
                                                             <span id="certificates_name"><img src="{!! url('assets/website-images/upload.svg') !!}"> Click here to Upload</span>
@@ -139,11 +105,11 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Disclaimers & Introduction</h4>
+                                                <h4>Introduction Video (mp4 only | Size:2048)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction"
                                                         id="disclaimers_introduction"
-                                                        class="uploadsignature addsignature" required>
+                                                        class="uploadsignature addsignature" required accept="video/mp4">
                                                     <label for="disclaimers_introduction">
                                                         <div class="signature-text">
                                                             <span id="disclaimers_introduction_name"><img src="{!! url('assets/website-images/upload.svg') !!}"> Click here to Upload</span>
@@ -166,6 +132,8 @@
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
     
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.3/additional-methods.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
     <!-- Append File name -->
     <script>
@@ -178,6 +146,26 @@
                 var geekss = e.target.files[0].name;
                 $("#certificates_name").text(geekss);
             });
+            $(".select2-container .selection .select2-selection .select2-search__field").addClass('form-control');
+        });
+        $('.livesearch').select2({
+            placeholder: 'Select tags',
+            ajax: {
+                url: "{{ route('load-sectors') }}",
+                dataType: 'json',
+                delay: 250,
+                processResults: function (data) {
+                    return {
+                        results: $.map(data, function (item) {
+                            return {
+                                text: item.tag_name,
+                                id: item.id
+                            }
+                        })
+                    };
+                },
+                cache: true
+            }
         });
     </script>
 
@@ -195,6 +183,15 @@
                         required: true,
                     },
                     description: {
+                        required: true,
+                    },
+                    course_fee: {
+                        required: true,
+                    },
+                    valid_upto: {
+                        required:true,
+                    },
+                    "tags[]": {
                         required: true,
                     },
                     certificates: {
@@ -219,13 +216,28 @@
                         required: "Please choose a file to upload.",
                         extension: "Please upload a file in one of these formats: jpg, jpeg, png, ico, bmp.",
                     },
+                    "tags[]": {
+                        required: 'Please enter tags',
+                    },
                     
                 },
 
                 submitHandler: function(form) {
                     // This function will be called when the form is valid and ready to be submitted
                     form.submit();
-                }
+                },
+                errorElement: "span",
+                errorPlacement: function(error, element) {
+                    error.addClass("invalid-feedback");
+                    element.closest(".form-group").append(error);
+
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).addClass("is-invalid");
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).removeClass("is-invalid");
+                },
             });
         });
     </script>

@@ -170,7 +170,8 @@ class SuperAdminController extends Controller
     public function courseChapter(Request $request, $courseID, $chapterID=null){
         try {
             $courseID = encrypt_decrypt('decrypt',$courseID);
-            $chapterID = encrypt_decrypt('decrypt',$chapterID);
+            if($chapterID != null && isset($chapterID)) $chapterID = encrypt_decrypt('decrypt',$chapterID);
+            else $chapterID = null;
             $chapters = CourseChapter::where('course_id',$courseID)->get();
             $datas = CourseChapterStep::where('course_chapter_id', $chapterID)->orderBy('sort_order')->get();
             return view('super-admin.course-chapter-list',compact('datas','chapters','courseID','chapterID'));
@@ -656,7 +657,7 @@ class SuperAdminController extends Controller
             $admin_id = $request->admin_id;
             $adminID = encrypt_decrypt('encrypt',$admin_id);
             Course::where('id',$course_id)->update(['status' => $status]);
-            return redirect('super-admin/listed-course/'.$adminID)->with('message','Status Changed successfully');
+            return redirect()->back()->with('message','Status Changed successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -796,11 +797,11 @@ class SuperAdminController extends Controller
         $courseID = encrypt_decrypt('decrypt',$courseID);
         $chapters = CourseChapter::where('course_id',$courseID)->get();
         if (count($chapters)>0) {
-            $chapterID = $chapters[0]->id;
+            $chapterID = null;
             $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
             $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
         } else {
-            $chapterID = '';
+            $chapterID = null;
             $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->get();
             $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->get();
         }
@@ -815,7 +816,7 @@ class SuperAdminController extends Controller
         $chapters = CourseChapter::where('course_id',$courseID)->get();
         $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
         $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
-        return view('super-admin.addcourse2',compact('quizes','datas','chapters','courseID','chapterID','userID'));
+        return view('super-admin.course-chapter-list',compact('quizes','datas','chapters','courseID','chapterID','userID'));
     }
 
     public function category() 
