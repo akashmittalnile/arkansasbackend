@@ -71,7 +71,7 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/creators.css') !!}">
     @endif
 
-    @if ($currentURL == 'SA.Addcourse2' || $currentURL == 'SA.CourseList')
+    @if ($currentURL == 'SA.Addcourse2' || $currentURL == 'SA.CourseList' ||  $currentURL == 'SA.Course')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">
         <script src="{!! url('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>

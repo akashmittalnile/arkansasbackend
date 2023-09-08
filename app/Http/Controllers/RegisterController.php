@@ -32,6 +32,6 @@ class RegisterController extends Controller
         //auth()->login($user);
 
         return redirect('/login')
-        ->with('success', "Account successfully registered.");
+        ->with('success', "Account approval request has been sent to admin we will notify you once it is approved via email.");
     }
 }

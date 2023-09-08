@@ -68,7 +68,7 @@ $(document).on('click', '.add-question-create', function () {
                                         <label for="answer-option-${oplength}-${questionCounter}-${id}">&nbsp</label>
                                     </div>
                                     <div class="pmu-add-questionnaire-tooltip">
-                                        <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Answer changed">
+                                        <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select answer using checkbox">
                                             <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
                                         </div> 
                                         <script>
@@ -115,7 +115,7 @@ $(document).on('click', '.add-option', function () {
                                                 <label for="answer-option-${oplength}-${id[2] ?? questionCounter}-${id[1]}">&nbsp</label>
                                             </div>
                                             <div class="pmu-add-questionnaire-tooltip">
-                                                <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Answer changed">
+                                                <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select answer using checkbox">
                                                     <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
                                                 </div> 
                                                 <script>
@@ -527,7 +527,7 @@ $(document).ready(function () {
                                                                     <label for="answer-option-${oplength}-${questionCounter}-${countForm}">&nbsp</label>
                                                                 </div>
                                                                 <div class="pmu-add-questionnaire-tooltip">
-                                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Answer changed">
+                                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select answer using checkbox">
                                                                         <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
                                                                     </div> 
                                                                     <script>
@@ -578,7 +578,7 @@ $(document).ready(function () {
                                             <input type="number" class="form-control" min="1" step="0" placeholder="Assign serial order" name="queue[${countForm}]" required>
                                         </div>
                                         <div class="pmu-add-questionnaire-tooltip">
-                                            <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Answer changed">
+                                            <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
                                                 <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
                                             </div> 
                                             <script>
@@ -642,7 +642,7 @@ $(document).ready(function () {
                                                 <input type="number" class="form-control" min="1" step="0" placeholder="Assign serial order" name="queue[${countForm}]" required>
                                             </div>
                                             <div class="pmu-add-questionnaire-tooltip">
-                                                <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Answer changed">
+                                                <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
                                                     <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
                                                 </div> 
                                                 <script>

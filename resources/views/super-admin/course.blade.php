@@ -1,5 +1,5 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Makeup University - Course')
+@section('title', 'Permanent Makeup University - Manage Course')
 @section('content')
     <div class="body-main-content">
         <div class="pmu-filter-section">
@@ -40,6 +40,13 @@
             </div>
         </div>
 
+        @if (session()->has('message'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ session()->get('message') }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+
         <div class="pmu-content-list">
             <div class="pmu-content">
                 <div class="row">
@@ -63,13 +70,38 @@
                                         </a>
                                     </div>
                                     <div class="pmu-course-content">
-                                        <div class="coursestatus"><img src="{!! url('assets/website-images/tick.svg') !!}">
+                                        <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! url('assets/website-images/tick.svg') !!}">
                                             @if ($data->status == 0)
                                                 Unpublished
                                             @else
                                                 Published 
                                             @endif
                                         </div>
+
+                                        <form action="{{ route('SaveStatusCourse') }}" method="POST">
+                                            <div class="course-status">
+                                                <input type="hidden" name="_token"
+                                                    value="{{ csrf_token() }}" />
+                                                <input type="hidden" name="course_id"
+                                                    value="{{ $data->id }}" />
+                                                <input type="hidden" name="admin_id"
+                                                    value="{{ $data->admin_id }}" />
+                                                <label for="user_id">Select Status</label>
+                                                <select name="status" id="status"
+                                                    class="course-select">
+                                                    <option disabled>Select Status</option>
+                                                    <option value="1"
+                                                        @if ($data->status == 1) selected='selected' @else @endif>
+                                                        Published</option>
+                                                    <option value="0"
+                                                        @if ($data->status == 0) selected='selected' @else @endif>
+                                                        Unpublished</option>
+                                                </select>
+
+                                                <button type="submit" class="course-save">Save</button>
+                                            </div>
+                                        </form>
+
                                         <h2>{{ ($data->title) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->course_fee,2) ? : 0}}</div>
                                         <p>{{ ($data->description) ? : ''}}</p>

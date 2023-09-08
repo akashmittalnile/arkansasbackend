@@ -194,59 +194,61 @@
                                                         <a data-fancybox data-type="iframe"
                                                             data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0"
                                                             href="javascript:;">
-                                                            <img src="{!! url('assets/superadmin-images/1.png') !!}">
-                                                            <div class="pmu-video-icon"><img src="{!! url('assets/superadmin-images/video.svg') !!}">
-                                                            </div>
+                                                            <video width="415" height="240" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
+                                                                <source src="{{ url( 'upload/disclaimers-introduction/' . $data->introduction_image) }}" type="video/mp4">
+                                                                Your browser does not support the video tag.
+                                                            </video>
+                                                            <!-- <div class="pmu-video-icon"><img src="{!! url('assets/superadmin-images/video.svg') !!}"></div> -->
                                                         </a>
                                                     </div>
-                                                    <a href="{{ url('super-admin/addcourse2/'.$user->id.'/'.encrypt_decrypt('encrypt',$data->id))}}">
-                                                        <div class="pmu-course-content">
-                                                            <div class="coursestatus"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
-                                                                @if ($data->status == 0)
-                                                                    Unpublished
-                                                                @else
-                                                                    Published
-                                                                @endif
-                                                            </div>
-                                                            <form action="{{ route('SaveStatusCourse') }}" method="POST">
-                                                                <div class="course-status">
-                                                                    <input type="hidden" name="_token"
-                                                                        value="{{ csrf_token() }}" />
-                                                                    <input type="hidden" name="course_id"
-                                                                        value="{{ $data->id }}" />
-                                                                    <input type="hidden" name="admin_id"
-                                                                        value="{{ $data->admin_id }}" />
-                                                                    <label for="user_id">Select Status</label>
-                                                                    <select name="status" id="status"
-                                                                        class="course-select">
-                                                                        <option disabled>Select Status</option>
-                                                                        <option value="1"
-                                                                            @if ($data->status == 1) selected='selected' @else @endif>
-                                                                            Published</option>
-                                                                        <option value="0"
-                                                                            @if ($data->status == 0) selected='selected' @else @endif>
-                                                                            Unpublished</option>
-                                                                    </select>
-
-                                                                    <button type="submit" class="course-save">Save</button>
-                                                                </div>
-                                                            </form>
-                                                            <h2>{{ $data->title ?: '' }}</h2>
-                                                            <div class="pmu-course-price">
-                                                                ${{ number_format($data->course_fee, 2) ?: 0 }}</div>
-                                                            <p>{{ $data->description ?: '' }}</p>
-                                                            <?php
-                                                            $chapter_count = \App\Models\CourseChapter::where('course_id', $data->id)->count();
-                                                            ?>
-                                                            @if ($chapter_count == 0)
-                                                                <div class="chapter-text">Chapter 0</div>
-                                                            @elseif ($chapter_count == 1)
-                                                                <div class="chapter-text">Chapter 1</div>
+                                                    <div class="pmu-course-content">
+                                                        <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
+                                                            @if ($data->status == 0)
+                                                                Unpublished
                                                             @else
-                                                                <div class="chapter-text">Chapter 1-{{ $chapter_count }}</div>
+                                                                Published
                                                             @endif
                                                         </div>
-                                                    </a>
+                                                        <form action="{{ route('SaveStatusCourse') }}" method="POST">
+                                                            <div class="course-status">
+                                                                <input type="hidden" name="_token"
+                                                                    value="{{ csrf_token() }}" />
+                                                                <input type="hidden" name="course_id"
+                                                                    value="{{ $data->id }}" />
+                                                                <input type="hidden" name="admin_id"
+                                                                    value="{{ $data->admin_id }}" />
+                                                                <label for="user_id">Select Status</label>
+                                                                <select name="status" id="status"
+                                                                    class="course-select">
+                                                                    <option disabled>Select Status</option>
+                                                                    <option value="1"
+                                                                        @if ($data->status == 1) selected='selected' @else @endif>
+                                                                        Published</option>
+                                                                    <option value="0"
+                                                                        @if ($data->status == 0) selected='selected' @else @endif>
+                                                                        Unpublished</option>
+                                                                </select>
+
+                                                                <button type="submit" class="course-save">Save</button>
+                                                            </div>
+                                                        </form>
+                                                        <h2>{{ $data->title ?: '' }}</h2>
+                                                        <div class="pmu-course-price">
+                                                            ${{ number_format($data->course_fee, 2) ?: 0 }}</div>
+                                                        <p>{{ $data->description ?: '' }}</p>
+                                                        <a href="{{ route('SA.Addcourse2', [ 'userID'=> encrypt_decrypt('encrypt', $user->id), 'courseID'=> encrypt_decrypt('encrypt',$data->id) ] ) }}">
+                                                        <?php
+                                                        $chapter_count = \App\Models\CourseChapter::where('course_id', $data->id)->count();
+                                                        ?>
+                                                        @if ($chapter_count == 0)
+                                                            <div class="chapter-text">Chapter 0</div>
+                                                        @elseif ($chapter_count == 1)
+                                                            <div class="chapter-text">Chapter 1</div>
+                                                        @else
+                                                            <div class="chapter-text">Chapter 1-{{ $chapter_count }}</div>
+                                                        @endif
+                                                        </a>
+                                                    </div>
                                                 </div>
                                             </div>
                                         @endforeach

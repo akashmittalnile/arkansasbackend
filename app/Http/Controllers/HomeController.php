@@ -33,10 +33,16 @@ class HomeController extends Controller
         return $status;
     }
 
-    public function index() 
+    public function index(Request $request) 
     {
-        $admin_id = Auth::user()->id;
-        $courses = Course::where('admin_id',$admin_id)->orderBy('id','DESC')->get();
+        $courses = Course::where('admin_id',Auth::user()->id);
+        if($request->filled('status')){
+            $courses->where('status', $request->status);
+        }
+        if($request->filled('course')){
+            $courses->where('title', 'like', '%' . $request->course . '%');
+        }
+        $courses = $courses->orderBy('id','DESC')->get();
         return view('home.index',compact('courses'));
     }
 
@@ -55,11 +61,11 @@ class HomeController extends Controller
         $courseID = encrypt_decrypt('decrypt',$courseID);
         $chapters = CourseChapter::where('course_id',$courseID)->get();
         if (count($chapters)>0) {
-            $chapterID = $chapters[0]->id;
+            $chapterID = null;
             $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
             $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
         } else {
-            $chapterID = '';
+            $chapterID = null;
             $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->get();
             $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->get();
         }
@@ -132,124 +138,10 @@ class HomeController extends Controller
     public function submitquestion(Request $request) {
         try {
             $type = array_unique($request->type);
-            
-            // $options = $request->option;
-            // $question = $request->question;
-            // if ($request->video) {
-            //     $videoName = time().'.'.$request->video->extension();  
-            //     $request->video->move(public_path('upload/course'), $videoName);
-            // }
-
-            // if ($request->pdf) {
-            //     $pdfName = time().'.'.$request->pdf->extension();  
-            //     $request->pdf->move(public_path('upload/course'), $pdfName);
-            // }
-
-            
-            // if($request->type == 'video'){
-            //     $ChapterQuiz = new ChapterQuiz;
-            //     $ChapterQuiz->title = 'video';
-            //     $ChapterQuiz->type = 'video';
-            //     $ChapterQuiz->desc = $request->input('video_decription');
-            //     $ChapterQuiz->file = $videoName;
-            //     $ChapterQuiz->chapter_id = $request->chapter_id;
-            //     $ChapterQuiz->course_id = $request->courseID;
-            //     $ChapterQuiz->save();
-            // }elseif($request->type == 'pdf'){
-            //     $ChapterQuiz = new ChapterQuiz;
-            //     $ChapterQuiz->title = 'pdf';
-            //     $ChapterQuiz->type = 'pdf';
-            //     $ChapterQuiz->desc = $request->input('PDF_decription');
-            //     $ChapterQuiz->file = $pdfName;
-            //     $ChapterQuiz->chapter_id = $request->chapter_id;
-            //     $ChapterQuiz->course_id = $request->courseID;
-            //     $ChapterQuiz->save();
-            // }elseif($request->type == 'quiz'){
-
-                // // if ($request->input('prerequisite') == 'on') {
-                // //     $prerequisite = 1;
-                // // } else {
-                // //     $prerequisite = 0;
-                // // }
-
-                // $questionsData = $request->input('questions');
-                // //dd($questionsData[1]);
-                // foreach ($questionsData as $questionData) {
-                //     $ChapterQuiz = new ChapterQuiz;
-                //     $ChapterQuiz->title = $questionData['text'];
-                //     $ChapterQuiz->type = 'quiz';
-                //     $ChapterQuiz->chapter_id = $request->chapter_id;
-                //     $ChapterQuiz->course_id = $request->courseID;
-                //     $ChapterQuiz->step_id = 1;
-                //     $ChapterQuiz->save();
-                //     $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
-                //     //dd($questionData['options']);
-                //     foreach ($questionData['options'] as $optionText) {
-                //         $option = new ChapterQuizOption;
-                //         $option->quiz_id = $quiz_id->id;
-                //         $option->answer_option_key = $optionText;
-                //         $option->created_date = date('Y-m-d H:i:s');
-                //         $option->status = 1;
-                //         $option->save();
-                //     }
-                //     //dd($questionData['options']);
-                // }
-            // }elseif($request->type == 'survey'){
-            //     $ChapterQuiz = new ChapterQuiz;
-            //     if ($request->input('required_fied') == 'on') {
-            //         $required_fied = 1;
-            //     } else {
-            //         $required_fied = 0;
-            //     }
-            //     $option = $request->option;
-                
-            //     $ChapterQuiz->title = $request->input('survey_question');
-            //     $ChapterQuiz->type = 'survey';
-            //     $ChapterQuiz->chapter_id = $request->chapter_id;
-            //     $ChapterQuiz->course_id = $request->courseID;
-            //     $ChapterQuiz->step_id = $required_fied;
-            //     $ChapterQuiz->save();
-            //     $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
-
-            //     if(isset($options))
-            //     {
-            //         if(count($options)>0)
-            //         {
-            //             foreach ($options as $key => $value) {
-            //                 if(!empty($value))
-            //                 {
-            //                     $option = new ChapterQuizOption;
-            //                     $option->quiz_id = $quiz_id->id;
-            //                     $points_value = $request->option[$key];
-            //                     $option->answer_option_key = $points_value;
-            //                     $option->created_date = date('Y-m-d H:i:s');
-            //                     $option->status = 1;
-            //                     $option->save();
-            //                 }else{
-            //                     $d_json = 0;
-            //                     return $d_json;
-            //                 }
-            //             }
-            //         }
-            //     }
-            // }elseif($request->type == 'assignment'){
-            //     $ChapterQuiz = new ChapterQuiz;
-            //     $ChapterQuiz->title = 'assignment';
-            //     $ChapterQuiz->type = 'assignment';
-            //     $ChapterQuiz->chapter_id = $request->chapter_id;
-            //     $ChapterQuiz->course_id = $request->courseID;
-            //     $ChapterQuiz->save();
-            // }else{
-                
-                // }
-
-            // dd($request->all());
-
+           
             if(array_has_dupes($request->queue)) {
                 return response()->json(['status' => 200, 'message' => "Two sections cannot have the same serial order please check and change the serial order."]);
             }
-
-
                 
             if(isset($type) && count($type) > 0){
                 foreach($type as $key => $value){
@@ -409,36 +301,21 @@ class HomeController extends Controller
     public function submitcourse(Request $request) 
     {
         try {
-            $thumbnail = VideoThumbnail::create('big_buck_bunny_480p_2mb.mp4');
-                dd(5);
             if ($request->certificates) {
                 $imageName = time().'.'.$request->certificates->extension();  
                 $request->certificates->move(public_path('upload/course-certificates'), $imageName);
-                if($imageName)
-                {
-                    $imageName = $imageName;
-                }else{
-                    $imageName = '';
-                }
             }
             if ($request->certificates) {
                 $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
                 $request->disclaimers_introduction->move(public_path('upload/disclaimers-introduction'), $disclaimers_introduction);
-                if($disclaimers_introduction)
-                {
-                    $disclaimers_introduction = $disclaimers_introduction;
-                }else{
-                    $disclaimers_introduction = '';
-                }
             }
-            $user_id = Auth::user()->id;
             $course = new Course;
-            $course->admin_id = $user_id;
+            $course->admin_id = Auth::user()->id;
             $course->title = $request->input('title');
             $course->description = $request->input('description');
             $course->course_fee = $request->input('course_fee');
             $course->valid_upto = $request->input('valid_upto');
-            $course->tags = $request->input('tags');
+            $course->tags = serialize($request->input('tags'));
             $course->certificates = $imageName;
             $course->status = 0;
             $course->introduction_image = $disclaimers_introduction;
@@ -449,6 +326,7 @@ class HomeController extends Controller
             $course->course_id = $last_id->id;
             $course->save();
             return redirect('/');
+
         } catch (\Exception $e) {
             return $e->getMessage();
         }

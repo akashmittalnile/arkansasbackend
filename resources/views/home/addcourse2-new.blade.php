@@ -1,5 +1,5 @@
 @extends('layouts.app-master')
-
+@section('title', 'Permanent Makeup University - Courses')
 @section('content')
 <input type="hidden" name="courseID" value="{{ $courseID }}" />
 <div class="body-main-content">
@@ -64,8 +64,11 @@
                         </div>
                         @endif
                         <div class="pmu-courses-form-section pmu-addcourse-form">
+                            
+                            @if (!$chapters->isEmpty() && isset($chapterID))
                             <h2 id="chapterName">Chapter </h2>
-                            {{-- <p>Chapter 1 Video: What Is Permanent Cosmetics?</p> --}}
+                            @endif
+                            
                             <div class="pmu-courses-form">
                                 @if ($datas->isEmpty())
                                 <tr>
@@ -570,7 +573,7 @@
 
                                 </form>
 
-                                @if (!$chapters->isEmpty())
+                                @if (!$chapters->isEmpty() && isset($chapterID))
                                 <div class="edit-questionnairetype-item">
                                     <h2>Questionnaire Type:</h2>
                                     <div class="edit-questionnairetype-list">
