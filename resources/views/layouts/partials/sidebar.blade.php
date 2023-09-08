@@ -55,7 +55,7 @@
                 @else
                     <li class="nav-item">
                         <a class="nav-link" href="{{ route('Home.HelpSupport') }}">
-                            <span class="menu-icon"><img src="{!! url('assets/website-images/Help.svg') !!}"></span>
+                            <span class="menu-icon"><img src="{!! url('assets/website-images/help.svg') !!}"></span>
                             <span class="menu-title">Help & Support</span>
                         </a>
                     </li>

@@ -52,8 +52,13 @@
                         <span class="menu-title">Manage Category</span>
                     </a>
                 </li>
-
-                <li class="nav-item @if ($currentURL == 'SA.Products' || $currentURL =='SA.AddProduct'||$currentURL =='SA.Coupons') active @endif">
+                <li class="nav-item @if ($currentURL == 'SA.TagListing') active @endif">
+                    <a class="nav-link" href="{{ route('SA.TagListing') }}">
+                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/book.svg') !!}"></span>
+                        <span class="menu-title">Manage Tags</span>
+                    </a>
+                </li>
+                <li class="nav-item @if ($currentURL == 'SA.Products' || $currentURL =='SA.AddProduct') active @endif">
                     <a class="nav-link" href="{{ route('SA.Products') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/products.svg') !!}"></span>
                         <span class="menu-title">Manage Products</span>
@@ -75,14 +80,8 @@
                 </li>
                 <li class="nav-item @if ($currentURL == 'SA.HelpSupport') active @endif">
                     <a class="nav-link" href="{{ route('SA.HelpSupport') }}">
-                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/Help.svg') !!}"></span>
+                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/help.svg') !!}"></span>
                         <span class="menu-title">Help & Support</span>
-                    </a>
-                </li>
-                <li class="nav-item @if ($currentURL == 'SA.TagListing') active @endif">
-                    <a class="nav-link" href="{{ route('SA.TagListing') }}">
-                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/Help.svg') !!}"></span>
-                        <span class="menu-title">Manage Tags</span>
                     </a>
                 </li>
                 

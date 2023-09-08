@@ -11,6 +11,8 @@
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/line-awesome/css/line-awesome.min.css') !!}">
     <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/header-footer.css') !!}">
     
+    @stack('css')
+
     @if ($currentURL == 'SA.Dashboard')
         
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-plugins/apexcharts/apexcharts.css') !!}">

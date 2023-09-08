@@ -29,7 +29,7 @@
                     <p>Please Login with your registered Email & Created Password!</p>
                     @include('layouts.partials.messages')
                     <div class="row">
-                        <form method="post" action="{{ route('login.perform') }}">
+                        <form method="post" action="{{ route('login.perform') }}" id="Form_Login">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                             <input type="hidden" name="role" value="2" />
                             <div class="col-md-12">
@@ -53,7 +53,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group text-center">
-                                    <button class="becomeacreator-btn" type="submit">Login</button>
+                                    <button class="becomeacreator-btn" type="button" id="LoginCheck">Login</button>
                                 </div>
                             </div>
 
@@ -76,7 +76,7 @@
                         </div>
                         <div class="col-md-12">
                             <div class="form-group">
-                                <p>Already Have an account? <a href="#">LOGIN</a></p>
+                                <p>Already Have an account? <a href="#" >LOGIN</a></p>
                             </div>
                         </div>
                     </div>
@@ -93,11 +93,10 @@
                     <div class="becomeacreator-form-info">
                         <img src="{!! url('assets/website-images/tick-circle.svg') !!}">
                         <h2>Great!! We have receive your Creator Enrollment request</h2>
-                        <p>Your creator Account is in under review process it will be ready once the System
-                            Administrator approve your account.. </p>
+                        <p>Your account is under review please wait for admin to approve the request we will notify you once it is approved via email.</p>
                         <div class="becomeacreator-btn-action">
                             <a href="#" class="close-btn" data-bs-dismiss="modal" aria-label="Close">Close</a>
-                            <a href="#" class="Login-btn">Login as Creator</a>
+                            {{-- <a href="#" class="Login-btn">Login as Creator</a> --}}
                         </div>
                     </div>
                 </div>
@@ -107,26 +106,29 @@
 
     <!-- Submit Form with ajax -->
     <script>
-        $('#LoginCheck').on('click', function() {
-            var admin_email = $('input[name="email"]').val();
-            $.ajax({
-                url: "{{ route('admin.check_status') }}",
-                method: 'GET',
-                data: {
-                    admin_email: admin_email,
-                },
-                dataType: 'json',
-                headers: {
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                success: function(data) {
-                    if (data == 1) {
-                        $('#becomeacreator_login').modal('show');
-                        e.preventDefault();
-                    } else {
-                        $('#Form_Login').submit();
+        $(document).ready(function(){
+            $('#LoginCheck').click(function(event){
+                var admin_email = $('input[name="email"]').val();
+                $.ajax({
+                    //url: "{{ route('admin.check_status') }}",
+                    url: 'https://nileprojects.in/arkansas/public/check_status',
+                    method: 'GET',
+                    data: {
+                        admin_email: admin_email,
+                    },
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function(data) {
+                        if (data == 1) {
+                            $('#becomeacreator').modal('show');
+                            e.preventDefault();
+                        } else {
+                            $('#Form_Login').submit();
+                        }
                     }
-                }
+                });
             });
         });
     </script>
