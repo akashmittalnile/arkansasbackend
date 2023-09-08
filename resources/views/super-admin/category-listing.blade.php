@@ -53,21 +53,21 @@
                             <div class="creator-table-col-3">
                                 <div class="creator-table-box">
                                     <div class="creator-table-text">Category Name</div>
-                                    <div class="creator-table-value">{{ $data->category_name }}</div>
+                                    <div class="creator-table-value">{{ $data->name }}</div>
                                 </div>
                             </div>
 
                             <div class="creator-table-col-3">
                                 <div class="creator-table-box">
                                     <div class="creator-table-text">Category Image</div>
-                                    <div class="creator-table-value center-div"><a href="{{ url('upload/category-image/'.$data->category_image)}}" target="_blank"><i class="las la-image"></i></a></div>
+                                    <div class="creator-table-value center-div"><a href="{{ url('upload/category-image/'.$data->icon)}}" target="_blank"><i class="las la-image"></i></a></div>
                                 </div>
                             </div>
 
                             <div class="creator-table-col-2">
                                 <div class="creator-table-box">
                                     <div class="creator-table-text">Account Status</div>
-                                    <div class="creator-table-value">@if ($data->cat_status) Active @else Inactive @endif</div>
+                                    <div class="creator-table-value">@if ($data->status) Active @else Inactive @endif</div>
                                 </div>
                             </div>
 

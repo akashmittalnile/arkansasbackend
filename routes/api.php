@@ -32,11 +32,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('wishlist-listing', [ApiController::class, "wishlist_listing"]);
     Route::get('all-category', [ApiController::class, "all_category"]);
     Route::post('object-type-details', [ApiController::class, "object_type_details"]);/*Course details & Product details*/
-    Route::post('top-category', [ApiController::class, "top_category"]);
-    Route::post('all-type-listing', [ApiController::class, "all_type_listing"]);
+    Route::post('all-type-listing', [ApiController::class, "all_type_listing"]);/*Listing of Course & Product*/
     Route::post('suggested-list', [ApiController::class, "suggested_list"]);
     Route::get('all-category', [ApiController::class,"all_category"]);
-    Route::post('like-object-type', [ApiController::class,"like_object_type"]);
+    Route::post('add-wishlist', [ApiController::class,"add_wishlist"]);
+    Route::post('remove-wishlist', [ApiController::class,"remove_wishlist"]);
     Route::post('submit-review', [ApiController::class,"submit_review"]);
     Route::post('review-list', [ApiController::class,"review_list"]);
     Route::get('home', [ApiController::class, "home"]);

@@ -50,12 +50,12 @@ class ApiController extends Controller
                 $b1['tags'] = isset($data->tags) ? $data->tags : '';
                 $b1['valid_upto'] = $data->valid_upto;
                 if (!empty($data->certificates)) {
-                    $b1['certificates_image'] = url('assets/upload/course-certificates/' . $data->certificates);
+                    $b1['certificates_image'] = url('upload/course-certificates/' . $data->certificates);
                 } else {
                     $b1['certificates_image'] = '';
                 }
                 if (!empty($data->introduction_image)) {
-                    $b1['introduction_image'] = url('assets/upload/disclaimers-introduction/' . $data->introduction_image);
+                    $b1['introduction_image'] = url('upload/disclaimers-introduction/' . $data->introduction_image);
                 } else {
                     $b1['introduction_image'] = '';
                 }
@@ -68,21 +68,25 @@ class ApiController extends Controller
                 $TrendingCourses[] = $b1;
             }
 
-            $top_category = Category::where('cat_status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
+            $top_category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
             $b2 = array();
             $TopCategory = array();
-            foreach ($top_category as $k => $data) {
-                $b2['id'] = isset($data->id) ? $data->id : '';
-                $b2['category_name'] = isset($data->category_name) ? $data->category_name : '';
-                if (!empty($data->product_image)) {
-                    $b2['category_image'] = url('assets/upload/category_image/' . $data->product_image);
-                } else {
-                    $b2['category_image'] = '';
+            if(count($top_category) > 0)
+            {
+                foreach ($top_category as $k => $data) {
+                    $b2['id'] = isset($data->id) ? $data->id : '';
+                    $b2['category_name'] = isset($data->name) ? $data->name : '';
+                    if (!empty($data->icon)) {
+                        $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                    } else {
+                        $b2['category_image'] = '';
+                    }
+                    $b2['cat_status'] = isset($data->status) ? $data->status : '';
+                    $b2['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
+                    $TopCategory[] = $b2;
                 }
-                $b2['cat_status'] = isset($data->cat_status) ? $data->cat_status : '';
-                $b2['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
-                $TopCategory[] = $b2;
             }
+            
 
             $suggested_courses = Course::leftJoin('users', function($join) {
                 $join->on('course.admin_id', '=', 'users.id');
@@ -105,12 +109,12 @@ class ApiController extends Controller
                 $b3['tags'] = isset($data->tags) ? $data->tags : '';
                 $b3['valid_upto'] = $data->valid_upto;
                 if (!empty($data->certificates)) {
-                    $b3['certificates_image'] = url('assets/upload/course-certificates/' . $data->certificates);
+                    $b3['certificates_image'] = url('upload/course-certificates/' . $data->certificates);
                 } else {
                     $b3['certificates_image'] = '';
                 }
                 if (!empty($data->introduction_image)) {
-                    $b3['introduction_image'] = url('assets/upload/disclaimers-introduction/' . $data->introduction_image);
+                    $b3['introduction_image'] = url('upload/disclaimers-introduction/' . $data->introduction_image);
                 } else {
                     $b3['introduction_image'] = '';
                 }
@@ -136,7 +140,7 @@ class ApiController extends Controller
                 $b4['price'] = $data->price;
                 $b4['status'] = $data->status;
                 if (!empty($data->product_image)) {
-                    $b4['Product_image'] = url('assets/upload/products/' . $data->product_image);
+                    $b4['Product_image'] = url('upload/products/' . $data->product_image);
                 } else {
                     $b4['Product_image'] = '';
                 }
@@ -163,7 +167,7 @@ class ApiController extends Controller
                 $b5['price'] = $data->price;
                 $b5['status'] = $data->status;
                 if (!empty($data->product_image)) {
-                    $b5['Product_image'] = url('assets/upload/products/' . $data->product_image);
+                    $b5['Product_image'] = url('upload/products/' . $data->product_image);
                 } else {
                     $b5['Product_image'] = '';
                 }
@@ -176,21 +180,24 @@ class ApiController extends Controller
                 $SugProducts[] = $b5;
             }
 
-            $Sug_category = Category::where('cat_status', 1)->orderBy('id', 'DESC')->get(); /*Get data of Suggested category*/
+            $Sug_category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of Suggested category*/
             $b6 = array();
             $SugCategory = array();
-            foreach ($Sug_category as $k => $data) {
-                $b6['id'] = isset($data->id) ? $data->id : '';
-                $b6['category_name'] = isset($data->category_name) ? $data->category_name : '';
-                if (!empty($data->product_image)) {
-                    $b6['category_image'] = url('assets/upload/category_image/' . $data->product_image);
-                } else {
-                    $b6['category_image'] = '';
+            if(count($Sug_category)>0){
+                foreach ($Sug_category as $k => $data) {
+                    $b6['id'] = isset($data->id) ? $data->id : '';
+                    $b6['category_name'] = isset($data->name) ? $data->name : '';
+                    if (!empty($data->icon)) {
+                        $b6['category_image'] = url('upload/category-image/' . $data->icon);
+                    } else {
+                        $b6['category_image'] = '';
+                    }
+                    $b6['cat_status'] = isset($data->status) ? $data->status : '';
+                    $b6['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
+                    $SugCategory[] = $b6;
                 }
-                $b6['cat_status'] = isset($data->cat_status) ? $data->cat_status : '';
-                $b6['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
-                $SugCategory[] = $b6;
             }
+            
 
             $datas['trending_course'] = $TrendingCourses;
             $datas['top_category'] = $TopCategory;
@@ -207,85 +214,89 @@ class ApiController extends Controller
     public function wishlist_listing(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'type' => 'required',
-            ]);
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
-            }
             $user_id = Auth::user()->id;
-            $type = $request->type;
-            if ($type == 1) { /* 1 stand for course ,2 for product */
-                $datas = Wishlist::where('status', 1)->where('object_type', 1)->orderBy('id', 'DESC')->get();
-            } else {
-                $datas = Wishlist::where('status', 1)->where('object_type', 2)->orderBy('id', 'DESC')->get();
-            }
-
-            $response = array();
-            if (isset($datas)) {
-                foreach ($datas as $keys => $item) {
-                    if ($type == 1) { /* 1 stand for course ,2 for product */
-                        $value = Course::leftJoin('users', function($join) {
-                            $join->on('course.admin_id', '=', 'users.id');
-                        })
-                        ->where('course.status', 1)->where('course.id', $item->object_id)->orderBy('id', 'DESC')->first();
-                        $temp['course_fee'] = $value->course_fee;
-                        $temp['valid_upto'] = $value->valid_upto;
-                        if (!empty($value->certificates)) {
-                            $temp['certificates_image'] = url('assets/upload/course-certificates/' . $value->certificates);
-                        } else {
-                            $temp['certificates_image'] = '';
-                        }
-                        if (!empty($value->introduction_image)) {
-                            $temp['introduction_image'] = url('assets/upload/disclaimers-introduction/' . $value->introduction_image);
-                        } else {
-                            $temp['introduction_image'] = '';
-                        }
-                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
-                        if (isset($exists)) {
-                            $temp['isLike'] = 1;
-                        } else {
-                            $temp['isLike'] = 0;
-                        }
-                        $temp['title'] = $value->title;
-                        $temp['content_creator_name'] = isset($value->admin_name) ? $value->admin_name : '';
-                        $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
-                        $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
-                    } else {
-                        $value = Product::where('status', 1)->where('id', $item->object_id)->orderBy('id', 'DESC')->first();
-                        $temp['price'] = $value->price;
-                        if (!empty($value->product_image)) {
-                            $temp['Product_image'] = url('assets/upload/products/' . $value->product_image);
-                        } else {
-                            $temp['Product_image'] = '';
-                        }
-                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
-                        if (isset($exists)) {
-                            $temp['isLike'] = 1;
-                        } else {
-                            $temp['isLike'] = 0;
-                        }
-                        $temp['title'] = $value->name;
-                        $temp['content_creator_name'] = isset($value->added_name) ? $value->added_name : '';
-                        $temp['content_creator_category'] = '';
-                        $temp['content_creator_id'] = '';
-                    }
-                    $temp['id'] = $value->id;
-                    $temp['description'] = $value->description;
-                    $temp['tags'] = $value->tags;
-                    $temp['status'] = $value->status;
-                    $temp['rating'] = 4.6;
-                    $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
-                    $response[] = $temp;
+            if($user_id)
+            {
+                $validator = Validator::make($request->all(), [
+                    'type' => 'required',
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
                 }
+                
+                $type = $request->type;
+                if ($type == 1) { /* 1 stand for course ,2 for product */
+                    $datas = Wishlist::where('userid', $user_id)->where('status', 1)->where('object_type', 1)->orderBy('id', 'DESC')->get();
+                } else {
+                    $datas = Wishlist::where('userid', $user_id)->where('status', 1)->where('object_type', 2)->orderBy('id', 'DESC')->get();
+                }
+    
+                $response = array();
+                if (isset($datas)) {
+                    foreach ($datas as $keys => $item) {
+                        if ($type == 1) { /* 1 stand for course ,2 for product */
+                            $value = Course::leftJoin('users', function($join) {
+                                $join->on('course.admin_id', '=', 'users.id');
+                            })
+                            ->where('course.status', 1)->where('course.id', $item->object_id)->orderBy('id', 'DESC')->first();
+                            $temp['course_fee'] = $value->course_fee;
+                            $temp['valid_upto'] = $value->valid_upto;
+                            if (!empty($value->certificates)) {
+                                $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                            } else {
+                                $temp['certificates_image'] = '';
+                            }
+                            if (!empty($value->introduction_image)) {
+                                $temp['introduction_image'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                            } else {
+                                $temp['introduction_image'] = '';
+                            }
+                            $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
+                            if (isset($exists)) {
+                                $temp['isLike'] = 1;
+                            } else {
+                                $temp['isLike'] = 0;
+                            }
+                            $temp['title'] = $value->title;
+                            $temp['content_creator_name'] = isset($value->admin_name) ? $value->admin_name : '';
+                            $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
+                            $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
+                        } else {
+                            $value = Product::where('status', 1)->where('id', $item->object_id)->orderBy('id', 'DESC')->first();
+                            $temp['price'] = $value->price;
+                            if (!empty($value->product_image)) {
+                                $temp['Product_image'] = url('upload/products/' . $value->product_image);
+                            } else {
+                                $temp['Product_image'] = '';
+                            }
+                            $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
+                            if (isset($exists)) {
+                                $temp['isLike'] = 1;
+                            } else {
+                                $temp['isLike'] = 0;
+                            }
+                            $temp['title'] = $value->name;
+                            $temp['content_creator_name'] = isset($value->added_name) ? $value->added_name : '';
+                            $temp['content_creator_category'] = '';
+                            $temp['content_creator_id'] = '';
+                        }
+                        $temp['id'] = $value->id;
+                        $temp['description'] = $value->description;
+                        $temp['tags'] = $value->tags;
+                        $temp['status'] = $value->status;
+                        $temp['rating'] = 4.6;
+                        $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
+                        $response[] = $temp;
+                    }
+                }
+                if ($type == 1) {
+                    return response()->json(['status' => true, 'message' => 'Course Listing', 'data' => $response]);
+                } else {
+                    return response()->json(['status' => true, 'message' => 'Product Listing', 'data' => $response]);
+                }
+            }else{
+                return response()->json(['status' => false, 'Message' => 'Please login']);
             }
-            if ($type == 1) {
-                return response()->json(['status' => true, 'message' => 'Course Listing', 'data' => $response]);
-            } else {
-                return response()->json(['status' => true, 'message' => 'Product Listing', 'data' => $response]);
-            }
-
-
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -396,20 +407,23 @@ class ApiController extends Controller
     {
         try {
             $user_id = Auth::user();
-            $category = Category::where('cat_status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
-            $response = array();
-            if (isset($category)) {
-                foreach ($category as $keys => $item) {
-                    $temp['id'] = $item->id;
-                    $temp['admin_id'] = $item->admin_id;
-                    $temp['category_name'] = $item->title;
-                    $temp['category_image'] = $item->description;
-                    $temp['status'] = $item->cat_status;
-                    $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
-                    $response[] = $temp;
+            if ($user_id) {
+                $category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
+                $response = array();
+                if (isset($category)) {
+                    foreach ($category as $keys => $item) {
+                        $temp['id'] = $item->id;
+                        $temp['category_name'] = $item->name;
+                        $temp['category_image'] = url('upload/category-image/' .$item->icon);
+                        $temp['status'] = $item->status;
+                        $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
+                        $response[] = $temp;
+                    }
                 }
+                return response()->json(['status' => true, 'message' => 'Category Listing', 'data' => $response]);
+            } else {
+                return response()->json(['status' => false, 'Message' => 'Please login']);
             }
-            return response()->json(['status' => true, 'message' => 'Category Listing', 'data' => $response]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -424,11 +438,11 @@ class ApiController extends Controller
                 $datas = array();
                 if ($request->has('query')) {
                     $search = $request->q;
-                    $datas = Category::where('category_name', 'LIKE', "%$search%")
+                    $datas = Category::where('name', 'LIKE', "%$search%")
                         ->where('cat_status', 1)
                         ->get();
                 } else {
-                    $datas = Category::where('cat_status', 1)->get();
+                    $datas = Category::where('status', 1)->get();
                 }
                 return response()->json(['status' => true, 'message' => 'Category Listing', 'data' => $datas]);
             } else {
@@ -694,6 +708,7 @@ class ApiController extends Controller
         }
     }
 
+    /*Listing of Course & Product*/
     public function all_type_listing(Request $request)
     {
         try {
@@ -875,7 +890,7 @@ class ApiController extends Controller
         }
     }
 
-    public function like_object_type(Request $request)
+    public function add_wishlist(Request $request)
     {
         try {
             $user = Auth::user();
@@ -885,7 +900,6 @@ class ApiController extends Controller
                     /* Type for 1 = Course, 2:Product (Object Type)*/
                     'id' => 'required',
                     /* Id of Course Or Product (Object ID)*/
-                    'status' => 'required'
                 ]);
                 if ($validator->fails()) {
                     return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
@@ -893,27 +907,56 @@ class ApiController extends Controller
                 $u_id = $user->id;
                 $item_id = $request->id;
                 $item_type = $request->type;
-                $status = $request->status;
-                $exist = Like::where('reaction_by', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->first();
+                $status = 1;
+                $exist = Wishlist::where('userid', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->first();
                 /* Status check for liked post 1 = Already liked , 2 = Create new liked post */
                 if ($exist) {
-                    if ($status == 1) {
-                        return response()->json(['status' => 0, 'Message' => 'Already favourites',]);
-                    } else {
-                        DB::table('user_reaction')->where('reaction_by', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->delete();
-                        return response()->json(['status' => 1, 'Message' => 'Removed to favourites',]);
-                    }
+                    return response()->json(['status' => false, 'Message' => 'Already favourites',]);
                 } else {
-                    $data = DB::table('user_reaction')->insert([
+                    $data = DB::table('user_wishlist')->insert([
                         'object_id' => (int) $item_id,
                         'object_type' => (int) $item_type,
-                        'reaction_by' => (int) $u_id,
-                        'reaction_type' => $status,
+                        'userid' => (int) $u_id,
+                        'status' => $status,
                     ]);
-                    return response()->json(['status' => 1, 'Message' => 'Added to favourites',]);
+                    return response()->json(['status' => true, 'Message' => 'Added to favourites',]);
                 }
             } else {
-                return response()->json(['status' => 0, 'Message' => 'Please login']);
+                return response()->json(['status' => false, 'Message' => 'Please login']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function remove_wishlist(Request $request)
+    {
+        try {
+            $user = Auth::user();
+            if ($user->id) {
+                $validator = Validator::make($request->all(), [
+                    'type' => 'required',
+                    /* Type for 1 = Course, 2:Product (Object Type)*/
+                    'id' => 'required',
+                    /* Id of Course Or Product (Object ID)*/
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+                }
+                $u_id = $user->id;
+                $item_id = $request->id;
+                $item_type = $request->type;
+                $status = 0;
+                $exist = Wishlist::where('userid', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->first();
+                /* Status check for liked post 1 = Already liked , 2 = Create new liked post */
+                if ($exist) {
+                    Wishlist::where('userid', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->delete();
+                    return response()->json(['status' => true, 'Message' => 'Removed to favourites',]);
+                } else {
+                    return response()->json(['status' => false, 'Message' => 'Something went wrong.',]);
+                }
+            } else {
+                return response()->json(['status' => false, 'Message' => 'Please login']);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -999,53 +1042,6 @@ class ApiController extends Controller
                     ]);
                 } else {
                     return response()->json(['status' => false, 'Message' => 'No data', 'review_list' => []]);
-                }
-            } else {
-                return response()->json(['status' => false, 'Message' => 'Please login']);
-            }
-        } catch (\Exception $e) {
-            return errorMsg("Exception -> " . $e->getMessage());
-        }
-    }
-
-    public function top_category(Request $request)
-    {
-        try {
-            $user_id = Auth::user()->id;
-            if ($user_id) {
-                $type = $request->type;
-                if ($type == 1) { /* 1 stand for course ,2 for product */
-                    $datas = Course::leftJoin('users', function($join) {
-                        $join->on('course.admin_id', '=', 'users.id');
-                    })
-                    ->where('course.status', 1)->orderBy('course.id', 'DESC')->limit(2)->get();
-                } else {
-                    $datas = Product::where('status', 1)->orderBy('id', 'DESC')->get();
-                }
-
-                $response = array();
-                if (isset($datas)) {
-                    foreach ($datas as $keys => $item) {
-                        $temp['id'] = $item->id;
-                        $temp['admin_id'] = $item->admin_id;
-                        $temp['title'] = $item->title;
-                        $temp['description'] = $item->description;
-                        $temp['course_fee'] = $item->course_fee;
-                        $temp['tags'] = $item->tags;
-                        $temp['valid_upto'] = $item->valid_upto;
-                        $temp['certificates_image'] = $item->certificates;
-                        $temp['introduction_image'] = $item->introduction_image;
-                        $temp['status'] = $item->status;
-                        $temp['rating'] = 4.6;
-                        $temp['is_like'] = 1;
-                        $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
-                        $response[] = $temp;
-                    }
-                }
-                if ($type == 1) {
-                    return response()->json(['status' => true, 'message' => 'Course Listing', 'data' => $response]);
-                } else {
-                    return response()->json(['status' => true, 'message' => 'Product Listing', 'data' => $response]);
                 }
             } else {
                 return response()->json(['status' => false, 'Message' => 'Please login']);

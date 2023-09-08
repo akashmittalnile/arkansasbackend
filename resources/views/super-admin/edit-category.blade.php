@@ -32,7 +32,7 @@
                                             <div class="form-group">
                                                 <h4>Category Name</h4>
                                                 <input type="text" class="form-control" name="category_name"
-                                                    placeholder="Category Name" id="category_name" value="{{ $data->category_name }}" required>
+                                                    placeholder="Category Name" id="category_name" value="{{ $data->name }}" required>
                                             </div>
                                         </div>
 
@@ -40,8 +40,8 @@
                                             <div class="form-group">
                                                 <h4>Category Status</h4>
                                                 <select class="form-control" name="cat_status" id="cat_status" required>
-                                                    <option value="1" @if ($data->cat_status == 1) selected='selected' @else @endif>Active</option>
-                                                    <option value="0" @if ($data->cat_status == 0) selected='selected' @else @endif>Inactive</option>
+                                                    <option value="1" @if ($data->status == 1) selected='selected' @else @endif>Active</option>
+                                                    <option value="0" @if ($data->status == 0) selected='selected' @else @endif>Inactive</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -63,8 +63,8 @@
                                                         <span
                                                             class="text-danger text-left">{{ $errors->first('category_image') }}</span>
                                                     @endif
-                                                    @if (!empty($data->category_image))
-                                                        <a href="{{ url('upload/category-image/'.$data->category_image)}}" target="_blank"><i class="las la-image"></i></a>
+                                                    @if (!empty($data->icon))
+                                                        <a href="{{ url('upload/category-image/'.$data->icon)}}" target="_blank"><i class="las la-image"></i></a>
                                                     @endif
                                                 </div>
                                             </div>

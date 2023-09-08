@@ -497,9 +497,9 @@ class SuperAdminController extends Controller
             }
             
             $Category = new Category;
-            $Category->category_name = $request->category_name;
-            $Category->category_image =  $imageName;
-            $Category->cat_status = $request->cat_status;
+            $Category->name = $request->category_name;
+            $Category->icon =  $imageName;
+            $Category->status = $request->cat_status;
             $Category->save();
             return redirect('/super-admin/category')->with('message','Category created successfully');
         } catch (\Exception $e) {
@@ -511,7 +511,7 @@ class SuperAdminController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                //'category_image' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
+                'category_image' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
                 'cat_status' => 'required',
             ]);
 
@@ -528,14 +528,14 @@ class SuperAdminController extends Controller
                     $imageName = $imageName;
                     $category_image = public_path() . '/upload/category-image/'. $Category->category_image;
                     unlink($category_image);
-                    $Category->category_image =  $imageName;
+                    $Category->icon =  $imageName;
                 }else{
                     $imageName = '';
                 }
             }
             
-            $Category->category_name = $request->category_name;
-            $Category->cat_status = $request->cat_status;
+            $Category->name = $request->category_name;
+            $Category->status = $request->cat_status;
             $Category->save();
             return redirect('/super-admin/category')->with('message','Category updated successfully');
         } catch (\Exception $e) {
