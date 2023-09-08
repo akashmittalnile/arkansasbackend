@@ -18,7 +18,7 @@ class HomeController extends Controller
     public function check_status(Request $request) 
     {
         $user = User::where('email',$request['admin_email'])->first();
-        if(!empty($user))
+        if($user)
         {
             if($user->status == 0)
             {

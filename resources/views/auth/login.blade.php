@@ -110,8 +110,7 @@
             $('#LoginCheck').click(function(event){
                 var admin_email = $('input[name="email"]').val();
                 $.ajax({
-                    //url: "{{ route('admin.check_status') }}",
-                    url: 'https://nileprojects.in/arkansas/public/check_status',
+                    url: "{{ route('admin.check_status') }}",
                     method: 'GET',
                     data: {
                         admin_email: admin_email,
