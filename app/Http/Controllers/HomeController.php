@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Models\User;
 use App\Models\CourseChapter;
 use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
@@ -14,6 +15,24 @@ use PDO;
 
 class HomeController extends Controller
 {
+    public function check_status(Request $request) 
+    {
+        $user = User::where('email',$request['admin_email'])->first();
+        if(!empty($user))
+        {
+            if($user->status == 0)
+            {
+                $status = 1;
+            }else{
+                $status = 0;
+            }
+            
+        }else{
+            $status = 0;
+        }
+        return $status;
+    }
+
     public function index() 
     {
         $admin_id = Auth::user()->id;
@@ -45,7 +64,7 @@ class HomeController extends Controller
             $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->get();
         }
         
-        return view('home.addcourse2',compact('quizes','datas','chapters','courseID','chapterID'));
+        return view('home.addcourse2-new',compact('quizes','datas','chapters','courseID','chapterID'));
     }
 
     public function course_list($courseID,$chapterID) 
@@ -462,7 +481,10 @@ class HomeController extends Controller
             $course_id = CourseChapter::where('id',$id)->first();
             $encrypt = encrypt_decrypt('encrypt',$course_id->course_id);
             CourseChapter::where('id',$id)->delete();
-            return redirect('admin/addcourse2/'.$encrypt)->with('message','Chapter deleted successfully');
+            $chapter = CourseChapter::where('course_id',$course_id->course_id)->orderByDesc('id')->first();
+            if(isset($chapter->id)) $chapterID = encrypt_decrypt('encrypt',$chapter->id);
+            else $chapterID = "";
+            return redirect('admin/addcourse2/'.$encrypt.'/'.$chapterID)->with('message','Chapter deleted successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -471,16 +493,17 @@ class HomeController extends Controller
     public function delete_video($id) 
     {
         try {
-            $value = ChapterQuiz::where('id',$id)->first();
-            $courseID = encrypt_decrypt('encrypt',$value->course_id);
-            $chapterID = encrypt_decrypt('encrypt',$value->chapter_id);
+            $value = CourseChapterStep::where('id',$id)->first();
+            $chapterID = encrypt_decrypt('encrypt',$value->course_chapter_id);
+            $courseID = CourseChapter::where('id',$value->course_chapter_id)->first();
+            $courseID = encrypt_decrypt('encrypt',$courseID->course_id);
 
-            $quiz = ChapterQuiz::where('id',$id)->first();
-            $image_name = $quiz->file;
+            $quiz = CourseChapterStep::where('id',$id)->first();
+            $image_name = $quiz->details;
             $image_path = public_path('upload/course/'.$image_name);
             if(File::exists($image_path)) {
-                ChapterQuiz::where('id',$id)->update([
-                    'file' => null,
+                CourseChapterStep::where('id',$id)->update([
+                    'details' => null,
                     ]);
                 File::delete($image_path);
             }
@@ -493,16 +516,17 @@ class HomeController extends Controller
     public function delete_pdf($id) 
     {
         try {
-            $value = ChapterQuiz::where('id',$id)->first();
-            $courseID = encrypt_decrypt('encrypt',$value->course_id);
-            $chapterID = encrypt_decrypt('encrypt',$value->chapter_id);
+            $value = CourseChapterStep::where('id',$id)->first();
+            $chapterID = encrypt_decrypt('encrypt',$value->course_chapter_id);
+            $courseID = CourseChapter::where('id',$value->course_chapter_id)->first();
+            $courseID = encrypt_decrypt('encrypt',$courseID->course_id);
 
-            $quiz = ChapterQuiz::where('id',$id)->first();
-            $image_name = $quiz->file;
+            $quiz = CourseChapterStep::where('id',$id)->first();
+            $image_name = $quiz->details;
             $image_path = public_path('upload/course/'.$image_name);
             if(File::exists($image_path)) {
-                ChapterQuiz::where('id',$id)->update([
-                    'file' => null,
+                CourseChapterStep::where('id',$id)->update([
+                    'details' => null,
                     ]);
                 File::delete($image_path);
             }

@@ -5,7 +5,7 @@ $('.edit-question-first').on('click', function () {
     let selector = '.' + question_param + question_id;
     var question = $(selector).val();
     $.ajax({
-        url: arkansasUrl + '/super-admin/update-question-list',
+        url: arkansasUrl + '/admin/update_question_list',
         method: 'GET',
         data: {
             question_id: question_id,
@@ -178,7 +178,7 @@ $('.edit-option').on('click', function () {
     let selector = '.' + option_param + option_id;
     var option = $(selector).val();
     $.ajax({
-        url: arkansasUrl + '/super-admin/update-option-list',
+        url: arkansasUrl + '/admin/update_option_list',
         method: 'GET',
         data: {
             option_id: option_id,
@@ -207,7 +207,7 @@ $(document).on('click', '.SaveOption', function () {
         else return 0;
     }).get();
     $.ajax({
-        url: arkansasUrl + '/super-admin/add-option',
+        url: arkansasUrl + '/admin/add-option',
         method: 'GET',
         data: {
             quiz_id,
@@ -232,7 +232,7 @@ $(document).on('change', '.ordering-select-function', function () {
     var chapterid = $(this).attr("data-chapter-id");
     var val = $(this).val();
     $.ajax({
-        url: arkansasUrl + '/super-admin/change-ordering/' + chapterid + '/' + id + '/' + val,
+        url: arkansasUrl + '/admin/change-ordering/' + chapterid + '/' + id + '/' + val,
         method: 'GET',
         dataType: 'json',
         headers: {
@@ -253,7 +253,7 @@ $(document).on('change', '.answerEditCheckbox', function () {
     if(val) val = 1;
     else val = 0;
     $.ajax({
-        url: arkansasUrl + '/super-admin/change-answer-option/' + id + '/' + val,
+        url: arkansasUrl + '/admin/change-answer-option/' + id + '/' + val,
         method: 'GET',
         dataType: 'json',
         headers: {
