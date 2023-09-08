@@ -31,7 +31,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('trending-course', [ApiController::class, "trending_course"]);
     Route::post('wishlist-listing', [ApiController::class, "wishlist_listing"]);
     Route::get('all-category', [ApiController::class, "all_category"]);
-    Route::post('object-type-details', [ApiController::class, "object_type_details"]);
+    Route::post('object-type-details', [ApiController::class, "object_type_details"]);/*Course details & Product details*/
     Route::post('top-category', [ApiController::class, "top_category"]);
     Route::post('all-type-listing', [ApiController::class, "all_type_listing"]);
     Route::post('suggested-list', [ApiController::class, "suggested_list"]);
@@ -48,7 +48,21 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('save-card-listing', [ApiController::class, "save_card_listing"]);
     Route::post('add-card', [ApiController::class, "add_card"]);
     Route::post('delete-card', [ApiController::class,"delete_card"]);
-    
+
+    Route::post('search-category', [ApiController::class,"search_category"]);
+    Route::post('search-object-type-all', [ApiController::class,"search_object_type_all"]);
+    Route::post('search-object-type-treending', [ApiController::class,"search_object_type_trending"]);
+    Route::post('search-object-type-suggest', [ApiController::class,"search_object_type_suggest"]);
+    Route::post('add-to-cart', [ApiController::class, "add_to_cart"]);
     Route::post('cart-list', [ApiController::class, "cart_list"]);
-    Route::post('cart-details', [ApiController::class, "cart_details"]);
+    Route::post('cart-details-payment', [ApiController::class, "cart_details_payment_page"]);
+
+    Route::post('coupon-list', [ApiController::class, "coupon_list"]);
+    // Route::post('applyed-coupon', [ApiController::class, "applyed_coupon"]);
+    // Route::post('remove-coupon', [ApiController::class, "remove_coupon"]);
+    // Route::post('remove-cart-list', [ApiController::class, "remove-cart-list"]);
+
+    Route::post('save-order', [ApiController::class, "save_order"]);
+
+
 });

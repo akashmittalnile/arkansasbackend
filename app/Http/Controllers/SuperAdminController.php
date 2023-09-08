@@ -12,6 +12,7 @@ use App\Models\CourseChapterStep;
 use App\Models\Tag;
 use App\Models\Product;
 use App\Models\Category;
+use Auth;
 use Illuminate\Support\Facades\Validator;
 use VideoThumbnail;
 use Illuminate\Support\Facades\File;
@@ -557,6 +558,7 @@ class SuperAdminController extends Controller
             return $e->getMessage();
         }
     }
+    
     public function student_detail($id) 
     {
         try {
@@ -923,11 +925,6 @@ class SuperAdminController extends Controller
         } catch (\Exception $e) {
             return $e->getMessage();
         }
-    }
-
-    public function coupons() 
-    {
-        return view('super-admin.coupons');
     }
 
 }
