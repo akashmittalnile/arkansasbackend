@@ -15,6 +15,7 @@ use App\Models\CardDetails;
 use App\Models\Notification;
 use App\Models\AddToCart;
 use App\Models\Coupon;
+use App\Models\ProductAttibutes;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
@@ -38,9 +39,15 @@ class ApiController extends Controller
             foreach ($trending_courses as $k => $data) {
                 $b1['id'] = isset($data->id) ? $data->id : '';
                 $b1['title'] = isset($data->title) ? $data->title : '';
-                $b1['content_creator_name'] = isset($data->admin_name) ? $data->admin_name : '';
+                $b1['content_creator_name'] = $data->first_name.' '.$data->last_name;
                 $b1['content_creator_category'] = isset($data->category_name) ? $data->category_name : '';
                 $b1['content_creator_id'] = isset($data->admin_id) ? $data->admin_id : '';
+                if ($data->profile_image) {
+                    $profile_image = url('upload/profile-image/'.$data->profile_image);
+                } else {
+                    $profile_image = '';
+                }
+                $b1['content_creator_image'] = $profile_image;
                 $b1['description'] = isset($data->description) ? $data->description : '';
                 $b1['admin_id'] = isset($data->admin_id) ? $data->admin_id : '';
                 $b1['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
@@ -55,9 +62,9 @@ class ApiController extends Controller
                     $b1['certificates_image'] = '';
                 }
                 if (!empty($data->introduction_image)) {
-                    $b1['introduction_image'] = url('upload/disclaimers-introduction/' . $data->introduction_image);
+                    $b1['introduction_video'] = url('upload/disclaimers-introduction/' . $data->introduction_image);
                 } else {
-                    $b1['introduction_image'] = '';
+                    $b1['introduction_video'] = '';
                 }
                 $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 1)->first();
                 if (isset($exists)) {
@@ -97,9 +104,16 @@ class ApiController extends Controller
             foreach ($suggested_courses as $k => $data) {
                 $b3['id'] = isset($data->id) ? $data->id : '';
                 $b3['title'] = isset($data->title) ? $data->title : '';
-                $b3['content_creator_name'] = isset($data->admin_name) ? $data->admin_name : '';
+                
                 $b3['content_creator_category'] = isset($data->category_name) ? $data->category_name : '';
                 $b3['content_creator_id'] = isset($data->admin_id) ? $data->admin_id : '';
+                if ($data->profile_image) {
+                    $profile_image = url('upload/profile-image/'.$data->profile_image);
+                } else {
+                    $profile_image = '';
+                }
+                $b3['content_creator_image'] = $profile_image;
+                $b3['content_creator_name'] = $data->first_name.' '.$data->last_name;
                 $b3['description'] = isset($data->description) ? $data->description : '';
                 $b3['admin_id'] = isset($data->admin_id) ? $data->admin_id : '';
                 $b3['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
@@ -114,9 +128,9 @@ class ApiController extends Controller
                     $b3['certificates_image'] = '';
                 }
                 if (!empty($data->introduction_image)) {
-                    $b3['introduction_image'] = url('upload/disclaimers-introduction/' . $data->introduction_image);
+                    $b3['introduction_video'] = url('upload/disclaimers-introduction/' . $data->introduction_image);
                 } else {
-                    $b3['introduction_image'] = '';
+                    $b3['introduction_video'] = '';
                 }
                 $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 1)->first();
                 if (isset($exists)) {
@@ -132,19 +146,20 @@ class ApiController extends Controller
             $AllProducts = array();
             foreach ($all_products as $k => $data) {
                 $b4['id'] = isset($data->id) ? $data->id : '';
-                $b4['title'] = isset($data->title) ? $data->name : '';
-                $b4['description'] = isset($data->description) ? $data->description : '';
-                $b4['admin_id'] = isset($data->admin_id) ? $data->admin_id : '';
-                $b4['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
+                $b4['title'] = isset($data->name) ? $data->name : '';
+                $b4['description'] = isset($data->product_desc) ? $data->product_desc : '';
+                $b4['admin_id'] = isset($data->added_by) ? $data->added_by : '';
+                $b4['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
                 $b4['rating'] = 4.6;
                 $b4['price'] = $data->price;
                 $b4['status'] = $data->status;
-                if (!empty($data->product_image)) {
-                    $b4['Product_image'] = url('upload/products/' . $data->product_image);
-                } else {
-                    $b4['Product_image'] = '';
+                $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                $datas_image = array();
+                foreach ($all_products_image as $k => $val) {
+                    $datasImage = url('upload/products/' . $val->attribute_value);
+                    $datas_image[] = $datasImage;
                 }
-
+                $b4['Product_image'] = $datas_image;
                 $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 2)->first();
                 if (isset($exists)) {
                     $b4['isLike'] = 1;
@@ -166,11 +181,13 @@ class ApiController extends Controller
                 $b5['rating'] = 4.6;
                 $b5['price'] = $data->price;
                 $b5['status'] = $data->status;
-                if (!empty($data->product_image)) {
-                    $b5['Product_image'] = url('upload/products/' . $data->product_image);
-                } else {
-                    $b5['Product_image'] = '';
+                $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                $datas_image = array();
+                foreach ($all_products_image as $k => $val) {
+                    $datasImage = url('upload/products/' . $val->attribute_value);
+                    $datas_image[] = $datasImage;
                 }
+                $b5['Product_image'] = $datas_image;
                 $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 2)->first();
                 if (isset($exists)) {
                     $b5['isLike'] = 1;
@@ -247,9 +264,9 @@ class ApiController extends Controller
                                 $temp['certificates_image'] = '';
                             }
                             if (!empty($value->introduction_image)) {
-                                $temp['introduction_image'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                                $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
                             } else {
-                                $temp['introduction_image'] = '';
+                                $temp['introduction_video'] = '';
                             }
                             $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
                             if (isset($exists)) {
@@ -258,17 +275,25 @@ class ApiController extends Controller
                                 $temp['isLike'] = 0;
                             }
                             $temp['title'] = $value->title;
-                            $temp['content_creator_name'] = isset($value->admin_name) ? $value->admin_name : '';
+                            if ($value->profile_image) {
+                                $profile_image = url('upload/profile-image/'.$value->profile_image);
+                            } else {
+                                $profile_image = '';
+                            }
+                            $temp['content_creator_image'] = $profile_image;
+                            $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
                             $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
                             $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
                         } else {
                             $value = Product::where('status', 1)->where('id', $item->object_id)->orderBy('id', 'DESC')->first();
                             $temp['price'] = $value->price;
-                            if (!empty($value->product_image)) {
-                                $temp['Product_image'] = url('upload/products/' . $value->product_image);
-                            } else {
-                                $temp['Product_image'] = '';
+                            $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                            $datas_image = array();
+                            foreach ($all_products_image as $k => $val) {
+                                $datasImage = url('upload/products/' . $val->attribute_value);
+                                $datas_image[] = $datasImage;
                             }
+                            $temp['Product_image'] = $datas_image;
                             $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
                             if (isset($exists)) {
                                 $temp['isLike'] = 1;
@@ -337,14 +362,14 @@ class ApiController extends Controller
                     $temp['tags'] = $item->tags;
                     $temp['valid_upto'] = $item->valid_upto;
                     if (!empty($item->certificates)) {
-                        $temp['certificates_image'] = url('assets/upload/course-certificates/' . $item->certificates);
+                        $temp['certificates_image'] = url('upload/course-certificates/' . $item->certificates);
                     } else {
                         $temp['certificates_image'] = '';
                     }
-                    if (!empty($value->introduction_image)) {
-                        $temp['introduction_image'] = url('assets/upload/disclaimers-introduction/' . $item->introduction_image);
+                    if (!empty($item->introduction_image)) {
+                        $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $item->introduction_image);
                     } else {
-                        $temp['introduction_image'] = '';
+                        $temp['introduction_video'] = '';
                     }
                     $temp['status'] = $item->status;
                     $temp['rating'] = 4.6;
@@ -386,11 +411,17 @@ class ApiController extends Controller
                     $temp['tags'] = $item->tags;
                     $temp['valid_upto'] = $item->valid_upto;
                     $temp['certificates_image'] = $item->certificates;
-                    $temp['introduction_image'] = $item->introduction_image;
+                    $temp['introduction_video'] = $item->introduction_image;
                     $temp['status'] = $item->status;
                     $temp['rating'] = 4.6;
                     $temp['is_like'] = 1;
-                    $temp['content_creator_name'] = isset($iten->admin_name) ? $item->admin_name : '';
+                    if ($item->profile_image) {
+                        $profile_image = url('upload/profile-image/'.$item->profile_image);
+                    } else {
+                        $profile_image = '';
+                    }
+                    $temp['content_creator_image'] = $profile_image;
+                    $temp['content_creator_name'] = $item->first_name.' '.$item->last_name;
                     $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
                     $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
@@ -650,14 +681,14 @@ class ApiController extends Controller
                         $temp['course_fee'] = $value->course_fee;
                         $temp['valid_upto'] = $value->valid_upto;
                         if (!empty($value->certificates)) {
-                            $temp['certificates_image'] = url('assets/upload/course-certificates/' . $value->certificates);
+                            $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
                         } else {
                             $temp['certificates_image'] = '';
                         }
                         if (!empty($value->introduction_image)) {
-                            $temp['introduction_image'] = url('assets/upload/disclaimers-introduction/' . $value->introduction_image);
+                            $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
                         } else {
-                            $temp['introduction_image'] = '';
+                            $temp['introduction_video'] = '';
                         }
                         $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
                         if (isset($exists)) {
@@ -666,16 +697,24 @@ class ApiController extends Controller
                             $temp['isLike'] = 0;
                         }
                         $temp['title'] = $value->title;
-                        $temp['content_creator_name'] = isset($value->admin_name) ? $value->admin_name : '';
+                        if ($value->profile_image) {
+                            $profile_image = url('upload/profile-image/'.$value->profile_image);
+                        } else {
+                            $profile_image = '';
+                        }
+                        $temp['content_creator_image'] = $profile_image;
+                        $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
                         $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
                         $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
                     } else {
                         $temp['price'] = $value->price;
-                        if (!empty($value->product_image)) {
-                            $temp['Product_image'] = url('assets/upload/products/' . $value->product_image);
-                        } else {
-                            $temp['Product_image'] = '';
+                        $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                        $datas_image = array();
+                        foreach ($all_products_image as $k => $val) {
+                            $datasImage = url('upload/products/' . $val->attribute_value);
+                            $datas_image[] = $datasImage;
                         }
+                        $temp['Product_image'] = $datas_image;
                         $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
                         if (isset($exists)) {
                             $temp['isLike'] = 1;
@@ -737,14 +776,14 @@ class ApiController extends Controller
                         $temp['course_fee'] = $value->course_fee;
                         $temp['valid_upto'] = $value->valid_upto;
                         if (!empty($value->certificates)) {
-                            $temp['certificates_image'] = url('assets/upload/course-certificates/' . $value->certificates);
+                            $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
                         } else {
                             $temp['certificates_image'] = '';
                         }
                         if (!empty($value->introduction_image)) {
-                            $temp['introduction_image'] = url('assets/upload/disclaimers-introduction/' . $value->introduction_image);
+                            $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
                         } else {
-                            $temp['introduction_image'] = '';
+                            $temp['introduction_video'] = '';
                         }
                         $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
                         if (isset($exists)) {
@@ -753,16 +792,24 @@ class ApiController extends Controller
                             $temp['isLike'] = 0;
                         }
                         $temp['title'] = $value->title;
-                        $temp['content_creator_name'] = isset($value->admin_name) ? $value->admin_name : '';
+                        if ($value->profile_image) {
+                            $profile_image = url('upload/profile-image/'.$value->profile_image);
+                        } else {
+                            $profile_image = '';
+                        }
+                        $temp['content_creator_image'] = $profile_image;
+                        $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
                         $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
                         $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
                     } else {
                         $temp['price'] = $value->price;
-                        if (!empty($value->product_image)) {
-                            $temp['Product_image'] = url('assets/upload/products/' . $value->product_image);
-                        } else {
-                            $temp['Product_image'] = '';
+                        $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                        $datas_image = array();
+                        foreach ($all_products_image as $k => $val) {
+                            $datasImage = url('upload/products/' . $val->attribute_value);
+                            $datas_image[] = $datasImage;
                         }
+                        $temp['Product_image'] = $datas_image;
                         $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
                         if (isset($exists)) {
                             $temp['isLike'] = 1;
@@ -825,14 +872,14 @@ class ApiController extends Controller
                         $temp['course_fee'] = $item->course_fee;
                         $temp['valid_upto'] = $item->valid_upto;
                         if (!empty($item->certificates)) {
-                            $temp['certificates_image'] = url('assets/upload/course-certificates/' . $item->certificates);
+                            $temp['certificates_image'] = url('upload/course-certificates/' . $item->certificates);
                         } else {
                             $temp['certificates_image'] = '';
                         }
                         if (!empty($item->introduction_image)) {
-                            $temp['introduction_image'] = url('assets/upload/disclaimers-introduction/' . $item->introduction_image);
+                            $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $item->introduction_image);
                         } else {
-                            $temp['introduction_image'] = '';
+                            $temp['introduction_video'] = '';
                         }
                         $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 1)->first();
                         if (isset($exists)) {
@@ -841,16 +888,24 @@ class ApiController extends Controller
                             $temp['isLike'] = 0;
                         }
                         $temp['title'] = $item->title;
-                        $temp['content_creator_name'] = isset($item->admin_name) ? $item->admin_name : '';
+                        if ($item->profile_image) {
+                            $profile_image = url('upload/profile-image/'.$item->profile_image);
+                        } else {
+                            $profile_image = '';
+                        }
+                        $temp['content_creator_image'] = $profile_image;
+                        $temp['content_creator_name'] = $item->first_name.' '.$item->last_name;
                         $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
                         $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                     } else {
                         $temp['price'] = $item->price;
-                        if (!empty($item->product_image)) {
-                            $temp['Product_image'] = url('assets/upload/products/' . $item->product_image);
-                        } else {
-                            $temp['Product_image'] = '';
+                        $all_products_image = ProductAttibutes::where('product_id', $item->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                        $datas_image = array();
+                        foreach ($all_products_image as $k => $val) {
+                            $datasImage = url('upload/products/' . $val->attribute_value);
+                            $datas_image[] = $datasImage;
                         }
+                        $temp['Product_image'] = $datas_image;
                         $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 2)->first();
                         if (isset($exists)) {
                             $temp['isLike'] = 1;
@@ -1064,7 +1119,7 @@ class ApiController extends Controller
                     $temp['last_name'] = ucfirst($user->last_name);
                     $temp['phone'] = $user->phone;
                     if ($user->profile_image) {
-                        $temp['profile_image'] = url('assets/upload/profile-image/' . $user->profile_image);
+                        $temp['profile_image'] = url('upload/profile-image/' . $user->profile_image);
                     } else {
                         $temp['profile_image'] = url('assets/superadmin-images/no-image.png');
                     }
@@ -1166,7 +1221,7 @@ class ApiController extends Controller
                         $temp['type'] = $item->type;
                         $temp['is_read'] = $item->is_read;
                         if ($item->image) {
-                            $temp['image'] = url('assets/upload/notification-image/' . $item->image);
+                            $temp['image'] = url('upload/notification-image/' . $item->image);
                         } else {
                             $temp['image'] = '';
                         }
@@ -1201,9 +1256,9 @@ class ApiController extends Controller
 
                         $card_type = $value->card_type;
                         if ($card_type == 'VISA') {
-                            $temp['card_image'] = url('assets/upload/notification-image/visa.png');
+                            $temp['card_image'] = url('upload/notification-image/visa.png');
                         } else {
-                            $temp['card_image'] = url('assets/upload/notification-image/m-card.png');
+                            $temp['card_image'] = url('upload/notification-image/m-card.png');
                         }
                         $response[] = $temp;
                     }
@@ -1334,6 +1389,15 @@ class ApiController extends Controller
                             $temp['added_by'] = $value->admin_id;
                             $temp['added_name'] = $value->admin_name;
                             $temp['price'] = $value->course_fee;
+                            if ($value->profile_image) {
+                                $profile_image = url('upload/profile-image/'.$value->profile_image);
+                            } else {
+                                $profile_image = '';
+                            }
+                            $temp['content_creator_image'] = $profile_image;
+                            $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
+                            $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
+                            $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                             $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
                             if (isset($exists)) {
                                 $temp['isLike'] = 1;
@@ -1352,6 +1416,13 @@ class ApiController extends Controller
                             } else {
                                 $temp['isLike'] = 0;
                             }
+                            $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                            $datas_image = array();
+                            foreach ($all_products_image as $k => $val) {
+                                $datasImage = url('upload/products/' . $val->attribute_value);
+                                $datas_image[] = $datasImage;
+                            }
+                            $temp['Product_image'] = $datas_image;
                         }
                         $temp['rating'] = 4.6;
                         $response[] = $temp;
@@ -1411,9 +1482,9 @@ class ApiController extends Controller
 
                         $card_type = $value->card_type;
                         if ($card_type == 'VISA') {
-                            $temp['card_image'] = url('assets/upload/notification-image/visa.png');
+                            $temp['card_image'] = url('upload/notification-image/visa.png');
                         } else {
-                            $temp['card_image'] = url('assets/upload/notification-image/m-card.png');
+                            $temp['card_image'] = url('upload/notification-image/m-card.png');
                         }
                         $response[] = $temp;
                     }
@@ -1452,25 +1523,20 @@ class ApiController extends Controller
             $user_id = Auth::user()->id;
             if ($user_id) {
                 $validator = Validator::make($request->all(), [
-                    'shipping_address' => 'required|string|max:255|min:1',
-                    //'transaction_id' => 'required',
-                    'amount' => 'required',
+                    'total_amout' => 'required',
+                    'card_id' => 'required',
+                    'coupon_id' => 'required'
                 ]);
                 if ($validator->fails()) {
                     return response()->json($validator->errors(), 202);
                 }
-                $user_id = $this->hasUser->id;
-                $carts = Addtocart::where('user_id', $user_id)->get();
-                $transaction_id = $request->transaction_id ? $request->transaction_id : rand(1000000000, 9999999999);
+                $carts = Addtocart::where('userid', $user_id)->get();
+                $transaction_id = rand(1000000000, 9999999999);
                 $order_no = rand(10000000, 99999999);
-                $website = Website::where('id', 1)->first();
-                $tax = $website->tax;
-                $shipping_cost = $website->shipping_cost;
-                $order_price = Addtocart::where('user_id', $user_id)->sum('total_price');
-                $extra = $tax + $shipping_cost;
-                $order_items = Addtocart::where('user_id', $user_id)->count();
-                $today = date('y:m:d');
-                $expected_date = Date('d-F-Y', strtotime('+10 days'));
+                $shipping_cost = 10;
+                $order_price = Addtocart::where('userid', $user_id)->sum('cart_value');
+                $order_items = Addtocart::where('userid', $user_id)->count();
+                $today = date('y/m/d');
                 if (!empty($request->coupon_id)) {
                     $ApplyCoupon = ApplyCoupon::where('user_id', $this->hasUser->id)->where('id', $request->coupon_id)->first();
                     $coupon_id = isset($ApplyCoupon->coupon_id) ? $ApplyCoupon->coupon_id : 0;

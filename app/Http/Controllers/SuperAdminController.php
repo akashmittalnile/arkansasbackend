@@ -17,6 +17,7 @@ use Auth;
 use Illuminate\Support\Facades\Validator;
 use VideoThumbnail;
 use Illuminate\Support\Facades\File;
+use DB;
 
 class SuperAdminController extends Controller
 {
@@ -888,7 +889,7 @@ class SuperAdminController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'category_image' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
+                'category_image' => 'image:jpeg,png,jpg,gif,svg|max:2048',
                 'cat_status' => 'required',
             ]);
 
@@ -896,24 +897,14 @@ class SuperAdminController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
            
-            $Category = Category::where('id',$request->id)->first();
             if ($request->category_image) {
                 $imageName = time().'.'.$request->category_image->extension();  
                 $request->category_image->move(public_path('upload/category-image'), $imageName);
-                if($imageName)
-                {
-                    $imageName = $imageName;
-                    $category_image = public_path() . '/upload/category-image/'. $Category->category_image;
-                    unlink($category_image);
-                    $Category->icon =  $imageName;
-                }else{
-                    $imageName = '';
-                }
+                    // $icon = public_path() . '/upload/category-image/'. $Category->icon;
+                    // unlink($icon);
+                    Category::where('id', $request->id)->update(['icon' => $imageName]);
             }
-            
-            $Category->name = $request->category_name;
-            $Category->status = $request->cat_status;
-            $Category->save();
+            Category::where('id', $request->id)->update(['name' => $request->category_name,'status'=>$request->cat_status]);
             return redirect('/super-admin/category')->with('message','Category updated successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
