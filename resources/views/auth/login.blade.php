@@ -92,7 +92,7 @@
                 <div class="modal-body">
                     <div class="becomeacreator-form-info">
                         <img src="{!! url('assets/website-images/tick-circle.svg') !!}">
-                        <h2>Great!! We have receive your Creator Enrollment request</h2>
+                        <h2>We have received your Creator Enrollment request</h2>
                         <p>Your account is under review please wait for admin to approve the request we will notify you once it is approved via email.</p>
                         <div class="becomeacreator-btn-action">
                             <a href="#" class="close-btn" data-bs-dismiss="modal" aria-label="Close">Close</a>
