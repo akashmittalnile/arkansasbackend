@@ -12,6 +12,7 @@ use App\Models\CourseChapterStep;
 use App\Models\Tag;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\ProductAttibutes;
 use Auth;
 use Illuminate\Support\Facades\Validator;
 use VideoThumbnail;
@@ -736,12 +737,12 @@ class SuperAdminController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'image' => 'required|array|min:1',
-                'image.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+                'image.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
                 'title' => 'required',
                 'price' => 'required',
                 'qnt' => 'required',
                 'description' => 'required',
-                'livesearch' => 'required',
+                //'livesearch' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -750,7 +751,17 @@ class SuperAdminController extends Controller
             
             $user = User::where('role',3)->first();
             $USERID = $user->id;
-
+            $course = Product::create([
+                'name' => $request->input('title'),
+                'product_desc' => $request->input('description'),
+                'price' => $request->input('price'),
+                'unit' => $request->input('qnt'),
+                //'tags' => $tag,
+                //'Product_image' => ($imageName)?json_encode($imageName):$imageName,
+                'status' => 1,
+                'added_by' => 1
+            ]);
+            $product_id = Product::orderBy('id','DESC')->first();
             $imageName = array();
             if ($files=$request->file('image')){
                 $type_a = false;
@@ -760,21 +771,19 @@ class SuperAdminController extends Controller
                     $name = time().'.'.$file->extension();
                     $file->move($destination, $name);
                     $profile_image_url = $name;
-                    $imageName[]= $profile_image_url;
+                    $course = ProductAttibutes::create([
+                        'product_id' => $product_id->id,
+                        'attribute_type' => 'Image',
+                        'attribute_code' => 'Image',
+                        'attribute_value' => $profile_image_url,
+                    ]);
+                    //$imageName[]= $profile_image_url;
                 }
             }
 
-            $arr_tag = $request->input('livesearch');
-            $tag = implode(",",$arr_tag);
-            $course = Product::create([
-                'title' => $request->input('title'),
-                'description' => $request->input('description'),
-                'price' => $request->input('price'),
-                'qnt' => $request->input('qnt'),
-                'tags' => $tag,
-                'Product_image' => ($imageName)?json_encode($imageName):$imageName,
-                'status' => 1,
-            ]);
+            // $arr_tag = $request->input('livesearch');
+            // $tag = implode(",",$arr_tag);
+            
             return redirect('/super-admin/products')->with('message','Product created successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
