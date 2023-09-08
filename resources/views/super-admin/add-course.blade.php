@@ -65,7 +65,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Upload Course Certificates(jpg,jpeg,png only|Size:2048)</h4>
+                                                <h4>Upload Course Certificate(jpg,jpeg,png only|Size:2048)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="certificates" accept="image/png, image/jpg, image/jpeg" id="PDF/JPEG Or PNG"
                                                         class="uploadsignature addsignature" required>
@@ -83,7 +83,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Disclaimers & Introduction(mp4 only|Size:2048)</h4>
+                                                <h4>Introduction Video(mp4 only|Size:2048)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction" accept="video/mp4"
                                                         id="Upload Training Video Or PDF / Paste Video URL Here…"
