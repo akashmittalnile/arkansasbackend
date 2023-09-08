@@ -661,6 +661,10 @@
 
     <script type="text/javascript" src="{{ asset('assets/superadmin-js/addcourse.js') }}"></script>
 
+    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
+    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">
+    <script src="{!! url('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>
+
     <!-- Style of Remove button -->
     <style>
         /* Style for the Remove Option button */
