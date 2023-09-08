@@ -57,14 +57,14 @@
                             </div>
                             <div class="creator-table-col-3">
                                 <div class="creator-table-box">
-                                    <div class="creator-table-text">Company Name</div>
-                                    <div class="creator-table-value">Xyz Solutions Pvt Ltd</div>
+                                    <div class="creator-table-text">{{ $data->email }}</div>
+                                    <!-- <div class="creator-table-value">{{ $data->email }}</div> -->
                                 </div>
                             </div>
                             <div class="creator-table-col-2">
                                 <div class="creator-table-box">
-                                    <div class="creator-table-text">Fee Settlement</div>
-                                    <div class="creator-table-value">10% Of Course Fees</div>
+                                    <div class="creator-table-text">Creator Type</div>
+                                    <div class="creator-table-value">@if($data->CreatorType == '1') Permanent Makeup Training @elseif($data->CreatorType == '2') Tattooing & Piercing Institute @endif</div>
                                 </div>
                             </div>
 
