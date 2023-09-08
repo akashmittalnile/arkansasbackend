@@ -25,7 +25,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item @if ($currentURL == 'SA.Course' || $currentURL == 'SA.AddCourse' ) active @endif">
+                <li class="nav-item @if ($currentURL == 'SA.Course' || $currentURL == 'SA.AddCourse' || $currentURL == 'SA.Course.Chapter' ) active @endif">
                     <a class="nav-link" href="{{ route('SA.Course') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/book.svg') !!}"></span>
                         <span class="menu-title">Manage Course</span>
