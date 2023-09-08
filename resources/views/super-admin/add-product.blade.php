@@ -74,10 +74,11 @@
                                                     <input type="file" name="image[]" id="PDF/JPEG Or PNG"
                                                         class="uploadsignature addsignature" multiple required accept="image/*">
                                                     <label for="PDF/JPEG Or PNG">
-                                                        <div class="signature-text">
-                                                            <span id="image_name"><img src="{!! url('assets/website-images/upload.svg') !!}"> Click here to Upload</span>
+                                                        <div class="signature-text" >
+                                                            <span ><img src="{!! url('assets/website-images/upload.svg') !!}"> Click here to Upload</span>
                                                         </div>
                                                     </label>
+                                                    <div id="image_names"></div>
                                                     @if ($errors->has('image'))
                                                         <span class="text-danger text-left">{{ $errors->first('image') }}</span>
                                                     @endif
@@ -86,12 +87,12 @@
                                         </div>
                                         
 
-                                        <div class="col-md-12">
+                                        {{-- <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Tags With Comma</h4>
                                                 <select class="form-control livesearch form-control p-3" name="livesearch[]" multiple="multiple" required></select>
                                             </div>
-                                        </div> 
+                                        </div>  --}}
                                     </div>
                                 </form>
                             </div>
@@ -101,11 +102,6 @@
             </div>
         </div>
     </div>
-
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-alpha1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
-    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
     <!-- JQuery Search Tags -->
     <script type="text/javascript">
@@ -161,9 +157,9 @@
                     qnt: {
                         required:true,
                     },
-                    livesearch: {
-                        required: true,
-                    },
+                    // livesearch: {
+                    //     required: true,
+                    // },
                 },
                 messages: {
                     title: {
@@ -178,9 +174,9 @@
                     qnt: {
                         required: 'Please enter quantity',
                     },
-                    livesearch: {
-                        required: 'Please enter tags',
-                    },
+                    // livesearch: {
+                    //     required: 'Please enter tags',
+                    // },
                 },
 
                 submitHandler: function(form) {
@@ -201,11 +197,32 @@
     </script>
 
     <!-- Append File name -->
-    <script>
+    {{-- <script>
         $(document).ready(function() {
             $('input[name="image"]').change(function(e) {
                 var geekss = e.target.files[0].name;
                 $("#image_name").text(geekss);
+            });
+        });
+    </script> --}}
+     <script>
+        $(document).ready(function() {
+            $('input[name="image"]').change(function(e) {
+                var imageNames = ""; // Initialize an empty string to store the names of selected files
+
+                // Loop through all selected files
+                for (var i = 0; i < e.target.files.length; i++) {
+                    var fileName = e.target.files[i].name;
+
+                    // Add the file name to the string, separated by a comma or newline
+                    imageNames += fileName + ", ";
+                }
+
+                // Remove the trailing comma and whitespace
+                imageNames = imageNames.replace(/,\s*$/, "");
+
+                // Display the names in the "image_names" div
+                $("#image_names").text(imageNames);
             });
         });
     </script>

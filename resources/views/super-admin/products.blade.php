@@ -58,15 +58,11 @@
                                 <div class="pmu-course-item">
                                     <div class="pmu-course-media">
                                         <a href="products-details.html">
-                                            @if (!empty($data->product_image))
-                                                <?php 
-                                                    $images = json_decode($data['product_image']);
-                                                    $image = $images[0];
-                                                ?>
-                                                <img src="{!! url('upload/products/'.$image) !!}"> 
-                                            @else
-                                                <img src="{!! url('assets/superadmin-images/p2.jpg') !!}">
-                                            @endif
+                                            <?php
+                                                $first_image = \App\Models\ProductAttibutes::where('product_id', $data->id)->first();
+                                            ?>
+                                                <img src="{!! url('upload/products/'.$first_image->attribute_value) !!}"> 
+                                                {{-- <img src="{!! url('assets/superadmin-images/p2.jpg') !!}"> --}}
                                             
                                         </a>
                                     </div>
@@ -79,21 +75,15 @@
                                             @endif
                                         </div>
 
-                                        <h2>{{ ($data->title) ? : ''}}</h2>
+                                        <h2>{{ ($data->name) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->price,2) ? : 0}}</div>
-                                        <p>{{ ($data->description) ? : ''}}</p>
-                                        <div class="notification-tag">
+                                        <p>{{ ($data->product_desc) ? : ''}}</p>
+                                        {{-- <div class="notification-tag">
                                             <h3>Course Tags:</h3>
                                             <div class="tags-list">
-                                                {{--
-                                                @if ()
-                                                    
-                                                @else
-                                                    
-                                                @endif --}}
                                                 <div class="Tags-text">Tattoo Course </div>
                                             </div>
-                                        </div>
+                                        </div> --}}
                                     </div>
                                 </div>
                             </div>
