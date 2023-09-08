@@ -45,19 +45,13 @@
                                                 <h4>Course Fees</h4>
                                                 <input type="number" class="form-control" name="course_fee"
                                                     placeholder="Enter Course Fees" step="0.01" required>
-                                                {{-- @if ($errors->has('course_fee'))
-                                                    <span class="text-danger text-left">{{ $errors->first('course_fee') }}</span>
-                                                @endif --}}
                                             </div>
                                         </div>
 
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Valid Up-To</h4>
-                                                <input type="date" class="form-control" name="valid_upto" placeholder="4 Month" required>
-                                                {{-- @if ($errors->has('valid_upto'))
-                                                    <span class="text-danger text-left">{{ $errors->first('valid_upto') }}</span>
-                                                @endif --}}
+                                                <input type="month" class="form-control" name="valid_upto" placeholder="4 Month" required>
                                             </div>
                                         </div>
                                         
@@ -65,15 +59,15 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Tags With Comma</h4>
-                                                <select class="form-control livesearch form-control p-3" name="livesearch" multiple="multiple" required></select>
+                                                <select class="form-control livesearch p-3" name="tags[]" name="livesearch" multiple="multiple" required></select>
                                             </div>
                                         </div>
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Upload Course Certificates(jpg,jpeg,png only|Size:2048)</h4>
+                                                <h4>Upload Course Certificate(jpg,jpeg,png only|Size:2048)</h4>
                                                 <div class="upload-signature">
-                                                    <input type="file" name="certificates" id="PDF/JPEG Or PNG"
+                                                    <input type="file" name="certificates" accept="image/png, image/jpg, image/jpeg" id="PDF/JPEG Or PNG"
                                                         class="uploadsignature addsignature" required>
                                                     <label for="PDF/JPEG Or PNG">
                                                         <div class="signature-text">
@@ -89,9 +83,9 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Disclaimers & Introduction(mp4 only|Size:2048)</h4>
+                                                <h4>Introduction Video(mp4 only|Size:2048)</h4>
                                                 <div class="upload-signature">
-                                                    <input type="file" name="disclaimers_introduction"
+                                                    <input type="file" name="disclaimers_introduction" accept="video/mp4"
                                                         id="Upload Training Video Or PDF / Paste Video URL Here…"
                                                         class="uploadsignature addsignature">
                                                     <label for="Upload Training Video Or PDF / Paste Video URL Here…">
@@ -126,7 +120,7 @@
         $('.livesearch').select2({
             placeholder: 'Select tags',
             ajax: {
-                url: 'http://127.0.0.1:8000/load-sectors',
+                url: "{{ route('load-sectors') }}",
                 dataType: 'json',
                 delay: 250,
                 processResults: function (data) {
@@ -155,11 +149,18 @@
         }
         h2 {
             color: white;
-        },
+        }
+        a{
+            text-decoration: none;
+        }
+        a:hover{
+            color: #fff;
+        }
+        .select2-container--default .select2-selection--multiple{ border: none !important; }
     </style>
 
     <!-- Include jQuery Validation -->
-    {{-- <script>
+    <script>
         $(document).ready(function() {
             $('#AddCourse').validate({
                 rules: {
@@ -176,6 +177,12 @@
                         required:true,
                     },
                     livesearch: {
+                        required: true,
+                    },
+                    certificates: {
+                        required: true,
+                    },
+                    disclaimers_introduction: {
                         required: true,
                     },
                 },
@@ -196,14 +203,25 @@
                         required: 'Please enter tags',
                     },
                 },
-
                 submitHandler: function(form) {
                     // This function will be called when the form is valid and ready to be submitted
                     form.submit();
-                }
+                },
+                errorElement: "span",
+                errorPlacement: function(error, element) {
+                    error.addClass("invalid-feedback");
+                    element.closest(".form-group").append(error);
+
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).addClass("is-invalid");
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).removeClass("is-invalid");
+                },
             });
         });
-    </script> --}}
+    </script>
 
     <!-- Submit form using Jquery -->
     <script>
@@ -211,6 +229,7 @@
             $('#SaveCourse').click(function() {
                 $('#AddCourse').submit();
             });
+            $(".select2-container .selection .select2-selection .select2-search__field").addClass('form-control');
         });
     </script>
 
