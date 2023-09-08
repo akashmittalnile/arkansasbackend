@@ -91,28 +91,39 @@
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
                                             <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Video<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
-                                            <div class="edit-pmu-checkbox-list">
-                                                <ul>
-                                                    <li>
-                                                        <div class="pmucheckbox">
-                                                            <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                            name="prerequisite" value="">
-                                                            <label for="Prerequisite{{$data->id}}">
-                                                                Prerequisite
-                                                            </label>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                        </div>
+                                        <div class="edit-pmu-checkbox-list">
+                                            <ul>
+                                                <li>
+                                                    <div class="pmucheckbox">
+                                                        <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
+                                                        name="prerequisite" value="">
+                                                        <label for="Prerequisite{{$data->id}}">
+                                                            Prerequisite
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
                                         </div>
                                         <div class="edit-pmu-text">
-                                            <div class="pmu-edit-questionnaire-ans">
-                                                <div class="pmu-edit-questionnaire-text">
+                                            <div class="pmu-edit-questionnaire-ans1">
+                                                <div class="pmu-edit-questionnaire-input">
                                                     <select name="changeAnswerOption" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" id="" class="form-control ordering-select-function">
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
                                                     </select>
+                                                </div>
+                                                <div class="pmu-add-questionnaire-tooltip">
+                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
+
+                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                    </div> 
+                                                    <script>
+                                                    $(function() {
+                                                        $('[data-bs-toggle="tooltip"]').tooltip();
+                                                    });
+                                                    </script>
                                                 </div>
                                             </div>
                                         </div>
@@ -121,7 +132,7 @@
                                                 Delete Section</a>
                                         </div>
                                     </div>
-                                    <div class="edit-pmu-section collapse" id="{{ 'CPDIV' . $randomNum }}">
+                                    <div class="edit-pmu-section collapse-course-form collapse" id="{{ 'CPDIV' . $randomNum }}">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
@@ -173,30 +184,40 @@
                                         <div class="edit-pmu-text">
                                             <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample{{ $data->id }}">
                                                 Quiz<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
-                                            <div class="edit-pmu-checkbox-list">
-                                                <ul>
-                                                    <li>
-                                                        <div class="pmucheckbox">
-                                                            <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                            name="prerequisite" value="">
-                                                            <label for="Prerequisite{{$data->id}}">
-                                                                Prerequisite
-                                                            </label>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                        </div>
+                                        <div class="edit-pmu-checkbox-list">
+                                            <ul>
+                                                <li>
+                                                    <div class="pmucheckbox">
+                                                        <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
+                                                        name="prerequisite" value="">
+                                                        <label for="Prerequisite{{$data->id}}">
+                                                            Prerequisite
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul> 
                                         </div>
                                         <div class="edit-pmu-text">
-                                            <div class="pmu-edit-questionnaire-ans">
-                                                <div class="pmu-edit-questionnaire-text">
+                                            <div class="pmu-edit-questionnaire-ans1">
+                                                <div class="pmu-edit-questionnaire-input">
                                                     <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{$valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
                                                     </select>
                                                 </div>
-                                            </div>
+                                                <div class="pmu-add-questionnaire-tooltip">
+                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
+                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                    </div> 
+                                                    <script>
+                                                    $(function() {
+                                                        $('[data-bs-toggle="tooltip"]').tooltip();
+                                                    });
+                                                    </script>
+                                                </div>
+                                            </div> 
                                         </div>
                                         <div class="edit-pmu-action">
                                             <a href="{{ url('super-admin/delete-quiz/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this quiz?');">
@@ -205,13 +226,16 @@
                                     </div>
                                     <?php $v = 'AA'; ?>
                                     @foreach ($data->quiz as $quiz)
-                                    <div class="collapse" id="collapseExample{{ $data->id }}">
+                                    <div class="edit-pmu-section collapse-course-form collapse" id="collapseExample{{ $data->id }}">
                                         <div class="pmu-edit-questionnaire-box">
                                             <div class="pmu-edit-label">
                                                 <div class="pmu-q-badge">Q</div>
                                             </div>
                                             <div class="pmu-edit-questionnaire-content">
                                                 <input type="text" class="form-control {{ $v . $quiz->id }}" placeholder="Enter Question Title" name="quiz_question" value="{{ $quiz->title }}">
+                                            </div>
+                                            <div class="pmu-edit-questionnaire-marks" style="margin-right: 5px;">
+                                                <input type="number" class="form-control" placeholder="Enter marks" name="questions[2][0][marks]" required="" value="{{ $quiz->marks ?? '' }}">
                                             </div>
                                             <div class="edit-pmu-action">
                                                 <a class="edit-question-first" data-id="{{ $quiz->id }}" data-param="{{ $v }}">Update
@@ -221,15 +245,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="pmu-edit-questionnaire-box">
-                                            <div class="pmu-edit-label">
-                                                <div class="pmu-q-badge">M</div>
-                                            </div>
-                                            <div class="pmu-edit-questionnaire-content">
-                                                <input type="number" class="form-control" placeholder="Enter Marks" name="marks_question" value="{{ $quiz->marks }}">
-                                            </div>
-                                        </div>
-
+                                       
                                         <div class="pmu-answer-option-list">
 
                                             <?php $s_no = 'A'; ?>
@@ -241,13 +257,25 @@
                                                     </div>
                                                     <div class="pmu-edit-questionnaire-text d-flex">
                                                         <input type="text" class="form-control {{ $s_no . $item->id }}" placeholder="Type Here..." name="answer" value="{{ $item->answer_option_key }}">
-                                                        <div class="update-remove-action mx-5">
+                                                        <div class="update-remove-action1">
                                                             <a class="update-text edit-option" id="edit-option" data-id="{{ $item->id }}" data-param="{{ $s_no }}">Update</a>
                                                             <a class="remove-text" href="{{ url('super-admin/delete-option/' . $item->id) }}" onclick="return confirm('Are you sure you want to delete this option?');">Remove</a>
                                                         </div>
-                                                        <div class="pmucheckbox">
-                                                            <input type="checkbox" class="answerEditCheckbox" data-answer-id="{{ $item->id }}" name="answer" id="answer-option-{{ $item->id }}" @if($item->is_correct) checked @endif value="1">
-                                                            <label for="answer-option-{{ $item->id }}"></label>
+                                                        <div class="pmu-answer-check-item">
+                                                            <div class="pmucheckbox1">
+                                                                <input type="checkbox" class="answerEditCheckbox" data-answer-id="{{ $item->id }}" name="answer" id="answer-option-{{ $item->id }}" @if($item->is_correct) checked @endif value="1">
+                                                                <label for="answer-option-{{ $item->id }}">&nbsp</label>
+                                                            </div>
+                                                            <div class="pmu-add-questionnaire-tooltip">
+                                                                <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Answer changed">
+                                                                    <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                                </div> 
+                                                                <script>
+                                                                $(function() {
+                                                                    $('[data-bs-toggle="tooltip"]').tooltip();
+                                                                });
+                                                                </script>
+                                                            </div>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -260,8 +288,6 @@
                                                 <a class="add-answer" data-id="{{ $quiz->id }}" id="addListingOption">Add Answer</a>
                                             </div>
                                         </div>
-
-
                                     </div>
                                     <?php $v = 'AA'; ?>
                                     @endforeach
@@ -274,28 +300,39 @@
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
                                             <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">PDF<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
-                                            <div class="edit-pmu-checkbox-list">
-                                                <ul>
-                                                    <li>
-                                                        <div class="pmucheckbox">
-                                                            <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                            name="prerequisite" value="">
-                                                            <label for="Prerequisite{{$data->id}}">
-                                                                Prerequisite
-                                                            </label>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                        </div>
+                                        <div class="edit-pmu-checkbox-list">
+                                            <ul>
+                                                <li>
+                                                    <div class="pmucheckbox">
+                                                        <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
+                                                        name="prerequisite" value="">
+                                                        <label for="Prerequisite{{$data->id}}">
+                                                            Prerequisite
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
                                         </div>
                                         <div class="edit-pmu-text">
-                                            <div class="pmu-edit-questionnaire-ans">
-                                                <div class="pmu-edit-questionnaire-text">
+                                            <div class="pmu-edit-questionnaire-ans1">
+                                                <div class="pmu-edit-questionnaire-input">
                                                     <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
                                                     </select>
+                                                </div>
+                                                <div class="pmu-add-questionnaire-tooltip">
+                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
+
+                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                    </div> 
+                                                    <script>
+                                                    $(function() {
+                                                        $('[data-bs-toggle="tooltip"]').tooltip();
+                                                    });
+                                                    </script>
                                                 </div>
                                             </div>
                                         </div>
@@ -304,7 +341,7 @@
                                                 Delete Section</a>
                                         </div>
                                     </div>
-                                    <div class="edit-pmu-section collapse" id="{{ 'CPDIV' . $randomNum }}">
+                                    <div class="edit-pmu-section collapse-course-form  collapse" id="{{ 'CPDIV' . $randomNum }}">
                                         <div class="row">
                                             <div class="col-md-6">
                                                 <div class="form-group">
@@ -349,30 +386,41 @@
                                 <div class="edit-pmu-form-item">
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
-                                            <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Assignment<i class="las la-angle-down" style="margin-left: 15px;"></i>
+                                            <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Assignment 
                                             </h3>
-                                            <div class="edit-pmu-checkbox-list">
-                                                <ul>
-                                                    <li>
-                                                        <div class="pmucheckbox">
-                                                            <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                            name="prerequisite" value="">
-                                                            <label for="Prerequisite{{$data->id}}">
-                                                                Prerequisite
-                                                            </label>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                        </div>
+                                        <div class="edit-pmu-checkbox-list">
+                                            <ul>
+                                                <li>
+                                                    <div class="pmucheckbox">
+                                                        <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
+                                                        name="prerequisite" value="">
+                                                        <label for="Prerequisite{{$data->id}}">
+                                                            Prerequisite
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
                                         </div>
                                         <div class="edit-pmu-text">
-                                            <div class="pmu-edit-questionnaire-ans">
-                                                <div class="pmu-edit-questionnaire-text">
+                                            <div class="pmu-edit-questionnaire-ans1">
+                                                <div class="pmu-edit-questionnaire-input">
                                                     <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
                                                     </select>
+                                                </div>
+                                                <div class="pmu-add-questionnaire-tooltip">
+                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
+
+                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                    </div> 
+                                                    <script>
+                                                    $(function() {
+                                                        $('[data-bs-toggle="tooltip"]').tooltip();
+                                                    });
+                                                    </script>
                                                 </div>
                                             </div>
                                         </div>
@@ -390,49 +438,60 @@
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
                                             <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Survey<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
-                                            <div class="edit-pmu-checkbox-list">
-                                                <ul>
-                                                    <li>
-                                                        <div class="pmucheckbox">
-                                                            <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                            name="prerequisite" value="">
-                                                            <label for="Prerequisite{{$data->id}}">
-                                                                Prerequisite
-                                                            </label>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                            <div class="edit-pmu-checkbox-list">
-                                                <ul>
-                                                    <li>
-                                                        <div class="pmucheckbox-radio">
-                                                            <input @if($data->duration == '0') checked @endif type="radio" id="Optional-{{$data->id}}" value="0" name="required_field{{$data->id}}">
-                                                            <label for="Optional-{{$data->id}}">
-                                                                Optional
-                                                            </label>
-                                                        </div>
-                                                    </li>
+                                        </div>
+                                        <div class="edit-pmu-checkbox-list">
+                                            <ul>
+                                                <li>
+                                                    <div class="pmucheckbox">
+                                                        <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
+                                                        name="prerequisite" value="">
+                                                        <label for="Prerequisite{{$data->id}}">
+                                                            Prerequisite
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                        <div class="edit-pmu-checkbox-list">
+                                            <ul>
+                                                <li>
+                                                    <div class="pmucheckbox-radio">
+                                                        <input @if($data->duration == '0') checked @endif type="radio" id="Optional-{{$data->id}}" value="0" name="required_field{{$data->id}}">
+                                                        <label for="Optional-{{$data->id}}">
+                                                            Optional
+                                                        </label>
+                                                    </div>
+                                                </li>
 
-                                                    <li>
-                                                        <div class="pmucheckbox-radio">
-                                                            <input @if($data->duration == '1') checked @endif type="radio" id="Mandatory-{{$data->id}}" value="1" name="required_field{{$data->id}}">
-                                                            <label for="Mandatory-{{$data->id}}">
-                                                                Mandatory
-                                                            </label>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
+                                                <li>
+                                                    <div class="pmucheckbox-radio">
+                                                        <input @if($data->duration == '1') checked @endif type="radio" id="Mandatory-{{$data->id}}" value="1" name="required_field{{$data->id}}">
+                                                        <label for="Mandatory-{{$data->id}}">
+                                                            Mandatory
+                                                        </label>
+                                                    </div>
+                                                </li>
+                                            </ul>
                                         </div>
                                         <div class="edit-pmu-text">
-                                            <div class="pmu-edit-questionnaire-ans">
-                                                <div class="pmu-edit-questionnaire-text">
+                                            <div class="pmu-edit-questionnaire-ans1">
+                                                <div class="pmu-edit-questionnaire-input">
                                                     <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
                                                     </select>
+                                                </div>
+                                                <div class="pmu-add-questionnaire-tooltip">
+                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
+
+                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                    </div> 
+                                                    <script>
+                                                    $(function() {
+                                                        $('[data-bs-toggle="tooltip"]').tooltip();
+                                                    });
+                                                    </script>
                                                 </div>
                                             </div>
                                         </div>
@@ -443,7 +502,7 @@
                                     </div>
                                     <?php $sur = 'SSS'; ?>
                                     @foreach ($data->quiz as $survey)
-                                    <div class="collapse" id="{{ 'CPDIV' . $randomNum }}">
+                                    <div class="collapse collapse-course-form" id="{{ 'CPDIV' . $randomNum }}">
                                         <div class="pmu-edit-questionnaire-box">
                                             <div class="pmu-edit-label">
                                                 <div class="pmu-q-badge">Q</div>
@@ -511,6 +570,7 @@
 
                                 </form>
 
+                                @if (!$chapters->isEmpty())
                                 <div class="edit-questionnairetype-item">
                                     <h2>Questionnaire Type:</h2>
                                     <div class="edit-questionnairetype-list">
@@ -568,6 +628,7 @@
                                         <button class="add-answer" id="radio">Add Section</button>
                                     </div>
                                 </div>
+                                @endif
                             </div>
                         </div>
                     </div>
@@ -599,9 +660,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
     <script type="text/javascript" src="{{ asset('assets/superadmin-js/addcourse.js') }}"></script>
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">
-    <script src="{!! url('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>
 
     <!-- Style of Remove button -->
     <style>
