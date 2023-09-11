@@ -1434,8 +1434,6 @@ class ApiController extends Controller
                             })
                             ->where('course.id', $item->object_id)->first();
                             $temp['title'] = $value->title;
-                            $temp['added_by'] = $value->admin_id;
-                            $temp['added_name'] = $value->admin_name;
                             $temp['price'] = $value->course_fee;
                             if ($value->profile_image) {
                                 $profile_image = url('upload/profile-image/'.$value->profile_image);
