@@ -12,12 +12,12 @@
                         <div class="col-md-6">
                             <div class="form-group">
                                 <a href="{{ url('super-admin/update-approval-request/' . encrypt_decrypt('encrypt', $user->id) . '/' . encrypt_decrypt('encrypt', 2)) }}"
-                                    class="reject-request-btn"><i class="las la-times-circle"></i> Reject Request</a>
+                                    class="newcourse-btn"><i class="las la-times-circle"></i> Reject Request</a>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="form-group">
-                                <a class="approve-request-btn"
+                                <a style="background: #E0B220;" class="newcourse-btn"
                                     href="{{ url('super-admin/update-approval-request/' . encrypt_decrypt('encrypt', $user->id) . '/' . encrypt_decrypt('encrypt', 1)) }}"><i
                                         class="las la-check-circle"></i> Approve request</a>
                             </div>
