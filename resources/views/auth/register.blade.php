@@ -27,6 +27,7 @@
                 <form method="post" action="{{ route('register.perform') }}">
                     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                     <input type="hidden" name="role" value="2" />
+                    <input type="hidden" name="status" value="0" />
                     <div class="becomeacreator-form">
                         <h2>PERMANENT MAKEUP TRAINING</h2>
                         <p>Create skills for your new career at Arkansas Permanent Cosmetics Institute, a school that

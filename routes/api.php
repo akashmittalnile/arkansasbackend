@@ -55,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('search-object-type-suggest', [ApiController::class,"search_object_type_suggest"]);
     Route::post('add-to-cart', [ApiController::class, "add_to_cart"]);
     Route::post('cart-list', [ApiController::class, "cart_list"]);
-    Route::post('cart-details-payment', [ApiController::class, "cart_details_payment_page"]);
+    Route::get('cart-details-payment', [ApiController::class, "cart_details_payment_page"]);
 
     Route::post('coupon-list', [ApiController::class, "coupon_list"]);
     // Route::post('applyed-coupon', [ApiController::class, "applyed_coupon"]);
@@ -63,6 +63,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::post('remove-cart-list', [ApiController::class, "remove-cart-list"]);
 
     Route::post('save-order', [ApiController::class, "save_order"]);
+    Route::post('my-order', [ApiController::class, "my_order"]);
 
 
 });
