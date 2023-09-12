@@ -55,6 +55,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
          */
         Route::get('/logout', 'LogoutController@perform')->name('logout.perform');
         Route::get('/', 'HomeController@index')->name('home.index');
+        Route::get('/edit-course/{id}', 'HomeController@editCourse')->name('Home.edit.course');
+        Route::post('/edit-course', 'HomeController@updateCourseDetails')->name('Home.updateCourseDetails');
+        Route::get('/delete-course/{id}', 'HomeController@deleteCourse')->name('Home.delete.course');
         Route::get('/performance', 'HomeController@performance')->name('Home.Performance');
         Route::get('/help-support', 'HomeController@helpSupport')->name('Home.HelpSupport');
         Route::get('/addcourse', 'HomeController@addcourse')->name('Home.Addcourse');
@@ -66,6 +69,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/admin/delete-question/{id}', 'HomeController@delete_question')->name('admin.DeleteQuestion');
         Route::get('/admin/delete-section/{id}', 'HomeController@delete_section')->name('admin.DeleteSection');
         Route::get('/admin/delete-video/{id}', 'HomeController@delete_video')->name('admin.DeleteVideo');
+        Route::post('/admin/add-video', 'HomeController@add_video')->name('admin.add.Video');
+        Route::post('/admin/add-pdf', 'HomeController@add_pdf')->name('admin.add.pdf');
         Route::get('/admin/update_option_list', 'HomeController@update_option_list')->name('admin.UpdateOptionList');
         Route::get('/admin/update_question_list', 'HomeController@update_question_list')->name('admin.update_question_list');
         Route::get('/admin/delete-pdf/{id}', 'HomeController@delete_pdf')->name('admin.DeletePDF');

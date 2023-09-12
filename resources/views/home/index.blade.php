@@ -66,18 +66,26 @@
                                     </div> 
                                       
                                     <div class="pmu-course-content">
+                                        <div class="d-flex">
+                                            <div class="col-md-2 mb-2">
+                                                <a class="newcourse-btn" href="{{ route('Home.edit.course', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-edit"></i></a>
+                                            </div>
+                                            <div class="col-md-2 mb-2 mx-2">
+                                                <a class="newcourse-btn" onclick="return confirm('Are you sure you want to delete this course?');" href="{{ route('Home.delete.course', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-trash"></i></a>
+                                            </div>
+                                        </div>
+
+                                        <a href="{{ url('admin/addcourse2/'.encrypt_decrypt('encrypt',$data->id))}}"> 
                                         <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! url('assets/website-images/tick.svg') !!}">
                                             @if ($data->status == 0)
                                                 Unpublished
                                             @else
                                                 Published 
                                             @endif
-                                            
                                         </div>
                                         <h2>{{ ($data->title) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->course_fee,2) ? : 0}}</div>
                                         <p>{{ ($data->description) ? : ''}}</p>
-                                        <a href="{{ url('admin/addcourse2/'.encrypt_decrypt('encrypt',$data->id))}}"> 
                                         <?php
                                             $chapter_count = \App\Models\CourseChapter::where('course_id',$data->id)->count();
                                         ?>

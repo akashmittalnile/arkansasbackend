@@ -137,12 +137,12 @@
                                     </div>
                                     <div class="edit-pmu-section collapse-course-form collapse" id="{{ 'CPDIV' . $randomNum }}">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="form-group">
                                                     <h4>Uploaded Video</h4>
                                                     <div class="upload-signature">
                                                         @if ($data->details)
-                                                        <div class="upload-file-item">
+                                                        <div class="upload-file-item col-md-6">
                                                             <div class="upload-file-icon">
                                                                 <img src="{!! url('assets/website-images/video-icon.svg') !!}">
                                                             </div>
@@ -155,16 +155,21 @@
                                                             </div>
                                                         </div>
                                                         @else
-                                                        <tr>
-                                                            <td colspan="10">
-                                                                <h5 style="text-align: center">No Video
-                                                                    Found</h5>
-                                                            </td>
-                                                        </tr>
+                                                        <form action="{{ route('admin.add.Video') }}" method="POST" class="d-flex" enctype="multipart/form-data">@csrf
+                                                            <div class="upload-signature col-md-6">
+                                                                <input type="file" name="newvideo" id="video-{{$data->id}}"
+                                                                    class="uploadsignature addsignature" required accept="video/mp4">
+                                                                <label for="video-{{$data->id}}">
+                                                                    <div class="signature-text">
+                                                                        <span id="video_file_name-{{$data->id}}">
+                                                                            <img src="{{ asset('assets/website-images/upload.svg') }}"> Click here to Upload</span>
+                                                                    </div>
+                                                                </label>
+                                                                <input type="hidden" name="vidId" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
+                                                            </div>
+                                                            <button type="submit" class="add-more py-0 mx-2 my-1">Save</button>
+                                                        </form>
                                                         @endif
-
-                                                        {{-- <video src="{!! url('assets/upload/course/' . $data->details) !!}" controls>
-                                                                    </video> --}}
                                                     </div>
                                                 </div>
                                             </div>
@@ -346,11 +351,11 @@
                                     </div>
                                     <div class="edit-pmu-section collapse-course-form  collapse" id="{{ 'CPDIV' . $randomNum }}">
                                         <div class="row">
-                                            <div class="col-md-6">
+                                            <div class="col-md-12">
                                                 <div class="form-group">
                                                     <h4>Uploaded PDF</h4>
                                                     @if ($data->details)
-                                                    <div class="upload-file-item">
+                                                    <div class="upload-file-item col-md-6">
                                                         <div class="upload-file-icon">
                                                             <img src="{!! url('assets/website-images/document-text.svg') !!}">
                                                         </div>
@@ -363,12 +368,20 @@
                                                         </div>
                                                     </div>
                                                     @else
-                                                    <tr>
-                                                        <td colspan="10">
-                                                            <h5 style="text-align: center">No PDF Found
-                                                            </h5>
-                                                        </td>
-                                                    </tr>
+                                                    <form action="{{ route('admin.add.pdf') }}" method="POST" class="d-flex" enctype="multipart/form-data">@csrf
+                                                            <div class="upload-signature col-md-6">
+                                                                <input type="file" name="newpdf" id="pdf_file-{{$data->id}}"
+                                                                    class="uploadsignature addsignature" required accept="application/pdf">
+                                                                <label for="pdf_file-{{$data->id}}">
+                                                                    <div class="signature-text">
+                                                                        <span id="pdf_file_name-{{$data->id}}">
+                                                                            <img src="{{ asset('assets/website-images/upload.svg') }}"> Click here to Upload</span>
+                                                                    </div>
+                                                                </label>
+                                                                <input type="hidden" name="pdfId" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
+                                                            </div>
+                                                            <button type="submit" class="add-more py-0 mx-2 my-1">Save</button>
+                                                    </form>
                                                     @endif
                                                 </div>
                                             </div>

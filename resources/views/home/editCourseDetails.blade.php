@@ -1,5 +1,5 @@
 @extends('layouts.app-master')
-@section('title', 'Permanent Makeup University - Add Course')
+@section('title', 'Permanent Makeup University - Edit Course')
 @section('content')
     <div class="body-main-content">
         <div class="pmu-filter-section">
@@ -9,7 +9,7 @@
             <div class="pmu-filter">
                 <div class="row">
                     <div class="col-md-12">
-                        <a href="#" id="SaveCourse" class="add-more">Save & Continue</a>
+                        <a href="#" id="SaveCourse" class="add-more">Update & Continue</a>
                     </div>
                 </div>
             </div>
@@ -20,16 +20,16 @@
                 <div class="row">
                     <div class="col-md-12">
                         <div class="pmu-courses-form-section">
-                            <h2>Course Details</h2>
+                            <h2>Edit Course Details</h2>
                             <div class="pmu-courses-form">
-                                <form method="post" action="{{ route('Home.submitcourse') }}" id="AddCourse" enctype="multipart/form-data">
+                                <form method="post" action="{{ route('Home.updateCourseDetails') }}" id="AddCourse" enctype="multipart/form-data">
                                     <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                     <input type="hidden" name="status" value="0" />
                                     <div class="row">
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Title</h4>
-                                                <input type="text" class="form-control" name="title" placeholder="Title" id="title" required>
+                                                <input type="text" class="form-control" name="title" placeholder="Title" id="title" required value="{{ $course->title }}">
                                                 {{-- @error('title')
                                                     <span class="error">{{ $message }}</span>
                                                 @enderror --}}
@@ -38,7 +38,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Description</h4>
-                                                <textarea type="text" class="form-control" name="description" placeholder="Description"></textarea>
+                                                <textarea type="text" class="form-control" name="description" placeholder="Description">{{ $course->description }}</textarea>
                                             </div>
                                         </div>
 
@@ -70,33 +70,37 @@
                                             <div class="form-group">
                                                 <h4>Course Fees</h4>
                                                 <input type="number" class="form-control" name="course_fee"
-                                                    placeholder="Enter Course Fees" step="0.01" required>
+                                                    placeholder="Enter Course Fees" step="0.01" required value="{{ $course->course_fee }}">
                                             </div>
                                         </div>
 
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Valid Up-To</h4>
-                                                <input type="date" class="form-control" name="valid_upto" placeholder="4 Month" required>
+                                                <input type="date" class="form-control" name="valid_upto" placeholder="4 Month" required value="{{ $course->valid_upto }}">
                                             </div>
                                         </div>
 
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Tags With Comma</h4>
-                                                <select class="form-control livesearch p-3" name="tags[]" multiple="multiple" required></select>
+                                                <select class="form-control livesearch p-3" name="tags[]" multiple="multiple" required>
+                                                    @foreach($combined as $val)
+                                                        <option @if($val['selected']) selected @endif value="{{ $val['id'] }}">{{ $val['name'] }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
-
+                                        <input type="hidden" name="hide" value="{{encrypt_decrypt('encrypt', $course->id)}}">
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Upload Course Certificate (jpg,jpeg,png only | Size: 1MB)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="certificates" id="certificates"
-                                                        class="uploadsignature addsignature" required accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">
+                                                        class="uploadsignature addsignature" accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">
                                                     <label for="certificates">
                                                         <div class="signature-text">
-                                                            <span id="certificates_nam"><img id="prev-img" src="{!! url('assets/website-images/upload.svg') !!}"> <small id="prev-small-line">Click here to Upload</small></span>
+                                                            <span id="certificates_nam"><img id="prev-img" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" src="{!! url('upload/course-certificates/'.$course->certificates) !!}"> <small id="prev-small-line">Click here to change image</small></span>
                                                         </div>
                                                     </label>
                                                 </div>
@@ -109,12 +113,11 @@
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction"
                                                         id="disclaimers_introduction"
-                                                        class="uploadsignature addsignature" required accept="video/mp4" onchange="loadVideoFile(event)">
+                                                        class="uploadsignature addsignature" accept="video/mp4" onchange="loadVideoFile(event)">
                                                     <label for="disclaimers_introduction">
                                                         <div class="signature-text">
                                                             <span id="disclaimers_introduction_nam">
-                                                                <img id="prev-vid" src="{!! url('assets/website-images/upload.svg') !!}"> <small id="video-small-line">Click here to Upload</small>
-                                                                <video controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume src="" id="vid-prev-tag" class="d-none"></video><small id="video2-small-line" class="d-none">Click here to change video</small>
+                                                                <video width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume src="{!! url('upload/disclaimers-introduction/'.$course->introduction_image) !!}" id="vid-prev-tag"></video><small id="video-small-line">Click here to Change video</small>
                                                             </span>
                                                         </div>
                                                     </label>
@@ -153,23 +156,25 @@
         });
         $('.livesearch').select2({
             placeholder: 'Select tags',
-            ajax: {
-                url: "{{ route('load-sectors') }}",
-                dataType: 'json',
-                delay: 250,
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                text: item.tag_name,
-                                id: item.id
-                            }
-                        })
-                    };
-                },
-                cache: true
-            }
+            tags: true,
+            // ajax: {
+            //     url: "{{ route('load-sectors') }}",
+            //     dataType: 'json',
+            //     delay: 250,
+            //     processResults: function (data) {
+            //         return {
+            //             results: $.map(data, function (item) {
+            //                 return {
+            //                     text: item.tag_name,
+            //                     id: item.id
+            //                 }
+            //             })
+            //         };
+            //     },
+            //     cache: true
+            // }
         });
+        
     </script>
 
     <style>
@@ -203,11 +208,9 @@
                         required: true,
                     },
                     certificates: {
-                        required: true,
-                        filesize : 1,
+                        filesize :1,
                     },
                     disclaimers_introduction: {
-                        required: true,
                         filesize : 2,
                     },
                 },
@@ -217,12 +220,6 @@
                     },
                     description: {
                         required: 'Please enter description',
-                    },
-                    certificates: {
-                        required: "Please choose a file to upload.",
-                    },
-                    disclaimers_introduction: {
-                        required: "Please choose a file to upload.",
                     },
                     "tags[]": {
                         required: 'Please enter tags',
@@ -237,6 +234,7 @@
                 errorPlacement: function(error, element) {
                     error.addClass("invalid-feedback");
                     element.closest(".form-group").append(error);
+
                 },
                 highlight: function(element, errorClass, validClass) {
                     $(element).addClass("is-invalid");
@@ -248,17 +246,14 @@
         });
 
         const loadImageFile = (event) => {
-            $("#prev-img").attr({width: "160", height: "80", src: URL.createObjectURL(event.target.files[0]), style: "object-fit: cover; object-position: center; border-radius: 8px"});
-            $("#prev-small-line").html("Click here to change image");
+            $("#prev-img").attr({src: URL.createObjectURL(event.target.files[0])});
+            $("#prev-small-line").hide();
             // $("#remove-img-btn1").removeClass('d-none');
         };
 
         const loadVideoFile = (event) => {
             $("#prev-vid").hide();
-            $("#video-small-line").hide();
-            $("#vid-prev-tag").removeClass('d-none');
             $("#vid-prev-tag").attr({"src": URL.createObjectURL(event.target.files[0]), style: "object-fit: cover; object-position: center; border-radius: 8px", width: "160", height: "80",})
-            $("#video2-small-line").removeClass('d-none');
             // $("#remove-img-btn1").removeClass('d-none');
         };
     </script>

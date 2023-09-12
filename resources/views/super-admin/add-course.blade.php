@@ -65,11 +65,11 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Upload Course Certificate (jpg,jpeg,png only | Size:2048)</h4>
+                                                <h4>Upload Course Certificate (jpg,jpeg,png only | Size: 1MB)</h4>
                                                 <div class="upload-signature">
-                                                    <input type="file" name="certificates" accept="image/png, image/jpg, image/jpeg" id="PDF/JPEG Or PNG"
+                                                    <input type="file" name="certificates" accept="image/png, image/jpg, image/jpeg" id="PDFJPEGOrPNG"
                                                         class="uploadsignature addsignature" required>
-                                                    <label for="PDF/JPEG Or PNG">
+                                                    <label for="PDFJPEGOrPNG">
                                                         <div class="signature-text">
                                                             <span id="certificates_name"><img src="{!! url('assets/website-images/upload.svg') !!}"> Click here to Upload</span>
                                                         </div>
@@ -83,12 +83,12 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Introduction Video (mp4 only | Size:2048)</h4>
+                                                <h4>Introduction Video (mp4 only | Size: 2MB)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction" accept="video/mp4"
-                                                        id="Upload Training Video Or PDF / Paste Video URL Here…"
+                                                        id="UploadTrainingVideo"
                                                         class="uploadsignature addsignature">
-                                                    <label for="Upload Training Video Or PDF / Paste Video URL Here…">
+                                                    <label for="UploadTrainingVideo">
                                                         <div class="signature-text">
                                                             <span id="disclaimers_introduction_name"><img src="{!! url('assets/website-images/upload.svg') !!}"> Click here to Upload</span>
                                                         </div>
@@ -162,6 +162,11 @@
     <!-- Include jQuery Validation -->
     <script>
         $(document).ready(function() {
+
+            $.validator.addMethod('filesize', function (value, element, param) {
+                return this.optional(element) || (element.files[0].size <= param * 1000000)
+            }, 'File size must be less than {0} MB');
+
             $('#AddCourse').validate({
                 rules: {
                     title: {
@@ -181,9 +186,11 @@
                     },
                     certificates: {
                         required: true,
+                        filesize : 1,
                     },
                     disclaimers_introduction: {
                         required: true,
+                        filesize : 2,
                     },
                 },
                 messages: {

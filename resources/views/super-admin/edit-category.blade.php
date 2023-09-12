@@ -48,23 +48,20 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Upload Image</h4>
+                                                <h4>Upload Image (jpg,jpeg,png only | Size: 1MB)</h4>
                                                 <div class="upload-signature">
-                                                    <input type="file" name="category_image" id="PDF/JPEG Or PNG"
-                                                        class="uploadsignature addsignature">
-                                                    <label for="PDF/JPEG Or PNG">
+                                                    <input type="file" name="category_image" id="PDFJPEGOrPNG"
+                                                        class="uploadsignature addsignature form-control" accept="image/png, image/jpg, image/jpeg" @if(empty($data->icon)) required @endif onchange="loadImageFile(event)">
+                                                    <label for="PDFJPEGOrPNG">
                                                         <div class="signature-text">
-                                                            <span id="category_image_file"><img
-                                                                    src="{!! url('assets/website-images/upload.svg') !!}"> Click here to
-                                                                Upload</span>
+                                                            <span id="category_image"><img @if(!empty($data->icon)) width="160", height="80" @endif style="object-fit: cover; object-position: center; border-radius: 8px" id="prev-img"
+                                                                    src="{!! url('upload/category-image/'.$data->icon) !!}">@if(empty($data->icon))<small id="prev-small-line">Click here to
+                                                                Upload</small>@endif</span>
                                                         </div>
                                                     </label>
                                                     @if ($errors->has('category_image'))
                                                         <span
                                                             class="text-danger text-left">{{ $errors->first('category_image') }}</span>
-                                                    @endif
-                                                    @if (!empty($data->icon))
-                                                        <a href="{{ url('upload/category-image/'.$data->icon)}}" target="_blank"><i class="las la-image"></i></a>
                                                     @endif
                                                 </div>
                                             </div>
@@ -96,6 +93,11 @@
     <!-- Include jQuery Validation -->
     <script>
         $(document).ready(function() {
+
+            $.validator.addMethod('filesize', function (value, element, param) {
+                return this.optional(element) || (element.files[0].size <= param * 1000000)
+            }, 'File size must be less than {0} MB');
+
             $('#UpdateCategory').validate({
                 rules: {
                     category_name: {
@@ -103,6 +105,9 @@
                     },
                     cat_status: {
                         required: true,
+                    },
+                    category_image: {
+                        filesize : 1,
                     },
                 },
                 messages: {
@@ -117,9 +122,27 @@
                 submitHandler: function(form) {
                     // This function will be called when the form is valid and ready to be submitted
                     form.submit();
-                }
+                },
+                errorElement: "span",
+                errorPlacement: function(error, element) {
+                    error.addClass("invalid-feedback");
+                    element.closest(".form-group").append(error);
+
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).addClass("is-invalid");
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).removeClass("is-invalid");
+                },
             });
         });
+
+        const loadImageFile = (event) => {
+            $("#prev-img").attr({width: "160", height: "80", src: URL.createObjectURL(event.target.files[0])});
+            $("#prev-small-line").hide();
+            // $("#remove-img-btn1").removeClass('d-none');
+        };
     </script>
 
     <!-- Submit form using Jquery -->

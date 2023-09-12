@@ -9,6 +9,7 @@ use App\Models\CourseChapter;
 use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
 use App\Models\CourseChapterStep;
+use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use PDO;
@@ -49,6 +50,105 @@ class HomeController extends Controller
     public function performance() 
     {
         return view('home.performance');
+    }
+
+    public function editCourse($id) 
+    {
+        $id = encrypt_decrypt('decrypt', $id);
+        $course = Course::where('id', $id)->first();
+        $course->tags = unserialize($course->tags);
+        $tags = Tag::all();
+        $combined = array();
+        foreach ($tags as $arr) {
+            $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
+            foreach ($course->tags as $arr2) {
+                if ($arr2 == $arr['id']) {
+                    $comb['selected'] = true;
+                    break;
+                }
+            }
+            $combined[] = $comb;
+        }
+        return view('home.editCourseDetails')->with(compact('course', 'combined'));
+    }
+
+    public function updateCourseDetails(Request $request){
+        try {
+            $course = Course::where('id', encrypt_decrypt('decrypt',$request->hide))->first();
+            $imageName = $course->certificates;
+            if ($request->certificates) {
+                $imageName = time().'.'.$request->certificates->extension();  
+                $request->certificates->move(public_path('upload/course-certificates'), $imageName);
+
+                $image_path = app_path("upload/course-certificates/{$course->certificates}");
+                if(File::exists($image_path)) {
+                    unlink($image_path);
+                }
+            }
+            $disclaimers_introduction = $course->introduction_image;
+            if ($request->disclaimers_introduction) {
+                $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
+                $request->disclaimers_introduction->move(public_path('upload/disclaimers-introduction'), $disclaimers_introduction);
+
+                $image_path = app_path("upload/disclaimers-introduction/{$course->introduction_image}");
+                if(File::exists($image_path)) {
+                    unlink($image_path);
+                }
+            }
+
+            Course::where('id', encrypt_decrypt('decrypt',$request->hide))->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'course_fee' => $request->course_fee,
+                'valid_upto' => $request->valid_upto,
+                'certificates' => $imageName,
+                'introduction_image' => $disclaimers_introduction,
+                'status' => 0,
+            ]);
+
+            return redirect('/');
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function deleteCourse($id){
+        try{
+            CourseChapter::where('course_id', encrypt_decrypt('decrypt',$id))->delete();
+            Course::where('id', encrypt_decrypt('decrypt',$id))->delete();
+            return redirect('/');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function add_video(Request $request){
+        try{
+            // dd($request->all());
+            if ($request->newvideo) {
+                $videoName = time().'.'.$request->newvideo->extension();  
+                $request->newvideo->move(public_path('upload/course'), $videoName);
+            }
+            $step = CourseChapterStep::where('id', encrypt_decrypt('decrypt',$request->vidId))->update(['details'=> $videoName]);
+            return redirect()->back()->with('message', 'Video added successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function add_pdf(Request $request){
+        try{
+            // dd($request->all());
+            if ($request->newpdf) {
+                $pdfName = time().'.'.$request->newpdf->extension();  
+                $request->newpdf->move(public_path('upload/course'), $pdfName);
+            }
+            $step = CourseChapterStep::where('id', encrypt_decrypt('decrypt',$request->pdfId))->update(['details'=> $pdfName]);
+            return redirect()->back()->with('message', 'PDF added successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     public function helpSupport() 
@@ -305,7 +405,7 @@ class HomeController extends Controller
                 $imageName = time().'.'.$request->certificates->extension();  
                 $request->certificates->move(public_path('upload/course-certificates'), $imageName);
             }
-            if ($request->certificates) {
+            if ($request->disclaimers_introduction) {
                 $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
                 $request->disclaimers_introduction->move(public_path('upload/disclaimers-introduction'), $disclaimers_introduction);
             }
