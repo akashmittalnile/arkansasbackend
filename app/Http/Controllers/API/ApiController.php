@@ -77,7 +77,7 @@ class ApiController extends Controller
                 }
                 $TrendingCourses[] = $b1;
             }
-
+            
             $top_category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
             $b2 = array();
             $TopCategory = array();
@@ -143,7 +143,7 @@ class ApiController extends Controller
                 }
                 $SuggestedCourses[] = $b3;
             }
-
+            
             $all_products = Product::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of All Product*/
             $b4 = array();
             $AllProducts = array();
@@ -179,7 +179,7 @@ class ApiController extends Controller
                 }
                 $AllProducts[] = $b4;
             }
-
+            
             $sug_products = Product::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of Suggested Product*/
             $b5 = array();
             $SugProducts = array();
@@ -1144,10 +1144,10 @@ class ApiController extends Controller
                         "review_list" => $data
                     ]);
                 } else {
-                    return response()->json(['status' => false, 'Message' => 'No data', 'review_list' => []]);
+                    return response()->json(['status' => false, 'message' => 'No data', 'review_list' => []]);
                 }
             } else {
-                return response()->json(['status' => false, 'Message' => 'Please login']);
+                return response()->json(['status' => false, 'message' => 'Please login']);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -1486,7 +1486,7 @@ class ApiController extends Controller
                     return response()->json([
                         'status' => true,
                         'message' => 'Cart Listing',
-                        'sub_total' => $cart_value,
+                        'sub_total' => (int)$cart_value,
                         'discount' => $discount,
                         'shipping' => $shipping_amount,
                         'total' => $total_amount,
@@ -1592,29 +1592,28 @@ class ApiController extends Controller
                 $coupon_price = 0;
                 $total_price = $order_price  + $shipping_cost;
 
-                $transaction = new Transaction;
-                $transaction->user_id = $user_id;
-                $transaction->status = 'Complete';
-                $transaction->transaction_id = $transaction_id;
-                $transaction->amount = $total_price;
-                $transaction->card_id = $request->card_id;
-                $transaction->created_date = date('d F Y, g:i A');
-                $transactionId = $transaction->save();
-                $transaction_id =  $transactionId->id;
+                dd($user_id);
+                $transactionId = Transaction::insertGetId([
+                    'user_id ' => $user_id,
+                    'status' => 1,
+                    'transaction_id' => $transaction_id,
+                    'amount' => $total_price,
+                    'card_id' =>  $request->card_id,
+                    'created_date' =>  date('Y-m-d H:i:s'),
+                ]);
 
                 if (count($carts) > 0) {
                     /*Create Order */
-                    $order = new Order;
-                    $order->user_id = $user_id;
-                    $order->amount = $order_price;
-                    $order->delivery_charges = $shipping_cost;
-                    $order->total_amount_paid = $total_price;/*Total amount of order*/
-                    $order->payment_id = $transaction_id;
-                    $order->created_date = date('d F Y, g:i A');
-                    $order->status = 1;
-                    $order->coupon_id = $transaction_id;
-                    $order->save();
-                    $insertedId = $order->id;
+                    $insertedId = Order::insertGetId([
+                        'user_id' => $user_id,
+                        'amount' => $order_price,
+                        'delivery_charges' => $shipping_cost,
+                        'total_amount_paid' => $total_price,/*Total amount of order*/
+                        'payment_id' => $transaction_id,
+                        'created_date' => date('d F Y, g:i A'),
+                        'status' => 1,
+                        'coupon_id' => $transaction_id,
+                    ]);
                     foreach ($carts as $cart) {
                         $OrderDetail = new OrderDetail;
                         $OrderDetail->user_id = $cart->user_id;
