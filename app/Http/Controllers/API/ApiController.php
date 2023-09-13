@@ -1025,6 +1025,7 @@ class ApiController extends Controller
 
                     // $chapters = DB::table('course_chapter as cc')->join('course_chapter_steps as ccs', 'cc.id', '=', 'ccs.course_chapter_id')->join('chapter_quiz as cq', 'ccs.id', '=', 'cq.step_id')->join('chapter_quiz_options as cqo', 'cq.id', '=', 'quiz_id')->where('cc.course_id', $id)->get();
 
+                    $review = Review::where('userid', $user_id)->count();
                     
                     $temp['description'] = $item->description;
                     $temp['tags'] = $tags;
@@ -1033,6 +1034,7 @@ class ApiController extends Controller
                     $temp['chapters'] = $chapters;
                     $temp['chapter_count'] = $chapter_count;
                     $temp['chapter_quiz_count'] = $chapter_quiz_count;
+                    $temp['review_count'] = $review;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
                     if ($type == 1) {
                         return response()->json(['status' => true, 'message' => ' Course Listing', 'data' => $temp]);
@@ -1354,7 +1356,7 @@ class ApiController extends Controller
         try {
             $user_id = Auth::user()->id;
             if ($user_id) {
-                $card = CardDetail::where('user_id', $user_id)->get();
+                $card = CardDetail::where('userid', $user_id)->get();
                 if (count($card) > 0) {
                     $response = [];
                     foreach ($card as $key => $value) {
