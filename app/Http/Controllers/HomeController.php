@@ -213,15 +213,15 @@ class HomeController extends Controller
     public function deleteQuiz($id) 
     {
         // $id =  encrypt_decrypt('decrypt',$id);
-        $step = CourseChapterStep::where('id', $id)->where('type', 'quiz')->first();
-        if($step->type == 'quiz'){
+        $step = CourseChapterStep::where('id', $id)->whereIn('type', ['quiz', 'survey'])->first();
+        if($step->type == 'quiz' || $step->type == 'survey'){
             $question = ChapterQuiz::where('step_id',$id)->get();
             foreach($question as $val){
                 ChapterQuizOption::where('quiz_id',$val->id)->delete();
                 ChapterQuiz::where('id',$val->id)->delete();
             }
         }
-        CourseChapterStep::where('id', $id)->where('type', 'quiz')->delete();
+        CourseChapterStep::where('id', $id)->whereIn('type', ['quiz', 'survey'])->delete();
         return redirect()->back()->with('message', 'Quiz deleted successfully');
     }
 

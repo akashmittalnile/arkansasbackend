@@ -46,7 +46,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Price</h4>
                                                 <input type="number" class="form-control" name="price"
@@ -57,7 +57,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Quantity</h4>
                                                 <input type="number" class="form-control" name="qnt" min="0" placeholder="Product Quantity" required>
@@ -67,14 +67,14 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Upload Product Image(jpg,jpeg,png only|Size:2048)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="image[]" id="PDF/JPEG Or PNG"
-                                                        class="uploadsignature addsignature" multiple required accept="image/*">
+                                                        class="uploadsignature addsignature" multiple required accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">
                                                     <label for="PDF/JPEG Or PNG">
-                                                        <div class="signature-text" >
+                                                        <div class="signature-text-img" >
                                                             <span ><img src="{!! url('assets/website-images/upload.svg') !!}"> Click here to Upload</span>
                                                         </div>
                                                     </label>
@@ -185,6 +185,15 @@
                 }
             });
         });
+
+        const loadImageFile = (event) => {
+            // src: URL.createObjectURL(event.target.files[0])
+            let html = ``;
+            for(i=0; i<event.target.files.length; i++){
+                html += `<img class="m-2" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" src="${URL.createObjectURL(event.target.files[i])}">`
+            }
+            $("#image_names").html(html);
+        };
     </script>
 
     <!-- Submit form using Jquery -->

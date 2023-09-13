@@ -1657,9 +1657,8 @@ class ApiController extends Controller
                 $coupon_price = 0;
                 $total_price = $order_price  + $shipping_cost;
 
-                dd($user_id);
                 $transactionId = Transaction::insertGetId([
-                    'user_id ' => $user_id,
+                    'user_id' => $user_id,
                     'status' => 1,
                     'transaction_id' => $transaction_id,
                     'amount' => $total_price,
@@ -1675,26 +1674,26 @@ class ApiController extends Controller
                         'delivery_charges' => $shipping_cost,
                         'total_amount_paid' => $total_price,/*Total amount of order*/
                         'payment_id' => $transaction_id,
-                        'created_date' => date('d F Y, g:i A'),
+                        'created_date' => date('Y-m-d H:i:s'),
                         'status' => 1,
                         'coupon_id' => $transaction_id,
                     ]);
                     foreach ($carts as $cart) {
                         $OrderDetail = new OrderDetail;
-                        $OrderDetail->user_id = $cart->user_id;
+                        // $OrderDetail->user_id = $cart->user_id;
                         $OrderDetail->order_id = $insertedId;
-                        $OrderDetail->item_no = rand(10000000, 99999999);
+                        // $OrderDetail->item_no = rand(10000000, 99999999);
                         $OrderDetail->product_id = $cart->object_id;
                         $OrderDetail->product_type = $cart->object_type;
                         $OrderDetail->quantity = $cart->quantity;
                         $OrderDetail->amount = $cart->cart_value;
-                        $OrderDetail->created_date = date('d F Y, g:i A');
+                        $OrderDetail->created_date = date('Y-m-d H:i:s');
                         $OrderDetail->save();
                     }
                     Addtocart::where('userid', $user_id)->delete();
 
                     $data['status'] = 1;
-                    $data['message'] = 'Order create successfully';
+                    $data['message'] = 'Order placed successfully';
                     return response()->json($data);
                 } else {
                     $data['status'] = 0;
