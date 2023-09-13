@@ -65,5 +65,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('save-order', [ApiController::class, "save_order"]);
     Route::post('my-order', [ApiController::class, "my_order"]);
 
+    Route::get("cart-count", [ApiController::class, "cart_count"]);
+    Route::post("assignment-upload-file", [ApiController::class, "assignment_upload_file"]);
 
 });

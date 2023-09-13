@@ -944,13 +944,17 @@ class ApiController extends Controller
 
                         $course_chapter = DB::table('course_chapter as cc')->where('cc.course_id', $id)->get();
                         $chapters = [];
+                        $chapter_count = 0;
+                        $chapter_quiz_count = 0;
                         foreach($course_chapter as $keyc => $valc){
                             $arr['id'] = $valc->id;
                             $steps = CourseChapterStep::where('course_chapter_id', $valc->id)->get();
+                            if(isset($steps) && count($steps)) $chapter_count++;
                             $chapter_steps = [];
                             foreach($steps as $vals){
                                 $arr1['id'] = $vals->id;
                                 $arr1['type'] = $vals->type;
+                                if($vals->type == 'quiz') $chapter_quiz_count++;
                                 $arr1['title'] = $vals->title;
                                 $arr1['description'] = $vals->description;
                                 $arr1['file'] = ($vals->details == null || $vals->details == "") ? null : url('upload/course/' . $vals->details);
@@ -1027,6 +1031,8 @@ class ApiController extends Controller
                     $temp['status'] = $item->status;
                     $temp['rating'] = 4.6;
                     $temp['chapters'] = $chapters;
+                    $temp['chapter_count'] = $chapter_count;
+                    $temp['chapter_quiz_count'] = $chapter_quiz_count;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
                     if ($type == 1) {
                         return response()->json(['status' => true, 'message' => ' Course Listing', 'data' => $temp]);
@@ -1858,4 +1864,34 @@ class ApiController extends Controller
     //         return response()->json($data);
     //     }
     // }
+
+    public function cart_count(Request $request){
+        try{
+            $cart = AddToCart::where('userid', auth()->user()->id)->count();
+            return $cart;
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function assignment_upload_file(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'file' => 'required|max:2048',
+                'chapter_step_id' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else{
+                $fileName = time().'.'.$request->file->extension();  
+                $request->file->move(public_path('upload/course'), $fileName);
+                $step = CourseChapterStep::where('id', $request->chapter_step_id)->where('type', 'assignment')->update([
+                    'details' => $fileName 
+                ]);
+                return response()->json(['status' => true, 'message' => 'File uploaded successfully']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
 }
