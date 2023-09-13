@@ -21,6 +21,10 @@ use App\Models\ProductAttibutes;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\ChapterQuiz;
+use App\Models\ChapterQuizOption;
+use App\Models\CourseChapterStep;
+use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -937,6 +941,48 @@ class ApiController extends Controller
                         $temp['content_creator_name'] = $item->first_name.' '.$item->last_name;
                         $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
                         $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
+
+                        $course_chapter = DB::table('course_chapter as cc')->where('cc.course_id', $id)->get();
+                        $chapters = [];
+                        foreach($course_chapter as $keyc => $valc){
+                            $arr['id'] = $valc->id;
+                            $steps = CourseChapterStep::where('course_chapter_id', $valc->id)->get();
+                            $chapter_steps = [];
+                            foreach($steps as $vals){
+                                $arr1['id'] = $vals->id;
+                                $arr1['type'] = $vals->type;
+                                $arr1['title'] = $vals->title;
+                                $arr1['description'] = $vals->description;
+                                $arr1['file'] = ($vals->details == null || $vals->details == "") ? null : url('upload/course/' . $vals->details);
+                                $arr1['prerequisite'] = $vals->prerequisite;
+                                $arr1['sort_order'] = $vals->sort_order;
+                                $question = ChapterQuiz::where('step_id', $vals->id)->get();
+                                $chapter_question = [];
+                                foreach($question as $valq){
+                                    $arr2['id'] = $valq->id;
+                                    $arr2['title'] = $valq->title;
+                                    $arr2['marks'] = $valq->marks;
+                                    $arr2['type'] = $valq->type;
+
+                                    $option = ChapterQuizOption::where('quiz_id', $valq->id)->get();
+                                    $chapter_option = [];
+                                    foreach($option as $valo){
+                                        $arr3['id'] = $valo->id;
+                                        $arr3['value'] = $valo->answer_option_key;
+                                        $arr3['correct'] = $valo->is_correct;
+                                        $arr3['correct_status'] = ($valo->is_correct == 1) ? "Correct" : "Wrong";
+                                        $chapter_option[] = $arr3;
+                                    }
+                                    $arr2['chapter_option'] = $chapter_option;
+                                    $chapter_question[] = $arr2;
+                                }
+                                $arr1['chapter_question'] = $chapter_question;
+                                $chapter_steps[] = $arr1;
+                            }
+                            $arr['chapter_steps'] = $chapter_steps;
+                            $chapters[] = $arr;
+                        }
+
                     } else {
                         $temp['price'] = $item->price;
                         $all_products_image = ProductAttibutes::where('product_id', $item->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
@@ -965,11 +1011,22 @@ class ApiController extends Controller
                     }
                     $temp['id'] = $item->id;
                    
+                    $tags = [];
+                    foreach(unserialize($item->tags) as $value){
+                        $name = Tag::where('id', $value)->first();
+                        $temparory['name'] = $name->tag_name;
+                        $temparory['id'] = $name->id;
+                        $tags[] = $temparory;
+                    }
+
+                    // $chapters = DB::table('course_chapter as cc')->join('course_chapter_steps as ccs', 'cc.id', '=', 'ccs.course_chapter_id')->join('chapter_quiz as cq', 'ccs.id', '=', 'cq.step_id')->join('chapter_quiz_options as cqo', 'cq.id', '=', 'quiz_id')->where('cc.course_id', $id)->get();
+
                     
                     $temp['description'] = $item->description;
-                    $temp['tags'] = $item->tags;
+                    $temp['tags'] = $tags;
                     $temp['status'] = $item->status;
                     $temp['rating'] = 4.6;
+                    $temp['chapters'] = $chapters;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
                     if ($type == 1) {
                         return response()->json(['status' => true, 'message' => ' Course Listing', 'data' => $temp]);
@@ -1324,25 +1381,30 @@ class ApiController extends Controller
     public function add_card(Request $request)
     {
         try {
-            $validator = Validator::make($request->all(), [
-                'card_number' => 'required|numeric',
-                'valid_upto' => 'required',
-                'cvv' => 'required',
-                'card_holder_name' => 'required'
-            ]);
-            if ($validator->fails()) {
-                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            $user_id = Auth::user()->id;
+            if ($user_id) {
+                $validator = Validator::make($request->all(), [
+                    'card_number' => 'required|numeric',
+                    'valid_upto' => 'required',
+                    'cvv' => 'required',
+                    'card_holder_name' => 'required'
+                ]);
+                if ($validator->fails()) {
+                    return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+                } else {
+                    $card = new CardDetail;
+                    $card->userid = $user_id;
+                    $card->card_no = encrypt_decrypt('encrypt', $request->card_number);
+                    $card->expiry = encrypt_decrypt('encrypt', $request->valid_upto);
+                    $card->CVV = encrypt_decrypt('encrypt', $request->cvv);
+                    $card->name_on_card = $request->card_holder_name;
+                    $card->card_type = 'VISA';
+                    $card->created_date = date('Y-m-d H:i:s');
+                    $card->save();
+                    return response()->json(['status' => true, 'message' => 'Card Added']);
+                }
             } else {
-                $card = new CardDetail;
-                $card->user_id = auth()->user()->id;
-                $card->card_number = encrypt_decrypt('encrypt', $request->card_number);
-                $card->valid_upto = encrypt_decrypt('encrypt', $request->valid_upto);
-                $card->cvv = encrypt_decrypt('encrypt', $request->cvv);
-                $card->card_holder_name = $request->card_holder_name;
-                $card->card_type = 'VISA';
-                $card->created_at = date('Y-m-d H:i:s');
-                $card->save();
-                return response()->json(['status' => true, 'message' => 'Card Added']);
+                return response()->json(['status' => false, 'Message' => 'Please login']);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -1518,6 +1580,7 @@ class ApiController extends Controller
             $user_id = Auth::user()->id;
             if ($user_id) {
                 $cart_value = AddToCart::where('userid', $user_id)->sum('cart_value');
+                $cart_count = AddToCart::where('userid', $user_id)->count();
                 $shipping_amount = 10;
                 $discount = 0;
                 $total_amount = ($cart_value + $shipping_amount) - $discount;
@@ -1527,10 +1590,10 @@ class ApiController extends Controller
 
                     foreach ($card as $key => $value) {
                         $temp['card_id'] = $value->id;
-                        $temp['card_number'] = encrypt_decrypt('decrypt', $value->card_number);
-                        $temp['card_holder_name'] = $value->card_holder_name;
-                        $temp['cvv'] = encrypt_decrypt('decrypt', $value->cvv);
-                        $temp['valid_upto'] = encrypt_decrypt('decrypt', $value->valid_upto);
+                        $temp['card_number'] = encrypt_decrypt('decrypt', $value->card_no);
+                        $temp['card_holder_name'] = $value->name_on_card;
+                        $temp['cvv'] = encrypt_decrypt('decrypt', $value->CVV);
+                        $temp['valid_upto'] = encrypt_decrypt('decrypt', $value->expiry);
                         $temp['card_type'] = $value->card_type;
 
                         $card_type = $value->card_type;
@@ -1544,7 +1607,8 @@ class ApiController extends Controller
                     return response()->json([
                         'status' => true,
                         'message' => 'Card list found.',
-                        'sub_total' => $cart_value,
+                        'sub_total' => (int)$cart_value,
+                        'order_count' => $cart_count,
                         'discount' => $discount,
                         'shopping' => $shipping_amount,
                         'total' => $total_amount,
@@ -1554,10 +1618,11 @@ class ApiController extends Controller
                     return response()->json([
                         'status' => true,
                         'message' => 'You have no card.',
-                        'sub_total' => '',
-                        'discount' => 0,
-                        'shipping' => 0,
-                        'total' => '',
+                        'sub_total' => (int)$cart_value,
+                        'order_count' => $cart_count,
+                        'discount' => $discount,
+                        'shipping' => $shipping_amount,
+                        'total' => $total_amount,
                         'data' => $response
                     ]);
                 }

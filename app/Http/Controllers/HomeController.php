@@ -101,6 +101,7 @@ class HomeController extends Controller
                 'description' => $request->description,
                 'course_fee' => $request->course_fee,
                 'valid_upto' => $request->valid_upto,
+                'tags' => serialize($request->tags),
                 'certificates' => $imageName,
                 'introduction_image' => $disclaimers_introduction,
                 'status' => 0,
@@ -345,7 +346,7 @@ class HomeController extends Controller
                                 foreach($valueQ as $keyQVal => $valueQVal){
                                     $ChapterQuiz = new ChapterQuiz;
                                     $ChapterQuiz->title = $valueQVal['text'];
-                                    $ChapterQuiz->type = 'quiz';
+                                    $ChapterQuiz->type = 'survey';
                                     $ChapterQuiz->chapter_id = $request->chapter_id;
                                     $ChapterQuiz->course_id = $request->courseID;
                                     $ChapterQuiz->step_id = $Step['id '];
