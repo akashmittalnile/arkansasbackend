@@ -828,6 +828,14 @@ class ApiController extends Controller
                         } else {
                             $temp['isLike'] = 0;
                         }
+
+                        $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                        if (isset($wishlist)) {
+                            $temp['isWishlist'] = 1;
+                        } else {
+                            $temp['isWishlist'] = 0;
+                        }
+
                         $temp['title'] = $value->title;
                         if ($value->profile_image) {
                             $profile_image = url('upload/profile-image/'.$value->profile_image);
@@ -1757,7 +1765,14 @@ class ApiController extends Controller
                 if (count($orders) > 0) {
                     foreach ($orders as $key => $value) {
                         if ($request->type == 1) {
-                            $OrderDetails = OrderDetail::where('order_id', $value->id)->where('product_type',1)->get();
+                            $OrderDetails = OrderDetail::where('order_id', $value->id)->where('product_type',1)->first();
+                            if(!isset($OrderDetails)){
+                                return response()->json([
+                                    'status' => true,
+                                    'message' => 'No Order found',
+                                    'data' => $response
+                                ]);
+                            }
                             $temp['course_valid_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                             $temp['complete_course_on'] = date('d/m/y,H:i', strtotime($value->created_date));
                             $Course = Course::where('id', $OrderDetails->product_id)->first();
@@ -1781,7 +1796,14 @@ class ApiController extends Controller
                             $temp['content_creator_name'] = $ContentCreator->first_name.' '.$ContentCreator->last_name;
                             $temp['content_creator_id'] = isset($ContentCreator->id) ? $ContentCreator->id : '';
                         } else {
-                            $OrderDetails = OrderDetail::where('order_id', $value->id)->where('product_type',2)->get();
+                            $OrderDetails = OrderDetail::where('order_id', $value->id)->where('product_type',2)->first();
+                            if(!isset($OrderDetails)){
+                                return response()->json([
+                                    'status' => true,
+                                    'message' => 'No Order found',
+                                    'data' => $response
+                                ]);
+                            }
                             $temp['order_id'] = 'ASD7896541';
                             $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                             $Product = Product::where('id', $OrderDetails->product_id)->first();
@@ -1870,7 +1892,11 @@ class ApiController extends Controller
     public function cart_count(Request $request){
         try{
             $cart = AddToCart::where('userid', auth()->user()->id)->count();
-            return $cart;
+            return response()->json([
+                'status' => true,
+                'message' => 'Cart count',
+                'data' => $cart
+            ]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
