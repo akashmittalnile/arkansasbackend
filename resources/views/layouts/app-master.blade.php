@@ -26,7 +26,7 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/help-support.css') !!}">
     @endif
 
-    @if ($currentURL == 'home.index' || $currentURL == 'Home.Addcourse'|| $currentURL == 'Home.Addcourse2' || $currentURL == 'Home.CourseList' || $currentURL == 'Home.edit.course')
+    @if ($currentURL == 'home.index' || $currentURL == 'Home.Addcourse'|| $currentURL == 'Home.Addcourse2' || $currentURL == 'Home.CourseList' || $currentURL == 'Home.edit.course' || $currentURL == 'Home.view.course')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">
         <script src="{!! url('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>

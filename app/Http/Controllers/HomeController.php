@@ -13,6 +13,7 @@ use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use PDO;
+use DB;
 
 class HomeController extends Controller
 {
@@ -107,7 +108,7 @@ class HomeController extends Controller
                 'status' => 0,
             ]);
 
-            return redirect('/');
+            return redirect()->route('home.index')->with('message','Course updated successfully');
 
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -116,12 +117,38 @@ class HomeController extends Controller
 
     public function deleteCourse($id){
         try{
-            CourseChapter::where('course_id', encrypt_decrypt('decrypt',$id))->delete();
             Course::where('id', encrypt_decrypt('decrypt',$id))->delete();
-            return redirect('/');
+            $courseChapter = CourseChapter::where('course_id', encrypt_decrypt('decrypt',$id))->get();
+            foreach($courseChapter as $val){
+                CourseChapterStep::where('course_chapter_id', $val->id)->delete();
+            }
+            CourseChapter::where('course_id', encrypt_decrypt('decrypt',$id))->delete();
+            return redirect()->route('home.index')->with('message','Course deleted successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    public function viewCourse($id) 
+    {
+        $id = encrypt_decrypt('decrypt', $id);
+        $course = Course::where('id', $id)->first();
+        $course->tags = unserialize($course->tags);
+        $tags = Tag::all();
+        $combined = array();
+        foreach ($tags as $arr) {
+            $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
+            foreach ($course->tags as $arr2) {
+                if ($arr2 == $arr['id']) {
+                    $comb['selected'] = true;
+                    break;
+                }
+            }
+            $combined[] = $comb;
+        }
+        $reviewAvg = DB::table('user_review as ur')->where('object_id', $id)->where('object_type', 1)->avg('rating');
+        $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date')->where('object_id', $id)->where('object_type', 1)->get();
+        return view('home.viewCourseDetails')->with(compact('course', 'combined', 'review', 'reviewAvg'));
     }
 
     public function add_video(Request $request){

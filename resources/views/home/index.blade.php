@@ -40,6 +40,13 @@
             </div>
         </div>
 
+        @if (session()->has('message'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ session()->get('message') }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
+
         <div class="pmu-content-list">
             <div class="pmu-content">
                 <div class="row">
@@ -72,6 +79,9 @@
                                             </div>
                                             <div class="col-md-2 mb-2 mx-2">
                                                 <a class="newcourse-btn" onclick="return confirm('Are you sure you want to delete this course?');" href="{{ route('Home.delete.course', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-trash"></i></a>
+                                            </div>
+                                            <div class="col-md-2 mb-2">
+                                                <a class="newcourse-btn" href="{{ route('Home.view.course', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-eye"></i></a>
                                             </div>
                                         </div>
 

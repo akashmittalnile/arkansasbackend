@@ -57,6 +57,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/', 'HomeController@index')->name('home.index');
         Route::get('/edit-course/{id}', 'HomeController@editCourse')->name('Home.edit.course');
         Route::post('/edit-course', 'HomeController@updateCourseDetails')->name('Home.updateCourseDetails');
+        Route::get('/view-course-details/{id}', 'HomeController@viewCourse')->name('Home.view.course');
         Route::get('/delete-course/{id}', 'HomeController@deleteCourse')->name('Home.delete.course');
         Route::get('/performance', 'HomeController@performance')->name('Home.Performance');
         Route::get('/help-support', 'HomeController@helpSupport')->name('Home.HelpSupport');
@@ -110,6 +111,11 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/delete-pdf/{id}', 'SuperAdminController@deletePdf')->name('SA.DeletePDF');
         Route::get('/super-admin/update-option-list', 'SuperAdminController@updateOptionList')->name('SA.UpdateOptionList');
         Route::get('/super-admin/update-question-list', 'SuperAdminController@updateQuestionList')->name('SA.UpdateQuestionList');
+
+        Route::get('/super-admin/edit-course/{id}', 'SuperAdminController@editCourse')->name('SA.edit.course');
+        Route::post('/super-admin/edit-course', 'SuperAdminController@updateCourseDetails')->name('SA.updateCourseDetails');
+        Route::get('/super-admin/delete-course/{id}', 'SuperAdminController@deleteCourse')->name('SA.delete.course');
+        Route::get('/super-admin/view-course-details/{id}', 'SuperAdminController@viewCourse')->name('SA.view.course');
         
         Route::get('/super-admin/earnings', 'SuperAdminController@earnings')->name('SA.Earnings');
         Route::get('/super-admin/products', 'SuperAdminController@products')->name('SA.Products');

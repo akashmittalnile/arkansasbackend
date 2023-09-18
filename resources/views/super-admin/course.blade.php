@@ -70,6 +70,19 @@
                                         </a>
                                     </div>
                                     <div class="pmu-course-content">
+
+                                        <div class="d-flex">
+                                            <div class="col-md-2 mb-2">
+                                                <a class="newcourse-btn" href="{{ route('SA.edit.course', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-edit"></i></a>
+                                            </div>
+                                            <div class="col-md-2 mb-2 mx-2">
+                                                <a class="newcourse-btn" onclick="return confirm('Are you sure you want to delete this course?');" href="{{ route('SA.delete.course', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-trash"></i></a>
+                                            </div>
+                                            <div class="col-md-2 mb-2">
+                                                <a class="newcourse-btn" href="{{ route('SA.view.course', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-eye"></i></a>
+                                            </div>
+                                        </div>
+
                                         <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! url('assets/website-images/tick.svg') !!}">
                                             @if ($data->status == 0)
                                                 Unpublished
@@ -102,10 +115,10 @@
                                             </div>
                                         </form>
 
+                                        <a href="{{ route('SA.Course.Chapter', ['courseID' => encrypt_decrypt('encrypt',$data->id)] )}}">
                                         <h2>{{ ($data->title) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->course_fee,2) ? : 0}}</div>
                                         <p>{{ ($data->description) ? : ''}}</p>
-                                        <a href="{{ route('SA.Course.Chapter', ['courseID' => encrypt_decrypt('encrypt',$data->id)] )}}">
                                             <?php
                                                 $chapter_count = \App\Models\CourseChapter::where('course_id',$data->id)->count();
                                             ?>

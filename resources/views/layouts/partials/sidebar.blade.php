@@ -11,7 +11,7 @@
     <div class="sidebar-nav">
         <nav class="sidebar sidebar-offcanvas" id="sidebar">
             <ul class="nav">
-                @if ($currentURL == 'home.index' || $currentURL == 'Home.Addcourse' || $currentURL == 'Home.Addcourse2' || $currentURL == 'Home.CourseList')
+                @if ($currentURL == 'home.index' || $currentURL == 'Home.Addcourse' || $currentURL == 'Home.Addcourse2' || $currentURL == 'Home.CourseList' || $currentURL == 'Home.view.course' || $currentURL == 'Home.edit.course')
                     <li class="nav-item active">
                         <a class="nav-link" href="{{ route('home.index') }}">
                             <span class="menu-icon"><img src="{!! url('assets/website-images/book.svg') !!}"></span>

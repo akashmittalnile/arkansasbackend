@@ -169,6 +169,104 @@ class SuperAdminController extends Controller
         }
     }
 
+    public function editCourse($id) 
+    {
+        $id = encrypt_decrypt('decrypt', $id);
+        $course = Course::where('id', $id)->first();
+        $course->tags = unserialize($course->tags);
+        $tags = Tag::all();
+        $combined = array();
+        foreach ($tags as $arr) {
+            $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
+            foreach ($course->tags as $arr2) {
+                if ($arr2 == $arr['id']) {
+                    $comb['selected'] = true;
+                    break;
+                }
+            }
+            $combined[] = $comb;
+        }
+        return view('super-admin.editCourseDetails')->with(compact('course', 'combined'));
+    }
+
+    public function updateCourseDetails(Request $request){
+        try {
+            $course = Course::where('id', encrypt_decrypt('decrypt',$request->hide))->first();
+            $imageName = $course->certificates;
+            if ($request->certificates) {
+                $imageName = time().'.'.$request->certificates->extension();  
+                $request->certificates->move(public_path('upload/course-certificates'), $imageName);
+
+                $image_path = app_path("upload/course-certificates/{$course->certificates}");
+                if(File::exists($image_path)) {
+                    unlink($image_path);
+                }
+            }
+            $disclaimers_introduction = $course->introduction_image;
+            if ($request->disclaimers_introduction) {
+                $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
+                $request->disclaimers_introduction->move(public_path('upload/disclaimers-introduction'), $disclaimers_introduction);
+
+                $image_path = app_path("upload/disclaimers-introduction/{$course->introduction_image}");
+                if(File::exists($image_path)) {
+                    unlink($image_path);
+                }
+            }
+
+            Course::where('id', encrypt_decrypt('decrypt',$request->hide))->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'course_fee' => $request->course_fee,
+                'valid_upto' => $request->valid_upto,
+                'tags' => serialize($request->tags),
+                'certificates' => $imageName,
+                'introduction_image' => $disclaimers_introduction,
+                'status' => 0,
+            ]);
+
+            return redirect()->route('SA.Course');
+
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function deleteCourse($id){
+        try{
+            Course::where('id', encrypt_decrypt('decrypt',$id))->delete();
+            $courseChapter = CourseChapter::where('course_id', encrypt_decrypt('decrypt',$id))->get();
+            foreach($courseChapter as $val){
+                CourseChapterStep::where('course_chapter_id', $val->id)->delete();
+            }
+            CourseChapter::where('course_id', encrypt_decrypt('decrypt',$id))->delete();
+            return redirect()->route('SA.Course')->with('message','Course deleted successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function viewCourse($id) 
+    {
+        $id = encrypt_decrypt('decrypt', $id);
+        $course = Course::where('id', $id)->first();
+        $course->tags = unserialize($course->tags);
+        $tags = Tag::all();
+        $combined = array();
+        foreach ($tags as $arr) {
+            $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
+            foreach ($course->tags as $arr2) {
+                if ($arr2 == $arr['id']) {
+                    $comb['selected'] = true;
+                    break;
+                }
+            }
+            $combined[] = $comb;
+        }
+        $reviewAvg = DB::table('user_review as ur')->where('object_id', $id)->where('object_type', 1)->avg('rating');
+        $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date')->where('object_id', $id)->where('object_type', 1)->get();
+        return view('super-admin.viewCourseDetails')->with(compact('course', 'combined', 'review', 'reviewAvg'));
+    }
+
     public function courseChapter(Request $request, $courseID, $chapterID=null){
         try {
             $courseID = encrypt_decrypt('decrypt',$courseID);
