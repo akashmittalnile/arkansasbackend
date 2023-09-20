@@ -138,7 +138,18 @@ class ApiController extends Controller
                 $b3['rating'] = 4.6;
                 $b3['course_fee'] = $data->course_fee;
                 $b3['status'] = $data->status;
-                $b3['tags'] = isset($data->tags) ? $data->tags : '';
+
+                $tags = [];
+                if(isset($data->tags)){
+                    foreach(unserialize($data->tags) as $value){
+                        $name = Tag::where('id', $value)->first();
+                        $temparory['name'] = $name->tag_name;
+                        $temparory['id'] = $name->id;
+                        $tags[] = $temparory;
+                    }
+                }
+
+                $b3['tags'] = $tags;
                 $b3['valid_upto'] = $data->valid_upto;
                 if (!empty($data->certificates)) {
                     $b3['certificates_image'] = url('upload/course-certificates/' . $data->certificates);
@@ -249,6 +260,17 @@ class ApiController extends Controller
                 }
             }
             
+            $allTags = [];
+            $tagsQuery = Tag::all();
+            if(isset($tagsQuery)){
+                foreach($tagsQuery as $value){
+                    $temparory['name'] = $value->tag_name;
+                    $temparory['id'] = $value->id;
+                    $temparory['type'] = $value->type;
+                    $temparory['type_name'] = ($value->type == 1) ? "Course" : "Product";
+                    $allTags[] = $temparory;
+                }
+            }
 
             $datas['trending_course'] = $TrendingCourses;
             $datas['top_category'] = $TopCategory;
@@ -256,6 +278,9 @@ class ApiController extends Controller
             $datas['all_product'] = $AllProducts;
             $datas['suggested_product'] = $SugProducts;
             $datas['suggested_category'] = $SugCategory;
+            $datas['all_tags'] = $allTags;
+
+
             return response()->json(['status' => true, 'message' => 'Home Page Listing', 'data' => $datas]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());

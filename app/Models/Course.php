@@ -21,6 +21,7 @@ class Course extends Model
         'valid_upto',
         'tags',
         'certificates',
-        'status'
+        'status',
+        'category_id'
     ];
 }
