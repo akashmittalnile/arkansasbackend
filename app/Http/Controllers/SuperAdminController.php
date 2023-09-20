@@ -1010,7 +1010,7 @@ class SuperAdminController extends Controller
                     // unlink($icon);
                     Category::where('id', $request->id)->update(['icon' => $imageName]);
             }
-            Category::where('id', $request->id)->update(['name' => $request->category_name,'status'=>$request->cat_status]);
+            Category::where('id', $request->id)->update(['name' => $request->category_name,'status'=>$request->cat_status, 'type' => $request->cat_type]);
             return redirect('/super-admin/category')->with('message','Category updated successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
