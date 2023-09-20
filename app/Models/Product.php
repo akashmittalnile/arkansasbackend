@@ -18,5 +18,6 @@ class Product extends Model
         'unit',
         'tags',
         'status',
+        'category_id',
     ];
 }

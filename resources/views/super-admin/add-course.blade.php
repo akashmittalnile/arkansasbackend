@@ -54,6 +54,18 @@
                                                 <input type="date" class="form-control" name="valid_upto" placeholder="4 Month" required>
                                             </div>
                                         </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <h4>Category</h4>
+                                                <select name="course_category" id="" class="form-control">
+                                                    <option value="">Select Category</option>
+                                                    @foreach(getCategory(1) as $val)
+                                                        <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
                                         
 
                                         <div class="col-md-12">
@@ -63,7 +75,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <!-- <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Upload Course Certificate (jpg,jpeg,png only | Size: 1MB)</h4>
                                                 <div class="upload-signature">
@@ -79,7 +91,7 @@
                                                     @endif
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
 
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -184,12 +196,11 @@
                     valid_upto: {
                         required:true,
                     },
+                    course_category: {
+                        required:true,
+                    },
                     "tags[]": {
                         required: true,
-                    },
-                    certificates: {
-                        required: true,
-                        filesize : 1,
                     },
                     disclaimers_introduction: {
                         required: true,
@@ -205,6 +216,9 @@
                     },
                     course_fee: {
                         required: 'Please enter course fee',
+                    },
+                    course_category: {
+                        required: 'Please enter course category',
                     },
                     valid_upto: {
                         required: 'Please enter valid upto',

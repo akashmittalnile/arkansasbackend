@@ -62,7 +62,7 @@
 
                             <div class="creator-table-col-1">
                                 <div class="mon-table-box">
-                                    <a onclick='accept_order("{{ $data->tag_name }}","{{ $data->status }}","{{ $data->id }}")' class="btn-go">
+                                    <a onclick='accept_order("{{ $data->tag_name }}","{{ $data->status }}","{{ $data->id }}","{{ $data->type }}")' class="btn-go">
                                         {{-- <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}"> --}}
                                         <i class="las la-edit"></i>
                                     </a>
@@ -109,6 +109,15 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
+                                        <select name="type" id="type" class="form-control" required>
+                                            <option value="" selected>Select Tags For</option>
+                                            <option value="1">Course</option>
+                                            <option value="2">Product</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
                                     <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                     <button class="save-btn" type="submit">Save</button>
                                     </div>
@@ -148,6 +157,15 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
+                                        <select name="type" id="tag_type" class="form-control" required>
+                                            <option value="" selected>Select Tags For</option>
+                                            <option value="1">Course</option>
+                                            <option value="2">Product</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
                                     <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                     <button class="save-btn" type="submit">Save</button>
                                     </div>
@@ -162,9 +180,10 @@
 
     <!-- Show data on edit form -->
     <script>
-        function accept_order(tag_name,status,id) {
+        function accept_order(tag_name,status,id,type) {
             document.getElementById("tag_name_value").value = tag_name;
             document.getElementById("tag_id").value = id;
+            document.getElementById("tag_type").value = type;
             var selectedUser = status;
             $('.form-field-user-edit > option[value="'+ selectedUser +'"]').prop('selected', true);
             $('#Editcourses').modal('show');

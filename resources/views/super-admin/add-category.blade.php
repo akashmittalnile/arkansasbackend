@@ -48,6 +48,17 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
+                                                <h4>Category Type</h4>
+                                                <select class="form-control" name="cat_type" id="cat_type" required>
+                                                    <option value="">Select Category For</option>
+                                                    <option value="1">Course</option>
+                                                    <option value="2">Product</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
                                                 <h4>Upload Image (jpg,jpeg,png only | Size: 1MB)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="category_image" id="PDFJPEGOrPNG"
@@ -106,6 +117,9 @@
                     cat_status: {
                         required: true,
                     },
+                    cat_type: {
+                        required: true,
+                    },
                     category_image: {
                         required: true,
                         filesize : 1,
@@ -117,6 +131,9 @@
                     },
                     cat_status: {
                         required: 'Please enter status',
+                    },
+                    cat_type: {
+                        required: 'Please enter category type',
                     },
                     category_image: {
                         required: "Please choose a file to upload.",

@@ -81,6 +81,18 @@
                                             </div>
                                         </div>
 
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <h4>Category</h4>
+                                                <select name="course_category" id="" class="form-control">
+                                                    <option @if($course->category_id == "") selected @endif value="">Select Category</option>
+                                                    @foreach(getCategory(1) as $val)
+                                                        <option @if($course->category_id == $val->id) selected @endif value="{{ $val->id }}">{{ $val->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Tags With Comma</h4>
@@ -92,7 +104,7 @@
                                             </div>
                                         </div>
                                         <input type="hidden" name="hide" value="{{encrypt_decrypt('encrypt', $course->id)}}">
-                                        <div class="col-md-6">
+                                        <!-- <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Upload Course Certificate (jpg,jpeg,png only | Size: 1MB)</h4>
                                                 <div class="upload-signature">
@@ -105,7 +117,7 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
 
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -207,8 +219,8 @@
                     "tags[]": {
                         required: true,
                     },
-                    certificates: {
-                        filesize :1,
+                    course_category: {
+                        required:true,
                     },
                     disclaimers_introduction: {
                         filesize : 2,
@@ -224,7 +236,9 @@
                     "tags[]": {
                         required: 'Please enter tags',
                     },
-                    
+                    course_category: {
+                        required: 'Please enter course category',
+                    },
                 },
                 submitHandler: function(form) {
                     // This function will be called when the form is valid and ready to be submitted

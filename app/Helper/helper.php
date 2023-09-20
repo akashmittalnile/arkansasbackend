@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Models\ChapterQuiz;
@@ -81,6 +82,21 @@ use App\Models\ChapterQuiz;
         function errorMsg($msg, $data = [])
         {
             return response()->json(['status' => false, 'message' => $msg, 'data' => $data]);
+        }
+    }
+
+    if (!function_exists('getCategory')) {
+        function getCategory($type, $id = null, $status = null)
+        {
+            $query = Category::where('type', $type);
+            if(isset($id)){
+                $query->where('id', $id);
+            }
+            if(isset($status)){
+                $query->where('status', $status);
+            }
+            $query = $query->get();
+            return $query;
         }
     }
 

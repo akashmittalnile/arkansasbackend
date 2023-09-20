@@ -76,16 +76,16 @@ class HomeController extends Controller
     public function updateCourseDetails(Request $request){
         try {
             $course = Course::where('id', encrypt_decrypt('decrypt',$request->hide))->first();
-            $imageName = $course->certificates;
-            if ($request->certificates) {
-                $imageName = time().'.'.$request->certificates->extension();  
-                $request->certificates->move(public_path('upload/course-certificates'), $imageName);
+            // $imageName = $course->certificates;
+            // if ($request->certificates) {
+            //     $imageName = time().'.'.$request->certificates->extension();  
+            //     $request->certificates->move(public_path('upload/course-certificates'), $imageName);
 
-                $image_path = app_path("upload/course-certificates/{$course->certificates}");
-                if(File::exists($image_path)) {
-                    unlink($image_path);
-                }
-            }
+            //     $image_path = app_path("upload/course-certificates/{$course->certificates}");
+            //     if(File::exists($image_path)) {
+            //         unlink($image_path);
+            //     }
+            // }
             $disclaimers_introduction = $course->introduction_image;
             if ($request->disclaimers_introduction) {
                 $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
@@ -103,7 +103,8 @@ class HomeController extends Controller
                 'course_fee' => $request->course_fee,
                 'valid_upto' => $request->valid_upto,
                 'tags' => serialize($request->tags),
-                'certificates' => $imageName,
+                'certificates' => null,
+                'category_id' => $request->course_category,
                 'introduction_image' => $disclaimers_introduction,
                 'status' => 0,
             ]);
@@ -429,10 +430,10 @@ class HomeController extends Controller
     public function submitcourse(Request $request) 
     {
         try {
-            if ($request->certificates) {
-                $imageName = time().'.'.$request->certificates->extension();  
-                $request->certificates->move(public_path('upload/course-certificates'), $imageName);
-            }
+            // if ($request->certificates) {
+            //     $imageName = time().'.'.$request->certificates->extension();  
+            //     $request->certificates->move(public_path('upload/course-certificates'), $imageName);
+            // }
             if ($request->disclaimers_introduction) {
                 $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
                 $request->disclaimers_introduction->move(public_path('upload/disclaimers-introduction'), $disclaimers_introduction);
@@ -444,7 +445,8 @@ class HomeController extends Controller
             $course->course_fee = $request->input('course_fee');
             $course->valid_upto = $request->input('valid_upto');
             $course->tags = serialize($request->input('tags'));
-            $course->certificates = $imageName;
+            $course->certificates = null;
+            $course->category_id = $request->course_category;
             $course->status = 0;
             $course->introduction_image = $disclaimers_introduction;
             $course->save(); 

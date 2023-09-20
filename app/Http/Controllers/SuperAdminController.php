@@ -128,7 +128,6 @@ class SuperAdminController extends Controller
         try {
             // dd($request->all());
             $validator = Validator::make($request->all(), [
-                'certificates' => 'required|max:2048',
                 'disclaimers_introduction' => 'required',
                 'title' => 'required',
                 'description' => 'required',
@@ -141,10 +140,10 @@ class SuperAdminController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            if ($request->certificates) {
-                $imageName = time().'.'.$request->certificates->extension();  
-                $request->certificates->move(public_path('upload/course-certificates'), $imageName);
-            }
+            // if ($request->certificates) {
+            //     $imageName = time().'.'.$request->certificates->extension();  
+            //     $request->certificates->move(public_path('upload/course-certificates'), $imageName);
+            // }
 
             if ($request->disclaimers_introduction) {
                 $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
@@ -157,8 +156,9 @@ class SuperAdminController extends Controller
             $course->description = $request->description;
             $course->course_fee = $request->course_fee;
             $course->valid_upto = $request->valid_upto;
+            $course->category_id = $request->course_category;
             $course->tags = serialize($request->tags);
-            $course->certificates = $imageName;
+            $course->certificates = null;
             $course->introduction_image = $disclaimers_introduction;
             $course->status = 1;
             $course->save();
@@ -192,16 +192,16 @@ class SuperAdminController extends Controller
     public function updateCourseDetails(Request $request){
         try {
             $course = Course::where('id', encrypt_decrypt('decrypt',$request->hide))->first();
-            $imageName = $course->certificates;
-            if ($request->certificates) {
-                $imageName = time().'.'.$request->certificates->extension();  
-                $request->certificates->move(public_path('upload/course-certificates'), $imageName);
+            // $imageName = $course->certificates;
+            // if ($request->certificates) {
+            //     $imageName = time().'.'.$request->certificates->extension();  
+            //     $request->certificates->move(public_path('upload/course-certificates'), $imageName);
 
-                $image_path = app_path("upload/course-certificates/{$course->certificates}");
-                if(File::exists($image_path)) {
-                    unlink($image_path);
-                }
-            }
+            //     $image_path = app_path("upload/course-certificates/{$course->certificates}");
+            //     if(File::exists($image_path)) {
+            //         unlink($image_path);
+            //     }
+            // }
             $disclaimers_introduction = $course->introduction_image;
             if ($request->disclaimers_introduction) {
                 $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
@@ -219,7 +219,8 @@ class SuperAdminController extends Controller
                 'course_fee' => $request->course_fee,
                 'valid_upto' => $request->valid_upto,
                 'tags' => serialize($request->tags),
-                'certificates' => $imageName,
+                'certificates' => null,
+                'category_id' => $request->course_category,
                 'introduction_image' => $disclaimers_introduction,
                 'status' => 0,
             ]);
@@ -779,6 +780,7 @@ class SuperAdminController extends Controller
             $tag = Tag::create([
                 'tag_name' => $request->input('tag_name'),
                 'status' => $request->input('status'),
+                'type' => $request->input('type'),
             ]);
             return redirect('super-admin/tag-listing')->with('message','Tag created successfully');
         } catch (\Exception $e) {
@@ -792,6 +794,7 @@ class SuperAdminController extends Controller
             $tag = Tag::where('id',$request->input('tag_id'))->first();
             $tag->tag_name = $request->input('tag_name');
             $tag->status = $request->input('status');
+            $tag->type = $request->input('type');
             $tag->save();
             return redirect('super-admin/tag-listing')->with('message','Tag updated successfully');
         } catch (\Exception $e) {
@@ -841,6 +844,7 @@ class SuperAdminController extends Controller
                 'title' => 'required',
                 'price' => 'required',
                 'qnt' => 'required',
+                'product_category' => 'required',
                 'description' => 'required',
                 //'livesearch' => 'required',
             ]);
@@ -855,6 +859,7 @@ class SuperAdminController extends Controller
                 'name' => $request->input('title'),
                 'product_desc' => $request->input('description'),
                 'price' => $request->input('price'),
+                'category_id' => $request->product_category,
                 'unit' => $request->input('qnt'),
                 //'tags' => $tag,
                 //'Product_image' => ($imageName)?json_encode($imageName):$imageName,
@@ -955,6 +960,7 @@ class SuperAdminController extends Controller
             $validator = Validator::make($request->all(), [
                 'category_image' => 'required|image:jpeg,png,jpg,gif,svg|max:2048',
                 'cat_status' => 'required',
+                'cat_type' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -977,6 +983,7 @@ class SuperAdminController extends Controller
             $Category->name = $request->category_name;
             $Category->icon =  $imageName;
             $Category->status = $request->cat_status;
+            $Category->type = $request->cat_type;
             $Category->save();
             return redirect('/super-admin/category')->with('message','Category created successfully');
         } catch (\Exception $e) {

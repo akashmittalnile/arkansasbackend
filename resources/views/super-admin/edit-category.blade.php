@@ -48,6 +48,17 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
+                                                <h4>Category Type</h4>
+                                                <select class="form-control" name="cat_type" id="cat_type" required>
+                                                    <option @if($data->type == '') selected @endif value="">Select Category For</option>
+                                                    <option @if($data->type == '1') selected @endif value="1">Course</option>
+                                                    <option @if($data->type == '2') selected @endif value="2">Product</option>
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
                                                 <h4>Upload Image (jpg,jpeg,png only | Size: 1MB)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="category_image" id="PDFJPEGOrPNG"
@@ -109,6 +120,9 @@
                     category_image: {
                         filesize : 1,
                     },
+                    cat_type: {
+                        required: true,
+                    },
                 },
                 messages: {
                     category_name: {
@@ -116,6 +130,9 @@
                     },
                     cat_status: {
                         required: 'Please enter status',
+                    },
+                    cat_type: {
+                        required: 'Please enter category type',
                     },
                 },
 

@@ -37,10 +37,10 @@ class ApiController extends Controller
             $user_id = Auth::user()->id;
             $datas = array();
 
-            $trending_courses = Course::leftJoin('users', function($join) {
-                $join->on('course.admin_id', '=', 'users.id');
+            $trending_courses = Course::leftJoin('users as u', function($join) {
+                $join->on('course.admin_id', '=', 'u.id');
             })
-            ->where('course.status', 1)->orderBy('course.id', 'DESC')->get(); /*Get data of Treanding Course*/
+            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name')->get(); /*Get data of Treanding Course*/
             $b1 = array();
             $TrendingCourses = array();
             foreach ($trending_courses as $k => $data) {
@@ -61,7 +61,18 @@ class ApiController extends Controller
                 $b1['rating'] = 4.6;
                 $b1['course_fee'] = $data->course_fee;
                 $b1['status'] = $data->status;
-                $b1['tags'] = isset($data->tags) ? $data->tags : '';
+
+                $tags = [];
+                if(isset($data->tags)){
+                    foreach(unserialize($data->tags) as $value){
+                        $name = Tag::where('id', $value)->first();
+                        $temparory['name'] = $name->tag_name;
+                        $temparory['id'] = $name->id;
+                        $tags[] = $temparory;
+                    }
+                }
+
+                $b1['tags'] = $tags;
                 $b1['valid_upto'] = $data->valid_upto;
                 if (!empty($data->certificates)) {
                     $b1['certificates_image'] = url('upload/course-certificates/' . $data->certificates);
@@ -725,6 +736,12 @@ class ApiController extends Controller
                         } else {
                             $temp['isLike'] = 0;
                         }
+                        $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                        if (isset($wishlist)) {
+                            $temp['isWishlist'] = 1;
+                        } else {
+                            $temp['isWishlist'] = 0;
+                        }
                         $temp['title'] = $value->title;
                         if ($value->profile_image) {
                             $profile_image = url('upload/profile-image/'.$value->profile_image);
@@ -749,6 +766,12 @@ class ApiController extends Controller
                             $temp['isLike'] = 1;
                         } else {
                             $temp['isLike'] = 0;
+                        }
+                        $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->where('status', 1)->first();
+                        if (isset($wishlist)) {
+                            $temp['isWishlist'] = 1;
+                        } else {
+                            $temp['isWishlist'] = 0;
                         }
                         $temp['title'] = $value->name;
                         $User = User::where('id', $value->added_by)->first();
@@ -828,14 +851,12 @@ class ApiController extends Controller
                         } else {
                             $temp['isLike'] = 0;
                         }
-
                         $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->where('status', 1)->first();
                         if (isset($wishlist)) {
                             $temp['isWishlist'] = 1;
                         } else {
                             $temp['isWishlist'] = 0;
                         }
-
                         $temp['title'] = $value->title;
                         if ($value->profile_image) {
                             $profile_image = url('upload/profile-image/'.$value->profile_image);
@@ -860,6 +881,12 @@ class ApiController extends Controller
                             $temp['isLike'] = 1;
                         } else {
                             $temp['isLike'] = 0;
+                        }
+                        $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->where('status', 1)->first();
+                        if (isset($wishlist)) {
+                            $temp['isWishlist'] = 1;
+                        } else {
+                            $temp['isWishlist'] = 0;
                         }
                         $temp['title'] = $value->name;
                         $User = User::where('id', $value->added_by)->first();
@@ -939,6 +966,12 @@ class ApiController extends Controller
                         } else {
                             $temp['isLike'] = 0;
                         }
+                        $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                        if (isset($wishlist)) {
+                            $temp['isWishlist'] = 1;
+                        } else {
+                            $temp['isWishlist'] = 0;
+                        }
                         $temp['title'] = $item->title;
                         if ($item->profile_image) {
                             $profile_image = url('upload/profile-image/'.$item->profile_image);
@@ -962,10 +995,12 @@ class ApiController extends Controller
                             foreach($steps as $vals){
                                 $arr1['id'] = $vals->id;
                                 $arr1['type'] = $vals->type;
+                                $arr1['is_completed'] = $vals->is_completed;
                                 if($vals->type == 'quiz') $chapter_quiz_count++;
                                 $arr1['title'] = $vals->title;
                                 $arr1['description'] = $vals->description;
                                 $arr1['file'] = ($vals->details == null || $vals->details == "") ? null : url('upload/course/' . $vals->details);
+                                $arr1['filename'] = $vals->details;
                                 $arr1['prerequisite'] = $vals->prerequisite;
                                 $arr1['sort_order'] = $vals->sort_order;
                                 $question = ChapterQuiz::where('step_id', $vals->id)->get();
@@ -995,10 +1030,15 @@ class ApiController extends Controller
                             $chapters[] = $arr;
                         }
 
+                        $temp['chapters'] = $chapters;
+                        $temp['chapter_count'] = $chapter_count;
+                        $temp['chapter_quiz_count'] = $chapter_quiz_count;
+
                     } else {
                         $temp['price'] = $item->price;
                         $all_products_image = ProductAttibutes::where('product_id', $item->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                         $datas_image = array();
+                        
                         foreach ($all_products_image as $k => $val) {
                             $datasImage = url('upload/products/' . $val->attribute_value);
                             $datas_image[] = $datasImage;
@@ -1009,6 +1049,12 @@ class ApiController extends Controller
                             $temp['isLike'] = 1;
                         } else {
                             $temp['isLike'] = 0;
+                        }
+                        $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 2)->where('status', 1)->first();
+                        if (isset($wishlist)) {
+                            $temp['isWishlist'] = 1;
+                        } else {
+                            $temp['isWishlist'] = 0;
                         }
                         $temp['title'] = $item->name;
                         $User = User::where('id', $item->added_by)->first();
@@ -1022,27 +1068,34 @@ class ApiController extends Controller
                         $temp['creator_id'] = $item->added_by;
                     }
                     $temp['id'] = $item->id;
-                   
+                    
                     $tags = [];
-                    foreach(unserialize($item->tags) as $value){
-                        $name = Tag::where('id', $value)->first();
-                        $temparory['name'] = $name->tag_name;
-                        $temparory['id'] = $name->id;
-                        $tags[] = $temparory;
+                    if(isset($item->tags)){
+                        foreach(unserialize($item->tags) as $value){
+                            $name = Tag::where('id', $value)->first();
+                            $temparory['name'] = $name->tag_name;
+                            $temparory['id'] = $name->id;
+                            $tags[] = $temparory;
+                        }
                     }
+                    
 
                     // $chapters = DB::table('course_chapter as cc')->join('course_chapter_steps as ccs', 'cc.id', '=', 'ccs.course_chapter_id')->join('chapter_quiz as cq', 'ccs.id', '=', 'cq.step_id')->join('chapter_quiz_options as cqo', 'cq.id', '=', 'quiz_id')->where('cc.course_id', $id)->get();
 
-                    $review = Review::where('userid', $user_id)->count();
+                    $reviewCount = Review::where('userid', $user_id)->count();
+                    $reviewAvg = DB::table('user_review as ur')->where('userid', $user_id)->avg('rating');
+                    $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date', 'u.profile_image')->where('userid', $user_id)->get();
+
+                    if(isset($review->profile_image)){
+                        $review->profile_image = url('upload/profile-image/' . $review->profile_image);
+                    } else $review->profile_image = null;
                     
                     $temp['description'] = $item->description;
                     $temp['tags'] = $tags;
                     $temp['status'] = $item->status;
-                    $temp['rating'] = 4.6;
-                    $temp['chapters'] = $chapters;
-                    $temp['chapter_count'] = $chapter_count;
-                    $temp['chapter_quiz_count'] = $chapter_quiz_count;
-                    $temp['review_count'] = $review;
+                    $temp['rating'] = number_format($reviewAvg, 1);
+                    $temp['review_count'] = $reviewCount;
+                    $temp['review'] = $review;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
                     if ($type == 1) {
                         return response()->json(['status' => true, 'message' => ' Course Listing', 'data' => $temp]);
@@ -1086,7 +1139,7 @@ class ApiController extends Controller
                 $exist = Wishlist::where('userid', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->first();
                 /* Status check for liked post 1 = Already liked , 2 = Create new liked post */
                 if ($exist) {
-                    return response()->json(['status' => false, 'Message' => 'Already favourites',]);
+                    return response()->json(['status' => false, 'message' => 'Already favourites',]);
                 } else {
                     $data = DB::table('user_wishlist')->insert([
                         'object_id' => (int) $item_id,
@@ -1095,10 +1148,10 @@ class ApiController extends Controller
                         'status' => $status,
                         'created_date' => date('Y-m-d H:i:s')
                     ]);
-                    return response()->json(['status' => true, 'Message' => 'Added to favourites',]);
+                    return response()->json(['status' => true, 'message' => 'Added to favourites',]);
                 }
             } else {
-                return response()->json(['status' => false, 'Message' => 'Please login']);
+                return response()->json(['status' => false, 'message' => 'Please login']);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -1127,12 +1180,12 @@ class ApiController extends Controller
                 /* Status check for liked post 1 = Already liked , 2 = Create new liked post */
                 if ($exist) {
                     Wishlist::where('userid', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->delete();
-                    return response()->json(['status' => true, 'Message' => 'Removed to favourites',]);
+                    return response()->json(['status' => true, 'message' => 'Removed from favourites',]);
                 } else {
-                    return response()->json(['status' => false, 'Message' => 'Something went wrong.',]);
+                    return response()->json(['status' => false, 'message' => 'Something went wrong.',]);
                 }
             } else {
-                return response()->json(['status' => false, 'Message' => 'Please login']);
+                return response()->json(['status' => false, 'message' => 'Please login']);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -1210,6 +1263,7 @@ class ApiController extends Controller
                         $data[$key]['review'] = $c->review;
                         $user_name = User::where('id', $c->userid)->first();
                         $data[$key]['user_name'] = $user_name->first_name . ' ' . $user_name->last_name;
+                        $data[$key]['profile_image'] = isset($user_name->profile_image) ? url('upload/profile-image/' . $user_name->profile_image) : null;
                     }
                     return response()->json([
                         "status" => true,
@@ -1916,7 +1970,26 @@ class ApiController extends Controller
                 $step = CourseChapterStep::where('id', $request->chapter_step_id)->where('type', 'assignment')->update([
                     'details' => $fileName 
                 ]);
-                return response()->json(['status' => true, 'message' => 'File uploaded successfully']);
+                return response()->json(['status' => true, 'message' => 'File uploaded successfully', 'data' => $fileName]);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function mark_complete(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'chapter_step_id' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else{
+                $courseStep = CourseChapterStep::where('id', $request->chapter_step_id)->first();
+                $step = CourseChapterStep::where('id', $request->chapter_step_id)->update([
+                    'is_completed' => 1 
+                ]);
+                return response()->json(['status' => true, 'message' => $courseStep->type.' is completed.']);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());

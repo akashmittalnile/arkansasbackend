@@ -67,5 +67,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get("cart-count", [ApiController::class, "cart_count"]);
     Route::post("assignment-upload-file", [ApiController::class, "assignment_upload_file"]);
+    Route::post("mark-as-complete", [ApiController::class, "mark_complete"]);
 
 });

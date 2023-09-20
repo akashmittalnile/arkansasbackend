@@ -81,6 +81,18 @@
                                             </div>
                                         </div>
 
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <h4>Category</h4>
+                                                <select name="course_category" id="" class="form-control">
+                                                    <option value="">Select Category</option>
+                                                    @foreach(getCategory(1) as $val)
+                                                        <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Tags With Comma</h4>
@@ -88,7 +100,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <!-- <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Upload Course Certificate (jpg,jpeg,png only | Size: 1MB)</h4>
                                                 <div class="upload-signature">
@@ -101,7 +113,7 @@
                                                     </label>
                                                 </div>
                                             </div>
-                                        </div>
+                                        </div> -->
 
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -202,9 +214,8 @@
                     "tags[]": {
                         required: true,
                     },
-                    certificates: {
-                        required: true,
-                        filesize : 1,
+                    course_category: {
+                        required:true,
                     },
                     disclaimers_introduction: {
                         required: true,
@@ -218,8 +229,8 @@
                     description: {
                         required: 'Please enter description',
                     },
-                    certificates: {
-                        required: "Please choose a file to upload.",
+                    course_category: {
+                        required: 'Please enter course category',
                     },
                     disclaimers_introduction: {
                         required: "Please choose a file to upload.",

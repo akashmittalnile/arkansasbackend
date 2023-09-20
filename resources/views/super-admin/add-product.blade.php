@@ -46,7 +46,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Price</h4>
                                                 <input type="number" class="form-control" name="price"
@@ -57,7 +57,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Quantity</h4>
                                                 <input type="number" class="form-control" name="qnt" min="0" placeholder="Product Quantity" required>
@@ -67,13 +67,25 @@
                                             </div>
                                         </div>
 
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <h4>Category</h4>
+                                                <select name="product_category" id="" class="form-control">
+                                                    <option value="">Select Category</option>
+                                                    @foreach(getCategory(2) as $val)
+                                                        <option value="{{ $val->id }}">{{ $val->name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Upload Product Image(jpg,jpeg,png only|Size:2048)</h4>
                                                 <div class="upload-signature">
-                                                    <input type="file" name="image[]" id="PDF/JPEG Or PNG"
+                                                    <input type="file" name="image[]" id="PDFJPEGOrPNG"
                                                         class="uploadsignature addsignature" multiple required accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">
-                                                    <label for="PDF/JPEG Or PNG">
+                                                    <label for="PDFJPEGOrPNG">
                                                         <div class="signature-text-img" >
                                                             <span ><img src="{!! url('assets/website-images/upload.svg') !!}"> Click here to Upload</span>
                                                         </div>
@@ -157,9 +169,9 @@
                     qnt: {
                         required:true,
                     },
-                    // livesearch: {
-                    //     required: true,
-                    // },
+                    product_category: {
+                        required: true,
+                    },
                 },
                 messages: {
                     title: {
@@ -174,15 +186,27 @@
                     qnt: {
                         required: 'Please enter quantity',
                     },
-                    // livesearch: {
-                    //     required: 'Please enter tags',
-                    // },
+                    product_category: {
+                        required: 'Please enter product category',
+                    },
                 },
 
                 submitHandler: function(form) {
                     // This function will be called when the form is valid and ready to be submitted
                     form.submit();
-                }
+                },
+                errorElement: "span",
+                errorPlacement: function(error, element) {
+                    error.addClass("invalid-feedback");
+                    element.closest(".form-group").append(error);
+
+                },
+                highlight: function(element, errorClass, validClass) {
+                    $(element).addClass("is-invalid");
+                },
+                unhighlight: function(element, errorClass, validClass) {
+                    $(element).removeClass("is-invalid");
+                },
             });
         });
 
