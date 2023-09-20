@@ -58,7 +58,7 @@ class HomeController extends Controller
         $id = encrypt_decrypt('decrypt', $id);
         $course = Course::where('id', $id)->first();
         $course->tags = unserialize($course->tags);
-        $tags = Tag::all();
+        $tags = Tag::where('type', 1)->get();
         $combined = array();
         foreach ($tags as $arr) {
             $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);

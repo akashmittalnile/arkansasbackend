@@ -81,6 +81,17 @@
 
                                         <div class="col-md-12">
                                             <div class="form-group">
+                                                <h4>Tags With Comma</h4>
+                                                <select class="form-control livesearch p-3" name="tags[]" multiple="multiple" required>
+                                                    @foreach(getTags(2) as $val)
+                                                        <option value="{{ $val->id }}">{{ $val->tag_name }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12">
+                                            <div class="form-group">
                                                 <h4>Upload Product Image(jpg,jpeg,png only|Size:2048)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="image[]" id="PDFJPEGOrPNG"
@@ -142,6 +153,9 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+
     <!-- Style of h2 tag and error message  jQuery Validation -->
     <style>
         .error {
@@ -154,7 +168,16 @@
 
      <!-- Include jQuery Validation -->
     <script>
+
+        $('.livesearch').select2({
+            placeholder: 'Select tags',
+            tags: true,
+        });
+
         $(document).ready(function() {
+            
+            $(".select2-container .selection .select2-selection .select2-search__field").addClass('form-control');
+
             $('#AddProduct').validate({
                 rules: {
                     title: {

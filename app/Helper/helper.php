@@ -4,6 +4,7 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Models\ChapterQuiz;
+use App\Models\Tag;
 
     if (!function_exists('sendNotification')) {
         function sendNotification($token, $data)
@@ -89,6 +90,21 @@ use App\Models\ChapterQuiz;
         function getCategory($type, $id = null, $status = null)
         {
             $query = Category::where('type', $type);
+            if(isset($id)){
+                $query->where('id', $id);
+            }
+            if(isset($status)){
+                $query->where('status', $status);
+            }
+            $query = $query->get();
+            return $query;
+        }
+    }
+
+    if (!function_exists('getTags')) {
+        function getTags($type, $id = null, $status = null)
+        {
+            $query = Tag::where('type', $type);
             if(isset($id)){
                 $query->where('id', $id);
             }

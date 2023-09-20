@@ -58,10 +58,10 @@ class SuperAdminController extends Controller
             $search = $request->q;
             $movies =Tag::select("id", "tag_name")
             		->where('tag_name', 'LIKE', "%$search%")
+                    ->where('type', '1')
             		->get();
         }else{
-            $movies =Tag::select("id", "tag_name")
-            		->get();
+            $movies =Tag::select("id", "tag_name")->where('type', '1')->get();
         }
         return response()->json($movies);
     }
@@ -174,7 +174,7 @@ class SuperAdminController extends Controller
         $id = encrypt_decrypt('decrypt', $id);
         $course = Course::where('id', $id)->first();
         $course->tags = unserialize($course->tags);
-        $tags = Tag::all();
+        $tags = Tag::where('type', 1)->get();
         $combined = array();
         foreach ($tags as $arr) {
             $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
@@ -861,7 +861,7 @@ class SuperAdminController extends Controller
                 'price' => $request->input('price'),
                 'category_id' => $request->product_category,
                 'unit' => $request->input('qnt'),
-                //'tags' => $tag,
+                'tags' => serialize($request->tags),
                 //'Product_image' => ($imageName)?json_encode($imageName):$imageName,
                 'status' => 1,
                 'added_by' => 1
