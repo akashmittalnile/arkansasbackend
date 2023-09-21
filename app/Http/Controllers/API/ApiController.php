@@ -23,8 +23,10 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
+use App\Models\CourseChapter;
 use App\Models\CourseChapterStep;
 use App\Models\Tag;
+use App\Models\UserQuizAnswer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -184,6 +186,18 @@ class ApiController extends Controller
                 } else {
                     $profile_image = url('upload/profile-image/' . $User->profile_image);
                 }
+
+                $tags = [];
+                if(isset($data->tags)){
+                    foreach(unserialize($data->tags) as $value){
+                        $name = Tag::where('id', $value)->first();
+                        $temparory['name'] = $name->tag_name;
+                        $temparory['id'] = $name->id;
+                        $tags[] = $temparory;
+                    }
+                }
+
+                $b4['tags'] = $tags;
                 $b4['creator_image'] = $profile_image;
                 $b4['creator_id'] = $data->added_by;
                 $b4['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
@@ -220,6 +234,18 @@ class ApiController extends Controller
                 } else {
                     $profile_image = url('upload/profile-image/' . $User->profile_image);
                 }
+
+                $tags = [];
+                if(isset($data->tags)){
+                    foreach(unserialize($data->tags) as $value){
+                        $name = Tag::where('id', $value)->first();
+                        $temparory['name'] = $name->tag_name;
+                        $temparory['id'] = $name->id;
+                        $tags[] = $temparory;
+                    }
+                }
+
+                $b5['tags'] = $tags;
                 $b5['creator_image'] = $profile_image;
                 $b5['creator_id'] = $data->added_by;
                 $b5['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
@@ -847,10 +873,23 @@ class ApiController extends Controller
             if ($type == 1) {
                 $datas = Course::leftJoin('users', function($join) {
                     $join->on('course.admin_id', '=', 'users.id');
-                })
-                ->where('course.status', 1)->orderBy('course.id', 'DESC')->get();
+                })->where('course.status', 1);
+                if($request->filled('title')){
+                    $datas->where('course.title', 'like' , '%' . $request->title . '%');
+                }
+                if($request->filled('category')){
+                    $datas->where('course.category_id', $request->category);
+                }
+                $datas = $datas->orderBy('course.id', 'DESC')->get();
             } else {
-                $datas = Product::where('status', 1)->orderBy('id', 'DESC')->get();
+                $datas = Product::where('status', 1);
+                if($request->filled('title')){
+                    $datas->where('name', 'LIKE' . '%' . $request->title . '%');
+                }
+                if($request->filled('category')){
+                    $datas->where('category_id', $request->category);
+                }
+                $datas = $datas->orderBy('id', 'DESC')->get();
             }
 
             $response = array();
@@ -925,13 +964,20 @@ class ApiController extends Controller
                         $temp['creator_id'] = $value->added_by;
                     }
                     $temp['id'] = $value->id;
-                    
-                    
                     $temp['description'] = $value->description;
-                    $temp['tags'] = $value->tags;
                     $temp['status'] = $value->status;
                     $temp['rating'] = 4.6;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
+                    $tags = [];
+                    if(isset($value->tags)){
+                        foreach(unserialize($value->tags) as $val){
+                            $name = Tag::where('id', $val)->first();
+                            $temparory['name'] = $name->tag_name;
+                            $temparory['id'] = $name->id;
+                            $tags[] = $temparory;
+                        }
+                    }
+                    $temp['tags'] = $tags;
                     $response[] = $temp;
                 }
             }
@@ -2020,4 +2066,72 @@ class ApiController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
+
+    public function contestQuizSurvey(Request $request, $chapterId, $quizId){
+        try{
+            $course = CourseChapterStep::where('course_chapter_id', $chapterId)->where('id', $quizId)->whereIn('type', ['quiz', 'survey'])->where('is_completed', 0)->first();
+            if(isset($course)){
+                $data = [];
+                $quiz = ChapterQuiz::where('step_id', $course->id)->whereIn('type', ['quiz', 'survey'])->get();
+                foreach($quiz as $val1){
+                    $temp['step_id'] = $course->id;
+                    $temp['question_id'] = $val1->id;
+                    $temp['type'] = $val1->type;
+                    $temp['title'] = $val1->title;
+                    $temp['marks'] = $val1->marks;
+                    $optionCount = ChapterQuizOption::where('quiz_id', $val1->id)->where('is_correct', '1')->count();
+                    $temp['optionCount'] = $optionCount;
+                    $options = ChapterQuizOption::where('quiz_id', $val1->id)->get();
+                    $temp['option'] = [];
+                    $quizAnswer = UserQuizAnswer::where('quiz_id', $course->id)->where('question_id', $val1->id)->first();
+                    $temp['quiz_answer'] = isset($quizAnswer) ? $quizAnswer->answer_option_key : null;
+                    foreach($options as $val2){
+                        $temp2['id'] = $val2->id;
+                        $temp2['answer'] = $val2->answer_option_key;
+                        $temp2['correct'] = $val2->is_correct;
+                        $temp['option'][] = $temp2;
+                    }
+                    $data[] = $temp;
+                }
+                // dd($data);
+                $questionCount = ChapterQuiz::where('step_id', $course->id)->whereIn('type', ['quiz', 'survey'])->count();
+                return view('home.contest-page')->with(compact('data', 'questionCount'));
+            } else return response()->json(['status'=> false, 'message'=> 'Invalid URL']);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function contestForm(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'quiz_id' => 'required',
+                'question_id' => 'required',
+                'option' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else{
+                $answer = ChapterQuizOption::where('quiz_id', $request->question_id)->where('id', $request->option)->where('is_correct', '1')->first();
+                if(isset($answer->id)){
+                    $marks = ChapterQuiz::where('step_id', $request->quiz_id)->where('id', $request->question_id)->first();
+                } else $marks = null;
+                $option = new UserQuizAnswer;
+                $option->userid = 9;
+                $option->quiz_id = $request->quiz_id;
+                $option->question_id = $request->question_id;
+                $option->marks_obtained = isset($marks) ? $marks->marks : 0;
+                $option->answer_option_key = $request->option;
+                $option->created_date = date('Y-m-d H:i:s');
+                $option->status = isset($answer->id) ? 1 : 0;
+                $option->save();
+                $correct_answer = ChapterQuizOption::where('quiz_id', $request->question_id)->where('is_correct', '1')->first();
+
+                return response()->json(['status'=> true, 'message'=> 'Answer is save successfully.', 'request'=> $request->all(), 'answer_status' => isset($answer->id) ? 1 : 0, 'correct_answer'=> $correct_answer]);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
 }

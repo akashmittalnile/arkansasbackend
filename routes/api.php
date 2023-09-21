@@ -24,6 +24,8 @@ Route::post('reset-password', [AuthController::class, 'reset_password']);
 Route::post('verify-otp', [AuthController::class, "verify_otp"]);
 Route::post('resend-otp', [AuthController::class, "resend_otp"]);
 
+Route::get('contest/{chapterId}/{quizId}', [ApiController::class, "contestQuizSurvey"]);
+Route::post('contest-form', [ApiController::class, "contestForm"])->name('contest.form');
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, "logout"]);
