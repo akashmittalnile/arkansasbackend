@@ -880,16 +880,36 @@ class ApiController extends Controller
                 if($request->filled('category')){
                     $datas->where('course.category_id', $request->category);
                 }
-                $datas = $datas->orderBy('course.id', 'DESC')->get();
+                if($request->filled('rating')){
+                    $datas->join('user_review as ur', 'ur.object_id', '=', 'course.id');
+                    $datas->where('ur.rating', $request->rating)->where('ur.object_type', 1);
+                }
+                if($request->filled('price')){
+                    if($request->price == 1) $datas->orderByDesc('course.course_fee');
+                    else $datas->orderBy('course.course_fee');
+                } else{
+                    $datas->orderBy('course.id', 'DESC');
+                }
+                $datas = $datas->select('course.*', 'users.first_name', 'users.last_name','users.profile_image','users.category_name')->get();
             } else {
-                $datas = Product::where('status', 1);
+                $datas = Product::where('product.status', 1);
                 if($request->filled('title')){
-                    $datas->where('name', 'LIKE' . '%' . $request->title . '%');
+                    $datas->where('product.name', 'LIKE' . '%' . $request->title . '%');
                 }
                 if($request->filled('category')){
-                    $datas->where('category_id', $request->category);
+                    $datas->where('product.category_id', $request->category);
                 }
-                $datas = $datas->orderBy('id', 'DESC')->get();
+                if($request->filled('rating')){
+                    $datas->join('user_review as ur', 'ur.object_id', '=', 'product.id');
+                    $datas->where('ur.rating', $request->rating)->where('ur.object_type', 2);
+                }
+                if($request->filled('price')){
+                    if($request->price == 1) $datas->orderByDesc('product.price');
+                    else $datas->orderBy('product.price');
+                } else{
+                    $datas->orderBy('product.id', 'DESC');
+                }
+                $datas = $datas->get();
             }
 
             $response = array();
@@ -966,7 +986,7 @@ class ApiController extends Controller
                     $temp['id'] = $value->id;
                     $temp['description'] = $value->description;
                     $temp['status'] = $value->status;
-                    $temp['rating'] = 4.6;
+                    $temp['rating'] = 5.0;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                     $tags = [];
                     if(isset($value->tags)){
