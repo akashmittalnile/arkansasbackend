@@ -429,17 +429,42 @@ class ApiController extends Controller
             }
             $user_id = Auth::user()->id;
             $limit = $request->limit;
-            if ($limit == 0) { /* 0 stand for limit ,1 for all */
-                $course = Course::leftJoin('users', function($join) {
-                    $join->on('course.admin_id', '=', 'users.id');
-                })
-                ->where('course.status', 1)->orderBy('course.id', 'DESC')->limit(2)->get();
-            } else {
-                $course = Course::leftJoin('users', function($join) {
-                    $join->on('course.admin_id', '=', 'users.id');
-                })
-                ->where('course.status', 1)->orderBy('course.id', 'DESC')->get();
+
+            $course = Course::leftJoin('users as u', function($join) {
+                $join->on('course.admin_id', '=', 'u.id');
+            })->where('course.status', 1);
+            if($request->filled('title')){
+                $course->where('course.title', 'like' , '%' . $request->title . '%');
             }
+            if($request->filled('category')){
+                $course->where('course.category_id', $request->category);
+            }
+            if($request->filled('rating')){
+                $course->join('user_review as ur', 'ur.object_id', '=', 'course.id');
+                $course->where('ur.rating', $request->rating)->where('ur.object_type', 1);
+            }
+            if($request->filled('price')){
+                if($request->price == 1) $course->orderByDesc('course.course_fee');
+                else $course->orderBy('course.course_fee');
+            } else{
+                $course->orderBy('course.id', 'DESC');
+            }
+            if ($limit == 0) {
+                $course->limit(2);
+            }
+            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name')->get();
+
+            // if ($limit == 0) { /* 0 stand for limit ,1 for all */
+            //     $course = Course::leftJoin('users', function($join) {
+            //         $join->on('course.admin_id', '=', 'users.id');
+            //     })
+            //     ->where('course.status', 1)->orderBy('course.id', 'DESC')->limit(2)->get();
+            // } else {
+            //     $course = Course::leftJoin('users', function($join) {
+            //         $join->on('course.admin_id', '=', 'users.id');
+            //     })
+            //     ->where('course.status', 1)->orderBy('course.id', 'DESC')->get();
+            // }
 
 
             $response = array();
@@ -759,10 +784,43 @@ class ApiController extends Controller
             if ($type == 1) { /* 1 stand for course ,2 for product */
                 $datas = Course::leftJoin('users', function($join) {
                     $join->on('course.admin_id', '=', 'users.id');
-                })
-                ->where('course.status', 1)->orderBy('course.id', 'DESC')->get();
+                })->where('course.status', 1);
+                if($request->filled('title')){
+                    $datas->where('course.title', 'like' , '%' . $request->title . '%');
+                }
+                if($request->filled('category')){
+                    $datas->where('course.category_id', $request->category);
+                }
+                if($request->filled('rating')){
+                    $datas->join('user_review as ur', 'ur.object_id', '=', 'course.id');
+                    $datas->where('ur.rating', $request->rating)->where('ur.object_type', 1);
+                }
+                if($request->filled('price')){
+                    if($request->price == 1) $datas->orderByDesc('course.course_fee');
+                    else $datas->orderBy('course.course_fee');
+                } else{
+                    $datas->orderBy('course.id', 'DESC');
+                }
+                $datas = $datas->select('course.*', 'users.first_name', 'users.last_name','users.profile_image','users.category_name')->get();
             } else {
-                $datas = Product::where('status', 1)->orderBy('id', 'DESC')->get();
+                $datas = Product::where('product.status', 1);
+                if($request->filled('title')){
+                    $datas->where('product.name', 'LIKE' . '%' . $request->title . '%');
+                }
+                if($request->filled('category')){
+                    $datas->where('product.category_id', $request->category);
+                }
+                if($request->filled('rating')){
+                    $datas->join('user_review as ur', 'ur.object_id', '=', 'product.id');
+                    $datas->where('ur.rating', $request->rating)->where('ur.object_type', 2);
+                }
+                if($request->filled('price')){
+                    if($request->price == 1) $datas->orderByDesc('product.price');
+                    else $datas->orderBy('product.price');
+                } else{
+                    $datas->orderBy('product.id', 'DESC');
+                }
+                $datas = $datas->orderBy('product.id', 'DESC')->get();
             }
       
             $response = array();
@@ -915,90 +973,179 @@ class ApiController extends Controller
             $response = array();
             if (isset($datas)) {
                 foreach ($datas as $keys => $value) {
-                    if ($type == 1) { /* 1 stand for course ,2 for product */
 
-                        $temp['course_fee'] = $value->course_fee;
-                        $temp['valid_upto'] = $value->valid_upto;
-                        if (!empty($value->certificates)) {
-                            $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                    if($request->filled('tag')){
+                        if(in_array($request->tag, unserialize($value->tags))){
+                            if ($type == 1) { /* 1 stand for course ,2 for product */
+                                $temp['course_fee'] = $value->course_fee;
+                                $temp['valid_upto'] = $value->valid_upto;
+                                if (!empty($value->certificates)) {
+                                    $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                                } else {
+                                    $temp['certificates_image'] = '';
+                                }
+                                if (!empty($value->introduction_image)) {
+                                    $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                                } else {
+                                    $temp['introduction_video'] = '';
+                                }
+                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
+                                if (isset($exists)) {
+                                    $temp['isLike'] = 1;
+                                } else {
+                                    $temp['isLike'] = 0;
+                                }
+                                $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                                if (isset($wishlist)) {
+                                    $temp['isWishlist'] = 1;
+                                } else {
+                                    $temp['isWishlist'] = 0;
+                                }
+                                $temp['title'] = $value->title;
+                                if ($value->profile_image) {
+                                    $profile_image = url('upload/profile-image/'.$value->profile_image);
+                                } else {
+                                    $profile_image = '';
+                                }
+                                $temp['content_creator_image'] = $profile_image;
+                                $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
+                                $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
+                                $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
+                            } else {
+                                $temp['price'] = $value->price;
+                                $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                                $datas_image = array();
+                                foreach ($all_products_image as $k => $val) {
+                                    $datasImage = url('upload/products/' . $val->attribute_value);
+                                    $datas_image[] = $datasImage;
+                                }
+                                $temp['Product_image'] = $datas_image;
+                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
+                                if (isset($exists)) {
+                                    $temp['isLike'] = 1;
+                                } else {
+                                    $temp['isLike'] = 0;
+                                }
+                                $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->where('status', 1)->first();
+                                if (isset($wishlist)) {
+                                    $temp['isWishlist'] = 1;
+                                } else {
+                                    $temp['isWishlist'] = 0;
+                                }
+                                $temp['title'] = $value->name;
+                                $User = User::where('id', $value->added_by)->first();
+                                $temp['creator_name'] = $User->first_name.' '.$User->last_name;
+                                if ($User->profile_image == '') {
+                                    $profile_image = '';
+                                } else {
+                                    $profile_image = url('upload/profile-image/' . $User->profile_image);
+                                }
+                                $temp['creator_image'] = $profile_image;
+                                $temp['creator_id'] = $value->added_by;
+                            }
+                            $temp['id'] = $value->id;
+                            $temp['description'] = $value->description;
+                            $temp['status'] = $value->status;
+                            $temp['rating'] = 5.0;
+                            $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
+                            $tags = [];
+                            if(isset($value->tags)){
+                                foreach(unserialize($value->tags) as $val){
+                                    $name = Tag::where('id', $val)->first();
+                                    $temparory['name'] = $name->tag_name;
+                                    $temparory['id'] = $name->id;
+                                    $tags[] = $temparory;
+                                }
+                            }
+                            $temp['tags'] = $tags;
+                            $response[] = $temp;
+                        } else continue;
+                    }else{
+                        if ($type == 1) { /* 1 stand for course ,2 for product */
+
+                            $temp['course_fee'] = $value->course_fee;
+                            $temp['valid_upto'] = $value->valid_upto;
+                            if (!empty($value->certificates)) {
+                                $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                            } else {
+                                $temp['certificates_image'] = '';
+                            }
+                            if (!empty($value->introduction_image)) {
+                                $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                            } else {
+                                $temp['introduction_video'] = '';
+                            }
+                            $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
+                            if (isset($exists)) {
+                                $temp['isLike'] = 1;
+                            } else {
+                                $temp['isLike'] = 0;
+                            }
+                            $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                            if (isset($wishlist)) {
+                                $temp['isWishlist'] = 1;
+                            } else {
+                                $temp['isWishlist'] = 0;
+                            }
+                            $temp['title'] = $value->title;
+                            if ($value->profile_image) {
+                                $profile_image = url('upload/profile-image/'.$value->profile_image);
+                            } else {
+                                $profile_image = '';
+                            }
+                            $temp['content_creator_image'] = $profile_image;
+                            $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
+                            $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
+                            $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
                         } else {
-                            $temp['certificates_image'] = '';
+                            $temp['price'] = $value->price;
+                            $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                            $datas_image = array();
+                            foreach ($all_products_image as $k => $val) {
+                                $datasImage = url('upload/products/' . $val->attribute_value);
+                                $datas_image[] = $datasImage;
+                            }
+                            $temp['Product_image'] = $datas_image;
+                            $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
+                            if (isset($exists)) {
+                                $temp['isLike'] = 1;
+                            } else {
+                                $temp['isLike'] = 0;
+                            }
+                            $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->where('status', 1)->first();
+                            if (isset($wishlist)) {
+                                $temp['isWishlist'] = 1;
+                            } else {
+                                $temp['isWishlist'] = 0;
+                            }
+                            $temp['title'] = $value->name;
+                            $User = User::where('id', $value->added_by)->first();
+                            $temp['creator_name'] = $User->first_name.' '.$User->last_name;
+                            if ($User->profile_image == '') {
+                                $profile_image = '';
+                            } else {
+                                $profile_image = url('upload/profile-image/' . $User->profile_image);
+                            }
+                            $temp['creator_image'] = $profile_image;
+                            $temp['creator_id'] = $value->added_by;
                         }
-                        if (!empty($value->introduction_image)) {
-                            $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
-                        } else {
-                            $temp['introduction_video'] = '';
+                        $temp['id'] = $value->id;
+                        $temp['description'] = $value->description;
+                        $temp['status'] = $value->status;
+                        $temp['rating'] = 5.0;
+                        $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
+                        $tags = [];
+                        if(isset($value->tags)){
+                            foreach(unserialize($value->tags) as $val){
+                                $name = Tag::where('id', $val)->first();
+                                $temparory['name'] = $name->tag_name;
+                                $temparory['id'] = $name->id;
+                                $tags[] = $temparory;
+                            }
                         }
-                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
-                        if (isset($exists)) {
-                            $temp['isLike'] = 1;
-                        } else {
-                            $temp['isLike'] = 0;
-                        }
-                        $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->where('status', 1)->first();
-                        if (isset($wishlist)) {
-                            $temp['isWishlist'] = 1;
-                        } else {
-                            $temp['isWishlist'] = 0;
-                        }
-                        $temp['title'] = $value->title;
-                        if ($value->profile_image) {
-                            $profile_image = url('upload/profile-image/'.$value->profile_image);
-                        } else {
-                            $profile_image = '';
-                        }
-                        $temp['content_creator_image'] = $profile_image;
-                        $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
-                        $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
-                        $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
-                    } else {
-                        $temp['price'] = $value->price;
-                        $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
-                        $datas_image = array();
-                        foreach ($all_products_image as $k => $val) {
-                            $datasImage = url('upload/products/' . $val->attribute_value);
-                            $datas_image[] = $datasImage;
-                        }
-                        $temp['Product_image'] = $datas_image;
-                        $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
-                        if (isset($exists)) {
-                            $temp['isLike'] = 1;
-                        } else {
-                            $temp['isLike'] = 0;
-                        }
-                        $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->where('status', 1)->first();
-                        if (isset($wishlist)) {
-                            $temp['isWishlist'] = 1;
-                        } else {
-                            $temp['isWishlist'] = 0;
-                        }
-                        $temp['title'] = $value->name;
-                        $User = User::where('id', $value->added_by)->first();
-                        $temp['creator_name'] = $User->first_name.' '.$User->last_name;
-                        if ($User->profile_image == '') {
-                            $profile_image = '';
-                        } else {
-                            $profile_image = url('upload/profile-image/' . $User->profile_image);
-                        }
-                        $temp['creator_image'] = $profile_image;
-                        $temp['creator_id'] = $value->added_by;
+                        $temp['tags'] = $tags;
+                        $response[] = $temp;
                     }
-                    $temp['id'] = $value->id;
-                    $temp['description'] = $value->description;
-                    $temp['status'] = $value->status;
-                    $temp['rating'] = 5.0;
-                    $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
-                    $tags = [];
-                    if(isset($value->tags)){
-                        foreach(unserialize($value->tags) as $val){
-                            $name = Tag::where('id', $val)->first();
-                            $temparory['name'] = $name->tag_name;
-                            $temparory['id'] = $name->id;
-                            $tags[] = $temparory;
-                        }
-                    }
-                    $temp['tags'] = $tags;
-                    $response[] = $temp;
                 }
             }
             if ($type == 1) {
@@ -2149,6 +2296,18 @@ class ApiController extends Controller
 
                 return response()->json(['status'=> true, 'message'=> 'Answer is save successfully.', 'request'=> $request->all(), 'answer_status' => isset($answer->id) ? 1 : 0, 'correct_answer'=> $correct_answer]);
             }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function resultQuizSurvey(Request $request, $quizId){
+        try{
+            $course = CourseChapterStep::where('id', $quizId)->whereIn('type', ['quiz', 'survey'])->update(['is_completed'=> '1']);
+            $total = ChapterQuiz::where('step_id', $quizId)->whereIn('type', ['quiz', 'survey'])->sum('marks');
+            $obtained = UserQuizAnswer::where('quiz_id', $quizId)->where('userid',9)->sum('marks_obtained');
+
+            return view('home.result-page')->with(compact('obtained', 'total'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }

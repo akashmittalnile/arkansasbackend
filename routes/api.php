@@ -25,6 +25,7 @@ Route::post('verify-otp', [AuthController::class, "verify_otp"]);
 Route::post('resend-otp', [AuthController::class, "resend_otp"]);
 
 Route::get('contest/{chapterId}/{quizId}', [ApiController::class, "contestQuizSurvey"]);
+Route::get('result/{quizId}', [ApiController::class, "resultQuizSurvey"]);
 Route::post('contest-form', [ApiController::class, "contestForm"])->name('contest.form');
 
 Route::middleware('auth:sanctum')->group(function () {

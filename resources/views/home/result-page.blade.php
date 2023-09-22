@@ -10,120 +10,14 @@
 
 <div class="course-player-quiz">
     <div class="course-player-quiz-inner">
-        <h3 id="question">QUESTION 1 OF {{ $questionCount }}</h3>
+        <h3 id="question">Result</h3>
 
-        @foreach($data as $keyq => $val)
-            <div class="{{ ($keyq+1 != 1 ? 'd-none' : '') }}" id="card-{{$keyq+1}}">
-                <div class="course-player-quiz-question">
-                    <h4>{{$val['title'] ?? "NA"}}?</h4>
-                    <p>Marks :- {{ $val['marks'] ?? 0 }}</p>
-                    <p>Choose only {{ $val['optionCount'] ?? 0 }} best answer.</p>
-                </div>
-                <div>
-                    <form  method="POST" id="formData">
-                        <div class="course-player-quiz-choices">
-                            <?php $s_no = 'A'; ?>
-                            @forelse($val['option'] as $keyo => $op)
-                                <div class="course-player-quiz-radio" id="option-{{ $val['question_id'] }}-{{ $op['id'] }}">
-                                    <input type="{{($val['optionCount']>1)?'checkbox':'radio'}}" id="choices-{{$keyq}}-{{ $keyo }}" name="option" value="{{$op['id']}}" required>
-                                    <label for="choices-{{$keyq}}-{{ $keyo }}">
-                                        <div class="course-player-quiz-choice-checkbox">
-                                            <div class="course-player-quiz-choice-label">{{ $s_no }}</div>
-                                            <div class="course-player-quiz-choice-text">{{ $op['answer'] ?? "NA" }}</div>
-                                        </div>
-                                    </label>
-                                </div>
-                            <?php $s_no ++; ?>
-                            @empty
-                            @endforelse
-                            <input type="hidden" name="quiz_id" value="{{$val['step_id']}}">
-                            <input type="hidden" name="question_id" value="{{$val['question_id']}}"> 
-                        </div>
-                        <div class="course-player-footer-action" id="card-button-{{ $val['question_id'] }}">
-                            <button type="submit" id="submit" class="Confirm-btn submit" data-index="{{$keyq+1}}">
-                                Confirm
-                            </button>
-                        </div>
-                    </form>
-                    <div id="explanation" class="course-player-quiz-explanation d-none">
-
-                    </div>
-                    <div class="course-player-footer-action d-none" id="next-button-{{ $val['question_id'] }}">
-                        <button id="next-btn" data-index="{{$keyq+1}}" type="button" class="Confirm-btn {{($questionCount==$keyq+1)?'d-none':'' }}">
-                            Next
-                        </button>
-                    </div>
-                    <div class="course-player-footer-action d-none" id="result-btn">
-                        <a href="{{ url('/') }}/api/result/{{ $val['step_id'] }}" class="Confirm-btn">
-                            Result
-                        </a>
-                    </div>
-                </div>
-            </div>
-        @endforeach
+        <p>Marks Obtained : {{ $obtained }}/{{ $total }}</p>
 
     </div>
 </div>
 
 <script>
-
-    $(document).ready(function(){
-        $(".submit").click(function (e) {
-            // alert(2);
-            e.preventDefault();
-            var id = $("input[name='option']:checked").val();
-            var quiz_id = $("input[name='quiz_id']").val();
-            var question_id = $("input[name='question_id']").val();
-            let confirmIndex = $(this).attr('data-index');
-            $.ajax({
-                url: "{{url('/')}}" + "/api/contest-form",
-                method: 'POST',
-                data: {
-                    option : id,
-                    quiz_id, question_id
-                },
-                success: function (data) {
-                    console.log(data);
-                    if (data.status) {
-                        toastr.success(data.message);
-                        $('#next-button-'+data.request.question_id).removeClass('d-none');
-                        $('#card-button-'+data.request.question_id).addClass('d-none');
-                        $("#explanation").removeClass('d-none');
-                        
-                        console.log(confirmIndex);
-                        if(confirmIndex == "{{ $questionCount }}"){
-                            $("#result-btn").removeClass('d-none');
-                        }
-                        
-                        if(data.answer_status==1){
-                            $("#option-"+data.request.question_id + '-' +data.request.option).addClass("correctanswer");
-                            $("#explanation").html("<span class='correctanswer-msg'>This answer is correct.</span>");
-                        }else{
-                            $("#option-"+data.request.question_id + '-' +data.correct_answer.id).addClass("correctanswer");
-                            $("#option-"+data.request.question_id + '-' +data.request.option).addClass("wronganswer");
-                            $("#explanation").html("<span class='wronganswer-msg'>This answer is incorrect.</span>");
-                        }   
-                    }
-                }
-            });
-        });
-
-
-    })
-
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
-    
-    $(document).on('click', '#next-btn', function(){
-        let cardIndex = $(this).attr('data-index');
-        let nextIndex = parseInt(cardIndex)+1;
-        $("#card-"+cardIndex).remove();
-        $("#card-"+nextIndex).removeClass('d-none');
-        $("#question").html("QUESTION "+ nextIndex +" OF {{ $questionCount }}");
-    })
 
     
 </script>
