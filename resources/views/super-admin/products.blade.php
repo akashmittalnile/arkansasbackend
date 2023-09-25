@@ -67,6 +67,16 @@
                                         </a>
                                     </div>
                                     <div class="pmu-course-content">
+
+                                        <div class="d-flex">
+                                            <div class="col-md-2 mb-2">
+                                                <a class="Create-btn" href="{{ route('SA.Edit.Products', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-edit"></i></a>
+                                            </div>
+                                            <div class="col-md-2 mb-2 mx-2">
+                                                <a class="Create-btn" onclick="return confirm('Are you sure you want to delete this product?');" href="{{ route('SA.Delete.Products', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-trash"></i></a>
+                                            </div>
+                                        </div>
+
                                         <div class="coursestatus"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
                                             @if ($data->status == 0)
                                                 Unpublished

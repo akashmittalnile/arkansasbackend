@@ -835,6 +835,90 @@ class SuperAdminController extends Controller
         return view('super-admin.add-product');
     }
 
+    public function deleteProduct($id) 
+    {
+        try{
+            $id = encrypt_decrypt('decrypt', $id);
+            Product::where('id', $id)->delete();
+            return redirect()->back()->with('message', 'Product deleted successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function editProduct($id) 
+    {
+        try{
+            $id = encrypt_decrypt('decrypt', $id);
+            $product = Product::where('id', $id)->first();
+            $product->tags = unserialize($product->tags);
+            $tags = Tag::where('type', 2)->get();
+            $combined = array();
+            foreach($tags as $arr) {
+                $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
+                foreach ($product->tags as $arr2) {
+                    if ($arr2 == $arr['id']) {
+                        $comb['selected'] = true;
+                        break;
+                    }
+                }
+                $combined[] = $comb;
+            }
+            $attr = ProductAttibutes::where('product_id', $id)->get();
+            return view('super-admin.editProductDetails')->with(compact('product', 'combined', 'attr'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function updateProduct(Request $request) 
+    {
+        try{
+            $validator = Validator::make($request->all(), [
+                'title' => 'required',
+                'price' => 'required',
+                'qnt' => 'required',
+                'product_category' => 'required',
+                'description' => 'required',
+                //'livesearch' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+            
+            $id = encrypt_decrypt('decrypt', $request->id);
+            $product = Product::where('id', $id)->update([
+                'name' => $request->title,
+                'price' => $request->price,
+                'unit' => $request->qnt,
+                'tags' => serialize($request->tags),
+                'category_id' => $request->product_category,
+                'product_desc' => $request->description,
+            ]);
+            
+            
+            if ($files=$request->file('image')){
+                foreach ($files as $j => $file){
+                    $destination = public_path('upload/products/');
+                    $name = time().'.'.$file->extension();
+                    $file->move($destination, $name);
+                    $profile_image_url = $name;
+                    $course = ProductAttibutes::create([
+                        'product_id' => $id,
+                        'attribute_type' => 'Image',
+                        'attribute_code' => 'Image',
+                        'attribute_value' => $profile_image_url,
+                    ]);
+                }
+            }
+            
+            return redirect()->route('SA.Products')->with('message','Product updated successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     public function submitproduct(Request $request) 
     {
         try {
