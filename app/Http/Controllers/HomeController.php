@@ -12,6 +12,7 @@ use App\Models\CourseChapterStep;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Validator;
 use PDO;
 use DB;
 
@@ -33,6 +34,74 @@ class HomeController extends Controller
             $status = 0;
         }
         return $status;
+    }
+
+    public function myAccount() 
+    {
+        try {
+            $user = User::where('id', auth()->user()->id)->first();
+            return view('home.myaccount')->with(compact('user'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function storeMyData(Request $request) 
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'phone' => 'required',
+                'bus_name' => 'required',
+                'bus_title' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }else{
+                $data = User::where('id', auth()->user()->id)->first();
+                if ($request->profile) {
+                    $profile = time().'.'.$request->profile->extension();  
+                    $request->profile->move(public_path('upload/profile-image'), $profile);
+                    $image_path = app_path("upload/profile-image/{$data->profile_image}");
+                    if(File::exists($image_path)) {
+                        unlink($image_path);
+                    }
+                } else $profile = $data->profile_image;
+                if ($request->logo) {
+                    $logo = time().'.'.$request->logo->extension();  
+                    $request->logo->move(public_path('upload/business-logo'), $logo);
+                    $image_path = app_path("upload/business-logo/{$data->business_logo}");
+                    if(File::exists($image_path)) {
+                        unlink($image_path);
+                    }
+                } else $logo = $data->business_logo;
+                if ($request->signature) {
+                    $signature = time().'.'.$request->signature->extension();  
+                    $request->signature->move(public_path('upload/signature'), $signature);
+                    $image_path = app_path("upload/signature/{$data->signature}");
+                    if(File::exists($image_path)) {
+                        unlink($image_path);
+                    }
+                } else $signature = $data->signature;
+
+                $user = User::where('id', auth()->user()->id)->update([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'phone' => $request->phone,
+                    'company_name' => $request->bus_name,
+                    'professional_title' => $request->bus_title,
+                    'profile_image' => $profile,
+                    'business_logo' => $logo,
+                    'signature' => $signature,
+                ]);
+
+                return redirect()->back()->with('message', 'Profile updated successfully');
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
     public function index(Request $request) 

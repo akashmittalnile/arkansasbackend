@@ -55,6 +55,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
          */
         Route::get('/logout', 'LogoutController@perform')->name('logout.perform');
         Route::get('/', 'HomeController@index')->name('home.index');
+        Route::get('/my-account', 'HomeController@myAccount')->name('Home.my.account');
+        Route::post('/my-data', 'HomeController@storeMyData')->name('Home.store.mydata');
         Route::get('/edit-course/{id}', 'HomeController@editCourse')->name('Home.edit.course');
         Route::post('/edit-course', 'HomeController@updateCourseDetails')->name('Home.updateCourseDetails');
         Route::get('/view-course-details/{id}', 'HomeController@viewCourse')->name('Home.view.course');
@@ -87,6 +89,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
     Route::group(['middleware' => ['auth.superadmin']], function() {
         Route::get('/super-admin/dashboard', 'SuperAdminController@dashboard')->name('SA.Dashboard');
+        Route::get('/super-admin/my-account', 'SuperAdminController@myAccount')->name('SA.My.Account');
+        Route::post('/super-admin/my-data', 'SuperAdminController@storeMyData')->name('SA.Store.Mydata');
         Route::get('/super-admin/addcourse', 'SuperAdminController@add_course')->name('SA.AddCourse');
         Route::get('/super-admin/addproduct', 'SuperAdminController@add_product')->name('SA.AddProduct');
         Route::post('/super-admin/submitcourse', 'SuperAdminController@submitcourse')->name('SA.SubmitCourse');

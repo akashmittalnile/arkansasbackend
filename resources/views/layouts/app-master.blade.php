@@ -11,6 +11,8 @@
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/line-awesome/css/line-awesome.min.css') !!}">
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/header-footer.css') !!}">
 
+    @stack('css')
+
     @if ($currentURL == 'check_status')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/auth.css') !!}">
     @endif

@@ -27,7 +27,7 @@
                     </a>
 
                     <div class="dropdown-menu">
-                        <a href="#" class="dropdown-item">
+                        <a href="{{ route('Home.my.account') }}" class="dropdown-item">
                             <i class="las la-user"></i> Profile
                         </a>
                         <a href="{{ route('logout.perform') }}" class="dropdown-item">
