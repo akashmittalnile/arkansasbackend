@@ -93,7 +93,10 @@
                                         </div>
 
                                         @foreach($attr as $valAttr)
-                                            <img src="{!! url('upload/products/'.$valAttr->attribute_value) !!}" />
+                                        <div class="col-2 mx-2 my-4" style="width: 160px; height: 80px;">
+                                            <img class="p-0" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" src="{!! url('upload/products/'.$valAttr->attribute_value) !!}" />
+                                            <a href="{{ route('SA.Delete.Products.Image', encrypt_decrypt('encrypt', $valAttr->id)) }}" onclick="return confirm('Are you sure you want to delete this product image?');"><i style="border: 1px solid red; background: red; border-radius: 50%; padding: 5px; color: white; position: relative; top: -90px; right: -144px;" class="las la-trash"></i></a>
+                                        </div>
                                         @endforeach
 
                                         <div class="col-md-12">

@@ -122,6 +122,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/edit-product/{id}', 'SuperAdminController@editProduct')->name('SA.Edit.Products');
         Route::post('/super-admin/update-product', 'SuperAdminController@updateProduct')->name('SA.Update.Products');
         Route::get('/super-admin/delete-product/{id}', 'SuperAdminController@deleteProduct')->name('SA.Delete.Products');
+        Route::get('/super-admin/delete-product-image/{id}', 'SuperAdminController@deleteProductImage')->name('SA.Delete.Products.Image');
         Route::get('/super-admin/notifications', 'SuperAdminController@notifications')->name('SA.Notifications');
         Route::get('/super-admin/listed-course/{id}', 'SuperAdminController@listed_course')->name('SA.ListedCourse');
         Route::get('/super-admin/inactive/{id}', 'SuperAdminController@InactiveStatus')->name('SA.InactiveStatus');

@@ -840,7 +840,31 @@ class SuperAdminController extends Controller
         try{
             $id = encrypt_decrypt('decrypt', $id);
             Product::where('id', $id)->delete();
+            $attr = ProductAttibutes::where('product_id', $id)->get();
+            foreach($attr as $val){
+                $image_path = app_path("upload/products/{$val->attribute_value}");
+                    if(File::exists($image_path)) {
+                        unlink($image_path);
+                }
+            }
+            $attr = ProductAttibutes::where('product_id', $id)->delete();
             return redirect()->back()->with('message', 'Product deleted successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function deleteProductImage($id) 
+    {
+        try{
+            $id = encrypt_decrypt('decrypt', $id);
+            $attr = ProductAttibutes::where('id', $id)->first();
+            $image_path = app_path("upload/products/{$attr->attribute_value}");
+                if(File::exists($image_path)) {
+                    unlink($image_path);
+            }
+            ProductAttibutes::where('id', $id)->delete();
+            return redirect()->back()->with('message', 'Product image successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
