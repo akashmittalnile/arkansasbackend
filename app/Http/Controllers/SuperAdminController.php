@@ -80,7 +80,7 @@ class SuperAdminController extends Controller
     {
         try {
             $user = User::where('id', auth()->user()->id)->first();
-            return view('super-admin.myaccount')->with(compact('user'));
+            return view('super-admin.my-account')->with(compact('user'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

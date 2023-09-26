@@ -77,15 +77,15 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <h4>Business Name</h4>
-                                    <input type="text" class="form-control" name="bus_name" placeholder="Business Name" value="{{ $user->company_name }}">
+                                    <h4>Business Title</h4>
+                                    <input type="text" class="form-control" name="bus_name" placeholder="Business Title" value="{{ $user->company_name }}">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <h4>Business Title</h4>
-                                    <input type="text" class="form-control" name="bus_title" placeholder="Business Title" value="{{ $user->professional_title }}">
+                                    <h4>Business Sub Title</h4>
+                                    <input type="text" class="form-control" name="bus_title" placeholder="Business Sub Title" value="{{ $user->professional_title }}">
                                 </div>
                             </div>
 
@@ -214,10 +214,10 @@
                     required: 'Please enter phone',
                 },
                 bus_name: {
-                    required: 'Please enter business name',
+                    required: 'Please enter business title',
                 },
                 bus_title: {
-                    required: 'Please enter business title',
+                    required: 'Please enter business sub title',
                 },
             },
             submitHandler: function(form) {
