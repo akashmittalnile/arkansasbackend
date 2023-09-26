@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ApiController;
+use Spatie\FlareClient\Api;
 
 /*
 |--------------------------------------------------------------------------
@@ -27,6 +28,8 @@ Route::post('resend-otp', [AuthController::class, "resend_otp"]);
 Route::get('contest/{chapterId}/{quizId}', [ApiController::class, "contestQuizSurvey"]);
 Route::get('result/{quizId}', [ApiController::class, "resultQuizSurvey"]);
 Route::post('contest-form', [ApiController::class, "contestForm"])->name('contest.form');
+
+Route::get('download-pdf/{id}/{uid}', [ApiController::class, "generate_pdf"]);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, "logout"]);
@@ -71,5 +74,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get("cart-count", [ApiController::class, "cart_count"]);
     Route::post("assignment-upload-file", [ApiController::class, "assignment_upload_file"]);
     Route::post("mark-as-complete", [ApiController::class, "mark_complete"]);
+
+    
 
 });

@@ -168,7 +168,8 @@ return [
         // App\Providers\BroadcastServiceProvider::class,
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
-        //Pawlox\VideoThumbnail\VideoThumbnailServiceProvider::class
+        //Pawlox\VideoThumbnail\VideoThumbnailServiceProvider::class,
+        niklasravnsborg\LaravelPdf\PdfServiceProvider::class
        
     ])->toArray(),
 
@@ -186,6 +187,7 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         // 'Example' => App\Facades\Example::class,
         //'VideoThumbnail' => Pawlox\VideoThumbnail\Facade\VideoThumbnail::class
+        'PDF' => niklasravnsborg\LaravelPdf\Facades\Pdf::class
     ])->toArray(),
 
 ];

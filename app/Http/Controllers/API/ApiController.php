@@ -26,10 +26,12 @@ use App\Models\ChapterQuizOption;
 use App\Models\CourseChapter;
 use App\Models\CourseChapterStep;
 use App\Models\Tag;
+use App\Models\UserCourse;
 use App\Models\UserQuizAnswer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use PDF;
 
 class ApiController extends Controller
 {
@@ -1588,35 +1590,35 @@ class ApiController extends Controller
         }
     }
 
-    public function certificates()
-    {
-        try {
-            $user_id = Auth::user()->id;
-            if ($user_id) {
-                $datas = Certificate::where('user_id', $user_id)->get(); /*Get data of category*/
-                $response = array();
-                if (isset($datas)) {
-                    foreach ($datas as $keys => $item) {
-                        $temp['id'] = $item->id;
-                        $temp['user_id'] = $item->user_id;
-                        if ($item->certificate_image) {
-                            $temp['certificate_image'] = url('upload/certificate-image/' . $item->certificate_image);
-                        } else {
-                            $temp['certificate_image'] = '';
-                        }
-                        $temp['rating'] = 4.9;
-                        $temp['name'] = 'Max bryant';
-                        $response[] = $temp;
-                    }
-                }
-                return response()->json(['status' => true, 'message' => 'Certificate Listing', 'data' => $response]);
-            } else {
-                return response()->json(['status' => false, 'Message' => 'Please login']);
-            }
-        } catch (\Exception $e) {
-            return errorMsg("Exception -> " . $e->getMessage());
-        }
-    }
+    // public function certificates()
+    // {
+    //     try {
+    //         $user_id = Auth::user()->id;
+    //         if ($user_id) {
+    //             $datas = Certificate::where('user_id', $user_id)->get(); /*Get data of category*/
+    //             $response = array();
+    //             if (isset($datas)) {
+    //                 foreach ($datas as $keys => $item) {
+    //                     $temp['id'] = $item->id;
+    //                     $temp['user_id'] = $item->user_id;
+    //                     if ($item->certificate_image) {
+    //                         $temp['certificate_image'] = url('upload/certificate-image/' . $item->certificate_image);
+    //                     } else {
+    //                         $temp['certificate_image'] = '';
+    //                     }
+    //                     $temp['rating'] = 4.9;
+    //                     $temp['name'] = 'Max bryant';
+    //                     $response[] = $temp;
+    //                 }
+    //             }
+    //             return response()->json(['status' => true, 'message' => 'Certificate Listing', 'data' => $response]);
+    //         } else {
+    //             return response()->json(['status' => false, 'Message' => 'Please login']);
+    //         }
+    //     } catch (\Exception $e) {
+    //         return errorMsg("Exception -> " . $e->getMessage());
+    //     }
+    // }
 
     public function notifications()
     {
@@ -2312,5 +2314,36 @@ class ApiController extends Controller
             return errorMsg("Exception -> " . $e->getMessage());
         }
     }
+
+    public function generate_pdf($id, $uid) {
+        $id = encrypt_decrypt('decrypt', $id);
+        $uid = encrypt_decrypt('decrypt', $uid);
+        $user = User::where('id', $uid)->first();
+        $admin = User::where('role', 3)->first();
+        $course = Course::join('users as u', 'u.id', '=', 'course.admin_id')->where('course.id', $id)->select('course.title', 'u.first_name', 'u.last_name', 'u.company_name', 'u.professional_title', 'u.signature', 'u.business_logo')->first();
+        // dd($course);
+        $date = UserCourse::where('user_id', $uid)->where('course_id', $id)->first();
+        $pdf = PDF::loadView('home.certificates', compact('course', 'date', 'user', 'admin'));
+        return $pdf->stream($course->title.' certificate.pdf');
+    }
+
+    public function certificates(Request $request){
+        try{
+            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status')->get();
+            $res = [];
+            foreach($data as $val){
+                $temp['course_id'] = $val->course_id;
+                $temp['user_id'] = $val->user_id;
+                $temp['title'] = $val->title;
+                $temp['status'] = $val->status;
+                $temp['download_pdf'] = url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$val->course_id)."/".encrypt_decrypt('encrypt',$val->user_id);
+                $res[] = $temp;
+            }
+            return response()->json(['status' => true, 'message' => 'Suggested Course Listing', 'data' => $res]);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
 
 }
