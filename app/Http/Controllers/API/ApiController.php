@@ -1237,6 +1237,7 @@ class ApiController extends Controller
                                 $arr1['type'] = $vals->type;
                                 $arr1['is_completed'] = $vals->is_completed;
                                 if($vals->type == 'quiz') $chapter_quiz_count++;
+                                $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) : null;
                                 $arr1['title'] = $vals->title;
                                 $arr1['description'] = $vals->description;
                                 $arr1['file'] = ($vals->details == null || $vals->details == "") ? null : url('upload/course/' . $vals->details);
@@ -2238,6 +2239,8 @@ class ApiController extends Controller
 
     public function contestQuizSurvey(Request $request, $chapterId, $quizId){
         try{
+            $chapterId = encrypt_decrypt('decrypt',$chapterId);
+            $quizId = encrypt_decrypt('decrypt',$quizId);
             $course = CourseChapterStep::where('course_chapter_id', $chapterId)->where('id', $quizId)->whereIn('type', ['quiz', 'survey'])->where('is_completed', 0)->first();
             if(isset($course)){
                 $data = [];
