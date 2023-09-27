@@ -40,7 +40,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('object-type-details', [ApiController::class, "object_type_details"]);/*Course details & Product details*/
     Route::post('all-type-listing', [ApiController::class, "all_type_listing"]);/*Listing of Course & Product*/
     Route::post('suggested-list', [ApiController::class, "suggested_list"]);
-    Route::get('all-category', [ApiController::class,"all_category"]);
     Route::post('add-wishlist', [ApiController::class,"add_wishlist"]);
     Route::post('remove-wishlist', [ApiController::class,"remove_wishlist"]);
     Route::post('submit-review', [ApiController::class,"submit_review"]);
@@ -74,7 +73,5 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get("cart-count", [ApiController::class, "cart_count"]);
     Route::post("assignment-upload-file", [ApiController::class, "assignment_upload_file"]);
     Route::post("mark-as-complete", [ApiController::class, "mark_complete"]);
-
-    
 
 });

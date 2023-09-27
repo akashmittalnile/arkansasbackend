@@ -115,6 +115,44 @@ class ApiController extends Controller
                     $TopCategory[] = $b2;
                 }
             }
+
+            $product_category = Category::where('status', 1)->where('type', 2)->orderBy('id', 'DESC')->get(); /*Get data of category*/
+            $b7 = array();
+            $ProductCategory = array();
+            if(count($product_category) > 0)
+            {
+                foreach ($product_category as $k => $data) {
+                    $b7['id'] = isset($data->id) ? $data->id : '';
+                    $b7['category_name'] = isset($data->name) ? $data->name : '';
+                    if (!empty($data->icon)) {
+                        $b7['category_image'] = url('upload/category-image/' . $data->icon);
+                    } else {
+                        $b7['category_image'] = '';
+                    }
+                    $b7['cat_status'] = isset($data->status) ? $data->status : '';
+                    $b7['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
+                    $ProductCategory[] = $b7;
+                }
+            }
+
+            $course_category = Category::where('status', 1)->where('type', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
+            $b8 = array();
+            $CourseCategory = array();
+            if(count($course_category) > 0)
+            {
+                foreach ($course_category as $k => $data) {
+                    $b8['id'] = isset($data->id) ? $data->id : '';
+                    $b8['category_name'] = isset($data->name) ? $data->name : '';
+                    if (!empty($data->icon)) {
+                        $b8['category_image'] = url('upload/category-image/' . $data->icon);
+                    } else {
+                        $b8['category_image'] = '';
+                    }
+                    $b8['cat_status'] = isset($data->status) ? $data->status : '';
+                    $b8['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
+                    $CourseCategory[] = $b8;
+                }
+            }
             
 
             $suggested_courses = Course::leftJoin('users', function($join) {
@@ -302,7 +340,9 @@ class ApiController extends Controller
 
             $datas['trending_course'] = $TrendingCourses;
             $datas['top_category'] = $TopCategory;
+            $datas['course_category'] = $CourseCategory;
             $datas['suggested_course'] = $SuggestedCourses;
+            $datas['product_category'] = $ProductCategory;
             $datas['all_product'] = $AllProducts;
             $datas['suggested_product'] = $SugProducts;
             $datas['suggested_category'] = $SugCategory;
@@ -565,6 +605,8 @@ class ApiController extends Controller
                         $temp['category_name'] = $item->name;
                         $temp['category_image'] = url('upload/category-image/' .$item->icon);
                         $temp['status'] = $item->status;
+                        $temp['type'] = $item->type;
+                        $temp['type_name'] = ($item->type==1) ? "Course" : "Product";
                         $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
                         $response[] = $temp;
                     }
@@ -1150,10 +1192,11 @@ class ApiController extends Controller
                     }
                 }
             }
+            $category = Category::select('id', 'name','description','icon','type')->where('status', 1)->orderByDesc('id')->get();
             if ($type == 1) {
-                return response()->json(['status' => true, 'message' => ' Course Listing', 'data' => $response]);
+                return response()->json(['status' => true, 'message' => ' Course Listing', 'data' => $response, 'category' => $category]);
             } else {
-                return response()->json(['status' => true, 'message' => ' Product Listing', 'data' => $response]);
+                return response()->json(['status' => true, 'message' => ' Product Listing', 'data' => $response, 'category' => $category]);
             }
 
 
