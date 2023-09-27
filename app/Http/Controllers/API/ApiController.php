@@ -1707,10 +1707,10 @@ class ApiController extends Controller
                     $response = [];
                     foreach ($card as $key => $value) {
                         $temp['card_id'] = $value->id;
-                        $temp['card_number'] = encrypt_decrypt('decrypt', $value->card_number);
-                        $temp['card_holder_name'] = $value->card_holder_name;
-                        $temp['cvv'] = encrypt_decrypt('decrypt', $value->cvv);
-                        $temp['valid_upto'] = encrypt_decrypt('decrypt', $value->valid_upto);
+                        $temp['card_number'] = "XXXX XXXX XXXX ".substr(encrypt_decrypt('decrypt', $value->card_no),12);
+                        $temp['card_holder_name'] = $value->name_on_card;
+                        $temp['cvv'] = encrypt_decrypt('decrypt', $value->CVV);
+                        $temp['valid_upto'] = encrypt_decrypt('decrypt', $value->expiry);
                         $temp['card_type'] = $value->card_type;
 
                         $card_type = $value->card_type;
@@ -1799,22 +1799,13 @@ class ApiController extends Controller
                 if ($validator->fails()) {
                     return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
                 }
-                $type = $request->object_type;
-                $object_type = $request->object_type;
-                $object_id = $request->object_id;
-                if ($object_type == 1) { /* 1 stand for course ,2 for product */
-                    $datas = Course::leftJoin('users', function($join) {
-                        $join->on('course.admin_id', '=', 'users.id');
-                    })
-                    ->where('course.id', $object_id)->first();
-                } else {
-                    $datas = Product::where('id', $object_id)->first();
-                }
+                
                 $cart = new AddToCart;
                 $cart->userid = $user_id;
-                $cart->object_id = $object_id;
-                $cart->object_type = $object_type;
+                $cart->object_id = $request->object_id;
+                $cart->object_type = $request->object_type;
                 $cart->cart_value = $request->cart_value;
+                $cart->quantity = $request->quantity ?? 1;
                 $cart->save();
                 if ($cart) {
                     return response()->json(['status' => true, 'message' => 'Cart Added']);
@@ -1845,10 +1836,10 @@ class ApiController extends Controller
                         $temp['userid'] = $item->userid;
                         $temp['object_id'] = $item->object_id;
                         if ($item->object_type == 1) { /* 1 stand for course ,2 for product */
-                            $value = Course::leftJoin('users', function($join) {
-                                $join->on('course.admin_id', '=', 'users.id');
+                            $value = Course::leftJoin('users as u', function($join) {
+                                $join->on('course.admin_id', '=', 'u.id');
                             })
-                            ->where('course.id', $item->object_id)->first();
+                            ->where('course.id', $item->object_id)->select('course.title', 'course.course_fee', 'u.profile_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.admin_id', 'course.id')->first();
                             $temp['title'] = $value->title;
                             $temp['price'] = $value->course_fee;
                             if ($value->profile_image) {
@@ -1858,8 +1849,6 @@ class ApiController extends Controller
                             }
                             $temp['content_creator_image'] = $profile_image;
                             $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
-                            $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
-                            $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                             $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
                             if (isset($exists)) {
                                 $temp['isLike'] = 1;
@@ -1896,15 +1885,15 @@ class ApiController extends Controller
                         $temp['rating'] = 4.6;
                         $response[] = $temp;
                     }
-                    $shipping_amount = 10;
+                    // $shipping_amount = 10;
                     $discount = 0;
-                    $total_amount = ($cart_value + $shipping_amount) - $discount;
+                    $total_amount = ($cart_value) - $discount;
                     return response()->json([
                         'status' => true,
                         'message' => 'Cart Listing',
                         'sub_total' => (int)$cart_value,
                         'discount' => $discount,
-                        'shipping' => $shipping_amount,
+                        // 'shipping' => $shipping_amount,
                         'total' => $total_amount,
                         'data' => $response
                     ]);
@@ -1935,9 +1924,9 @@ class ApiController extends Controller
             if ($user_id) {
                 $cart_value = AddToCart::where('userid', $user_id)->sum('cart_value');
                 $cart_count = AddToCart::where('userid', $user_id)->count();
-                $shipping_amount = 10;
+                // $shipping_amount = 10;
                 $discount = 0;
-                $total_amount = ($cart_value + $shipping_amount) - $discount;
+                $total_amount = ($cart_value) - $discount;
                 $card = CardDetail::where('userid', $user_id)->get();
                 $response = [];
                 if (count($card) > 0) {
@@ -1964,7 +1953,7 @@ class ApiController extends Controller
                         'sub_total' => (int)$cart_value,
                         'order_count' => $cart_count,
                         'discount' => $discount,
-                        'shopping' => $shipping_amount,
+                        // 'shipping' => $shipping_amount,
                         'total' => $total_amount,
                         'data' => $response
                     ]);
@@ -2001,15 +1990,15 @@ class ApiController extends Controller
                     return response()->json($validator->errors(), 202);
                 }
                 $carts = Addtocart::where('userid', $user_id)->get();
-                $transaction_id = rand(1000000000, 9999999999);
-                $order_no = rand(10000000, 99999999);
-                $shipping_cost = 10;
+                $transaction_id = "txn".rand(1000000000, 9999999999);
+                $order_no = "AKS".rand(10000000, 99999999);
+                // $shipping_cost = 10;
                 $order_price = Addtocart::where('userid', $user_id)->sum('cart_value');
-                $order_items = Addtocart::where('userid', $user_id)->count();
-                $today = date('y/m/d');
-                $coupon_id = 0;
-                $coupon_price = 0;
-                $total_price = $order_price  + $shipping_cost;
+                // $order_items = Addtocart::where('userid', $user_id)->count();
+                // $today = date('y/m/d');
+                // $coupon_id = 0;
+                // $coupon_price = 0;
+                $total_price = $order_price;
 
                 $transactionId = Transaction::insertGetId([
                     'user_id' => $user_id,
@@ -2024,25 +2013,36 @@ class ApiController extends Controller
                     /*Create Order */
                     $insertedId = Order::insertGetId([
                         'user_id' => $user_id,
+                        'order_number' => $order_no,
                         'amount' => $order_price,
-                        'delivery_charges' => $shipping_cost,
                         'total_amount_paid' => $total_price,/*Total amount of order*/
-                        'payment_id' => $transaction_id,
+                        'payment_id' => $transactionId,
+                        'payment_type' => 'card',
                         'created_date' => date('Y-m-d H:i:s'),
                         'status' => 1,
-                        'coupon_id' => $transaction_id,
                     ]);
                     foreach ($carts as $cart) {
                         $OrderDetail = new OrderDetail;
-                        // $OrderDetail->user_id = $cart->user_id;
                         $OrderDetail->order_id = $insertedId;
-                        // $OrderDetail->item_no = rand(10000000, 99999999);
                         $OrderDetail->product_id = $cart->object_id;
                         $OrderDetail->product_type = $cart->object_type;
                         $OrderDetail->quantity = $cart->quantity;
                         $OrderDetail->amount = $cart->cart_value;
                         $OrderDetail->created_date = date('Y-m-d H:i:s');
                         $OrderDetail->save();
+
+                        if($cart->object_type == 1){
+                            $userCourse = new UserCourse;
+                            $userCourse->course_id = $cart->object_id;
+                            $userCourse->user_id = $user_id;
+                            $userCourse->buy_price = $cart->cart_value;
+                            $userCourse->payment_id = $transactionId;
+                            $userCourse->buy_date = date('Y-m-d H:i:s');
+                            $userCourse->status = 0;
+                            $userCourse->created_date = date('Y-m-d H:i:s');
+                            $userCourse->coupon_id = null;
+                            $userCourse->save();
+                        }
                     }
                     Addtocart::where('userid', $user_id)->delete();
 
@@ -2117,7 +2117,7 @@ class ApiController extends Controller
                             $temp['title'] = $Course->title;
                             $temp['course_id'] = $Course->id;
                             $temp['rating'] = 4.6;
-                            $temp['order_status'] = 'Pending';
+                            $temp['order_status'] = ($value->status == 1) ? 'Active' : 'Pending';
                             $exists = Like::where('reaction_by', '=', $value->user_id)->where('object_id', '=', $OrderDetails->product_id)->where('object_type', '=', 1)->first();
                             if (isset($exists)) {
                                 $temp['isLike'] = 1;
@@ -2142,36 +2142,31 @@ class ApiController extends Controller
                                     'data' => $response
                                 ]);
                             }
-                            $temp['order_id'] = 'ASD7896541';
                             $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                             $Product = Product::where('id', $OrderDetails->product_id)->first();
                             $temp['title'] = $Product->name;
                             $temp['product_id'] = $Product->id;
                             $temp['product_price'] = $Product->price;
                             $temp['rating'] = 4.6;
-                            $temp['order_status'] = 'Pending';
+                            $temp['order_status'] = ($value->status == 1) ? 'Active' : 'Pending';
                             $exists = Like::where('reaction_by', '=', $value->user_id)->where('object_id', '=', $OrderDetails->product_id)->where('object_type', '=', 2)->first();
                             if (isset($exists)) {
                                 $temp['isLike'] = 1;
                             } else {
                                 $temp['isLike'] = 0;
                             }
-                            $ContentCreator = User::where('id', $Product->admin_id)->first();
+                            $ContentCreator = User::where('id', $Product->added_by)->first();
+                            $temp['creator_name'] = $ContentCreator->first_name.' '.$ContentCreator->last_name;
                             if ($ContentCreator->profile_image == '') {
                                 $profile_image = '';
                             } else {
                                 $profile_image = url('upload/profile-image/' . $ContentCreator->profile_image);
                             }
-                            $User = User::where('id', $value->added_by)->first();
-                            $temp['creator_name'] = $User->first_name.' '.$User->last_name;
-                            if ($User->profile_image == '') {
-                                $profile_image = '';
-                            } else {
-                                $profile_image = url('upload/profile-image/' . $User->profile_image);
-                            }
                             $temp['creator_image'] = $profile_image;
                             $temp['creator_id'] = $value->added_by;
                         }
+                        $temp['order_id'] = $value->id;
+                        $temp['order_number'] = $value->order_number;
                         $response[] = $temp;
                     }
                     return response()->json([
