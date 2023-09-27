@@ -984,7 +984,7 @@ class ApiController extends Controller
                 }
                 if($request->filled('rating')){
                     $datas->join('user_review as ur', 'ur.object_id', '=', 'course.id');
-                    $datas->where('ur.rating', $request->rating)->where('ur.object_type', 1);
+                    $datas->where('ur.rating', '>=', min($request->rating))->where('ur.object_type', 1);
                 }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('course.course_fee');
@@ -1003,7 +1003,7 @@ class ApiController extends Controller
                 }
                 if($request->filled('rating')){
                     $datas->join('user_review as ur', 'ur.object_id', '=', 'product.id');
-                    $datas->where('ur.rating', $request->rating)->where('ur.object_type', 2);
+                    $datas->where('ur.rating', '>=', min($request->rating))->where('ur.object_type', 2);
                 }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('product.price');
@@ -1055,6 +1055,8 @@ class ApiController extends Controller
                                 $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
                                 $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
                                 $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
+                                $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 1)->avg('rating');
+                                $temp['avg_rating'] = number_format($avgRating, 1);
                             } else {
                                 $temp['price'] = $value->price;
                                 $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
@@ -1086,11 +1088,12 @@ class ApiController extends Controller
                                 }
                                 $temp['creator_image'] = $profile_image;
                                 $temp['creator_id'] = $value->added_by;
+                                $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
+                                $temp['avg_rating'] = number_format($avgRating, 1);
                             }
                             $temp['id'] = $value->id;
                             $temp['description'] = $value->description;
                             $temp['status'] = $value->status;
-                            $temp['rating'] = 5.0;
                             $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                             $tags = [];
                             if(isset($value->tags)){
@@ -1141,6 +1144,8 @@ class ApiController extends Controller
                             $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
                             $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
                             $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
+                            $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 1)->avg('rating');
+                            $temp['avg_rating'] = number_format($avgRating, 1);
                         } else {
                             $temp['price'] = $value->price;
                             $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
@@ -1172,11 +1177,12 @@ class ApiController extends Controller
                             }
                             $temp['creator_image'] = $profile_image;
                             $temp['creator_id'] = $value->added_by;
+                            $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
+                            $temp['avg_rating'] = number_format($avgRating, 1);
                         }
                         $temp['id'] = $value->id;
                         $temp['description'] = $value->description;
                         $temp['status'] = $value->status;
-                        $temp['rating'] = 5.0;
                         $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                         $tags = [];
                         if(isset($value->tags)){
@@ -1805,7 +1811,7 @@ class ApiController extends Controller
                 $cart->object_id = $request->object_id;
                 $cart->object_type = $request->object_type;
                 $cart->cart_value = $request->cart_value;
-                $cart->quantity = $request->quantity ?? 1;
+                $cart->quantity = 1;
                 $cart->save();
                 if ($cart) {
                     return response()->json(['status' => true, 'message' => 'Cart Added']);
@@ -1827,7 +1833,7 @@ class ApiController extends Controller
             $user_id = Auth::user()->id;
             if ($user_id) {
                 $datas = AddToCart::where('userid', $user_id)->orderBy('id', 'DESC')->get();
-                $cart_value = AddToCart::where('userid', $user_id)->sum('cart_value');
+                $cart_value = AddToCart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
 
                 $response = array();
                 if (isset($datas)) {
@@ -1835,6 +1841,9 @@ class ApiController extends Controller
                         $temp['id'] = $item->id;
                         $temp['userid'] = $item->userid;
                         $temp['object_id'] = $item->object_id;
+                        $temp['type'] = $item->object_type;
+                        $temp['type_name'] = ($item->object_type==1) ? "Course" : "Product";
+                        $temp['quantity'] = $item->quantity;
                         if ($item->object_type == 1) { /* 1 stand for course ,2 for product */
                             $value = Course::leftJoin('users as u', function($join) {
                                 $join->on('course.admin_id', '=', 'u.id');
@@ -1882,7 +1891,8 @@ class ApiController extends Controller
                             }
                             $temp['Product_image'] = $datas_image;
                         }
-                        $temp['rating'] = 4.6;
+                        $avgRating = DB::table('user_review as ur')->where('object_id', $item->object_id)->where('object_type', $item->object_type)->avg('rating');
+                        $temp['avg_rating'] = number_format($avgRating, 1);
                         $response[] = $temp;
                     }
                     // $shipping_amount = 10;
@@ -1922,7 +1932,7 @@ class ApiController extends Controller
         try {
             $user_id = Auth::user()->id;
             if ($user_id) {
-                $cart_value = AddToCart::where('userid', $user_id)->sum('cart_value');
+                $cart_value = AddToCart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
                 $cart_count = AddToCart::where('userid', $user_id)->count();
                 // $shipping_amount = 10;
                 $discount = 0;
@@ -1993,23 +2003,25 @@ class ApiController extends Controller
                 $transaction_id = "txn".rand(1000000000, 9999999999);
                 $order_no = "AKS".rand(10000000, 99999999);
                 // $shipping_cost = 10;
-                $order_price = Addtocart::where('userid', $user_id)->sum('cart_value');
+                $order_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
                 // $order_items = Addtocart::where('userid', $user_id)->count();
                 // $today = date('y/m/d');
                 // $coupon_id = 0;
                 // $coupon_price = 0;
                 $total_price = $order_price;
 
-                $transactionId = Transaction::insertGetId([
-                    'user_id' => $user_id,
-                    'status' => 1,
-                    'transaction_id' => $transaction_id,
-                    'amount' => $total_price,
-                    'card_id' =>  $request->card_id,
-                    'created_date' =>  date('Y-m-d H:i:s'),
-                ]);
-
+                
                 if (count($carts) > 0) {
+
+                    $transactionId = Transaction::insertGetId([
+                        'user_id' => $user_id,
+                        'status' => 1,
+                        'transaction_id' => $transaction_id,
+                        'amount' => $total_price,
+                        'card_id' =>  $request->card_id,
+                        'created_date' =>  date('Y-m-d H:i:s'),
+                    ]);
+
                     /*Create Order */
                     $insertedId = Order::insertGetId([
                         'user_id' => $user_id,
@@ -2021,6 +2033,7 @@ class ApiController extends Controller
                         'created_date' => date('Y-m-d H:i:s'),
                         'status' => 1,
                     ]);
+
                     foreach ($carts as $cart) {
                         $OrderDetail = new OrderDetail;
                         $OrderDetail->order_id = $insertedId;
@@ -2386,5 +2399,88 @@ class ApiController extends Controller
         }
     }
 
+    public function special_courses(Request $request){
+        try{
+            $users = User::where('role', 3)->pluck('id');
+            $courses = Course::leftJoin('users', function($join) {
+                $join->on('course.admin_id', '=', 'users.id');
+            })->where('course.status', 1)->whereIn('admin_id', $users)->orderBy('course.id', 'DESC')->select('course.*', 'users.first_name', 'users.last_name','users.profile_image','users.category_name')->get();
+            $data = [];
+            foreach($courses as $value){
+                $temp['course_fee'] = $value->course_fee;
+                $temp['valid_upto'] = $value->valid_upto;
+                if (!empty($value->certificates)) {
+                    $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                } else {
+                    $temp['certificates_image'] = '';
+                }
+                if (!empty($value->introduction_image)) {
+                    $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                } else {
+                    $temp['introduction_video'] = '';
+                }
+                $exists = Like::where('reaction_by', '=', auth()->user()->id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
+                if (isset($exists)) {
+                    $temp['isLike'] = 1;
+                } else {
+                    $temp['isLike'] = 0;
+                }
+                $wishlist = Wishlist::where('userid', '=', auth()->user()->id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                if (isset($wishlist)) {
+                    $temp['isWishlist'] = 1;
+                } else {
+                    $temp['isWishlist'] = 0;
+                }
+                $temp['title'] = $value->title;
+                if ($value->profile_image) {
+                    $profile_image = url('upload/profile-image/'.$value->profile_image);
+                } else {
+                    $profile_image = '';
+                }
+                $temp['content_creator_image'] = $profile_image;
+                $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
+                $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
+                $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
+                $temp['id'] = $value->id;
+                $temp['description'] = $value->description;
+                $temp['status'] = $value->status;
+                $temp['rating'] = 5.0;
+                $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
+                $tags = [];
+                if(isset($value->tags)){
+                    foreach(unserialize($value->tags) as $val){
+                        $name = Tag::where('id', $val)->first();
+                        $temparory['name'] = $name->tag_name;
+                        $temparory['id'] = $name->id;
+                        $tags[] = $temparory;
+                    }
+                }
+                $temp['tags'] = $tags;
+                $data[] = $temp;
+            }
+            return response()->json(['status' => true, 'message' => 'Special Courses', 'data' => $data]);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function updateProductQuantity(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'cart_id' => 'required',
+                'quantity' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }else{
+                if($request->quantity >= 1 && $request->quantity <= 10){
+                    AddToCart::where('id', $request->cart_id)->where('object_type', 2)->update(['quantity' => $request->quantity]);
+                    return response()->json(['status'=> true, 'message' => 'Quantity updated']);
+                } else return response()->json(['status'=> false, 'message' => 'Quantity must be between in 1 to 10']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
 
 }
