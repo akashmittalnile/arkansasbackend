@@ -71,9 +71,11 @@ class ApiController extends Controller
                 if(isset($data->tags)){
                     foreach(unserialize($data->tags) as $value){
                         $name = Tag::where('id', $value)->first();
-                        $temparory['name'] = $name->tag_name;
-                        $temparory['id'] = $name->id;
-                        $tags[] = $temparory;
+                        if(isset($name->id)){
+                            $temparory['name'] = $name->tag_name ?? null;
+                            $temparory['id'] = $name->id ?? null;
+                            $tags[] = $temparory;
+                        }
                     }
                 }
 
@@ -181,18 +183,20 @@ class ApiController extends Controller
                 $b3['rating'] = 4.6;
                 $b3['course_fee'] = $data->course_fee;
                 $b3['status'] = $data->status;
-
                 $tags = [];
                 if(isset($data->tags)){
                     foreach(unserialize($data->tags) as $value){
                         $name = Tag::where('id', $value)->first();
-                        $temparory['name'] = $name->tag_name;
-                        $temparory['id'] = $name->id;
-                        $tags[] = $temparory;
+                        if(isset($name->id)){
+                            $temparory['name'] = $name->tag_name ?? null;
+                            $temparory['id'] = $name->id ?? null;
+                            $tags[] = $temparory;
+                        }
                     }
                 }
 
                 $b3['tags'] = $tags;
+            
                 $b3['valid_upto'] = $data->valid_upto;
                 if (!empty($data->certificates)) {
                     $b3['certificates_image'] = url('upload/course-certificates/' . $data->certificates);
@@ -232,9 +236,11 @@ class ApiController extends Controller
                 if(isset($data->tags)){
                     foreach(unserialize($data->tags) as $value){
                         $name = Tag::where('id', $value)->first();
-                        $temparory['name'] = $name->tag_name;
-                        $temparory['id'] = $name->id;
-                        $tags[] = $temparory;
+                        if(isset($name->id)){
+                            $temparory['name'] = $name->tag_name ?? null;
+                            $temparory['id'] = $name->id ?? null;
+                            $tags[] = $temparory;
+                        }
                     }
                 }
 
@@ -280,9 +286,11 @@ class ApiController extends Controller
                 if(isset($data->tags)){
                     foreach(unserialize($data->tags) as $value){
                         $name = Tag::where('id', $value)->first();
-                        $temparory['name'] = $name->tag_name;
-                        $temparory['id'] = $name->id;
-                        $tags[] = $temparory;
+                        if(isset($name->id)){
+                            $temparory['name'] = $name->tag_name ?? null;
+                            $temparory['id'] = $name->id ?? null;
+                            $tags[] = $temparory;
+                        }
                     }
                 }
 
@@ -956,9 +964,11 @@ class ApiController extends Controller
                     if(isset($value->tags)){
                         foreach(unserialize($value->tags) as $val){
                             $name = Tag::where('id', $val)->first();
-                            $temparory['name'] = $name->tag_name;
-                            $temparory['id'] = $name->id;
-                            $tags[] = $temparory;
+                            if(isset($name->id)){
+                                $temparory['name'] = $name->tag_name ?? null;
+                                $temparory['id'] = $name->id ?? null;
+                                $tags[] = $temparory;
+                            }
                         }
                     }
                     $temp['tags'] = $tags;
@@ -1113,9 +1123,11 @@ class ApiController extends Controller
                     if(isset($value->tags)){
                         foreach(unserialize($value->tags) as $val){
                             $name = Tag::where('id', $val)->first();
-                            $temparory['name'] = $name->tag_name;
-                            $temparory['id'] = $name->id;
-                            $tags[] = $temparory;
+                            if(isset($name->id)){
+                                $temparory['name'] = $name->tag_name ?? null;
+                                $temparory['id'] = $name->id ?? null;
+                                $tags[] = $temparory;
+                            }
                         }
                     }
                     $temp['tags'] = $tags;
@@ -1289,9 +1301,11 @@ class ApiController extends Controller
                     if(isset($item->tags)){
                         foreach(unserialize($item->tags) as $value){
                             $name = Tag::where('id', $value)->first();
-                            $temparory['name'] = $name->tag_name;
-                            $temparory['id'] = $name->id;
-                            $tags[] = $temparory;
+                            if(isset($name->id)){
+                                $temparory['name'] = $name->tag_name ?? null;
+                                $temparory['id'] = $name->id ?? null;
+                                $tags[] = $temparory;
+                            }
                         }
                     }
                     
