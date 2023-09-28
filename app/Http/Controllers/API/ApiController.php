@@ -26,6 +26,7 @@ use App\Models\ChapterQuizOption;
 use App\Models\CourseChapter;
 use App\Models\CourseChapterStep;
 use App\Models\Tag;
+use App\Models\UserChapterStatus;
 use App\Models\UserCourse;
 use App\Models\UserQuizAnswer;
 use Illuminate\Support\Facades\Auth;
@@ -517,7 +518,16 @@ class ApiController extends Controller
                     $temp['title'] = $item->title;
                     $temp['description'] = $item->description;
                     $temp['course_fee'] = $item->course_fee;
-                    $temp['tags'] = $item->tags;
+                    $tags = [];
+                    if(isset($item->tags)){
+                        foreach(unserialize($item->tags) as $val){
+                            $name = Tag::where('id', $val)->first();
+                            $temparory['name'] = $name->tag_name;
+                            $temparory['id'] = $name->id;
+                            $tags[] = $temparory;
+                        }
+                    }
+                    $temp['tags'] = $tags;
                     $temp['valid_upto'] = $item->valid_upto;
                     if (!empty($item->certificates)) {
                         $temp['certificates_image'] = url('upload/course-certificates/' . $item->certificates);
@@ -530,7 +540,6 @@ class ApiController extends Controller
                         $temp['introduction_video'] = '';
                     }
                     $temp['status'] = $item->status;
-                    $temp['rating'] = 4.6;
                     $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 1)->first();
                     if (isset($exists)) {
                         $temp['isLike'] = 1;
@@ -541,6 +550,10 @@ class ApiController extends Controller
                     $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
                     $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
+                    $avgRating = DB::table('user_review as ur')->where('object_id', $item->id)->where('object_type', 1)->avg('rating');
+                    $temp['avg_rating'] = number_format($avgRating, 1);
+                    if($request->filled('rating'))
+                        if($avgRating < min($request->rating)) continue;
                     $response[] = $temp;
                 }
             }
@@ -835,10 +848,6 @@ class ApiController extends Controller
                 if($request->filled('category')){
                     $datas->where('course.category_id', $request->category);
                 }
-                if($request->filled('rating')){
-                    $datas->join('user_review as ur', 'ur.object_id', '=', 'course.id');
-                    $datas->where('ur.rating', $request->rating)->where('ur.object_type', 1);
-                }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('course.course_fee');
                     else $datas->orderBy('course.course_fee');
@@ -853,10 +862,6 @@ class ApiController extends Controller
                 }
                 if($request->filled('category')){
                     $datas->where('product.category_id', $request->category);
-                }
-                if($request->filled('rating')){
-                    $datas->join('user_review as ur', 'ur.object_id', '=', 'product.id');
-                    $datas->where('ur.rating', $request->rating)->where('ur.object_type', 2);
                 }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('product.price');
@@ -905,6 +910,10 @@ class ApiController extends Controller
                         $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
                         $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
                         $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
+                        $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 1)->avg('rating');
+                        $temp['avg_rating'] = number_format($avgRating, 1);
+                        if($request->filled('rating'))
+                            if($avgRating < min($request->rating)) continue;
                     } else {
                         $temp['price'] = $value->price;
                         $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
@@ -936,14 +945,24 @@ class ApiController extends Controller
                         }
                         $temp['creator_image'] = $profile_image;
                         $temp['creator_id'] = $value->added_by;
+                        $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
+                        $temp['avg_rating'] = number_format($avgRating, 1);
+                        if($request->filled('rating'))
+                            if($avgRating < min($request->rating)) continue;
                     }
                     $temp['id'] = $value->id;
-                    
-                    
                     $temp['description'] = $value->description;
-                    $temp['tags'] = $value->tags;
+                    $tags = [];
+                    if(isset($value->tags)){
+                        foreach(unserialize($value->tags) as $val){
+                            $name = Tag::where('id', $val)->first();
+                            $temparory['name'] = $name->tag_name;
+                            $temparory['id'] = $name->id;
+                            $tags[] = $temparory;
+                        }
+                    }
+                    $temp['tags'] = $tags;
                     $temp['status'] = $value->status;
-                    $temp['rating'] = 4.6;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                     $response[] = $temp;
                 }
@@ -982,10 +1001,6 @@ class ApiController extends Controller
                 if($request->filled('category')){
                     $datas->where('course.category_id', $request->category);
                 }
-                if($request->filled('rating')){
-                    $datas->join('user_review as ur', 'ur.object_id', '=', 'course.id');
-                    $datas->where('ur.rating', '>=', min($request->rating))->where('ur.object_type', 1);
-                }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('course.course_fee');
                     else $datas->orderBy('course.course_fee');
@@ -1001,10 +1016,6 @@ class ApiController extends Controller
                 if($request->filled('category')){
                     $datas->where('product.category_id', $request->category);
                 }
-                if($request->filled('rating')){
-                    $datas->join('user_review as ur', 'ur.object_id', '=', 'product.id');
-                    $datas->where('ur.rating', '>=', min($request->rating))->where('ur.object_type', 2);
-                }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('product.price');
                     else $datas->orderBy('product.price');
@@ -1017,99 +1028,9 @@ class ApiController extends Controller
             $response = array();
             if (isset($datas)) {
                 foreach ($datas as $keys => $value) {
-
-                    if($request->filled('tag')){
-                        if(in_array($request->tag, unserialize($value->tags))){
-                            if ($type == 1) { /* 1 stand for course ,2 for product */
-                                $temp['course_fee'] = $value->course_fee;
-                                $temp['valid_upto'] = $value->valid_upto;
-                                if (!empty($value->certificates)) {
-                                    $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
-                                } else {
-                                    $temp['certificates_image'] = '';
-                                }
-                                if (!empty($value->introduction_image)) {
-                                    $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
-                                } else {
-                                    $temp['introduction_video'] = '';
-                                }
-                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
-                                if (isset($exists)) {
-                                    $temp['isLike'] = 1;
-                                } else {
-                                    $temp['isLike'] = 0;
-                                }
-                                $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->where('status', 1)->first();
-                                if (isset($wishlist)) {
-                                    $temp['isWishlist'] = 1;
-                                } else {
-                                    $temp['isWishlist'] = 0;
-                                }
-                                $temp['title'] = $value->title;
-                                if ($value->profile_image) {
-                                    $profile_image = url('upload/profile-image/'.$value->profile_image);
-                                } else {
-                                    $profile_image = '';
-                                }
-                                $temp['content_creator_image'] = $profile_image;
-                                $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
-                                $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
-                                $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
-                                $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 1)->avg('rating');
-                                $temp['avg_rating'] = number_format($avgRating, 1);
-                            } else {
-                                $temp['price'] = $value->price;
-                                $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
-                                $datas_image = array();
-                                foreach ($all_products_image as $k => $val) {
-                                    $datasImage = url('upload/products/' . $val->attribute_value);
-                                    $datas_image[] = $datasImage;
-                                }
-                                $temp['Product_image'] = $datas_image;
-                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
-                                if (isset($exists)) {
-                                    $temp['isLike'] = 1;
-                                } else {
-                                    $temp['isLike'] = 0;
-                                }
-                                $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->where('status', 1)->first();
-                                if (isset($wishlist)) {
-                                    $temp['isWishlist'] = 1;
-                                } else {
-                                    $temp['isWishlist'] = 0;
-                                }
-                                $temp['title'] = $value->name;
-                                $User = User::where('id', $value->added_by)->first();
-                                $temp['creator_name'] = $User->first_name.' '.$User->last_name;
-                                if ($User->profile_image == '') {
-                                    $profile_image = '';
-                                } else {
-                                    $profile_image = url('upload/profile-image/' . $User->profile_image);
-                                }
-                                $temp['creator_image'] = $profile_image;
-                                $temp['creator_id'] = $value->added_by;
-                                $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
-                                $temp['avg_rating'] = number_format($avgRating, 1);
-                            }
-                            $temp['id'] = $value->id;
-                            $temp['description'] = $value->description;
-                            $temp['status'] = $value->status;
-                            $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
-                            $tags = [];
-                            if(isset($value->tags)){
-                                foreach(unserialize($value->tags) as $val){
-                                    $name = Tag::where('id', $val)->first();
-                                    $temparory['name'] = $name->tag_name;
-                                    $temparory['id'] = $name->id;
-                                    $tags[] = $temparory;
-                                }
-                            }
-                            $temp['tags'] = $tags;
-                            $response[] = $temp;
-                        } else continue;
-                    }else{
-                        if ($type == 1) { /* 1 stand for course ,2 for product */
-
+                    if($request->filled('tag'))
+                        if(!in_array($request->tag, unserialize($value->tags))) continue;
+                    if ($type == 1) { /* 1 stand for course ,2 for product */
                             $temp['course_fee'] = $value->course_fee;
                             $temp['valid_upto'] = $value->valid_upto;
                             if (!empty($value->certificates)) {
@@ -1146,7 +1067,9 @@ class ApiController extends Controller
                             $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
                             $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 1)->avg('rating');
                             $temp['avg_rating'] = number_format($avgRating, 1);
-                        } else {
+                            if($request->filled('rating'))
+                                if($avgRating < min($request->rating)) continue;
+                    } else {
                             $temp['price'] = $value->price;
                             $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                             $datas_image = array();
@@ -1179,23 +1102,25 @@ class ApiController extends Controller
                             $temp['creator_id'] = $value->added_by;
                             $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
                             $temp['avg_rating'] = number_format($avgRating, 1);
-                        }
-                        $temp['id'] = $value->id;
-                        $temp['description'] = $value->description;
-                        $temp['status'] = $value->status;
-                        $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
-                        $tags = [];
-                        if(isset($value->tags)){
-                            foreach(unserialize($value->tags) as $val){
-                                $name = Tag::where('id', $val)->first();
-                                $temparory['name'] = $name->tag_name;
-                                $temparory['id'] = $name->id;
-                                $tags[] = $temparory;
-                            }
-                        }
-                        $temp['tags'] = $tags;
-                        $response[] = $temp;
+                            if($request->filled('rating'))
+                                if($avgRating < min($request->rating)) continue;
                     }
+                    $temp['id'] = $value->id;
+                    $temp['description'] = $value->description;
+                    $temp['status'] = $value->status;
+                    $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
+                    $tags = [];
+                    if(isset($value->tags)){
+                        foreach(unserialize($value->tags) as $val){
+                            $name = Tag::where('id', $val)->first();
+                            $temparory['name'] = $name->tag_name;
+                            $temparory['id'] = $name->id;
+                            $tags[] = $temparory;
+                        }
+                    }
+                    $temp['tags'] = $tags;
+                    $response[] = $temp;
+                    
                 }
             }
             $category = Category::select('id', 'name','description','icon','type')->where('status', 1)->orderByDesc('id')->get();
@@ -1376,16 +1301,26 @@ class ApiController extends Controller
                     $reviewAvg = DB::table('user_review as ur')->where('userid', $user_id)->avg('rating');
                     $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date', 'u.profile_image')->where('userid', $user_id)->get();
 
-                    if(isset($review->profile_image)){
-                        $review->profile_image = url('upload/profile-image/' . $review->profile_image);
-                    } else $review->profile_image = null;
+                    $reviewArr = [];
+                    foreach($review as $valReview){
+                        $tempReview['first_name'] = $valReview->first_name;
+                        $tempReview['last_name'] = $valReview->last_name;
+                        $tempReview['rating'] = $valReview->rating;
+                        $tempReview['review'] = $valReview->review;
+                        if(isset($valReview->profile_image)){
+                            $valReview->profile_image = url('upload/profile-image/' . $valReview->profile_image);
+                        } else $valReview->profile_image = null;
+                        $tempReview['profile_image'] = $valReview->profile_image;
+                        $tempReview['created_date'] = $valReview->created_date;
+                        $reviewArr[] = $tempReview;
+                    }
                     
                     $temp['description'] = $item->description;
                     $temp['tags'] = $tags;
                     $temp['status'] = $item->status;
                     $temp['rating'] = number_format($reviewAvg, 1);
                     $temp['review_count'] = $reviewCount;
-                    $temp['review'] = $review;
+                    $temp['review'] = $reviewArr;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
                     if ($type == 1) {
                         return response()->json(['status' => true, 'message' => ' Course Listing', 'data' => $temp]);
@@ -2278,10 +2213,22 @@ class ApiController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             } else{
                 $courseStep = CourseChapterStep::where('id', $request->chapter_step_id)->first();
-                $step = CourseChapterStep::where('id', $request->chapter_step_id)->update([
-                    'is_completed' => 1 
-                ]);
-                return response()->json(['status' => true, 'message' => $courseStep->type.' is completed.']);
+                if(isset($courseStep->course_chapter_id)){
+                    $courseChapter = CourseChapter::where('id', $courseStep->course_chapter_id)->first();
+                    if(isset($courseChapter->course_id)){
+                        $check = UserCourse::where('course_id', $courseChapter->course_id)->where('user_id', auth()->user()->id)->first();
+                        if(!isset($check->id)) return response()->json(['status' => false, 'message' => 'Please purchase this course first']);
+                        $userChapterStatus = new UserChapterStatus;
+                        $userChapterStatus->userid = auth()->user()->id;
+                        $userChapterStatus->course_id = $courseChapter->course_id;
+                        $userChapterStatus->chapter_id = $courseStep->course_chapter_id;
+                        $userChapterStatus->step_id = $request->chapter_step_id;
+                        $userChapterStatus->status = 1;
+                        $userChapterStatus->created_date = date('Y-m-d H:i:s');
+                        $userChapterStatus->save();
+                        return response()->json(['status' => true, 'message' => $courseStep->type.' is completed.']);
+                    } else return response()->json(['status' => false, 'message' => 'Something went wrong']);
+                }else return response()->json(['status' => false, 'message' => 'Incorrect step id']);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -2464,7 +2411,7 @@ class ApiController extends Controller
         }
     }
 
-    public function updateProductQuantity(Request $request){
+    public function update_product_quantity(Request $request){
         try{
             $validator = Validator::make($request->all(), [
                 'cart_id' => 'required',
@@ -2474,9 +2421,33 @@ class ApiController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             }else{
                 if($request->quantity >= 1 && $request->quantity <= 10){
-                    AddToCart::where('id', $request->cart_id)->where('object_type', 2)->update(['quantity' => $request->quantity]);
-                    return response()->json(['status'=> true, 'message' => 'Quantity updated']);
+                    $cart = AddToCart::where('id', $request->cart_id)->where('object_type', 2)->update(['quantity' => $request->quantity]);
+                    if ($cart) {
+                        return response()->json(['status'=> true, 'message' => 'Quantity updated']);
+                    } else {
+                        return response()->json(['status' => false, 'message' => 'Something went wrong!']);
+                    }
                 } else return response()->json(['status'=> false, 'message' => 'Quantity must be between in 1 to 10']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function remove_cart(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'cart_id' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }else{
+                $cart = AddToCart::where('id', $request->cart_id)->delete();
+                if ($cart) {
+                    return response()->json(['status'=> true, 'message' => 'Item removed from cart.']);
+                } else {
+                    return response()->json(['status' => false, 'message' => 'Something went wrong!']);
+                }
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
