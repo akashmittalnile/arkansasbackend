@@ -382,8 +382,8 @@ $(document).ready(function () {
 
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <h4>Video Description</h4>
-                                                <textarea type="text" class="form-control" name="video_description[${countForm}]" placeholder="Video Description" required></textarea>
+                                                <h4>Video Title</h4>
+                                                <input type="text" name="video_description[${countForm}]" placeholder="Video Title" required class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -448,8 +448,8 @@ $(document).ready(function () {
                                     </div>
                                     <div class="col-md-12">
                                         <div class="form-group">
-                                            <h4>PDF Description</h4>
-                                            <textarea type="text" class="form-control" name="PDF_description[${countForm}]" placeholder="PDF Description" required></textarea>
+                                            <h4>PDF Title</h4>
+                                            <input type="text" class="form-control" name="PDF_description[${countForm}]" placeholder="PDF Title" required>
                                         </div>
                                     </div>
                                 </div>
@@ -495,6 +495,13 @@ $(document).ready(function () {
                                     <a href="javascript:void(0)" class="dlt-div" data-id="quiz_div" data-type="Quiz"> Delete Section</a>
                                 </div>
                             </div>
+
+                            <div class="col-md-12 px-3">
+                                <div class="form-group">
+                                    <input type="text" name="quiz_description[${countForm}]" placeholder="Quiz Title" required class="form-control">
+                                </div>
+                            </div>
+
                             <div class="add-course-form">
                                 <div class="questions-${countForm}">
                                     <div class="question">
@@ -559,7 +566,6 @@ $(document).ready(function () {
                             <div class="add-pmu-heading">
                                 <div class="add-pmu-text">
                                     <h3>Assignment</h3>
-                                    
                                 </div>
                                 <div class="add-pmu-checkbox-list">
                                     <ul>
@@ -571,7 +577,6 @@ $(document).ready(function () {
                                         </li>
                                     </ul>
                                 </div>
-
                                 <div class="add-pmu-text">
                                     <div class="pmu-add-questionnaire-ans">
                                         <div class="pmu-add-questionnaire-input">
@@ -590,9 +595,13 @@ $(document).ready(function () {
                                     </div>
                                 </div>
                                 <input type="hidden" name="assignment[${countForm}]" id="assignment-${countForm}">
-
                                 <div class="add-pmu-action">
                                     <a href="javascript:void(0)" class="dlt-div" data-id="assignment_div" data-type="Assignment"> Delete Section</a>
+                                </div>
+                            </div>
+                            <div class="col-md-12 px-3">
+                                <div class="form-group">
+                                    <input type="text" name="assignment_description[${countForm}]" placeholder="Assignment Title" required class="form-control">
                                 </div>
                             </div>
                         </div>`;
@@ -657,6 +666,13 @@ $(document).ready(function () {
                                         <a href="javascript:void(0)" class="dlt-div" data-id="survey_div" data-type="Survey"> Delete Section</a>
                                     </div>
                                 </div>
+                                
+                                <div class="col-md-12 px-3">
+                                    <div class="form-group">
+                                        <input type="text" name="survey_description[${countForm}]" placeholder="Survey Title" required class="form-control">
+                                    </div>
+                                </div>
+
                                 <div class="add-course-form">
                                     <div class="surveyQuestion-${countForm}">
                                         <div class="pmu-edit-questionnaire-box">

@@ -386,7 +386,7 @@ class HomeController extends Controller
                                 $ChapterQuiz->type = 'assignment';
                                 $ChapterQuiz->sort_order = $request->queue[$keyAssignment] ?? -1;
                                 $ChapterQuiz->title = ucwords($type[$key]);
-                                $ChapterQuiz->description = null;
+                                $ChapterQuiz->description = $request->assignment_description[$keyAssignment] ?? null;
                                 $ChapterQuiz->details = null;
                                 $ChapterQuiz->prerequisite = $request->prerequisite[$keyAssignment] ?? 0;
                                 $ChapterQuiz->course_chapter_id = $request->chapter_id;
@@ -401,6 +401,7 @@ class HomeController extends Controller
                                 $Step->title = ucwords($type[$key]);
                                 $Step->sort_order = $request->queue[$keyQ] ?? -1;
                                 $Step->type = 'quiz';
+                                $Step->description = $request->quiz_description[$keyQ] ?? null;
                                 $Step->prerequisite = $request->prerequisite[$keyQ] ?? 0;
                                 $Step->course_chapter_id = $request->chapter_id;
                                 $Step->save();
@@ -436,6 +437,7 @@ class HomeController extends Controller
                                 $Step->title = ucwords($type[$key]);
                                 $Step->sort_order = $request->queue[$keyS] ?? -1;
                                 $Step->type = 'survey';
+                                $Step->description = $request->video_description[$keyS] ?? null;
                                 $Step->duration = $request->required_field[$keyS] ?? 0;
                                 $Step->prerequisite = $request->prerequisite[$keyS] ?? 0;
                                 $Step->course_chapter_id = $request->chapter_id;
@@ -463,26 +465,6 @@ class HomeController extends Controller
                                 }
                             }
                         }
-                    }
-                }
-            }elseif($request->type == 'survey'){
-                $questionsData = $request->input('questions_survey');
-                foreach ($questionsData as $questionData) {
-                    $ChapterQuiz = new ChapterQuiz;
-                    $ChapterQuiz->title = $questionData['text'];
-                    $ChapterQuiz->type = 'survey';
-                    $ChapterQuiz->chapter_id = $request->chapter_id;
-                    $ChapterQuiz->course_id = $request->courseID;
-                    $ChapterQuiz->step_id = 1;
-                    $ChapterQuiz->save();
-                    $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
-                    foreach ($questionData['options_survey'] as $optionText) {
-                        $option = new ChapterQuizOption;
-                        $option->quiz_id = $quiz_id->id;
-                        $option->answer_option_key = $optionText;
-                        $option->created_date = date('Y-m-d H:i:s');
-                        $option->status = 1;
-                        $option->save();
                     }
                 }
             }

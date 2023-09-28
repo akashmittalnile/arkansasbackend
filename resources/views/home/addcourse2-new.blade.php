@@ -176,8 +176,9 @@
 
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <h4>Video Description</h4>
-                                                    <textarea type="text" class="form-control" name="video_description" placeholder="Video Description" disabled>{{ $data->description ?: '' }}</textarea>
+                                                    <h4>Video Title</h4>
+                                                    <input type="text" name="video_description" placeholder="Video Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                                    <!-- <textarea type="text" class="form-control" name="video_description" placeholder="Video Description" disabled>{{ $data->description ?: '' }}</textarea> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -232,9 +233,16 @@
                                                 Delete Section</a>
                                         </div>
                                     </div>
-                                    <?php $v = 'AA'; ?>
-                                    @foreach ($data->quiz as $quiz)
                                     <div class="edit-pmu-section collapse-course-form collapse" id="collapseExample{{ $data->id }}">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <h4>Quiz Title</h4>
+                                                <input type="text" name="quiz_description" placeholder="Quiz Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        
+                                        <?php $v = 'AA'; ?>
+                                        @foreach ($data->quiz as $quiz)
                                         <div class="pmu-edit-questionnaire-box">
                                             <div class="pmu-edit-label">
                                                 <div class="pmu-q-badge">Q</div>
@@ -296,9 +304,10 @@
                                                 <a class="add-answer" data-id="{{ $quiz->id }}" id="addListingOption">Add Answer</a>
                                             </div>
                                         </div>
+                                        <?php $v = 'AA'; ?>
+                                        @endforeach
+
                                     </div>
-                                    <?php $v = 'AA'; ?>
-                                    @endforeach
                                 </div>
                                 @elseif($data->type == 'pdf')
                                 @php
@@ -388,8 +397,9 @@
 
                                             <div class="col-md-12">
                                                 <div class="form-group">
-                                                    <h4>PDF Description</h4>
-                                                    <textarea type="text" class="form-control" name="PDF_description" placeholder="PDF Description" disabled>{{ $data->description ?: '' }}</textarea>
+                                                    <h4>PDF Title</h4>
+                                                    <input type="text" class="form-control" name="PDF_description" placeholder="PDF Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                                    <!-- <textarea type="text" class="form-control" name="PDF_description" placeholder="PDF Description" disabled>{{ $data->description ?: '' }}</textarea> -->
                                                 </div>
                                             </div>
                                         </div>
@@ -402,8 +412,7 @@
                                 <div class="edit-pmu-form-item">
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
-                                            <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Assignment 
-                                            </h3>
+                                            <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'ASDIV' . $randomNum }}">Assignment<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
                                         </div>
                                         <div class="edit-pmu-checkbox-list">
                                             <ul>
@@ -443,6 +452,14 @@
                                         <div class="edit-pmu-action">
                                             <a href="{{ url('admin/delete-section/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">
                                                 Delete Section</a>
+                                        </div>
+                                    </div>
+                                    <div class="collapse collapse-course-form" id="{{ 'ASDIV' . $randomNum }}">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <h4>Assignment Title</h4>
+                                                <input type="text" name="assignment_description" placeholder="Assignment Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -516,9 +533,16 @@
                                                 Delete Section</a>
                                         </div>
                                     </div>
-                                    <?php $sur = 'SSS'; ?>
-                                    @foreach ($data->quiz as $survey)
                                     <div class="collapse collapse-course-form" id="{{ 'CPDIV' . $randomNum }}">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <h4>Survey Title</h4>
+                                                <input type="text" name="survey_description" placeholder="Survey Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        
+                                        <?php $sur = 'SSS'; ?>
+                                        @foreach ($data->quiz as $survey)
                                         <div class="pmu-edit-questionnaire-box">
                                             <div class="pmu-edit-label">
                                                 <div class="pmu-q-badge">Q</div>
@@ -562,9 +586,9 @@
                                                 <a class="add-answer" data-id="{{ $survey->id }}" id="addListingSurveyOption">Add Answer</a>
                                             </div>
                                         </div>
+                                        <?php $sur = 'SSS'; ?>
+                                        @endforeach
                                     </div>
-                                    <?php $sur = 'SSS'; ?>
-                                    @endforeach
                                 </div>
                                 @else
                                 @endif
