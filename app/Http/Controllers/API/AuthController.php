@@ -4,61 +4,28 @@ namespace App\Http\Controllers\API;
 
 use App\Models\User;
 use Illuminate\Http\Request;
-use Validator;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum', ['except' => ['login', 'register','logout','refresh','forget_password',
-        'forget_password_verify','resend_otp','verify_otp']]);
+        $this->middleware('auth:sanctum', ['except' => ['login', 'register' ,'logout','refresh','forget_password', 'forget_password_verify','resend_otp','verify_otp']]);
     }
-
-    // public function login(Request $request)
-    // {
-    //     $input = $request->all();
-    //     $validator = Validator::make($input, [
-    //         'email' => 'required|email',
-    //         'password' => 'required|min:6',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return errorMsg($validator->errors()->first());
-    //     }
-
-    //     $user = User::where('email', $request->email)->first();
-    //     if (Hash::check($request->password, $user->password)) {
-    //         // $user = User::where('id',$user->id)->first();
-    //         // $user->fcm_token = $request->fcm_token;
-    //         // $user->save();
-
-    //         $token = $user->createToken('apiToken')->plainTextToken;
-
-    //         return response()->json([
-    //             'status' => true,
-    //             'user' => $user,
-    //             'authorization' => [
-    //                 'token' => $token,
-    //                 'type' => 'bearer',
-    //             ]
-    //         ]);
-    //     }
-
-    //     return response()->json([
-    //         'status' => false,
-    //         'message' => 'Invalid credentials',
-    //     ], 401);
-    // }
 
     public function login(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
         ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+        }
+
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
             $user = Auth::user();
@@ -78,56 +45,23 @@ class AuthController extends Controller
         ], 401);
     }
 
-    // public function register(Request $request)
-    // {
-    //     $input = $request->all();
-    //     $validator = Validator::make($input, [
-    //         'name' => 'required|string|max:255',
-    //         'phone' => 'required',
-    //         'email' => 'required|string|email|max:255|unique:users',
-    //         'password' => 'required|min:6',
-    //     ]);
-
-    //     if ($validator->fails()) {
-    //         return errorMsg($validator->errors()->first());
-    //     }
-
-    //     $user = User::create([
-    //         'first_name' => $request->name,
-    //         'phone' => $request->phone,
-    //         'email' => $request->email,
-    //         'password' => Hash::make($request->password),
-    //     ]);
-
-    //     if($user){
-    //         return response()->json([
-    //             'status' => true,
-    //             'message' => 'User created successfully',
-    //             'user' => $user
-    //         ]);
-    //     }else{
-    //         return response()->json([
-    //             'status' => false,
-    //             'message' => 'Something went wrong',
-    //             'user' => ''
-    //         ]);
-    //     }
-
-        
-    // }
 
     public function register(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'first_name' => 'required|string|max:255',
             'last_name' => 'required|string|max:255',
             'phone' => 'required',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
         ]);
+        if ($validator->fails()) {
+            return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+        }
 
         $user = new User;
-        $user->first_name = $request->name;
+        $user->first_name = $request->first_name;
+        $user->last_name = $request->last_name;
         $user->phone = $request->phone;
         $user->email = $request->email;
         $user->password = $request->password;
