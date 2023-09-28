@@ -433,18 +433,18 @@
                                             <h4>Set fee% for every Course Purchase</h4>
                                             <div class="grant-progress ye-progress">
                                                 <div class="grant-use-text">
-                                                    <span>{{ $user->course_fee }}%</span>
+                                                    <span>{{ $user->admin_cut }}%</span>
                                                 </div>
                                                 <div class="progress">
                                                     <div class="progress-bar progress-bar-striped" role="progressbar"
-                                                        style="width: {{ $user->course_fee }}%" aria-valuenow="2" aria-valuemin="0"
+                                                        style="width: {{ $user->admin_cut }}%" aria-valuenow="2" aria-valuemin="0"
                                                         aria-valuemax="10"></div>
                                                 </div>
                                             </div>
                                         </div>
                                         
                                         <input type="hidden" name="admin_id" value="{{ $user->id }}" />
-                                        <input type="number" class="form-control" name="course_fee" placeholder="Custom %" value="{{$user->course_fee}}">
+                                        <input type="number" class="form-control" name="course_fee" placeholder="Custom %" value="{{$user->admin_cut}}">
                                         <div class="note">On every Course Purchases Creator will get the % revenue Cut</div>
                                     </div>
                                 </div>

@@ -1152,10 +1152,10 @@ class ApiController extends Controller
                 $type = $request->type;
                 $id = $request->id;
                 if ($type == 1) { /* 1 stand for course ,2 for product */
-                    $item = Course::leftJoin('users', function($join) {
-                        $join->on('course.admin_id', '=', 'users.id');
+                    $item = Course::leftJoin('users as u', function($join) {
+                        $join->on('course.admin_id', '=', 'u.id');
                     })
-                    ->where('course.status', 1)->where('course.id', $id)->orderBy('course.id', 'DESC')->first();
+                    ->where('course.status', 1)->where('course.id', $id)->select('u.first_name', 'u.last_name', 'u.profile_image', 'u.category_name', 'course.*')->orderBy('course.id', 'DESC')->first();
                 } else {
                     $item = Product::where('status', 1)->where('id', $id)->orderBy('id', 'DESC')->first();
                 }
@@ -1248,7 +1248,7 @@ class ApiController extends Controller
                         $temp['chapters'] = $chapters;
                         $temp['chapter_count'] = $chapter_count;
                         $temp['chapter_quiz_count'] = $chapter_quiz_count;
-
+                        $reviewAvg = DB::table('user_review as ur')->where('object_id', $item->id)->where('object_type', 1)->avg('rating');
                     } else {
                         $temp['price'] = $item->price;
                         $all_products_image = ProductAttibutes::where('product_id', $item->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
@@ -1281,6 +1281,7 @@ class ApiController extends Controller
                         }
                         $temp['creator_image'] = $profile_image;
                         $temp['creator_id'] = $item->added_by;
+                        $reviewAvg = DB::table('user_review as ur')->where('object_id', $item->id)->where('object_type', 2)->avg('rating');
                     }
                     $temp['id'] = $item->id;
                     
@@ -1298,8 +1299,8 @@ class ApiController extends Controller
                     // $chapters = DB::table('course_chapter as cc')->join('course_chapter_steps as ccs', 'cc.id', '=', 'ccs.course_chapter_id')->join('chapter_quiz as cq', 'ccs.id', '=', 'cq.step_id')->join('chapter_quiz_options as cqo', 'cq.id', '=', 'quiz_id')->where('cc.course_id', $id)->get();
 
                     $reviewCount = Review::where('userid', $user_id)->count();
-                    $reviewAvg = DB::table('user_review as ur')->where('userid', $user_id)->avg('rating');
-                    $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date', 'u.profile_image')->where('userid', $user_id)->get();
+                    
+                    $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date', 'u.profile_image')->where('ur.object_id', $item->id)->where('object_type', $type)->get();
 
                     $reviewArr = [];
                     foreach($review as $valReview){
@@ -1307,7 +1308,7 @@ class ApiController extends Controller
                         $tempReview['last_name'] = $valReview->last_name;
                         $tempReview['rating'] = $valReview->rating;
                         $tempReview['review'] = $valReview->review;
-                        if(isset($valReview->profile_image)){
+                        if(isset($valReview->profile_image) && $valReview->profile_image != ""){
                             $valReview->profile_image = url('upload/profile-image/' . $valReview->profile_image);
                         } else $valReview->profile_image = null;
                         $tempReview['profile_image'] = $valReview->profile_image;
@@ -1318,7 +1319,7 @@ class ApiController extends Controller
                     $temp['description'] = $item->description;
                     $temp['tags'] = $tags;
                     $temp['status'] = $item->status;
-                    $temp['rating'] = number_format($reviewAvg, 1);
+                    $temp['avg_rating'] = number_format($reviewAvg, 1);
                     $temp['review_count'] = $reviewCount;
                     $temp['review'] = $reviewArr;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));

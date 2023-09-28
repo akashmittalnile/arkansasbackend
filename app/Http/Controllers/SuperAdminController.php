@@ -876,7 +876,7 @@ class SuperAdminController extends Controller
             $course_fee = $request->course_fee;
             $admin_id = $request->admin_id;
             $adminID = encrypt_decrypt('encrypt',$admin_id);
-            User::where('id',$admin_id)->update(['course_fee' => $course_fee]);
+            User::where('id',$admin_id)->update(['admin_cut' => $course_fee]);
             return redirect('super-admin/listed-course/'.$adminID)->with('message','Status Changed successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
