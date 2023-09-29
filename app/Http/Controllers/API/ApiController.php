@@ -1232,10 +1232,23 @@ class ApiController extends Controller
                                 $isCompleted = isset($isComplete->id) ? $isComplete->status : 0;
 
                                 if($isPurchased){
-                                    $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) . '/' . encrypt_decrypt('encrypt', $user_id) : null;
+                                    if($isCompleted == 1){
+                                        $total = ChapterQuiz::where('step_id', $vals->id)->whereIn('type', ['quiz', 'survey'])->sum('marks');
+                                        $obtained = UserQuizAnswer::where('quiz_id', $vals->id)->where('userid', auth()->user()->id)->sum('marks_obtained');
+
+                                        $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) . '/' . encrypt_decrypt('encrypt', $user_id) : null;
+                                        $arr1['marks_obtained'] = $obtained;
+                                        $arr1['marks_out_of'] = $total;
+                                    } else {
+                                        $arr1['quiz_url'] = null;
+                                        $arr1['marks_obtained'] = null;
+                                        $arr1['marks_out_of'] = null;
+                                    } 
                                     $arr1['is_completed'] = $isCompleted;
                                 }else{
                                     $arr1['quiz_url'] = null;
+                                    $arr1['marks_obtained'] = null;
+                                    $arr1['marks_out_of'] = null;
                                     $arr1['is_completed'] = null;
                                 }
                                 
@@ -1780,7 +1793,21 @@ class ApiController extends Controller
                 $cart->userid = $user_id;
                 $cart->object_id = $request->object_id;
                 $cart->object_type = $request->object_type;
-                $cart->cart_value = $request->cart_value;
+
+                $cart_value = $request->cart_value;
+                $admin_value = $request->cart_value;
+                if($request->object_type == 1){
+                    $course = Course::where('id', $request->object_id)->first();
+                    $user = User::where('id', $course->admin_id)->first();
+                    if(isset($user->id) && $user->role == 3){
+                        $admin_value = $request->cart_value;
+                    } else if(isset($user->id) && $user->role == 2){
+                        $admin_value = number_format((float)(($request->cart_value * $user->admin_cut)/100), 2);
+                    }
+                }
+
+                $cart->cart_value = $cart_value;
+                $cart->admin_cut_value = $admin_value;
                 $cart->quantity = 1;
                 $cart->save();
                 if ($cart) {
@@ -1936,17 +1963,20 @@ class ApiController extends Controller
                 }
                 $carts = Addtocart::where('userid', $user_id)->get();
                 $order_no = "AKS".rand(10000000, 99999999);
-                $order_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
-                $total_price = $order_price;
+                
                 
                 if (count($carts) > 0) {
 
                     /*Create Order */
+                    $admin_cut_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('admin_cut_value * quantity'));
+                    $order_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
+                    $total_price = $order_price;
+
                     $insertedId = Order::insertGetId([
                         'user_id' => $user_id,
                         'order_number' => $order_no,
-                        'amount' => $order_price,
-                        'admin_amount' => $order_price,
+                        'amount' => $order_price - $admin_cut_price,
+                        'admin_amount' => $admin_cut_price,
                         'total_amount_paid' => $total_price,/*Total amount of order*/
                         'payment_id' => null,
                         'payment_type' => null,
@@ -1961,7 +1991,7 @@ class ApiController extends Controller
                         $OrderDetail->product_type = $cart->object_type;
                         $OrderDetail->quantity = $cart->quantity;
                         $OrderDetail->amount = $cart->cart_value;
-                        $OrderDetail->admin_amount = $cart->cart_value;
+                        $OrderDetail->admin_amount = $cart->admin_cut_value;
                         $OrderDetail->created_date = date('Y-m-d H:i:s');
                         $OrderDetail->save();
 
