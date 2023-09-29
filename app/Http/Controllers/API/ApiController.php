@@ -2363,7 +2363,10 @@ class ApiController extends Controller
             }
             $total = ChapterQuiz::where('step_id', $quizId)->whereIn('type', ['quiz', 'survey'])->sum('marks');
             $obtained = UserQuizAnswer::where('quiz_id', $quizId)->where('userid',9)->sum('marks_obtained');
-            return view('home.result-page')->with(compact('obtained', 'total'));
+            $totalQuestion = ChapterQuiz::where('step_id', $quizId)->whereIn('type', ['quiz', 'survey'])->count();
+            $totalCorrect = UserQuizAnswer::where('quiz_id', $quizId)->where('userid',9)->where('status', 1)->count();
+            $totalWrong = UserQuizAnswer::where('quiz_id', $quizId)->where('userid',9)->where('status', 0)->count();
+            return view('home.result-page')->with(compact('obtained', 'total', 'totalWrong', 'totalCorrect', 'totalQuestion'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
