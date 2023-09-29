@@ -172,7 +172,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <h4>Video Title</h4>
-                                                    <input type="text" name="video_description" placeholder="Video Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                                    <input type="text" name="video_description" placeholder="Video Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
                                                     <!-- <textarea type="text" class="form-control" name="video_description" placeholder="Video Description" disabled>{{ $data->description ?: '' }}</textarea> -->
                                                 </div>
                                             </div>
@@ -232,7 +232,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Quiz Title</h4>
-                                                <input type="text" name="quiz_description" placeholder="Quiz Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                                <input type="text" name="quiz_description" placeholder="Quiz Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
                                             </div>
                                         </div>
                                         
@@ -385,7 +385,7 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <h4>PDF Title</h4>
-                                                    <input type="text" class="form-control" name="PDF_description" placeholder="PDF Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                                    <input type="text" class="form-control" name="PDF_description" placeholder="PDF Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
                                                     <!-- <textarea type="text" class="form-control" name="PDF_description" placeholder="PDF Description" disabled>{{ $data->description ?: '' }}</textarea> -->
                                                 </div>
                                             </div>
@@ -445,7 +445,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Assignment Title</h4>
-                                                <input type="text" name="assignment_description" placeholder="Assignment Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                                <input type="text" name="assignment_description" placeholder="Assignment Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
                                             </div>
                                         </div>
                                     </div>
@@ -524,7 +524,7 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Survey Title</h4>
-                                                <input type="text" name="survey_description" placeholder="Survey Title" disabled value="{{ $data->description ?: '' }}" class="form-control">
+                                                <input type="text" name="survey_description" placeholder="Survey Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
                                             </div>
                                         </div>
                                         

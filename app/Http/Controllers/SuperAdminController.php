@@ -12,6 +12,8 @@ use App\Models\CourseChapterStep;
 use App\Models\Tag;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\ProductAttibutes;
 use Auth;
 use Illuminate\Support\Facades\Validator;
@@ -368,8 +370,8 @@ class SuperAdminController extends Controller
                                 $ChapterQuiz = new CourseChapterStep;
                                 $ChapterQuiz->type = 'video';
                                 $ChapterQuiz->sort_order = $request->queue[$keyVideo] ?? -1;
-                                $ChapterQuiz->title = ucwords($type[$key]);
-                                $ChapterQuiz->description = $request->video_description[$keyVideo] ?? null;
+                                $ChapterQuiz->title = $request->video_description[$keyVideo] ?? null;
+                                $ChapterQuiz->description = null;
                                 $ChapterQuiz->details = $videoName;
                                 $ChapterQuiz->prerequisite = $request->prerequisite[$keyVideo] ?? 0;
                                 $ChapterQuiz->course_chapter_id = $request->chapter_id;
@@ -386,8 +388,8 @@ class SuperAdminController extends Controller
                                 $ChapterQuiz = new CourseChapterStep;
                                 $ChapterQuiz->type = 'pdf';
                                 $ChapterQuiz->sort_order = $request->queue[$keyPdf] ?? -1;
-                                $ChapterQuiz->title = ucwords($type[$key]);
-                                $ChapterQuiz->description = $request->PDF_description[$keyPdf] ?? null;
+                                $ChapterQuiz->title = $request->PDF_description[$keyPdf] ?? null;
+                                $ChapterQuiz->description = null;
                                 $ChapterQuiz->details = $pdfName;
                                 $ChapterQuiz->prerequisite = $request->prerequisite[$keyPdf] ?? 0;
                                 $ChapterQuiz->course_chapter_id = $request->chapter_id;
@@ -401,8 +403,8 @@ class SuperAdminController extends Controller
                                 $ChapterQuiz = new CourseChapterStep;
                                 $ChapterQuiz->type = 'assignment';
                                 $ChapterQuiz->sort_order = $request->queue[$keyAssignment] ?? -1;
-                                $ChapterQuiz->title = ucwords($type[$key]);
-                                $ChapterQuiz->description = $request->assignment_description[$keyAssignment] ?? null;
+                                $ChapterQuiz->title = $request->assignment_description[$keyAssignment] ?? null;
+                                $ChapterQuiz->description = null;
                                 $ChapterQuiz->details = null;
                                 $ChapterQuiz->prerequisite = $request->prerequisite[$keyAssignment] ?? 0;
                                 $ChapterQuiz->course_chapter_id = $request->chapter_id;
@@ -414,10 +416,10 @@ class SuperAdminController extends Controller
                         if(count($request->questions) > 0){
                             foreach($request->questions as $keyQ => $valueQ){
                                 $Step = new CourseChapterStep;
-                                $Step->title = ucwords($type[$key]);
+                                $Step->title = $request->quiz_description[$keyQ] ?? null;
                                 $Step->sort_order = $request->queue[$keyQ] ?? -1;
                                 $Step->type = 'quiz';
-                                $Step->description = $request->quiz_description[$keyQ] ?? null;
+                                $Step->description = null;
                                 $Step->prerequisite = $request->prerequisite[$keyQ] ?? 0;
                                 $Step->course_chapter_id = $request->chapter_id;
                                 $Step->save();
@@ -450,10 +452,10 @@ class SuperAdminController extends Controller
                         if(count($request->survey_question) > 0){
                             foreach($request->survey_question as $keyS => $valueQ){
                                 $Step = new CourseChapterStep;
-                                $Step->title = ucwords($type[$key]);
+                                $Step->title = $request->survey_description[$keyS] ?? null;
                                 $Step->sort_order = $request->queue[$keyS] ?? -1;
                                 $Step->type = 'survey';
-                                $Step->description = $request->survey_description[$keyS] ?? null;
+                                $Step->description = null;
                                 $Step->duration = $request->required_field[$keyS] ?? 0;
                                 $Step->prerequisite = $request->prerequisite[$keyS] ?? 0;
                                 $Step->course_chapter_id = $request->chapter_id;

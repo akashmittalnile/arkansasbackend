@@ -2209,10 +2209,27 @@ class ApiController extends Controller
             } else{
                 $fileName = time().'.'.$request->file->extension();  
                 $request->file->move(public_path('upload/course'), $fileName);
-                $step = CourseChapterStep::where('id', $request->chapter_step_id)->where('type', 'assignment')->update([
-                    'details' => $fileName 
-                ]);
-                return response()->json(['status' => true, 'message' => 'File uploaded successfully', 'data' => $fileName]);
+
+                $step = CourseChapterStep::where('id', $request->chapter_step_id)->where('type', 'assignment')->first();
+                if(isset($step->course_chapter_id)){
+                    $courseChapter = CourseChapter::where('id', $step->course_chapter_id)->first();
+                    if(isset($courseChapter->course_id)){
+                        $check = UserCourse::where('course_id', $courseChapter->course_id)->where('user_id', auth()->user()->id)->first();
+                        if(!isset($check->id)) return response()->json(['status' => false, 'message' => 'Please purchase this course first']);
+
+                        $userChapterStatus = new UserChapterStatus;
+                        $userChapterStatus->userid = auth()->user()->id;
+                        $userChapterStatus->course_id = $courseChapter->course_id;
+                        $userChapterStatus->chapter_id = $step->course_chapter_id;
+                        $userChapterStatus->step_id = $request->chapter_step_id;
+                        $userChapterStatus->step_type = $request->type;
+                        $userChapterStatus->file = $fileName;
+                        $userChapterStatus->status = 1;
+                        $userChapterStatus->created_date = date('Y-m-d H:i:s');
+                        $userChapterStatus->save();
+                        return response()->json(['status' => true, 'message' => 'File uploaded successfully', 'data' => $fileName]);
+                    } else return response()->json(['status' => false, 'message' => 'Something went wrong']);
+                } else return response()->json(['status' => false, 'message' => 'Incorrect step id']);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -2238,6 +2255,8 @@ class ApiController extends Controller
                         $userChapterStatus->course_id = $courseChapter->course_id;
                         $userChapterStatus->chapter_id = $courseStep->course_chapter_id;
                         $userChapterStatus->step_id = $request->chapter_step_id;
+                        $userChapterStatus->step_type = $request->type;
+                        $userChapterStatus->file = null;
                         $userChapterStatus->status = 1;
                         $userChapterStatus->created_date = date('Y-m-d H:i:s');
                         $userChapterStatus->save();
