@@ -54,7 +54,7 @@
                         </button>
                     </div>
                     <div class="course-player-footer-action d-none" id="result-btn">
-                        <a href="{{ url('/') }}/api/result/{{ $val['step_id'] }}" class="Confirm-btn">
+                        <a href="{{ url('/') }}/api/result/{{ encrypt_decrypt('encrypt', $val['step_id']) }}/{{ encrypt_decrypt('encrypt', $userId ) }}" class="Confirm-btn">
                             Result
                         </a>
                     </div>
@@ -80,7 +80,8 @@
                 method: 'POST',
                 data: {
                     option : id,
-                    quiz_id, question_id
+                    quiz_id, question_id,
+                    user_id : "{{ $userId }}"
                 },
                 success: function (data) {
                     console.log(data);

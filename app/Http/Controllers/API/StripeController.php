@@ -49,7 +49,7 @@ class StripeController extends Controller
                     foreach($orderDetails as $val){
                         $userCourse = UserCourse::where('course_id', $val->product_id)->where('user_id', auth()->user()->id)->update(['payment_id'=>$transactionId]);
                     }
-                    return response()->json(["status" => false, "message" => "Payment successfully done.", 'receipt URL' => $charge->receipt_url,
+                    return response()->json(["status" => true, "message" => "Payment successfully done.", 'receipt URL' => $charge->receipt_url,
                     ]);
                 } else {
                     return response()->json(["status" => false, "message" => "Something went wrong.", 'receipt URL' => $charge->receipt_url ]);

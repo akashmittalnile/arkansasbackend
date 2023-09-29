@@ -1232,7 +1232,7 @@ class ApiController extends Controller
                                 $isCompleted = isset($isComplete->id) ? $isComplete->status : 0;
 
                                 if($isPurchased){
-                                    $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) : null;
+                                    $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) . '/' . encrypt_decrypt('encrypt', $user_id) : null;
                                     $arr1['is_completed'] = $isCompleted;
                                 }else{
                                     $arr1['quiz_url'] = null;
@@ -2232,9 +2232,6 @@ class ApiController extends Controller
                         $userChapterStatus->status = 1;
                         $userChapterStatus->created_date = date('Y-m-d H:i:s');
                         $userChapterStatus->save();
-
-
-
                         return response()->json(['status' => true, 'message' => $courseStep->type.' is completed.']);
                     } else return response()->json(['status' => false, 'message' => 'Something went wrong']);
                 }else return response()->json(['status' => false, 'message' => 'Incorrect step id']);
@@ -2244,10 +2241,11 @@ class ApiController extends Controller
         }
     }
 
-    public function contestQuizSurvey(Request $request, $chapterId, $quizId){
+    public function contestQuizSurvey(Request $request, $chapterId, $quizId, $userId){
         try{
             $chapterId = encrypt_decrypt('decrypt',$chapterId);
             $quizId = encrypt_decrypt('decrypt',$quizId);
+            $userId = encrypt_decrypt('decrypt',$userId);
             $course = CourseChapterStep::where('course_chapter_id', $chapterId)->where('id', $quizId)->whereIn('type', ['quiz'])->first();
             if(isset($course)){
                 $data = [];
@@ -2274,7 +2272,7 @@ class ApiController extends Controller
                 }
                 // dd($data);
                 $questionCount = ChapterQuiz::where('step_id', $course->id)->whereIn('type', ['quiz', 'survey'])->count();
-                return view('home.contest-page')->with(compact('data', 'questionCount'));
+                return view('home.contest-page')->with(compact('data', 'questionCount', 'userId'));
             } else return response()->json(['status'=> false, 'message'=> 'Invalid URL']);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -2286,7 +2284,8 @@ class ApiController extends Controller
             $validator = Validator::make($request->all(), [
                 'quiz_id' => 'required',
                 'question_id' => 'required',
-                'option' => 'required'
+                'option' => 'required',
+                'user_id' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
@@ -2296,7 +2295,7 @@ class ApiController extends Controller
                     $marks = ChapterQuiz::where('step_id', $request->quiz_id)->where('id', $request->question_id)->first();
                 } else $marks = null;
                 $option = new UserQuizAnswer;
-                $option->userid = 9;
+                $option->userid = $request->user_id;
                 $option->quiz_id = $request->quiz_id;
                 $option->question_id = $request->question_id;
                 $option->marks_obtained = isset($marks) ? $marks->marks : 0;
@@ -2305,7 +2304,6 @@ class ApiController extends Controller
                 $option->status = isset($answer->id) ? 1 : 0;
                 $option->save();
                 $correct_answer = ChapterQuizOption::where('quiz_id', $request->question_id)->where('is_correct', '1')->first();
-
                 return response()->json(['status'=> true, 'message'=> 'Answer is save successfully.', 'request'=> $request->all(), 'answer_status' => isset($answer->id) ? 1 : 0, 'correct_answer'=> $correct_answer]);
             }
         } catch (\Exception $e) {
@@ -2313,14 +2311,16 @@ class ApiController extends Controller
         }
     }
 
-    public function resultQuizSurvey(Request $request, $quizId){
+    public function resultQuizSurvey(Request $request, $quizId, $userId){
         try{
+            $quizId = encrypt_decrypt('decrypt',$quizId);
+            $userId = encrypt_decrypt('decrypt',$userId);
             $courseStep = CourseChapterStep::where('id', $quizId)->whereIn('type', ['quiz'])->first();
             if(isset($courseStep->course_chapter_id)){
                 $courseChapter = CourseChapter::where('id', $courseStep->course_chapter_id)->first();
                 if(isset($courseChapter->course_id)){
                     $userChapterStatus = new UserChapterStatus;
-                    $userChapterStatus->userid = auth()->user()->id;
+                    $userChapterStatus->userid = $userId;
                     $userChapterStatus->course_id = $courseChapter->course_id;
                     $userChapterStatus->chapter_id = $courseStep->course_chapter_id;
                     $userChapterStatus->step_id = $courseStep->id;
