@@ -415,15 +415,22 @@ class HomeController extends Controller
                                     $ChapterQuiz->marks = $valueQVal['marks'] ?? 0;
                                     $ChapterQuiz->save();
                                     $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
+                                    $optionCount = 0;
                                     foreach ($valueQVal['options'] as $keyOp => $optionText) {
-                                        // dd($optionText);
+                                        $isCorrect = '0';
+                                        if($optionCount == 0 && !isset($valueQVal['correct'])){
+                                            $isCorrect = '1';
+                                        }else {
+                                            $isCorrect = '0';
+                                        }
                                         $option = new ChapterQuizOption;
                                         $option->quiz_id = $quiz_id->id;
                                         $option->answer_option_key = $optionText;
-                                        $option->is_correct = $valueQVal['correct'][$keyOp] ?? '0';
+                                        $option->is_correct = $valueQVal['correct'][$keyOp] ?? $isCorrect;
                                         $option->created_date = date('Y-m-d H:i:s');
                                         $option->status = 1;
                                         $option->save();
+                                        $optionCount++;
                                     }
                                     
                                 }
@@ -677,8 +684,15 @@ class HomeController extends Controller
     public function changeAnswerOption($id, $val) 
     {
         try {
-            $chapter = ChapterQuizOption::where('id', $id)->update(['is_correct' => $val]);
-            return 1;
+            $chapterQuiz = ChapterQuizOption::where('id', $id)->first();
+            $quizOptionCount = ChapterQuizOption::where('quiz_id', $chapterQuiz->quiz_id)->where('is_correct', '1')->count();
+            // $quizOptionsId = ChapterQuizOption::where('quiz_id', $$chapterQuiz->quiz_id)->where('is_correct', 1)->pluck('id');
+            if($quizOptionCount == 1 && $val == 0){
+                return response()->json(['status' => 201, 'message'=> "Question should have atleast one correct answer. Don't try to uncheck."]);
+            }else{
+                $chapter = ChapterQuizOption::where('id', $id)->update(['is_correct' => $val]);
+                return response()->json(['status' => 200, 'message'=> "Answer changed."]);
+            }
         } catch (\Exception $e) {
             return $e->getMessage();
         }

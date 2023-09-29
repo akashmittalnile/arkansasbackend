@@ -220,8 +220,8 @@ $(document).on('click', '.SaveOption', function () {
         },
         success: function (data) {
             if (data == 1) {
-                location.reload();
                 toastr.success('New answer added successfully.');
+                setInterval(function () {location.reload();}, 2000);
             }
         }
     });
@@ -240,8 +240,8 @@ $(document).on('change', '.ordering-select-function', function () {
         },
         success: function (data) {
             if (data == 1) {
-                location.reload();
                 toastr.success("Ordering changed.");
+                setInterval(function () {location.reload();}, 2000);
             }
         }
     });
@@ -260,8 +260,11 @@ $(document).on('change', '.answerEditCheckbox', function () {
             'X-CSRF-TOKEN': '{{ csrf_token() }}'
         },
         success: function (data) {
-            if (data == 1) {
-                toastr.success("Answer changed.");
+            if (data.status == 200) {
+                toastr.success(data.message);
+            } else if (data.status == 201) {
+                toastr.warning(data.message);
+                setInterval(function () {location.reload();}, 3000);
             }
         }
     });
@@ -756,8 +759,8 @@ $(document).ready(function () {
             },
             success: function (response) {
                 if (response.status == 201) {
-                    location.reload();
                     toastr.success(response.message);
+                    setInterval(function () {location.reload();}, 2000);
                     // return false;
                 }
 

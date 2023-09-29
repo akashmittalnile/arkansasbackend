@@ -1213,6 +1213,11 @@ class ApiController extends Controller
                         $chapters = [];
                         $chapter_count = 0;
                         $chapter_quiz_count = 0;
+
+                        $isPurchase = UserCourse::where('course_id', $id)->where('user_id', $user_id)->first();
+                        $isPurchased = (isset($isPurchase->id)) ? true : false;
+                        $temp['isPurchased'] = $isPurchased;
+
                         foreach($course_chapter as $keyc => $valc){
                             $arr['id'] = $valc->id;
                             $steps = CourseChapterStep::where('course_chapter_id', $valc->id)->get();
@@ -1221,12 +1226,27 @@ class ApiController extends Controller
                             foreach($steps as $vals){
                                 $arr1['id'] = $vals->id;
                                 $arr1['type'] = $vals->type;
-                                $arr1['is_completed'] = $vals->is_completed;
                                 if($vals->type == 'quiz') $chapter_quiz_count++;
-                                $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) : null;
+
+                                $isComplete = UserChapterStatus::where('userid', $user_id)->where('course_id', $id)->where('chapter_id', $valc->id)->where('step_id', $vals->id)->first();
+                                $isCompleted = isset($isComplete->id) ? $isComplete->status : 0;
+
+                                if($isPurchased){
+                                    $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) : null;
+                                    $arr1['is_completed'] = $isCompleted;
+                                }else{
+                                    $arr1['quiz_url'] = null;
+                                    $arr1['is_completed'] = null;
+                                }
+                                
                                 $arr1['title'] = $vals->title;
                                 $arr1['description'] = $vals->description;
-                                $arr1['file'] = ($vals->details == null || $vals->details == "") ? null : url('upload/course/' . $vals->details);
+                                if($vals->type == 'assignment'){
+                                    $arr1['file'] = (isset($isComplete->id) ? (isset($isComplete->file) ? url('upload/course/' . $isComplete->file) : null) : null);
+                                }else{
+                                    $arr1['file'] = ($vals->details == null || $vals->details == "") ? null : url('upload/course/' . $vals->details);
+                                }
+                                
                                 $arr1['filename'] = $vals->details;
                                 $arr1['prerequisite'] = $vals->prerequisite;
                                 $arr1['sort_order'] = $vals->sort_order;
@@ -1884,51 +1904,16 @@ class ApiController extends Controller
             if ($user_id) {
                 $cart_value = AddToCart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
                 $cart_count = AddToCart::where('userid', $user_id)->count();
-                // $shipping_amount = 10;
                 $discount = 0;
                 $total_amount = ($cart_value) - $discount;
-                $card = CardDetail::where('userid', $user_id)->get();
-                $response = [];
-                if (count($card) > 0) {
-
-                    foreach ($card as $key => $value) {
-                        $temp['card_id'] = $value->id;
-                        $temp['card_number'] = encrypt_decrypt('decrypt', $value->card_no);
-                        $temp['card_holder_name'] = $value->name_on_card;
-                        $temp['cvv'] = encrypt_decrypt('decrypt', $value->CVV);
-                        $temp['valid_upto'] = encrypt_decrypt('decrypt', $value->expiry);
-                        $temp['card_type'] = $value->card_type;
-
-                        $card_type = $value->card_type;
-                        if ($card_type == 'VISA') {
-                            $temp['card_image'] = url('upload/notification-image/visa.png');
-                        } else {
-                            $temp['card_image'] = url('upload/notification-image/m-card.png');
-                        }
-                        $response[] = $temp;
-                    }
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'Card list found.',
-                        'sub_total' => (int)$cart_value,
-                        'order_count' => $cart_count,
-                        'discount' => $discount,
-                        // 'shipping' => $shipping_amount,
-                        'total' => $total_amount,
-                        'data' => $response
-                    ]);
-                } else {
-                    return response()->json([
-                        'status' => true,
-                        'message' => 'You have no card.',
-                        'sub_total' => (int)$cart_value,
-                        'order_count' => $cart_count,
-                        'discount' => $discount,
-                        'shipping' => $shipping_amount,
-                        'total' => $total_amount,
-                        'data' => $response
-                    ]);
-                }
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Cart details.',
+                    'sub_total' => (int)$cart_value,
+                    'order_count' => $cart_count,
+                    'discount' => $discount,
+                    'total' => $total_amount,
+                ]);
             } else {
                 return response()->json(['status' => false, 'Message' => 'Please login']);
             }
@@ -1950,38 +1935,23 @@ class ApiController extends Controller
                     return response()->json($validator->errors(), 202);
                 }
                 $carts = Addtocart::where('userid', $user_id)->get();
-                $transaction_id = "txn".rand(1000000000, 9999999999);
                 $order_no = "AKS".rand(10000000, 99999999);
-                // $shipping_cost = 10;
                 $order_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
-                // $order_items = Addtocart::where('userid', $user_id)->count();
-                // $today = date('y/m/d');
-                // $coupon_id = 0;
-                // $coupon_price = 0;
                 $total_price = $order_price;
-
                 
                 if (count($carts) > 0) {
-
-                    $transactionId = Transaction::insertGetId([
-                        'user_id' => $user_id,
-                        'status' => 1,
-                        'transaction_id' => $transaction_id,
-                        'amount' => $total_price,
-                        'card_id' =>  $request->card_id,
-                        'created_date' =>  date('Y-m-d H:i:s'),
-                    ]);
 
                     /*Create Order */
                     $insertedId = Order::insertGetId([
                         'user_id' => $user_id,
                         'order_number' => $order_no,
                         'amount' => $order_price,
+                        'admin_amount' => $order_price,
                         'total_amount_paid' => $total_price,/*Total amount of order*/
-                        'payment_id' => $transactionId,
-                        'payment_type' => 'card',
+                        'payment_id' => null,
+                        'payment_type' => null,
                         'created_date' => date('Y-m-d H:i:s'),
-                        'status' => 1,
+                        'status' => 0,
                     ]);
 
                     foreach ($carts as $cart) {
@@ -1991,6 +1961,7 @@ class ApiController extends Controller
                         $OrderDetail->product_type = $cart->object_type;
                         $OrderDetail->quantity = $cart->quantity;
                         $OrderDetail->amount = $cart->cart_value;
+                        $OrderDetail->admin_amount = $cart->cart_value;
                         $OrderDetail->created_date = date('Y-m-d H:i:s');
                         $OrderDetail->save();
 
@@ -1999,7 +1970,7 @@ class ApiController extends Controller
                             $userCourse->course_id = $cart->object_id;
                             $userCourse->user_id = $user_id;
                             $userCourse->buy_price = $cart->cart_value;
-                            $userCourse->payment_id = $transactionId;
+                            $userCourse->payment_id = null;
                             $userCourse->buy_date = date('Y-m-d H:i:s');
                             $userCourse->status = 0;
                             $userCourse->created_date = date('Y-m-d H:i:s');
@@ -2011,6 +1982,8 @@ class ApiController extends Controller
 
                     $data['status'] = 1;
                     $data['message'] = 'Order placed successfully';
+                    $data['order_id'] = $insertedId;
+                    $data['total_amount'] = $total_price;
                     return response()->json($data);
                 } else {
                     $data['status'] = 0;
@@ -2216,13 +2189,12 @@ class ApiController extends Controller
                     if(isset($courseChapter->course_id)){
                         $check = UserCourse::where('course_id', $courseChapter->course_id)->where('user_id', auth()->user()->id)->first();
                         if(!isset($check->id)) return response()->json(['status' => false, 'message' => 'Please purchase this course first']);
-
                         $userChapterStatus = new UserChapterStatus;
                         $userChapterStatus->userid = auth()->user()->id;
                         $userChapterStatus->course_id = $courseChapter->course_id;
                         $userChapterStatus->chapter_id = $step->course_chapter_id;
                         $userChapterStatus->step_id = $request->chapter_step_id;
-                        $userChapterStatus->step_type = $request->type;
+                        $userChapterStatus->step_type = $step->type;
                         $userChapterStatus->file = $fileName;
                         $userChapterStatus->status = 1;
                         $userChapterStatus->created_date = date('Y-m-d H:i:s');
@@ -2255,11 +2227,14 @@ class ApiController extends Controller
                         $userChapterStatus->course_id = $courseChapter->course_id;
                         $userChapterStatus->chapter_id = $courseStep->course_chapter_id;
                         $userChapterStatus->step_id = $request->chapter_step_id;
-                        $userChapterStatus->step_type = $request->type;
+                        $userChapterStatus->step_type = $courseStep->type;
                         $userChapterStatus->file = null;
                         $userChapterStatus->status = 1;
                         $userChapterStatus->created_date = date('Y-m-d H:i:s');
                         $userChapterStatus->save();
+
+
+
                         return response()->json(['status' => true, 'message' => $courseStep->type.' is completed.']);
                     } else return response()->json(['status' => false, 'message' => 'Something went wrong']);
                 }else return response()->json(['status' => false, 'message' => 'Incorrect step id']);
@@ -2273,7 +2248,7 @@ class ApiController extends Controller
         try{
             $chapterId = encrypt_decrypt('decrypt',$chapterId);
             $quizId = encrypt_decrypt('decrypt',$quizId);
-            $course = CourseChapterStep::where('course_chapter_id', $chapterId)->where('id', $quizId)->whereIn('type', ['quiz', 'survey'])->where('is_completed', 0)->first();
+            $course = CourseChapterStep::where('course_chapter_id', $chapterId)->where('id', $quizId)->whereIn('type', ['quiz'])->first();
             if(isset($course)){
                 $data = [];
                 $quiz = ChapterQuiz::where('step_id', $course->id)->whereIn('type', ['quiz', 'survey'])->get();
@@ -2340,10 +2315,24 @@ class ApiController extends Controller
 
     public function resultQuizSurvey(Request $request, $quizId){
         try{
-            $course = CourseChapterStep::where('id', $quizId)->whereIn('type', ['quiz', 'survey'])->update(['is_completed'=> '1']);
+            $courseStep = CourseChapterStep::where('id', $quizId)->whereIn('type', ['quiz'])->first();
+            if(isset($courseStep->course_chapter_id)){
+                $courseChapter = CourseChapter::where('id', $courseStep->course_chapter_id)->first();
+                if(isset($courseChapter->course_id)){
+                    $userChapterStatus = new UserChapterStatus;
+                    $userChapterStatus->userid = auth()->user()->id;
+                    $userChapterStatus->course_id = $courseChapter->course_id;
+                    $userChapterStatus->chapter_id = $courseStep->course_chapter_id;
+                    $userChapterStatus->step_id = $courseStep->id;
+                    $userChapterStatus->step_type = $courseStep->type;
+                    $userChapterStatus->file = null;
+                    $userChapterStatus->status = 1;
+                    $userChapterStatus->created_date = date('Y-m-d H:i:s');
+                    $userChapterStatus->save();
+                }
+            }
             $total = ChapterQuiz::where('step_id', $quizId)->whereIn('type', ['quiz', 'survey'])->sum('marks');
             $obtained = UserQuizAnswer::where('quiz_id', $quizId)->where('userid',9)->sum('marks_obtained');
-
             return view('home.result-page')->with(compact('obtained', 'total'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ApiController;
+use App\Http\Controllers\API\StripeController;
 use Spatie\FlareClient\Api;
 
 /*
@@ -77,5 +78,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('special-courses', [ApiController::class, "special_courses"]);
     Route::post('update-product-quantity', [ApiController::class, "update_product_quantity"]);
     Route::post('remove-cart', [ApiController::class, "remove_cart"]);
+    Route::post('make-payment', [StripeController::class, "makePayment"]);
 
 });

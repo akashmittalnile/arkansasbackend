@@ -34,7 +34,7 @@ class AuthController extends Controller
                 'user' => $user,
                 'status' => true,
                 'authorization' => [
-                    'token' => 'Bearer '.$user->createToken('ApiToken')->plainTextToken,
+                    'token' => $user->createToken('ApiToken')->plainTextToken,
                 ]
             ]);
         }
