@@ -22,7 +22,7 @@
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" href="#Profile" data-bs-toggle="tab">Profile</a> </li>
             <li class="nav-item"><a class="nav-link" href="#Password" data-bs-toggle="tab">Password</a> </li>
-            <li class="nav-item"><a class="nav-link" href="#TaxSetting" data-bs-toggle="tab">Payout & Tax Setting</a> </li>
+            <li class="nav-item"><a class="nav-link" href="#TaxSetting" data-bs-toggle="tab">Bank Info</a> </li>
         </ul>
     </div>
 
@@ -162,8 +162,45 @@
             </div>
         </div>
         <div class="tab-pane" id="TaxSetting">
-            <div class="Overview-card">
+            <div class="myaccount-card">
+                <div class="myaccount-card-form">
+                    <form action="{{ route('Home.store.bank.info') }}" method="POST" id="bank-info-form">
+                        @csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <h4>Account Number</h4>
+                                    <input type="number" class="form-control" name="acc_number" placeholder="Account Number" value="{{ $bank->account_number }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <h4>Re-enter Account Number</h4>
+                                    <input type="number" class="form-control" name="re_acc_number" placeholder="Re-enter Account Number" value="{{ $bank->account_number }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <h4>Routine Number</h4>
+                                    <input type="text" class="form-control" name="routine" placeholder="Routine Number" value="{{ $bank->routine_number }}">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <h4>Account Holder Name (Optional)</h4>
+                                    <input type="text" class="form-control" name="name" placeholder="Account Holder Name" value="{{ $bank->name_on_card }}">
+                                </div>
+                            </div>
 
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button class="cancelbtn">Cancel</button>
+                                    <button class="Createbtn">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
             </div>
         </div>
     </div>
@@ -218,6 +255,54 @@
                 },
                 bus_title: {
                     required: 'Please enter business sub title',
+                },
+            },
+            submitHandler: function(form) {
+                // This function will be called when the form is valid and ready to be submitted
+                form.submit();
+            },
+            errorElement: "span",
+            errorPlacement: function(error, element) {
+                error.addClass("invalid-feedback");
+                element.closest(".form-group").append(error);
+
+            },
+            highlight: function(element, errorClass, validClass) {
+                $(element).addClass("is-invalid");
+            },
+            unhighlight: function(element, errorClass, validClass) {
+                $(element).removeClass("is-invalid");
+            },
+        });
+
+
+        $('#bank-info-form').validate({
+            rules: {
+                acc_number: {
+                    required: true,
+                    maxlength: 15,
+                    minlength: 8,
+                },
+                re_acc_number: {
+                    required: true,
+                    equalTo: "input[name='acc_number']"
+                },
+                routine: {
+                    required: true,
+                    maxlength: 15,
+                    minlength: 5,
+                },
+            },
+            messages: {
+                acc_number: {
+                    required: 'Please enter account number',
+                },
+                re_acc_number: {
+                    required: 'Please re-enter account number',
+                    equalTo: 'Account number does not match',
+                },
+                routine: {
+                    required: 'Please enter routine number',
                 },
             },
             submitHandler: function(form) {

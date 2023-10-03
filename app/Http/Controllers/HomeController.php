@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CardDetail;
 use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\User;
@@ -40,7 +41,8 @@ class HomeController extends Controller
     {
         try {
             $user = User::where('id', auth()->user()->id)->first();
-            return view('home.myaccount')->with(compact('user'));
+            $bank = CardDetail::where('userid', auth()->user()->id)->first();
+            return view('home.myaccount')->with(compact('user', 'bank'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -98,6 +100,43 @@ class HomeController extends Controller
                 ]);
 
                 return redirect()->back()->with('message', 'Profile updated successfully');
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function bankInfo(Request $request) 
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'acc_number' => 'required',
+                'routine' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }else{
+                $user = CardDetail::where('userid', auth()->user()->id)->first();
+                if(isset($user->id)){
+                    CardDetail::where('userid', auth()->user()->id)->update([
+                        'account_number' => $request->acc_number,
+                        'routine_number' => $request->routine,
+                        'name_on_card' => $request->name ?? null,
+                        'is_default' => 1,
+                        'is_active' => 1,
+                    ]);
+                } else {
+                    $card = new CardDetail;
+                    $card->userid = auth()->user()->id;
+                    $card->account_number = $request->acc_number;
+                    $card->routine_number = $request->routine;
+                    $card->name_on_card = $request->name ?? null;
+                    $card->is_default = 1;
+                    $card->is_active = 1;
+                }
+
+                return redirect()->back()->with('message', 'Bank details updated successfully');
             }
         } catch (\Exception $e) {
             return $e->getMessage();

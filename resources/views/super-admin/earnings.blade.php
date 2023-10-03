@@ -44,7 +44,7 @@
                             <div class="col-md-9">
                                 <div class="pmu-table-info-card">
                                     <h2>Total Admin Earning</h2>
-                                    <div class="pmu-table-value">${{ number_format((float)$walletBalance->balance, 2) }}</div>
+                                    <div class="pmu-table-value">${{ number_format((float)(isset($walletBalance->balance) ? $walletBalance->balance : 0), 2) }}</div>
                                 </div>
                             </div>
 
@@ -72,8 +72,8 @@
                             @forelse($orders as $index => $val)
                             <tr>
                                 <td><span class="sno">{{ $index+1 }}</span> </td>
-                                <td>{{ $val->first_name . ' ' . $val->last_name }}</td>
-                                <td>{{ $val->order_number }}</td>
+                                <td>{{ $val->first_name ?? "NA" . ' ' . $val->last_name }}</td>
+                                <td>{{ $val->order_number ?? "NA" }}</td>
                                 <td>{{ date('d M, Y H:iA', strtotime($val->created_date)) }}</td>
                                 <td>STRIPE</td>
                                 <td>${{ number_format((float)$val->admin_amount, 2) }}</td>

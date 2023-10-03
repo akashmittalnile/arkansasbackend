@@ -57,6 +57,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/', 'HomeController@index')->name('home.index');
         Route::get('/my-account', 'HomeController@myAccount')->name('Home.my.account');
         Route::post('/my-data', 'HomeController@storeMyData')->name('Home.store.mydata');
+        Route::post('/bank-info', 'HomeController@bankInfo')->name('Home.store.bank.info');
         Route::get('/edit-course/{id}', 'HomeController@editCourse')->name('Home.edit.course');
         Route::post('/edit-course', 'HomeController@updateCourseDetails')->name('Home.updateCourseDetails');
         Route::get('/view-course-details/{id}', 'HomeController@viewCourse')->name('Home.view.course');
