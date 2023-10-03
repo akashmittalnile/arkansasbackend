@@ -86,6 +86,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/admin/change-ordering/{chapterid}/{id}/{val}', 'HomeController@changeOrdering')->name('admin.change-answer');
         Route::get('/admin/change-answer-option/{id}/{val}', 'HomeController@changeAnswerOption')->name('admin.change-answer.option');
 
+        Route::get('/earnings', 'HomeController@earnings')->name('Home.earnings');
+        Route::get('/payment-request', 'HomeController@paymentRequest')->name('Home.payment.request');
+
     });
 
     Route::group(['middleware' => ['auth.superadmin']], function() {

@@ -28,6 +28,10 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/help-support.css') !!}">
     @endif
 
+    @if ($currentURL == 'Home.earnings' || $currentURL == 'Home.payment.request')
+        <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/earnings.css') !!}">
+    @endif
+
     @if ($currentURL == 'home.index' || $currentURL == 'Home.Addcourse'|| $currentURL == 'Home.Addcourse2' || $currentURL == 'Home.CourseList' || $currentURL == 'Home.edit.course' || $currentURL == 'Home.view.course')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">

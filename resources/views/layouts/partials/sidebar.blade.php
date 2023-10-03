@@ -60,6 +60,13 @@
                         </a>
                     </li>
                 @endif
+
+                <li class="nav-item @if ($currentURL == 'Home.earnings' || $currentURL == 'Home.payment.request') active @endif">
+                    <a class="nav-link" href="{{ route('Home.earnings') }}">
+                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/earnings.svg') !!}"></span>
+                        <span class="menu-title">Earnings</span>
+                    </a>
+                </li>
                 
                 
 

@@ -72,7 +72,7 @@
                             @forelse($orders as $index => $val)
                             <tr>
                                 <td><span class="sno">{{ $index+1 }}</span> </td>
-                                <td>{{ $val->first_name ?? "NA" . ' ' . $val->last_name }}</td>
+                                <td>{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</td>
                                 <td>{{ $val->order_number ?? "NA" }}</td>
                                 <td>{{ date('d M, Y H:iA', strtotime($val->created_date)) }}</td>
                                 <td>STRIPE</td>
@@ -81,6 +81,9 @@
                                 <td>{{ ($val->status == 1) ? "Active" : "Pending" }}</td>
                             </tr>
                             @empty
+                            <tr class="text-center">
+                                <td colspan="8">No record found</td>
+                            </tr>
                             @endforelse
                         </tbody>
                     </table>

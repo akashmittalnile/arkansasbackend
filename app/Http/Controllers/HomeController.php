@@ -10,6 +10,8 @@ use App\Models\CourseChapter;
 use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
 use App\Models\CourseChapterStep;
+use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\Tag;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
@@ -732,6 +734,34 @@ class HomeController extends Controller
                 $chapter = ChapterQuizOption::where('id', $id)->update(['is_correct' => $val]);
                 return response()->json(['status' => 200, 'message'=> "Answer changed."]);
             }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function earnings(Request $request) 
+    {
+        try {
+            // $orders = Order::join('users as u', 'u.id', '=', 'orders.user_id');
+            
+            // $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->paginate(10);
+
+            $orders = DB::table('order_product_detail as opd')
+                ->leftJoin('course as c', 'c.id', '=', 'opd.product_id')
+                ->leftJoin('orders as o', 'o.id', '=', 'opd.order_id')
+                ->leftJoin('users as u', 'u.id', '=', 'o.user_id');
+                if($request->filled('name')){
+                    $orders->where(DB::raw("CONCAT('u.first_name', ' ', 'u.last_name')"), 'like', '%'.$request->name.'%');
+                }
+                if($request->filled('number')){
+                    $orders->where('o.order_number', 'like', '%'.$request->number.'%');
+                }
+                if($request->filled('order_date')){
+                    $orders->whereDate('o.created_date', date('Y-m-d', strtotime($request->order_date)));
+                }
+            $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->paginate(10);
+
+            return view('home.earnings',compact('orders'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
