@@ -7,6 +7,8 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Transaction;
 use App\Models\UserCourse;
+use App\Models\WalletBalance;
+use App\Models\WalletHistory;
 use Illuminate\Http\Request;
 use Stripe;
 use Illuminate\Support\Facades\Validator;
@@ -48,6 +50,38 @@ class StripeController extends Controller
                     $orderDetails = OrderDetail::where('order_id', $request->order_id)->where('product_type', 1)->get();
                     foreach($orderDetails as $val){
                         $userCourse = UserCourse::where('course_id', $val->product_id)->where('user_id', auth()->user()->id)->update(['payment_id'=>$transactionId]);
+                    }
+                    $walletBalance = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
+                    $orderAdminAmount = Order::where('id', $request->order_id)->first();
+                    if(isset($walletBalance->id)){
+                        WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->update([
+                            'balance' => $walletBalance->balance + $orderAdminAmount->admin_amount,
+                            'updated_date' => date('Y-m-d H:i:s')
+                        ]);
+                        $history = new WalletHistory;
+                        $history->wallet_id = $walletBalance->id;
+                        $history->balance = $orderAdminAmount->admin_amount ?? 0;
+                        $history->added_date = date('Y-m-d H:i:s');
+                        $history->added_by = auth()->user()->id;
+                        $history->payment_id = $transactionId;
+                        $history->status = 1;
+                        $history->save();
+                    }else{
+                        $balance = new WalletBalance;
+                        $balance->owner_id = auth()->user()->id;
+                        $balance->owner_type = auth()->user()->role;
+                        $balance->balance = $orderAdminAmount->admin_amount ?? 0;
+                        $balance->created_date = date('Y-m-d H:i:s');
+                        $balance->updated_date = date('Y-m-d H:i:s');
+                        $balance->save();
+                        $history = new WalletHistory;
+                        $history->wallet_id = $balance->id;
+                        $history->balance = $orderAdminAmount->admin_amount ?? 0;
+                        $history->added_date = date('Y-m-d H:i:s');
+                        $history->added_by = auth()->user()->id;
+                        $history->payment_id = $transactionId;
+                        $history->status = 1;
+                        $history->save();
                     }
                     return response()->json(["status" => true, "message" => "Payment successfully done.", 'receipt URL' => $charge->receipt_url,
                     ]);

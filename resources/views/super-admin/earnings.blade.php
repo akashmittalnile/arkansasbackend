@@ -7,29 +7,32 @@
                 <h2>Earnings</h2>
             </div>
             <div class="pmu-search-filter wd80">
-                <div class="row">
-                    <div class="col-md-6">
-                        <div class="form-group search-form-group">
-                            <input type="text" class="form-control" name="Start Date"
-                                placeholder="Enter Student Name, email ID, Phone no., order ID to get order details">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                <form action="">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group search-form-group">
+                                <input type="text" class="form-control" name="name" placeholder="Enter Name here....." value="{{ request()->name }}">
+                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group search-form-group">
+                                <input type="text" class="form-control" name="number" placeholder="Enter Order Number here....." value="{{ request()->number }}">
+                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="date" name="order_date" class="form-control" value="{{ request()->order_date }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <button class="download-btn" style="padding: 12px 0px;" type="">Search</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <input type="date" class="form-control">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <select class="form-control">
-                                <option>Select Type!</option>
-                                <option>Students</option>
-                                <option>Content Creator</option>
-                            </select>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -40,8 +43,8 @@
                         <div class="row">
                             <div class="col-md-9">
                                 <div class="pmu-table-info-card">
-                                    <h2>Total Enrolled User</h2>
-                                    <div class="pmu-table-value">$ 5678.99</div>
+                                    <h2>Total Admin Earning</h2>
+                                    <div class="pmu-table-value">${{ number_format((float)$walletBalance->balance, 2) }}</div>
                                 </div>
                             </div>
 
@@ -57,84 +60,33 @@
                             <tr>
                                 <th>S.no</th>
                                 <th>Name</th>
+                                <th>Order Number</th>
                                 <th>Date Of Payment</th>
-                                <th>Date Of Payment Received</th>
                                 <th>Payment Mode</th>
-                                <th>Course fees paid</th>
-                                <th>Product Price Paid</th>
+                                <th>Admin Cut</th>
+                                <th>Total fees paid</th>
+                                <th>Status</th>
                             </tr>
                         </thead>
                         <tbody>
+                            @forelse($orders as $index => $val)
                             <tr>
-                                <td><span class="sno">1</span> </td>
-                                <td>Tilakavati Manne</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>CC-XXX89</td>
-                                <td>$499.00</td>
-                                <td>$499.00</td>
+                                <td><span class="sno">{{ $index+1 }}</span> </td>
+                                <td>{{ $val->first_name . ' ' . $val->last_name }}</td>
+                                <td>{{ $val->order_number }}</td>
+                                <td>{{ date('d M, Y H:iA', strtotime($val->created_date)) }}</td>
+                                <td>STRIPE</td>
+                                <td>${{ number_format((float)$val->admin_amount, 2) }}</td>
+                                <td>${{ number_format((float)$val->total_amount_paid, 2) }}</td>
+                                <td>{{ ($val->status == 1) ? "Active" : "Pending" }}</td>
                             </tr>
-                            <tr>
-                                <td><span class="sno">2</span> </td>
-                                <td>Tilakavati Manne</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>CC-XXX89</td>
-                                <td>$499.00</td>
-                                <td>$499.00</td>
-                            </tr>
-                            <tr>
-                                <td><span class="sno">3</span> </td>
-                                <td>Tilakavati Manne</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>CC-XXX89</td>
-                                <td>$499.00</td>
-                                <td>$499.00</td>
-                            </tr>
-                            <tr>
-                                <td><span class="sno">4</span> </td>
-                                <td>Tilakavati Manne</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>CC-XXX89</td>
-                                <td>$499.00</td>
-                                <td>$499.00</td>
-                            </tr>
-                            <tr>
-                                <td><span class="sno">5</span> </td>
-                                <td>Tilakavati Manne</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>26 May, 2023-09:30AM</td>
-                                <td>CC-XXX89</td>
-                                <td>$499.00</td>
-                                <td>$499.00</td>
-                            </tr>
+                            @empty
+                            @endforelse
                         </tbody>
                     </table>
 
                     <div class="pmu-table-pagination">
-                        <ul class="pmu-pagination">
-                            <li class="disabled" id="example_previous">
-                                <a href="#" aria-controls="example" data-dt-idx="0" tabindex="0"
-                                    class="page-link">Previous</a>
-                            </li>
-                            <li class="active">
-                                <a href="#" class="page-link">1</a>
-                            </li>
-                            <li class="">
-                                <a href="#" aria-controls="example" data-dt-idx="2" tabindex="0"
-                                    class="page-link">2</a>
-                            </li>
-                            <li class="">
-                                <a href="#" aria-controls="example" data-dt-idx="3" tabindex="0"
-                                    class="page-link">3</a>
-                            </li>
-                            <li class="next" id="example_next">
-                                <a href="#" aria-controls="example" data-dt-idx="7" tabindex="0"
-                                    class="page-link">Next</a>
-                            </li>
-                        </ul>
+                        {{$orders->appends(Request::except('page'))->links('pagination::bootstrap-4')}}
                     </div>
                 </div>
             </div>

@@ -15,6 +15,7 @@ use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\ProductAttibutes;
+use App\Models\WalletBalance;
 use Auth;
 use Illuminate\Support\Facades\Validator;
 use VideoThumbnail;
@@ -738,11 +739,22 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function earnings() 
+    public function earnings(Request $request) 
     {
         try {
-            $courses = Course::orderBy('id','DESC')->get();
-        return view('super-admin.earnings',compact('courses'));
+            $walletBalance = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
+            $orders = Order::join('users as u', 'u.id', '=', 'orders.user_id');
+            if($request->filled('name')){
+                $orders->where(DB::raw("CONCAT('u.first_name', ' ', 'u.last_name')"), 'like', '%'.$request->name.'%');
+            }
+            if($request->filled('number')){
+                $orders->where('orders.order_number', 'like', '%'.$request->number.'%');
+            }
+            if($request->filled('order_date')){
+                $orders->whereDate('orders.created_date', date('Y-m-d', strtotime($request->order_date)));
+            }
+            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->paginate(10);
+            return view('super-admin.earnings',compact('orders', 'walletBalance'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

@@ -1787,35 +1787,41 @@ class ApiController extends Controller
                 ]);
                 if ($validator->fails()) {
                     return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
-                }
-                
-                $cart = new AddToCart;
-                $cart->userid = $user_id;
-                $cart->object_id = $request->object_id;
-                $cart->object_type = $request->object_type;
+                }else{
+                    if($request->object_type == 1){
+                        $orderDetail = Order::join('order_product_detail as opd', 'opd.order_id', '=', 'orders.id')->where('orders.user_id', auth()->user()->id)->where('orders.status', 1)->where('product_id', $request->object_id)->where('product_type', 1)->select('orders.id')->first();
+                        if(isset($orderDetail->id)){
+                            return response()->json(['status' => false, 'message' => 'Already purchased this course!. Please try another courses.']);
+                        }  
+                    }
+                    
+                    $cart = new AddToCart;
+                    $cart->userid = $user_id;
+                    $cart->object_id = $request->object_id;
+                    $cart->object_type = $request->object_type;
 
-                $cart_value = $request->cart_value;
-                $admin_value = $request->cart_value;
-                if($request->object_type == 1){
-                    $course = Course::where('id', $request->object_id)->first();
-                    $user = User::where('id', $course->admin_id)->first();
-                    if(isset($user->id) && $user->role == 3){
-                        $admin_value = $request->cart_value;
-                    } else if(isset($user->id) && $user->role == 2){
-                        $admin_value = number_format((float)(($request->cart_value * $user->admin_cut)/100), 2);
+                    $cart_value = $request->cart_value;
+                    $admin_value = $request->cart_value;
+                    if($request->object_type == 1){
+                        $course = Course::where('id', $request->object_id)->first();
+                        $user = User::where('id', $course->admin_id)->first();
+                        if(isset($user->id) && $user->role == 3){
+                            $admin_value = $request->cart_value;
+                        } else if(isset($user->id) && $user->role == 2){
+                            $admin_value = number_format((float)(($request->cart_value * $user->admin_cut)/100), 2);
+                        }
+                    }
+
+                    $cart->cart_value = $cart_value;
+                    $cart->admin_cut_value = $admin_value;
+                    $cart->quantity = 1;
+                    $cart->save();
+                    if ($cart) {
+                        return response()->json(['status' => true, 'message' => 'Cart Added']);
+                    } else {
+                        return response()->json(['status' => true, 'message' => 'Something went wrong!']);
                     }
                 }
-
-                $cart->cart_value = $cart_value;
-                $cart->admin_cut_value = $admin_value;
-                $cart->quantity = 1;
-                $cart->save();
-                if ($cart) {
-                    return response()->json(['status' => true, 'message' => 'Cart Added']);
-                } else {
-                    return response()->json(['status' => true, 'message' => 'Something went wrong!']);
-                }
-
             } else {
                 return response()->json(['status' => false, 'Message' => 'Please login']);
             }
@@ -1955,12 +1961,6 @@ class ApiController extends Controller
             $data = array();
             $user_id = Auth::user()->id;
             if ($user_id) {
-                $validator = Validator::make($request->all(), [
-                    'card_id' => 'required',
-                ]);
-                if ($validator->fails()) {
-                    return response()->json($validator->errors(), 202);
-                }
                 $carts = Addtocart::where('userid', $user_id)->get();
                 $order_no = "AKS".rand(10000000, 99999999);
                 
