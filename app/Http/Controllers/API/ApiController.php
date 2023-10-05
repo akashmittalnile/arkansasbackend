@@ -1851,7 +1851,7 @@ class ApiController extends Controller
                             $value = Course::leftJoin('users as u', function($join) {
                                 $join->on('course.admin_id', '=', 'u.id');
                             })
-                            ->where('course.id', $item->object_id)->select('course.title', 'course.course_fee', 'u.profile_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.admin_id', 'course.id')->first();
+                            ->where('course.id', $item->object_id)->select('course.title', 'course.course_fee', 'u.profile_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.admin_id', 'course.id', 'course.introduction_image')->first();
                             $temp['title'] = $value->title;
                             $temp['price'] = $value->course_fee;
                             if ($value->profile_image) {
@@ -1867,6 +1867,9 @@ class ApiController extends Controller
                             } else {
                                 $temp['isLike'] = 0;
                             }
+                            if(isset($value->introduction_image)){
+                                $temp['Product_image'] = array(url('upload/disclaimers-introduction/'.$value->introduction_image));  
+                            } else $temp['Product_image'] = array();
                         } else {
                             $value = Product::where('id', $item->object_id)->first();
                             $temp['title'] = $value->name;
