@@ -1021,7 +1021,7 @@ class ApiController extends Controller
             } else {
                 $datas = Product::where('product.status', 1);
                 if($request->filled('title')){
-                    $datas->where('product.name', 'LIKE' . '%' . $request->title . '%');
+                    $datas->where('product.name', 'like' , '%' . $request->title . '%');
                 }
                 if($request->filled('category')){
                     $datas->where('product.category_id', $request->category);
@@ -2407,9 +2407,24 @@ class ApiController extends Controller
             $users = User::where('role', 3)->pluck('id');
             $courses = Course::leftJoin('users', function($join) {
                 $join->on('course.admin_id', '=', 'users.id');
-            })->where('course.status', 1)->whereIn('admin_id', $users)->orderBy('course.id', 'DESC')->select('course.*', 'users.first_name', 'users.last_name','users.profile_image','users.category_name')->get();
+            })->where('course.status', 1)->whereIn('course.admin_id', $users);
+            if($request->filled('title')){
+                $courses->where('course.title', 'like' , '%' . $request->title . '%');
+            }
+            if($request->filled('category')){
+                $courses->where('course.category_id', $request->category);
+            }
+            if($request->filled('price')){
+                if($request->price == 1) $courses->orderByDesc('course.course_fee');
+                else $courses->orderBy('course.course_fee');
+            } else{
+                $courses->orderBy('course.id', 'DESC');
+            }
+            $courses = $courses->select('course.*', 'users.first_name', 'users.last_name','users.profile_image','users.category_name')->get();
             $data = [];
             foreach($courses as $value){
+                if($request->filled('tag'))
+                    if(!in_array($request->tag, unserialize($value->tags))) continue;
                 $temp['course_fee'] = $value->course_fee;
                 $temp['valid_upto'] = $value->valid_upto;
                 if (!empty($value->certificates)) {
@@ -2447,7 +2462,10 @@ class ApiController extends Controller
                 $temp['id'] = $value->id;
                 $temp['description'] = $value->description;
                 $temp['status'] = $value->status;
-                $temp['rating'] = 5.0;
+                $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
+                $temp['avg_rating'] = number_format($avgRating, 1);
+                if($request->filled('rating'))
+                    if($avgRating < min($request->rating)) continue;
                 $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                 $tags = [];
                 if(isset($value->tags)){
