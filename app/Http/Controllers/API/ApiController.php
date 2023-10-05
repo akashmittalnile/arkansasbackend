@@ -488,7 +488,7 @@ class ApiController extends Controller
                 $course->where('course.title', 'like' , '%' . $request->title . '%');
             }
             if($request->filled('category')){
-                $course->where('course.category_id', $request->category);
+                $course->whereIntegerInRaw('course.category_id', $request->category);
             }
             if($request->filled('rating')){
                 $course->join('user_review as ur', 'ur.object_id', '=', 'course.id');
@@ -854,7 +854,7 @@ class ApiController extends Controller
                     $datas->where('course.title', 'like' , '%' . $request->title . '%');
                 }
                 if($request->filled('category')){
-                    $datas->where('course.category_id', $request->category);
+                    $datas->whereIntegerInRaw('course.category_id', $request->category);
                 }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('course.course_fee');
@@ -869,7 +869,7 @@ class ApiController extends Controller
                     $datas->where('product.name', 'LIKE' . '%' . $request->title . '%');
                 }
                 if($request->filled('category')){
-                    $datas->where('product.category_id', $request->category);
+                    $datas->whereIntegerInRaw('product.category_id', $request->category);
                 }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('product.price');
@@ -1009,7 +1009,7 @@ class ApiController extends Controller
                     $datas->where('course.title', 'like' , '%' . $request->title . '%');
                 }
                 if($request->filled('category')){
-                    $datas->where('course.category_id', $request->category);
+                    $datas->whereIntegerInRaw('course.category_id', $request->category);
                 }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('course.course_fee');
@@ -1024,7 +1024,7 @@ class ApiController extends Controller
                     $datas->where('product.name', 'like' , '%' . $request->title . '%');
                 }
                 if($request->filled('category')){
-                    $datas->where('product.category_id', $request->category);
+                    $datas->whereIntegerInRaw('product.category_id', $request->category);
                 }
                 if($request->filled('price')){
                     if($request->price == 1) $datas->orderByDesc('product.price');
@@ -2412,7 +2412,7 @@ class ApiController extends Controller
                 $courses->where('course.title', 'like' , '%' . $request->title . '%');
             }
             if($request->filled('category')){
-                $courses->where('course.category_id', $request->category);
+                $courses->whereIntegerInRaw('course.category_id', $request->category);
             }
             if($request->filled('price')){
                 if($request->price == 1) $courses->orderByDesc('course.course_fee');
