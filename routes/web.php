@@ -88,7 +88,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
         Route::get('/earnings', 'HomeController@earnings')->name('Home.earnings');
         Route::get('/payment-request', 'HomeController@paymentRequest')->name('Home.payment.request');
-
+        Route::post('/payment-request', 'HomeController@paymentRequestStore')->name('Home.payment.request.store');
+        
+        Route::get('/download-earnings', 'HomeController@downloadEarnings')->name('Home.download.earnings');
     });
 
     Route::group(['middleware' => ['auth.superadmin']], function() {
@@ -141,6 +143,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/addcourse2/{userID}/{courseID}', 'SuperAdminController@addcourse2')->name('SA.Addcourse2');
         Route::get('/super-admin/addcourse2/{userID}/{courseID}/{chapterID}', 'SuperAdminController@course_list')->name('SA.CourseList');
 
+        Route::get('/super-admin/payment-requests/{userID}', 'SuperAdminController@payment_request')->name('SA.Payment.Request');
+        Route::get('/super-admin/changes-payout-status/{id}/{status}', 'SuperAdminController@change_payout_status')->name('SA.Change.Payout.Status');
+
         Route::get('/super-admin/tag-listing', 'SuperAdminController@tag_listing')->name('SA.TagListing');
         Route::get('/load-sectors', 'SuperAdminController@loadSectors')->name('load-sectors');
         Route::get('/super-admin/delete-tags/{id}', 'SuperAdminController@delete_tags')->name('admin.DeleteTags');
@@ -157,6 +162,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/delete-category/{id}', 'SuperAdminController@delete_categoty')->name('SA.DeleteCategoty');
 
         Route::get('/super-admin/coupons', 'SuperAdminController@coupons')->name('SA.Coupons');
+
+        Route::get('/super-admin/download-earnings', 'SuperAdminController@downloadEarnings')->name('SA.Download.Earnings');
        
     });
     

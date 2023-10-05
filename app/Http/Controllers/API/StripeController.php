@@ -75,7 +75,7 @@ class StripeController extends Controller
                         $balance->updated_date = date('Y-m-d H:i:s');
                         $balance->save();
                         $history = new WalletHistory;
-                        $history->wallet_id = $balance->id;
+                        $history->wallet_id = $balance['id '];
                         $history->balance = $orderAdminAmount->admin_amount ?? 0;
                         $history->added_date = date('Y-m-d H:i:s');
                         $history->added_by = auth()->user()->id;

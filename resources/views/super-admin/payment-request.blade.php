@@ -1,10 +1,10 @@
-@extends('layouts.app-master')
+@extends('super-admin-layouts.app-master')
 @section('title', 'Makeup University - Payment Request')
 @section('content')
 <div class="body-main-content">
     <div class="pmu-filter-section">
         <div class="pmu-filter-heading">
-            <h2>Payment Requests</h2>
+            <h2>Payment Request</h2>
         </div>
         <div class="pmu-search-filter wd80">
             <form action="">
@@ -31,12 +31,12 @@
                     </div>
                     <div class="col-md-1">
                         <div class="form-group">
-                            <a href="{{ route('Home.payment.request') }}" style="padding: 12px 0px;" class="download-btn"><i class="las la-sync"></i></a>
+                            <a class="download-btn" style="padding: 12px 0px;" href="{{ route('SA.Payment.Request', encrypt_decrypt('encrypt', $userID)) }}"><i class="las la-sync"></i></a>
                         </div>
                     </div>
                     <div class="col-md-1">
                         <div class="form-group">
-                            <a class="download-btn" style="padding: 13.5px 0px;" href="{{ route('Home.earnings') }}">Back</a>
+                            <a class="download-btn" style="padding: 13.5px 0px;" href="{{ route('SA.ListedCourse', encrypt_decrypt('encrypt', $userID)) }}">Back</a>
                         </div>
                     </div>
                 </div>
@@ -56,23 +56,22 @@
             <div class="pmu-card-table pmu-table-card">
                 <div class="pmu-table-filter">
                     <div class="row">
-                        <div class="col-md-2">
+                        <div class="col-md-12">
                             <div class="pmu-table-info-card">
-                                <h2>Total Earning</h2>
+                                <h2>Total Settled amount</h2>
                                 <div class="pmu-table-value">${{ number_format((float)$amount, 2) }}</div>
                             </div>
                         </div>
-                        <div class="col-md-7">
-                            <div class="pmu-table-info-card">
-                                <h2>My Wallet</h2>
-                                <div class="pmu-table-value">${{ number_format((float)$mymoney['balance'], 2) }}</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
+                        <!-- <div class="col-md-3">
                             <div class="pmu-table-form-card">
-                                <button class="download-btn" data-bs-toggle="modal" data-bs-target="#Editcourses">Create Payout Request</button>
+                                <button class="download-btn" data-bs-toggle="modal" data-bs-target="#Editcourses">Payout Request</button>
                             </div>
-                        </div>
+                        </div> -->
+                        <!-- <div class="col-md-3">
+                            <div class="pmu-table-form-card">
+                                <a href="#" class="download-btn">Download Payment Log</a>
+                            </div>
+                        </div> -->
                     </div>
                 </div>
                 <table class="table">
@@ -91,7 +90,9 @@
                             <td>${{ number_format((float)$val->balance, 2) }}</td>
                             <td>{{ date('d M, Y H:iA', strtotime($val->added_date)) }}</td>
                             <td>
-                                @if($val->status == 0) Pending
+                                @if($val->status == 0)
+                                    <a title="Approve Request" class="approve-btn" href="{{ route('SA.Change.Payout.Status', ['id' => encrypt_decrypt('encrypt', $val->id), 'status' => encrypt_decrypt('encrypt', 1)]) }}"><img src="{!! url('assets/superadmin-images/approve.svg') !!}"></a>
+                                    <a title="Reject Request" onclick="return confirm('Are you sure you want to reject this payout request?');" class="reject-btn"href="{{ route('SA.Change.Payout.Status', ['id' => encrypt_decrypt('encrypt', $val->id), 'status' => encrypt_decrypt('encrypt', 2)]) }}"><img src="{!! url('assets/superadmin-images/reject.svg') !!}"></a>
                                 @elseif($val->status == 1) Approved
                                 @elseif($val->status == 2) Rejected
                                 @endif
@@ -113,81 +114,17 @@
     </div>
 </div>
 
-
-<div class="modal ro-modal fade" id="Editcourses" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="PaymentRequest-form-info">
-                    <h2>Payout Request</h2>
-                    <div class="row">
-                        <!-- <div class="col-md-12">
-                            <div class="modal-settled-info-text">
-                                <img src="{!! url('assets/superadmin-images/dollar-circle.svg')!!}">
-                                <p>Total Course Payment Received</p>
-                                <h4>3207.55</h4>
-                            </div>
-                        </div> -->
-                        <form method="POST" action="{{ route('Home.payment.request.store') }}" id="amount-form" autocomplete="off"> @csrf
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <input type="number" name="amount" class="form-control" placeholder="Enter amount here..." min="1">
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close" type="button">Cancel</button>
-                                    <button class="save-btn" type="submit">Save</button>
-                                </div>
-                            </div>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
 <style>
     a:hover{
         color: #fff;
     }
 </style>
+
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     $(document).ready(function() {
-        $.validator.addMethod("greaterThan", function (value) {
-                return parseFloat(value, 2) <= parseFloat("{{$amount-$requestedAmount ?? 0}}", 2);
-        }, "Amount must be equal or smaller than the {{$amount-$requestedAmount ?? 0}}");
-        $('#amount-form').validate({
-            rules: {
-                amount: {
-                    required: true,
-                    greaterThan: true
-                }
-            },
-            messages: {
-                amount: {
-                    required: 'Please enter amount',
-                }
-            },
-            submitHandler: function(form) {
-                // This function will be called when the form is valid and ready to be submitted
-                form.submit();
-            },
-            errorElement: "span",
-            errorPlacement: function(error, element) {
-                error.addClass("invalid-feedback");
-                element.closest(".form-group").append(error);
-
-            },
-            highlight: function(element, errorClass, validClass) {
-                $(element).addClass("is-invalid");
-            },
-            unhighlight: function(element, errorClass, validClass) {
-                $(element).removeClass("is-invalid");
-            },
-        });
+        
     })
 </script>
 @endsection

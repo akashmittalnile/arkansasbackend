@@ -93,7 +93,7 @@
                                             </div>
                                             <div class="side-profile-total-content">
                                                 <h2>Fee Settlement</h2>
-                                                <p>{{ $user->course_fee }}% Of Course Fees</p>
+                                                <p>{{ $user->admin_cut ?? 0 }}% Of Course Fees</p>
                                             </div>
                                         </div>
                                     </div>
@@ -136,21 +136,35 @@
                                     <img src="{!! url('assets/superadmin-images/card.svg') !!}">
                                 </div>
                                 <div class="added-bank-info-text">
-                                    <h2>Account number</h2>
-                                    <p>**** ***** 6742</p>
-                                    <div class="added-plan-type">Weekly</div>
+                                    <h2>Account Number</h2>
+                                    @if(isset($account->account_number))
+                                    <p>XXXX XXXX {{ substr($account->account_number,8) }}</p>
+                                    @else
+                                    <p>NA</p>
+                                    @endif
+                                    <!-- <div class="added-plan-type">Weekly</div> -->
+                                </div>
+                            </div>
+
+                            <div class="added-bank-info-card">
+                                <div class="added-bank-info-icon">
+                                    <img src="{!! url('assets/superadmin-images/card.svg') !!}">
+                                </div>
+                                <div class="added-bank-info-text">
+                                    <h2>Routine Number</h2>
+                                    <p>{{ $account->routine_number ?? "NA" }}</p>
+                                    <!-- <div class="added-plan-type">Weekly</div> -->
                                 </div>
                             </div>
 
                             <div class="settled-info-text">
-                                <div class="added-new-request">01 new request</div>
-                                <p>Total Settled amount - May, 2023</p>
-                                <h2>4045.99</h2>
+                                <div class="added-new-request">{{ $count ?? 0 }} new request</div>
+                                <p>Total Settled Amount</p>
+                                <h2>{{ number_format((float)$amount, 2) }}</h2>
                             </div>
 
                             <div class="Payment-Request-action">
-                                <a class="newcourse-btn" data-bs-toggle="modal" data-bs-target="#PaymentRequest">Payment
-                                    Request</a>
+                                <a href="{{ route('SA.Payment.Request', encrypt_decrypt('encrypt', $user->id)) }}" class="newcourse-btn">See Payment Requests</a>
                             </div>
                         </div>
                     </div>

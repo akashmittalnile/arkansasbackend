@@ -9,7 +9,7 @@
             <div class="pmu-search-filter wd80">
                 <form action="">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="name" placeholder="Enter Name here....." value="{{ request()->name }}">
                                 <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
@@ -31,6 +31,11 @@
                                 <button class="download-btn" style="padding: 12px 0px;" type="">Search</button>
                             </div>
                         </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <a href="{{ route('SA.Earnings') }}" style="padding: 12px 0px;" class="download-btn"><i class="las la-sync"></i></a>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -47,10 +52,19 @@
                                     <div class="pmu-table-value">${{ number_format((float)(isset($walletBalance->balance) ? $walletBalance->balance : 0), 2) }}</div>
                                 </div>
                             </div>
-
+                            @php
+                                $full = url()->full();
+                                $current = url()->current();
+                                $arr = explode($current, $full);
+                                $str = '';
+                                for ($i = 1; $i < strlen($arr[1]); $i++) {
+                                    $str .= $arr[1][$i];
+                                }
+                                $arr[1] = $str;
+                            @endphp
                             <div class="col-md-3">
                                 <div class="pmu-table-form-card">
-                                    <a href="#" class="download-btn">Download Payment Log</a>
+                                    <a href="{{ route('SA.Download.Earnings', $arr[1]) }}" class="download-btn">Download Payment Log</a>
                                 </div>
                             </div>
                         </div>
@@ -64,7 +78,7 @@
                                 <th>Date Of Payment</th>
                                 <th>Payment Mode</th>
                                 <th>Admin Cut</th>
-                                <th>Total fees paid</th>
+                                <th>Total Fees Paid</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -95,4 +109,9 @@
             </div>
         </div>
     </div>
+    <style>
+        a:hover{
+            color: #fff;
+        }
+    </style>
 @endsection

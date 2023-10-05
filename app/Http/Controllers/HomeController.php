@@ -13,11 +13,14 @@ use App\Models\CourseChapterStep;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Tag;
+use App\Models\WalletBalance;
+use App\Models\WalletHistory;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use PDO;
 use DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class HomeController extends Controller
 {
@@ -742,16 +745,12 @@ class HomeController extends Controller
     public function earnings(Request $request) 
     {
         try {
-            // $orders = Order::join('users as u', 'u.id', '=', 'orders.user_id');
-            
-            // $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->paginate(10);
-
             $orders = DB::table('order_product_detail as opd')
                 ->leftJoin('course as c', 'c.id', '=', 'opd.product_id')
                 ->leftJoin('orders as o', 'o.id', '=', 'opd.order_id')
                 ->leftJoin('users as u', 'u.id', '=', 'o.user_id');
                 if($request->filled('name')){
-                    $orders->where(DB::raw("CONCAT('u.first_name', ' ', 'u.last_name')"), 'like', '%'.$request->name.'%');
+                    $orders->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
                 }
                 if($request->filled('number')){
                     $orders->where('o.order_number', 'like', '%'.$request->number.'%');
@@ -761,7 +760,140 @@ class HomeController extends Controller
                 }
             $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->paginate(10);
 
-            return view('home.earnings',compact('orders'));
+            $myWallet = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
+            if(isset($myWallet->id)){
+                $mymoney = $myWallet->balance ?? 0;
+            }else $mymoney = 0;
+
+            return view('home.earnings',compact('orders', 'mymoney'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function downloadEarnings(Request $request) 
+    {
+        try {
+            $orders = DB::table('order_product_detail as opd')
+                ->leftJoin('course as c', 'c.id', '=', 'opd.product_id')
+                ->leftJoin('orders as o', 'o.id', '=', 'opd.order_id')
+                ->leftJoin('users as u', 'u.id', '=', 'o.user_id');
+                if($request->filled('name')){
+                    $orders->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
+                }
+                if($request->filled('number')){
+                    $orders->where('o.order_number', 'like', '%'.$request->number.'%');
+                }
+                if($request->filled('order_date')){
+                    $orders->whereDate('o.created_date', date('Y-m-d', strtotime($request->order_date)));
+                }
+            $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->paginate(10);
+
+            return $this->downloadEarningExcelFile($orders);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function downloadEarningExcelFile($data)
+    {
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="Earnings"' . time() . '.csv');
+        $output = fopen("php://output", "w");
+
+        fputcsv($output, array('S.no', 'Name', 'Order Number', 'Date Of Payment', 'Payment Mode', 'Admin Cut', 'Total Fee Paid', 'Status'));
+
+        if (count($data) > 0) {
+            foreach ($data as $key => $row) {
+
+                $final = [
+                    $key + 1,
+                    $row->first_name . ' ' . $row->last_name,
+                    $row->order_number,
+                    date('d M, Y H:iA', strtotime($row->created_date)),
+                    'STRIPE',
+                    number_format((float)($row->amount-$row->admin_amount), 2),
+                    number_format((float)$row->amount, 2),
+                    ($row->status == 1) ? "Active" : "Pending"
+                ];
+
+                fputcsv($output, $final);
+            }
+        }
+    }
+
+    public function paymentRequest(Request $request) 
+    {
+        try {
+            $amount = DB::table('order_product_detail as opd')
+                ->leftJoin('course as c', 'c.id', '=', 'opd.product_id')
+                ->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->sum(\DB::raw('opd.amount - opd.admin_amount'));
+            
+            $payment = WalletHistory::join('wallet_balance as wb', 'wb.id', '=', 'wallet_history.wallet_id');
+            if($request->filled('status')){
+                $payment->where('wallet_history.status', $request->status);
+            }
+            if($request->filled('order_date')){
+                $payment->whereDate('wallet_history.added_date', $request->order_date);
+            }
+            $payment = $payment->where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->select('wallet_history.*')->paginate(10);
+
+            $requestedAmount = 0;
+            $mymoney['balance'] = 0;
+            if(isset($payment[0]->id)){
+                $requestedAmount = WalletHistory::join('wallet_balance as wb', 'wb.id', '=', 'wallet_history.wallet_id')->where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->whereIn('wallet_history.status', [1,0])->sum('wallet_history.balance');
+                $mymoney = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
+            }
+
+            // dd($payment[0]->id);
+            // dd($requestedAmount);
+
+            return view('home.payment-request',compact('amount', 'payment', 'requestedAmount', 'mymoney'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function paymentRequestStore(Request $request) 
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'amount' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            } else {
+                $walletBalance = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
+                if(isset($walletBalance->id)){
+                    $history = new WalletHistory;
+                    $history->wallet_id = $walletBalance->id;
+                    $history->balance = $request->amount ?? 0;
+                    $history->added_date = date('Y-m-d H:i:s');
+                    $history->added_by = auth()->user()->id;
+                    $history->payment_id = null;
+                    $history->status = 0;
+                    $history->save();
+                } else {
+                    $balance = new WalletBalance;
+                    $balance->owner_id = auth()->user()->id;
+                    $balance->owner_type = auth()->user()->role;
+                    $balance->balance = 0;
+                    $balance->created_date = date('Y-m-d H:i:s');
+                    $balance->updated_date = date('Y-m-d H:i:s');
+                    $balance->save();
+                    $history = new WalletHistory;
+                    $history->wallet_id = $balance['id '];
+                    $history->balance = $request->amount ?? 0;
+                    $history->added_date = date('Y-m-d H:i:s');
+                    $history->added_by = auth()->user()->id;
+                    $history->payment_id = null;
+                    $history->status = 0;
+                    $history->save();
+                }
+                return redirect()->back()->with('message', 'Request submitted successfully. Wait for admin approval.');
+            }   
         } catch (\Exception $e) {
             return $e->getMessage();
         }

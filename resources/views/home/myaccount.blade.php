@@ -280,8 +280,8 @@
             rules: {
                 acc_number: {
                     required: true,
-                    maxlength: 15,
-                    minlength: 8,
+                    maxlength: 12,
+                    minlength: 12,
                 },
                 re_acc_number: {
                     required: true,
@@ -289,8 +289,8 @@
                 },
                 routine: {
                     required: true,
-                    maxlength: 15,
-                    minlength: 5,
+                    maxlength: 10,
+                    minlength: 8,
                 },
             },
             messages: {

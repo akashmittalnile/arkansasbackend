@@ -45,7 +45,7 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/students.css') !!}">
     @endif
 
-    @if ($currentURL == 'SA.Earnings')
+    @if ($currentURL == 'SA.Earnings' || $currentURL == 'SA.Payment.Request')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/earnings.css') !!}">
     @endif
 
@@ -57,7 +57,7 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/notifications.css') !!}">
     @endif
 
-    @if ($currentURL == 'SA.ListedCourse')
+    @if ($currentURL == 'SA.ListedCourse'|| $currentURL == 'SA.Payment.Request')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-plugins/fancybox/jquery.fancybox.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
         <script src="{!! url('assets/superadmin-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>

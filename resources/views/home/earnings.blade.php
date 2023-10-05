@@ -9,7 +9,7 @@
             <div class="pmu-search-filter wd80">
                 <form action="">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="name" placeholder="Enter Name here....." value="{{ request()->name }}">
                                 <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
@@ -31,6 +31,11 @@
                                 <button class="download-btn" style="padding: 12px 0px;" type="">Search</button>
                             </div>
                         </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <a href="{{ route('Home.earnings') }}" style="padding: 12px 0px;" class="download-btn"><i class="las la-sync"></i></a>
+                            </div>
+                        </div>
                     </div>
                 </form>
             </div>
@@ -41,21 +46,37 @@
                 <div class="pmu-card-table pmu-table-card">
                     <div class="pmu-table-filter">
                         <div class="row">
-                            <div class="col-md-6">
+                            <div class="col-md-2">
                                 <div class="pmu-table-info-card">
                                     <h2>Total Earning</h2>
-                                    <div class="pmu-table-value">${{ number_format((float)0, 2) }}</div>
+                                    <div class="pmu-table-value total_earning">${{ number_format((float)0, 2) }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="pmu-table-info-card">
+                                    <h2>My Wallet</h2>
+                                    <div class="pmu-table-value">${{ number_format((float)$mymoney, 2) }}</div>
                                 </div>
                             </div>
 
                             <div class="col-md-3">
                                 <div class="pmu-table-form-card">
-                                    <a href="#" class="download-btn">Payment Request</a>
+                                    <a href="{{ route('Home.payment.request') }}" class="download-btn">Payment Request List</a>
                                 </div>
                             </div>
+                            @php
+                                $full = url()->full();
+                                $current = url()->current();
+                                $arr = explode($current, $full);
+                                $str = '';
+                                for ($i = 1; $i < strlen($arr[1]); $i++) {
+                                    $str .= $arr[1][$i];
+                                }
+                                $arr[1] = $str;
+                            @endphp
                             <div class="col-md-3">
                                 <div class="pmu-table-form-card">
-                                    <a href="#" class="download-btn">Download Payment Log</a>
+                                    <a href="{{ route('Home.download.earnings', $arr[1]) }}" class="download-btn">Download Earning Log</a>
                                 </div>
                             </div>
                         </div>
@@ -84,7 +105,7 @@
                                 <td>STRIPE</td>
                                 <td>${{ number_format((float)($val->amount-$val->admin_amount), 2) }}</td>
                                 <td>${{ number_format((float)$val->amount, 2) }}</td>
-                                <td>{{ ($val->status == 1) ? "Active" : "Pending" }}</td>
+                                <td>{{ ($val->status == 1) ? "Payment Done" : "Payment Pending" }}</td>
                             </tr>
                             <?php  $count += ($val->amount-$val->admin_amount) ?>
                             @empty
@@ -103,6 +124,11 @@
         </div>
     </div>
     <script>
-        $(".pmu-table-value").html("${{number_format((float)$count,2)}}");
+        $(".total_earning").html("${{number_format((float)$count,2)}}");
     </script>
+    <style>
+        a:hover{
+            color: #fff;
+        }
+    </style>
 @endsection

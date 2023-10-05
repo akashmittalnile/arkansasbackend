@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\CardDetail;
 use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\User;
@@ -16,11 +17,13 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\ProductAttibutes;
 use App\Models\WalletBalance;
+use App\Models\WalletHistory;
 use Auth;
 use Illuminate\Support\Facades\Validator;
 use VideoThumbnail;
 use Illuminate\Support\Facades\File;
 use DB;
+use Maatwebsite\Excel\Facades\Excel;
 
 class SuperAdminController extends Controller
 {
@@ -745,7 +748,7 @@ class SuperAdminController extends Controller
             $walletBalance = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
             $orders = Order::join('users as u', 'u.id', '=', 'orders.user_id');
             if($request->filled('name')){
-                $orders->where(DB::raw("CONCAT('u.first_name', ' ', 'u.last_name')"), 'like', '%'.$request->name.'%');
+                $orders->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
             }
             if($request->filled('number')){
                 $orders->where('orders.order_number', 'like', '%'.$request->number.'%');
@@ -757,6 +760,56 @@ class SuperAdminController extends Controller
             return view('super-admin.earnings',compact('orders', 'walletBalance'));
         } catch (\Exception $e) {
             return $e->getMessage();
+        }
+    }
+
+    public function downloadEarnings(Request $request) 
+    {
+        try {
+            $walletBalance = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
+            $orders = Order::join('users as u', 'u.id', '=', 'orders.user_id');
+            if($request->filled('name')){
+                $orders->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
+            }
+            if($request->filled('number')){
+                $orders->where('orders.order_number', 'like', '%'.$request->number.'%');
+            }
+            if($request->filled('order_date')){
+                $orders->whereDate('orders.created_date', date('Y-m-d', strtotime($request->order_date)));
+            }
+            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->paginate(10);
+
+            return $this->downloadEarningExcelFile($orders);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function downloadEarningExcelFile($data)
+    {
+
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="Earnings"' . time() . '.csv');
+        $output = fopen("php://output", "w");
+
+        fputcsv($output, array('S.no', 'Name', 'Order Number', 'Date Of Payment', 'Payment Mode', 'Admin Cut', 'Total Fee Paid', 'Status'));
+
+        if (count($data) > 0) {
+            foreach ($data as $key => $row) {
+
+                $final = [
+                    $key + 1,
+                    $row->first_name . ' ' . $row->last_name,
+                    $row->order_number,
+                    date('d M, Y H:iA', strtotime($row->created_date)),
+                    'STRIPE',
+                    number_format((float)$row->admin_amount, 2),
+                    number_format((float)$row->total_amount_paid, 2),
+                    ($row->status == 1) ? "Active" : "Pending"
+                ];
+
+                fputcsv($output, $final);
+            }
         }
     }
 
@@ -776,7 +829,18 @@ class SuperAdminController extends Controller
             $id = encrypt_decrypt('decrypt',$id);
             $user = User::where('id',$id)->first();
             $courses = Course::where('admin_id',$id)->orderBy('id','DESC')->get();
-            return view('super-admin.listed-course',compact('courses','user'));
+            $user = User::where('id', $id)->first();
+
+            $payment = WalletHistory::join('wallet_balance as wb', 'wb.id', '=', 'wallet_history.wallet_id')->where('owner_id', $user->id)->where('owner_type', $user->role)->select('wb.id')->first();
+            $amount = 0;
+            $count = 0;
+            if(isset($payment->id)){
+                $amount = WalletHistory::where('wallet_id', $payment->id)->where('status', 1)->sum('wallet_history.balance');
+                $count = WalletHistory::where('wallet_id', $payment->id)->where('status', 0)->count();
+            }
+
+            $account = CardDetail::where('userid', $id)->first();
+            return view('super-admin.listed-course',compact('courses','user', 'amount', 'count', 'account'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1218,5 +1282,57 @@ class SuperAdminController extends Controller
             return $e->getMessage();
         }
     }
+
+    public function payment_request($userID, Request $request) 
+    {
+        try {
+            $userID = encrypt_decrypt('decrypt',$userID);
+            $user = User::where('id', $userID)->first();
+
+            $payment = WalletHistory::join('wallet_balance as wb', 'wb.id', '=', 'wallet_history.wallet_id');
+            if($request->filled('status')){
+                $payment->where('wallet_history.status', $request->status);
+            }
+            if($request->filled('order_date')){
+                $payment->whereDate('wallet_history.added_date', $request->order_date);
+            }
+            $payment = $payment->where('owner_id', $user->id)->where('owner_type', $user->role)->select('wallet_history.*')->paginate(10);
+            $amount = 0;
+            if(isset($payment[0]->id)){
+                $amount = WalletHistory::where('wallet_id', $payment[0]->wallet_id)->where('status', 1)->sum('wallet_history.balance');
+            }
+            return view('super-admin.payment-request')->with(compact('payment', 'amount', 'userID'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function change_payout_status($id, $status) 
+    {
+        try {
+            $id = encrypt_decrypt('decrypt',$id);
+            $status = encrypt_decrypt('decrypt',$status);
+            
+            $wallet = WalletHistory::where('id', $id)->first();
+            if(isset($wallet->id)){
+                if($status == 1){
+                    WalletHistory::where('id', $id)->update(['status' => $status]);
+                    $walletBalance = WalletBalance::where('id', $wallet->wallet_id)->first();
+                    WalletBalance::where('id', $wallet->wallet_id)->update([
+                        'balance' => $walletBalance->balance + $wallet->balance
+                    ]);
+                    $msg = 'Payout request approved successfully.';
+                } else{
+                    WalletHistory::where('id', $id)->update(['status' => $status]);
+                    $msg = 'Payout request rejected successfully.';
+                } 
+            }else return redirect()->back()->with('message', 'Something went wrong!');
+            return redirect()->back()->with('message', $msg);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+
 
 }
