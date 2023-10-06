@@ -1,6 +1,7 @@
 @extends('super-admin-layouts.app-master')
 @section('title', 'Permanent Makeup University - Courses')
 @section('content')
+<link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
 <input type="hidden" name="courseID" value="{{ $courseID }}" />
 <div class="body-main-content">
     <div class="pmu-filter-section">
@@ -36,11 +37,11 @@
                         @foreach ($chapters as $chapterKey => $chapter)
                         <div class="chapter-list">
                             @if ($chapter->id == $chapterID)
-                            <div class="chapter-item active" data-index="{{ $chapterKey + 1 }}">
+                            <div class="chapter-item active" data-index="{{ $chapter->chapter ?? 'NA' }}">
                                 @else
                                 <div class="chapter-item">
                                     @endif
-                                    <a href="{{ route('SA.Course.Chapter', ['courseID'=>encrypt_decrypt('encrypt',$chapter->course_id), 'chapterID'=> encrypt_decrypt('encrypt',$chapter->id)] ) }}"><span>Chapter {{ $v }}</span></a>
+                                    <a href="{{ route('SA.Course.Chapter', ['courseID'=>encrypt_decrypt('encrypt',$chapter->course_id), 'chapterID'=> encrypt_decrypt('encrypt',$chapter->id)] ) }}"><span>{{ $chapter->chapter ?? "NA" }}</span></a>
                                     <a href="{{ url('super-admin/delete-chapter/' . $chapter->id) }}" onclick="return confirm('Are you sure you want to delete this chapter?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}">
                                     </a>
                                 </div>
@@ -49,7 +50,7 @@
                             @endforeach
                             @endif
                             <div class="chapter-action">
-                                <a class="add-chapter-btn" href="{{ url('super-admin/submit-chapter/'.$courseID) }}">Add Chapter</a>
+                                <a class="add-chapter-btn" data-bs-toggle="modal" data-bs-target="#Editcourses">Add Chapter</a>
                             </div>
                         </div>
                     </div>
@@ -66,7 +67,10 @@
                         <div class="pmu-courses-form-section pmu-addcourse-form">
 
                             @if (!$chapters->isEmpty() && isset($chapterID))
-                            <h2 id="chapterName">Chapter </h2>
+                            <div class="d-flex">
+                                <h2 id="chapterName" class="text-capitalize">Chapter </h2>
+                                <a href="" data-bs-toggle="modal" data-bs-target="#EditChapter" id="edit-chapter-modal-open" data-chapter-id="{{ $chapterID }}"><img width="40" height="40" style="cursor: pointer;" src="{{ asset('assets/superadmin-images/edit.png') }}" alt=""></a>
+                            </div>
                             @endif
                             
                             <div class="pmu-courses-form">
@@ -229,12 +233,22 @@
                                         </div>
                                     </div>
                                     <div class="edit-pmu-section collapse-course-form collapse" id="collapseExample{{ $data->id }}">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <h4>Quiz Title</h4>
-                                                <input type="text" name="quiz_description" placeholder="Quiz Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
+
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <h4>Quiz Title</h4>
+                                                    <input type="text" name="quiz_description" placeholder="Quiz Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <h4>Quiz Minimum Passing Percentage</h4>
+                                                    <input type="text" name="quiz_passing_per" placeholder="Quiz Minimum Passing Percentage" disabled value="{{ $data->passing ?: '' }}" class="form-control">
+                                                </div>
                                             </div>
                                         </div>
+                                        
                                         
                                         <?php $v = 'AA'; ?>
                                         @foreach ($data->quiz as $quiz)
@@ -677,6 +691,62 @@
                             from system adminitration via Email</p>
                         <div class="becomeacreator-btn-action">
                             <a href="#" class="close-btn" data-bs-dismiss="modal" aria-label="Close">Close</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal ro-modal fade" id="Editcourses" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="becomeacreator-form-info">
+                        <h2>Add Chapter</h2>
+                        <div class="row">
+                            <form method="POST" action="{{ route('SA.SubmitChapter') }}" id="add-chapter-form" autocomplete="off"> @csrf
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <input type="text" required name="name" class="form-control" placeholder="Enter chapter name here..." >
+                                        <input type="hidden" name="courseID" value="{{ $courseID }}" >
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <button class="cancel-btn mx-2" data-bs-dismiss="modal" aria-label="Close" type="button">Cancel</button>
+                                        <button class="save-btn" type="submit">Save</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal ro-modal fade" id="EditChapter" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div class="becomeacreator-form-info">
+                        <h2>Edit Chapter</h2>
+                        <div class="row">
+                            <form method="POST" action="{{ route('SA.EditSubmitChapter') }}" id="add-chapter-form" autocomplete="off"> @csrf
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <input type="text" required name="chaptername" class="form-control" placeholder="Enter chapter name here..." >
+                                        <input type="hidden" name="courseID" value="{{ $courseID }}" >
+                                        <input type="hidden" name="chapterID" value="" >
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <button class="cancel-btn mx-2" data-bs-dismiss="modal" aria-label="Close" type="button">Cancel</button>
+                                        <button class="save-btn" type="submit">Save</button>
+                                    </div>
+                                </div>
+                            </form>
                         </div>
                     </div>
                 </div>

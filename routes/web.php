@@ -78,7 +78,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/admin/update_option_list', 'HomeController@update_option_list')->name('admin.UpdateOptionList');
         Route::get('/admin/update_question_list', 'HomeController@update_question_list')->name('admin.update_question_list');
         Route::get('/admin/delete-pdf/{id}', 'HomeController@delete_pdf')->name('admin.DeletePDF');
-        Route::get('/admin/submit-chapter/{courseID}', 'HomeController@submitCourseChapter')->name('admin.SubmitChapter');
+        Route::post('/admin/submit-chapter', 'HomeController@submitCourseChapter')->name('admin.SubmitChapter');
+        Route::post('/admin/edit-chapter', 'HomeController@editCourseChapter')->name('admin.EditSubmitChapter');
         Route::get('/admin/delete-chapter/{id}', 'HomeController@deleteCourseChapter')->name('admin.DeleteChapter');
         Route::get('/admin/delete-quiz/{id}', 'HomeController@deleteQuiz')->name('admin.DeleteQuiz');
         Route::post('/admin/save-answer', 'HomeController@SaveAnswer')->name('SaveAnswer');
@@ -107,7 +108,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/course', 'SuperAdminController@course')->name('SA.Course');
         Route::get('/super-admin/course/{courseID}/{chapterID?}', 'SuperAdminController@courseChapter')->name('SA.Course.Chapter');
         Route::post('/super-admin/add-chapter', 'SuperAdminController@addChapter')->name('SA.Course.Addchapter');
-        Route::get('/super-admin/submit-chapter/{courseID}', 'SuperAdminController@newCourseChapter')->name('SA.SubmitChapter');
+        Route::post('/super-admin/submit-chapter', 'SuperAdminController@newCourseChapter')->name('SA.SubmitChapter');
+        Route::post('/super-admin/edit-submit-chapter', 'SuperAdminController@editCourseChapter')->name('SA.EditSubmitChapter');
         Route::get('/super-admin/delete-chapter/{id}', 'SuperAdminController@deleteCourseChapter')->name('SA.DeleteChapter');
         Route::get('/super-admin/delete-quiz/{id}', 'SuperAdminController@deleteChapterQuiz')->name('SA.DeleteQuiz');
         Route::get('/super-admin/delete-section/{id}', 'SuperAdminController@deleteChapterSection')->name('SA.DeleteSection');

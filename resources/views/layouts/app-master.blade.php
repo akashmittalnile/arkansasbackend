@@ -28,7 +28,7 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/help-support.css') !!}">
     @endif
 
-    @if ($currentURL == 'Home.earnings' || $currentURL == 'Home.payment.request')
+    @if ($currentURL == 'Home.earnings' || $currentURL == 'Home.payment.request' || $currentURL == 'Home.CourseList')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/earnings.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
     @endif

@@ -446,6 +446,7 @@ class HomeController extends Controller
                                 $Step->sort_order = $request->queue[$keyQ] ?? -1;
                                 $Step->type = 'quiz';
                                 $Step->description = null;
+                                $Step->passing = $request->quiz_passing_per_[$keyQ] ?? null;
                                 $Step->prerequisite = $request->prerequisite[$keyQ] ?? 0;
                                 $Step->course_chapter_id = $request->chapter_id;
                                 $Step->save();
@@ -571,15 +572,30 @@ class HomeController extends Controller
         return view('home.addcourse',compact('CourseChapters'));
     }
 
-    public function submitCourseChapter($courseID) 
+    public function submitCourseChapter(Request $request) 
     {
         try {
             $course = new CourseChapter;
-            $course->course_id = $courseID;
+            $course->course_id = $request->courseID;
+            $course->chapter = $request->name;
             $course->save();
-            $encrypt = encrypt_decrypt('encrypt',$courseID);
+            $encrypt = encrypt_decrypt('encrypt',$request->courseID);
             $encryptChapter = encrypt_decrypt('encrypt',$course['id ']);
             return redirect()->route('Home.CourseList', ['courseID'=> $encrypt, 'chapterID'=> $encryptChapter])->with('message', 'Chapter created successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function editCourseChapter(Request $request) 
+    {
+        try {
+            $course = CourseChapter::where('id', $request->chapterID)->update([
+                'chapter' => $request->chaptername ?? null
+            ]);
+            $encrypt = encrypt_decrypt('encrypt',$request->courseID);
+            $encryptChapter = encrypt_decrypt('encrypt',$request->chapterID);
+            return redirect()->route('Home.CourseList', ['courseID'=> $encrypt, 'chapterID'=> $encryptChapter])->with('message', 'Chapter updated successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }

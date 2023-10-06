@@ -285,11 +285,17 @@ $(document).on('change', 'input[type="file"]',function (e) {
         $('#pdf_file_name-'+id).text(geekss);
 });
 
+$(document).on('click', '#edit-chapter-modal-open', function(){
+    $("input[name='chapterID']").val($(this).attr('data-chapter-id'));
+    let chapName = $(".chapter-item.active").attr('data-index');
+    $("input[name='chaptername']").val((chapName=='NA') ? '' : chapName);
+});
 
 // Submit form And Mange all Hide and Show field(Append)
 $(document).ready(function () {
 
-    $("#chapterName").html(($(".chapter-item.active").attr('data-index')) ? "Chapter" + ' ' + $(".chapter-item.active").attr('data-index') : "Chapter");
+    $("#chapterName").html(($(".chapter-item.active").attr('data-index')) ? $(".chapter-item.active").attr('data-index') : "NA");
+    // $("#chapterName").html(($(".chapter-item.active").attr('data-index')) ? "Chapter" + ' ' + $(".chapter-item.active").attr('data-index') : "Chapter");
 
     $.ajaxSetup({
         headers: {
@@ -499,13 +505,23 @@ $(document).ready(function () {
                                 </div>
                             </div>
 
-                            <div class="col-md-12 px-3">
-                                <div class="form-group">
-                                    <input type="text" name="quiz_description[${countForm}]" placeholder="Quiz Title" required class="form-control">
-                                </div>
-                            </div>
                             
                             <div class="add-course-form">
+
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <input type="text" name="quiz_description[${countForm}]" placeholder="Quiz Title" required class="form-control">
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <input type="number" min="33" step="0.1" name="quiz_passing_per_[${countForm}]" placeholder="Quiz Minimum Passing Percentage" required class="form-control">
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div class="questions-${countForm}">
                                     <div class="question">
 

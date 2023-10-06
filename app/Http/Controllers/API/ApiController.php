@@ -1220,12 +1220,14 @@ class ApiController extends Controller
 
                         foreach($course_chapter as $keyc => $valc){
                             $arr['id'] = $valc->id;
+                            $arr['chapter_name'] = $valc->chapter ?? "NA";
                             $steps = CourseChapterStep::where('course_chapter_id', $valc->id)->get();
                             if(isset($steps) && count($steps)) $chapter_count++;
                             $chapter_steps = [];
                             foreach($steps as $vals){
                                 $arr1['id'] = $vals->id;
                                 $arr1['type'] = $vals->type;
+                                $arr1['passing_percentage'] = $vals->passing;
                                 if($vals->type == 'quiz') $chapter_quiz_count++;
 
                                 $isComplete = UserChapterStatus::where('userid', $user_id)->where('course_id', $id)->where('chapter_id', $valc->id)->where('step_id', $vals->id)->first();
@@ -1236,11 +1238,11 @@ class ApiController extends Controller
                                         $total = ChapterQuiz::where('step_id', $vals->id)->whereIn('type', ['quiz', 'survey'])->sum('marks');
                                         $obtained = UserQuizAnswer::where('quiz_id', $vals->id)->where('userid', auth()->user()->id)->sum('marks_obtained');
 
-                                        $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) . '/' . encrypt_decrypt('encrypt', $user_id) : null;
+                                        $arr1['quiz_url'] = null;
                                         $arr1['marks_obtained'] = $obtained;
                                         $arr1['marks_out_of'] = $total;
                                     } else {
-                                        $arr1['quiz_url'] = null;
+                                        $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) . '/' . encrypt_decrypt('encrypt', $user_id) : null;
                                         $arr1['marks_obtained'] = null;
                                         $arr1['marks_out_of'] = null;
                                     } 
