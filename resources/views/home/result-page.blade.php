@@ -249,7 +249,7 @@
     <div class="quiz-results-section">
         <div class="continer">
             <div class="quiz-results-content">
-                @if( number_format((float)(($obtained * 100) / $total), 1) >= 40 )
+                @if( number_format((float)(($obtained * 100) / $total), 1) >= $passingPercentage )
                 <h3>Hurry!</h3>
                 <p>You passed this quiz with a score of</p>
                 @else
@@ -270,7 +270,7 @@
                     </div>
                 </div>
 
-                <p>You need 40% to pass</p>
+                <p>You need {{ $passingPercentage ?? 33 }}% to pass</p>
 
 
             </div>
@@ -303,8 +303,9 @@
                 </div>
             </div>
             <div class="quiz-results-action">
-                <a class="Retakebtn" href="#">Retake Quiz</a>
-                <a class="Retakebtn" data-bs-toggle="modal" data-bs-target="#Prerequisite">poup</a>
+                @if( !(number_format((float)(($obtained * 100) / $total), 1) >= $passingPercentage) )
+                <a class="Retakebtn" href="{{ url('/').'/api/contest/'.encrypt_decrypt('encrypt',$chapterId).'/'.encrypt_decrypt('encrypt',$quizId).'/'.encrypt_decrypt('encrypt', $userId) }}">Retake Quiz</a>
+                @endif
             </div>
         </div>
     </div>
@@ -312,29 +313,3 @@
 </body>
 
 </html>
-
-
-
-<!-- Add card -->
-<div class="modal ro-modal fade" id="Prerequisite" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-body">
-                <div class="becomeacreator-form-info">
-                    <div class="becomeacreator-form-media">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="101" height="100" viewBox="0 0 101 100" fill="none">
-                            <path opacity="0.4" d="M50.4999 91.6666C73.5118 91.6666 92.1666 73.0118 92.1666 49.9999C92.1666 26.9881 73.5118 8.33325 50.4999 8.33325C27.4881 8.33325 8.83325 26.9881 8.83325 49.9999C8.83325 73.0118 27.4881 91.6666 50.4999 91.6666Z" fill="#E0B220" />
-                            <path d="M49.5 58.5V57.4502C49.5 54.0502 51.6508 52.2501 53.8014 50.8001C55.9008 49.4001 58 47.6002 58 44.3002C58 39.7002 54.2109 36 49.5 36C44.7891 36 41 39.7002 41 44.3002M49.4766 71H49.5227" stroke="#E0B220" stroke-width="5.5" stroke-linecap="round" stroke-linejoin="round" />
-                        </svg>
-                    </div>
-                    <h2>Prerequisite(s) have not yet been completed!</h2>
-                    <p>To move forward, please complete all prerequisites in Chapter 2: Frequently Asked Questions</p>
-                    <div class="becomeacreator-btn-action">
-                        <a href="#" class="close-btn" data-bs-dismiss="modal" aria-label="Close">Close</a>
-                        <a href="#" class="Login-btn">OK, got it</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>

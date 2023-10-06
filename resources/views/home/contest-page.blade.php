@@ -87,23 +87,16 @@
                     console.log(data);
                     if (data.status) {
                         toastr.success(data.message);
-                        $('#next-button-'+data.request.question_id).removeClass('d-none');
-                        $('#card-button-'+data.request.question_id).addClass('d-none');
-                        $("#explanation").removeClass('d-none');
                         
-                        console.log(confirmIndex);
+                        $('#card-button-'+data.request.question_id).addClass('d-none');
+                        
                         if(confirmIndex == "{{ $questionCount }}"){
                             $("#result-btn").removeClass('d-none');
-                        }
-                        
-                        if(data.answer_status==1){
-                            $("#option-"+data.request.question_id + '-' +data.request.option).addClass("correctanswer");
-                            $("#explanation").html("<span class='correctanswer-msg'>This answer is correct.</span>");
+                            $("#result-btn a").trigger('click');
                         }else{
-                            $("#option-"+data.request.question_id + '-' +data.correct_answer.id).addClass("correctanswer");
-                            $("#option-"+data.request.question_id + '-' +data.request.option).addClass("wronganswer");
-                            $("#explanation").html("<span class='wronganswer-msg'>This answer is incorrect.</span>");
-                        }   
+                            // $('#next-button-'+data.request.question_id).removeClass('d-none');
+                            $(`#next-button-${data.request.question_id} button`).click();
+                        }
                     }
                 }
             });
