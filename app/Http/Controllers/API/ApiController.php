@@ -45,8 +45,8 @@ class ApiController extends Controller
 
             $trending_courses = Course::leftJoin('users as u', function($join) {
                 $join->on('course.admin_id', '=', 'u.id');
-            })
-            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name')->get(); /*Get data of Treanding Course*/
+            })->leftJoin('category as cat', 'course.category_id', '=', 'cat.id')
+            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname')->get(); /*Get data of Treanding Course*/
             $b1 = array();
             $TrendingCourses = array();
             foreach ($trending_courses as $k => $data) {
@@ -60,6 +60,8 @@ class ApiController extends Controller
                 } else {
                     $profile_image = '';
                 }
+                $b1['category_id'] = $data->category_id ?? null;
+                $b1['category_name'] = $data->catname ?? "NA";
                 $b1['content_creator_image'] = $profile_image;
                 $b1['description'] = isset($data->description) ? $data->description : '';
                 $b1['admin_id'] = isset($data->admin_id) ? $data->admin_id : '';
@@ -159,10 +161,10 @@ class ApiController extends Controller
             }
             
 
-            $suggested_courses = Course::leftJoin('users', function($join) {
-                $join->on('course.admin_id', '=', 'users.id');
-            })
-            ->where('course.status', 1)->orderBy('course.id', 'DESC')->get(); /*Get data of Suggested Course*/
+            $suggested_courses = Course::leftJoin('users as u', function($join) {
+                $join->on('course.admin_id', '=', 'u.id');
+            })->leftJoin('category as cat', 'course.category_id', '=', 'cat.id')
+            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname')->get(); /*Get data of Suggested Course*/
             $b3 = array();
             $SuggestedCourses = array();
             foreach ($suggested_courses as $k => $data) {
@@ -176,6 +178,8 @@ class ApiController extends Controller
                 } else {
                     $profile_image = '';
                 }
+                $b3['category_id'] = $data->category_id ?? null;
+                $b3['category_name'] = $data->catname ?? "NA";
                 $b3['content_creator_image'] = $profile_image;
                 $b3['content_creator_name'] = $data->first_name.' '.$data->last_name;
                 $b3['description'] = isset($data->description) ? $data->description : '';
