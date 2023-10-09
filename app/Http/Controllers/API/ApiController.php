@@ -1289,6 +1289,14 @@ class ApiController extends Controller
                         $isPurchase = UserCourse::where('course_id', $id)->where('user_id', $user_id)->first();
                         $isPurchased = (isset($isPurchase->id)) ? true : false;
                         $temp['isPurchased'] = $isPurchased;
+                        if(isset($isPurchase->id)){
+                            $temp['courseCompleted'] = $isPurchase->status;
+                            $temp['certificate'] = ($isPurchase->status==1) ? url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$id)."/".encrypt_decrypt('encrypt',$user_id) : null;
+                        } else {
+                            $temp['courseCompleted'] = 0;
+                            $temp['certificate'] = null;
+                        }
+                        
 
                         foreach($course_chapter as $keyc => $valc){
                             $arr['id'] = $valc->id;
@@ -1304,15 +1312,21 @@ class ApiController extends Controller
 
                                 $isComplete = UserChapterStatus::where('userid', $user_id)->where('course_id', $id)->where('chapter_id', $valc->id)->where('step_id', $vals->id)->first();
                                 $isCompleted = isset($isComplete->id) ? $isComplete->status : 0;
-
+                                
                                 if($isPurchased){
                                     if($isCompleted == 1 || $isCompleted == 2){
+                                        $arr1['complete_date'] = date('d M, Y H:iA', strtotime($isComplete->created_date));
                                         $total = ChapterQuiz::where('step_id', $vals->id)->whereIn('type', ['quiz', 'survey'])->sum('marks');
                                         $obtained = UserQuizAnswer::where('quiz_id', $vals->id)->where('userid', auth()->user()->id)->sum('marks_obtained');
+                                        $totalQuestion = ChapterQuiz::where('step_id', $vals->id)->whereIn('type', ['quiz', 'survey'])->count();
+                                        $totalCorrect = UserQuizAnswer::where('quiz_id', $vals->id)->where('userid',$user_id)->where('status', 1)->count();
 
                                         $arr1['quiz_url'] = (($isCompleted == 1) ? null : (($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) . '/' . encrypt_decrypt('encrypt', $user_id) : null));
-                                        $arr1['marks_obtained'] = $obtained;
-                                        $arr1['marks_out_of'] = $total;
+                                        $arr1['survey_url'] = null;
+                                        $arr1['marks_obtained'] = $obtained ?? 0;
+                                        $arr1['marks_out_of'] = $total ?? 0;
+                                        $arr1['total_question'] = $totalQuestion ?? 0;
+                                        $arr1['total_correct'] = $totalCorrect ?? 0;
                                         if($total != 0 && $total != null){
                                             $arr1['percentage_obtained'] = number_format((float)(($obtained * 100) / $total), 1);
                                             $arr1['pass_status'] = (number_format((float)(($obtained * 100) / $total), 1) >= $vals->passing) ? "Pass" : "Fail! Please retake test.";
@@ -1322,20 +1336,28 @@ class ApiController extends Controller
                                         } 
                                         
                                     } else {
+                                        $arr1['complete_date'] = null;
                                         $arr1['quiz_url'] = ($vals->type == 'quiz') ? url('/').'/api/contest/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) . '/' . encrypt_decrypt('encrypt', $user_id) : null;
+                                        $arr1['survey_url'] = ($vals->type == 'survey') ? url('/').'/api/survey/'.encrypt_decrypt('encrypt',$valc->id).'/'.encrypt_decrypt('encrypt',$vals->id) . '/' . encrypt_decrypt('encrypt', $user_id) : null;
                                         $arr1['marks_obtained'] = null;
                                         $arr1['marks_out_of'] = null;
                                         $arr1['percentage_obtained'] = null;
                                         $arr1['pass_status'] = null;
+                                        $arr1['total_question'] = null;
+                                        $arr1['total_correct'] = null;
                                     } 
                                     $arr1['is_completed'] = $isCompleted;
                                 }else{
+                                    $arr1['complete_date'] = null;
                                     $arr1['quiz_url'] = null;
+                                    $arr1['survey_url'] = null;
                                     $arr1['marks_obtained'] = null;
                                     $arr1['marks_out_of'] = null;
                                     $arr1['is_completed'] = null;
                                     $arr1['percentage_obtained'] = null;
                                     $arr1['pass_status'] = null;
+                                    $arr1['total_question'] = null;
+                                    $arr1['total_correct'] = null;
                                 }
                                 
                                 $arr1['title'] = $vals->title;
@@ -2322,6 +2344,8 @@ class ApiController extends Controller
                         $userChapterStatus->status = 1;
                         $userChapterStatus->created_date = date('Y-m-d H:i:s');
                         $userChapterStatus->save();
+
+                        $this->course_complete(auth()->user()->id, $courseChapter->course_id);
                         return response()->json(['status' => true, 'message' => 'File uploaded successfully', 'data' => $fileName]);
                     } else return response()->json(['status' => false, 'message' => 'Something went wrong']);
                 } else return response()->json(['status' => false, 'message' => 'Incorrect step id']);
@@ -2355,6 +2379,8 @@ class ApiController extends Controller
                         $userChapterStatus->status = 1;
                         $userChapterStatus->created_date = date('Y-m-d H:i:s');
                         $userChapterStatus->save();
+
+                        $this->course_complete(auth()->user()->id, $courseChapter->course_id);
                         return response()->json(['status' => true, 'message' => $courseStep->type.' is completed.']);
                     } else return response()->json(['status' => false, 'message' => 'Something went wrong']);
                 }else return response()->json(['status' => false, 'message' => 'Incorrect step id']);
@@ -2402,6 +2428,41 @@ class ApiController extends Controller
         }
     }
 
+    public function surveyFormUrl(Request $request, $chapterId, $surveyId, $userId){
+        try{
+            $chapterId = encrypt_decrypt('decrypt',$chapterId);
+            $surveyId = encrypt_decrypt('decrypt',$surveyId);
+            $userId = encrypt_decrypt('decrypt',$userId);
+            $course = CourseChapterStep::where('course_chapter_id', $chapterId)->where('id', $surveyId)->whereIn('type', ['survey'])->first();
+            if(isset($course)){
+                $data = [];
+                $quiz = ChapterQuiz::where('step_id', $course->id)->whereIn('type', ['survey'])->get();
+                foreach($quiz as $val1){
+                    $temp['step_id'] = $course->id;
+                    $temp['question_id'] = $val1->id;
+                    $temp['type'] = $val1->type;
+                    $temp['title'] = $val1->title;
+                    $options = ChapterQuizOption::where('quiz_id', $val1->id)->get();
+                    $temp['option'] = [];
+                    $quizAnswer = UserQuizAnswer::where('quiz_id', $course->id)->where('question_id', $val1->id)->first();
+                    $temp['quiz_answer'] = isset($quizAnswer) ? $quizAnswer->answer_option_key : null;
+                    foreach($options as $val2){
+                        $temp2['id'] = $val2->id;
+                        $temp2['answer'] = $val2->answer_option_key;
+                        $temp2['correct'] = $val2->is_correct;
+                        $temp['option'][] = $temp2;
+                    }
+                    $data[] = $temp;
+                }
+                // dd($data);
+                $questionCount = ChapterQuiz::where('step_id', $course->id)->whereIn('type', ['survey'])->count();
+                return view('home.survey-page')->with(compact('data', 'questionCount', 'userId'));
+            } else return response()->json(['status'=> false, 'message'=> 'Invalid URL']);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
     public function contestForm(Request $request){
         try{
             $validator = Validator::make($request->all(), [
@@ -2436,6 +2497,34 @@ class ApiController extends Controller
                     $option->save();
                 }
                 return response()->json(['status'=> true, 'message'=> 'Answer is save successfully.', 'request'=> $request->all(), 'answer_status' => isset($answer->id) ? 1 : 0]);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function surveyForm(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'quiz_id' => 'required',
+                'question_id' => 'required',
+                'option' => 'required',
+                'user_id' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else{
+                    $option = new UserQuizAnswer;
+                    $option->userid = $request->user_id;
+                    $option->quiz_id = $request->quiz_id;
+                    $option->question_id = $request->question_id;
+                    $option->marks_obtained = null;
+                    $option->answer_option_key = $request->option;
+                    $option->created_date = date('Y-m-d H:i:s');
+                    $option->status = 1;
+                    $option->save();
+                
+                return response()->json(['status'=> true, 'message'=> 'Feedback is save successfully.', 'request'=> $request->all()]);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -2479,9 +2568,45 @@ class ApiController extends Controller
                         $userChapterStatus->created_date = date('Y-m-d H:i:s');
                         $userChapterStatus->save(); 
                     }
+                    $this->course_complete($userId, $courseChapter->course_id);
                 }
             }
             return view('home.result-page')->with(compact('obtained', 'total', 'totalWrong', 'totalCorrect', 'totalQuestion', 'passingPercentage', 'quizId', 'userId', 'chapterId'));
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function resultSurvey(Request $request, $quizId, $userId){
+        try{
+            $quizId = encrypt_decrypt('decrypt',$quizId);
+            $userId = encrypt_decrypt('decrypt',$userId);
+            $courseStep = CourseChapterStep::where('id', $quizId)->whereIn('type', ['survey'])->first();
+            if(isset($courseStep->course_chapter_id)){
+                $chapterId = $courseStep->course_chapter_id;
+                $courseChapter = CourseChapter::where('id', $courseStep->course_chapter_id)->first();
+                if(isset($courseChapter->course_id)){
+                    $isExist = UserChapterStatus::where('userid', $userId)->where('course_id', $courseChapter->course_id)->where('chapter_id', $courseStep->course_chapter_id)->where('step_id', $courseStep->id)->where('step_type', $courseStep->type)->first();
+                    if(isset($isExist->id)){
+                        UserChapterStatus::where('id', $isExist->id)->update([
+                            'status' => $status ?? 0,
+                        ]);
+                    }else{
+                        $userChapterStatus = new UserChapterStatus;
+                        $userChapterStatus->userid = $userId;
+                        $userChapterStatus->course_id = $courseChapter->course_id;
+                        $userChapterStatus->chapter_id = $courseStep->course_chapter_id;
+                        $userChapterStatus->step_id = $courseStep->id;
+                        $userChapterStatus->step_type = $courseStep->type;
+                        $userChapterStatus->file = null;
+                        $userChapterStatus->status = 1;
+                        $userChapterStatus->created_date = date('Y-m-d H:i:s');
+                        $userChapterStatus->save(); 
+                    }
+                    $this->course_complete($userId, $courseChapter->course_id);
+                }
+            }
+            return view('home.survey-result')->with(compact('quizId', 'userId', 'chapterId'));
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -2638,6 +2763,30 @@ class ApiController extends Controller
                     return response()->json(['status' => false, 'message' => 'Something went wrong!']);
                 }
             }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function course_complete($uid, $courseid){
+        try{
+            $check = UserCourse::where('course_id', $courseid)->where('user_id', $uid)->where('status', 1)->first();
+            if(isset($check->id)) return;
+            $isComplete = true;
+            $chapters = CourseChapter::where('course_id', $courseid)->pluck('id');
+            foreach($chapters as $val){
+                $steps = CourseChapterStep::where('course_chapter_id', $val)->pluck('id');
+                foreach($steps as $item){
+                    $myCompleteChapters = UserChapterStatus::where('userid', $uid)->where('course_id', $courseid)->where('chapter_id', $val)->where('step_id', $item)->where('status', 1)->first();
+                    if(!isset($myCompleteChapters->id)) {
+                        $isComplete = false;
+                        break;
+                    }
+                }
+            }
+            UserCourse::where('course_id', $courseid)->where('user_id', $uid)->update([
+                'status' => $isComplete ? 1 : 0,
+            ]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
