@@ -91,8 +91,9 @@
                         $('#card-button-'+data.request.question_id).addClass('d-none');
                         
                         if(confirmIndex == "{{ $questionCount }}"){
-                            $("#result-btn").removeClass('d-none');
-                            $("#result-btn a").trigger('click');
+                            // $("#result-btn").removeClass('d-none');
+                            window.location.replace($("#result-btn a").attr('href'));
+                            // $("#result-btn a").trigger('click');
                         }else{
                             // $('#next-button-'+data.request.question_id).removeClass('d-none');
                             $(`#next-button-${data.request.question_id} button`).click();
