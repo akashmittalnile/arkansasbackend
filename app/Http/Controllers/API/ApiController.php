@@ -66,7 +66,6 @@ class ApiController extends Controller
                 $b1['description'] = isset($data->description) ? $data->description : '';
                 $b1['admin_id'] = isset($data->admin_id) ? $data->admin_id : '';
                 $b1['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
-                $b1['rating'] = 4.6;
                 $b1['course_fee'] = $data->course_fee;
                 $b1['status'] = $data->status;
 
@@ -100,8 +99,15 @@ class ApiController extends Controller
                 } else {
                     $b1['isLike'] = 0;
                 }
+
+                $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 1)->avg('rating');
+                $b1['avg_rating'] = number_format($avgRating, 1);
+
                 $TrendingCourses[] = $b1;
             }
+            $TrendingCourses = collect($TrendingCourses);
+            $TrendingCourses = $TrendingCourses->sortByDesc('avg_rating')->values();
+            $TrendingCourses = $TrendingCourses->all();
             
             $top_category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
             $b2 = array();
@@ -185,7 +191,6 @@ class ApiController extends Controller
                 $b3['description'] = isset($data->description) ? $data->description : '';
                 $b3['admin_id'] = isset($data->admin_id) ? $data->admin_id : '';
                 $b3['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
-                $b3['rating'] = 4.6;
                 $b3['course_fee'] = $data->course_fee;
                 $b3['status'] = $data->status;
                 $tags = [];
@@ -219,8 +224,15 @@ class ApiController extends Controller
                 } else {
                     $b3['isLike'] = 0;
                 }
+
+                $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 1)->avg('rating');
+                $b3['avg_rating'] = number_format($avgRating, 1);
+
                 $SuggestedCourses[] = $b3;
             }
+            $SuggestedCourses = collect($SuggestedCourses);
+            $SuggestedCourses = $SuggestedCourses->sortByDesc('avg_rating')->values();
+            $SuggestedCourses = $SuggestedCourses->all();
             
             $all_products = Product::leftJoin('category as c', 'c.id', '=', 'product.category_id')->where('product.status', 1)->orderBy('product.id', 'DESC')->select('product.*', 'c.name as catname')->get(); /*Get data of All Product*/
             $b4 = array();
@@ -254,7 +266,6 @@ class ApiController extends Controller
                 $b4['creator_image'] = $profile_image;
                 $b4['creator_id'] = $data->added_by;
                 $b4['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
-                $b4['rating'] = 4.6;
                 $b4['price'] = $data->price;
                 $b4['status'] = $data->status;
                 $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
@@ -270,8 +281,15 @@ class ApiController extends Controller
                 } else {
                     $b4['isLike'] = 0;
                 }
+
+                $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 2)->avg('rating');
+                $b4['avg_rating'] = number_format($avgRating, 1);
+
                 $AllProducts[] = $b4;
             }
+            $AllProducts = collect($AllProducts);
+            $AllProducts = $AllProducts->sortByDesc('avg_rating')->values();
+            $AllProducts = $AllProducts->all();
             
             $sug_products = Product::leftJoin('category as c', 'c.id', '=', 'product.category_id')->where('product.status', 1)->orderBy('product.id', 'DESC')->select('product.*', 'c.name as catname')->get(); /*Get data of Suggested Product*/
             $b5 = array();
@@ -306,7 +324,6 @@ class ApiController extends Controller
                 $b5['creator_image'] = $profile_image;
                 $b5['creator_id'] = $data->added_by;
                 $b5['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
-                $b5['rating'] = 4.6;
                 $b5['price'] = $data->price;
                 $b5['status'] = $data->status;
                 $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
@@ -322,8 +339,15 @@ class ApiController extends Controller
                 } else {
                     $b5['isLike'] = 0;
                 }
+
+                $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 2)->avg('rating');
+                $b5['avg_rating'] = number_format($avgRating, 1);
+
                 $SugProducts[] = $b5;
             }
+            $SugProducts = collect($SugProducts);
+            $SugProducts = $SugProducts->sortByDesc('avg_rating')->values();
+            $SugProducts = $SugProducts->all();
 
             $Sug_category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of Suggested category*/
             $b6 = array();
@@ -513,19 +537,6 @@ class ApiController extends Controller
             }
             $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid')->get();
 
-            // if ($limit == 0) { /* 0 stand for limit ,1 for all */
-            //     $course = Course::leftJoin('users', function($join) {
-            //         $join->on('course.admin_id', '=', 'users.id');
-            //     })
-            //     ->where('course.status', 1)->orderBy('course.id', 'DESC')->limit(2)->get();
-            // } else {
-            //     $course = Course::leftJoin('users', function($join) {
-            //         $join->on('course.admin_id', '=', 'users.id');
-            //     })
-            //     ->where('course.status', 1)->orderBy('course.id', 'DESC')->get();
-            // }
-
-
             $response = array();
             if (isset($course)) {
                 foreach ($course as $keys => $item) {
@@ -574,6 +585,12 @@ class ApiController extends Controller
                         if($avgRating < min($request->rating)) continue;
                     $response[] = $temp;
                 }
+            }
+
+            if(!$request->filled('price')){
+                $response = collect($response);
+                $response = $response->sortByDesc('avg_rating')->values();
+                $response = $response->all();
             }
 
             $top_category = Category::where('status', 1)->where('type', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
@@ -1005,6 +1022,12 @@ class ApiController extends Controller
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                     $response[] = $temp;
                 }
+                if($request->filled('price')){
+                    $response = collect($response);
+                    $response = $response->sortByDesc('avg_rating')->values();
+                    $response = $response->all();
+                }
+                
             }
             $top_category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
             $b2 = array();
@@ -1913,8 +1936,8 @@ class ApiController extends Controller
                         if ($item->object_type == 1) { /* 1 stand for course ,2 for product */
                             $value = Course::leftJoin('users as u', function($join) {
                                 $join->on('course.admin_id', '=', 'u.id');
-                            })
-                            ->where('course.id', $item->object_id)->select('course.title', 'course.course_fee', 'u.profile_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.admin_id', 'course.id', 'course.introduction_image')->first();
+                            })->leftJoin('category as c', 'c.id', '=', 'course.category_id')
+                            ->where('course.id', $item->object_id)->select('course.title', 'course.course_fee', 'u.profile_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.admin_id', 'course.id', 'course.introduction_image', 'c.id as catid', 'c.name as catname')->first();
                             $temp['title'] = $value->title;
                             $temp['price'] = $value->course_fee;
                             if ($value->profile_image) {
@@ -1922,6 +1945,8 @@ class ApiController extends Controller
                             } else {
                                 $profile_image = '';
                             }
+                            $temp['category_id'] = $value->catid ?? null;
+                            $temp['category_name'] = $value->catname ?? null;
                             $temp['content_creator_image'] = $profile_image;
                             $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
                             $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
@@ -1934,7 +1959,7 @@ class ApiController extends Controller
                                 $temp['Product_image'] = array(url('upload/disclaimers-introduction/'.$value->introduction_image));  
                             } else $temp['Product_image'] = array();
                         } else {
-                            $value = Product::where('id', $item->object_id)->first();
+                            $value = Product::leftJoin('category as c', 'c.id', '=', 'product.category_id')->where('product.id', $item->object_id)->select('product.*', 'c.id as catid', 'c.name as catname')->first();
                             $temp['title'] = $value->name;
                             $User = User::where('id', $value->added_by)->first();
                             $temp['creator_name'] = $User->first_name.' '.$User->last_name;
@@ -1943,6 +1968,8 @@ class ApiController extends Controller
                             } else {
                                 $profile_image = url('upload/profile-image/' . $User->profile_image);
                             }
+                            $temp['category_id'] = $value->catid ?? null;
+                            $temp['category_name'] = $value->catname ?? null;
                             $temp['creator_image'] = $profile_image;
                             $temp['creator_id'] = $value->added_by;
                             $temp['price'] = $value->price;
