@@ -222,7 +222,7 @@ class ApiController extends Controller
                 $SuggestedCourses[] = $b3;
             }
             
-            $all_products = Product::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of All Product*/
+            $all_products = Product::leftJoin('category as c', 'c.id', '=', 'product.category_id')->where('product.status', 1)->orderBy('product.id', 'DESC')->select('product.*', 'c.name as catname')->get(); /*Get data of All Product*/
             $b4 = array();
             $AllProducts = array();
             foreach ($all_products as $k => $data) {
@@ -248,7 +248,8 @@ class ApiController extends Controller
                         }
                     }
                 }
-
+                $b4['category_id'] = $data->category_id ?? null;
+                $b4['category_name'] = $data->catname ?? "NA";
                 $b4['tags'] = $tags;
                 $b4['creator_image'] = $profile_image;
                 $b4['creator_id'] = $data->added_by;
@@ -272,7 +273,7 @@ class ApiController extends Controller
                 $AllProducts[] = $b4;
             }
             
-            $sug_products = Product::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of Suggested Product*/
+            $sug_products = Product::leftJoin('category as c', 'c.id', '=', 'product.category_id')->where('product.status', 1)->orderBy('product.id', 'DESC')->select('product.*', 'c.name as catname')->get(); /*Get data of Suggested Product*/
             $b5 = array();
             $SugProducts = array();
             foreach ($sug_products as $k => $data) {
@@ -299,6 +300,8 @@ class ApiController extends Controller
                     }
                 }
 
+                $b5['category_id'] = $data->category_id ?? null;
+                $b5['category_name'] = $data->catname ?? "NA";
                 $b5['tags'] = $tags;
                 $b5['creator_image'] = $profile_image;
                 $b5['creator_id'] = $data->added_by;
@@ -488,7 +491,7 @@ class ApiController extends Controller
 
             $course = Course::leftJoin('users as u', function($join) {
                 $join->on('course.admin_id', '=', 'u.id');
-            })->where('course.status', 1);
+            })->leftJoin('category as c', 'c.id', '=', 'course.category_id')->where('course.status', 1);
             if($request->filled('title')){
                 $course->where('course.title', 'like' , '%' . $request->title . '%');
             }
@@ -508,7 +511,7 @@ class ApiController extends Controller
             if ($limit == 0) {
                 $course->limit(2);
             }
-            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name')->get();
+            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid')->get();
 
             // if ($limit == 0) { /* 0 stand for limit ,1 for all */
             //     $course = Course::leftJoin('users', function($join) {
@@ -531,6 +534,8 @@ class ApiController extends Controller
                     $temp['title'] = $item->title;
                     $temp['description'] = $item->description;
                     $temp['course_fee'] = $item->course_fee;
+                    $temp['category_id'] = $item->catid ?? null;
+                    $temp['category_name'] = $item->catname ?? 'NA';
                     $tags = [];
                     if(isset($item->tags)){
                         foreach(unserialize($item->tags) as $val){
@@ -570,7 +575,26 @@ class ApiController extends Controller
                     $response[] = $temp;
                 }
             }
-            return response()->json(['status' => true, 'message' => 'Trending Couse Listing', 'data' => $response]);
+
+            $top_category = Category::where('status', 1)->where('type', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
+            $b2 = array();
+            $TopCategory = array();
+            if(count($top_category) > 0)
+            {
+                foreach ($top_category as $k => $data) {
+                    $b2['id'] = isset($data->id) ? $data->id : '';
+                    $b2['category_name'] = isset($data->name) ? $data->name : '';
+                    if (!empty($data->icon)) {
+                        $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                    } else {
+                        $b2['category_image'] = '';
+                    }
+                    $b2['status'] = isset($data->status) ? $data->status : '';
+                    $b2['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
+                    $TopCategory[] = $b2;
+                }
+            }
+            return response()->json(['status' => true, 'message' => 'Trending Couse Listing', 'data' => $response, 'category' => $TopCategory]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -982,10 +1006,30 @@ class ApiController extends Controller
                     $response[] = $temp;
                 }
             }
+            $top_category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
+            $b2 = array();
+            $TopCategory = array();
+            if(count($top_category) > 0)
+            {
+                foreach ($top_category as $k => $data) {
+                    $b2['id'] = isset($data->id) ? $data->id : '';
+                    $b2['category_name'] = isset($data->name) ? $data->name : '';
+                    if (!empty($data->icon)) {
+                        $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                    } else {
+                        $b2['category_image'] = '';
+                    }
+                    $b2['status'] = isset($data->status) ? $data->status : '';
+                    $b2['type_name'] = ($data->type == 1) ? 'Course' : 'Product';
+                    $b2['type'] = $data->type;
+                    $b2['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
+                    $TopCategory[] = $b2;
+                }
+            }
             if ($type == 1) {
-                return response()->json(['status' => true, 'message' => 'Suggested Course Listing', 'data' => $response]);
+                return response()->json(['status' => true, 'message' => 'Suggested Course Listing', 'data' => $response,'category' => $TopCategory]);
             } else {
-                return response()->json(['status' => true, 'message' => 'Suggested Product Listing', 'data' => $response]);
+                return response()->json(['status' => true, 'message' => 'Suggested Product Listing', 'data' => $response,'category' => $TopCategory]);
             }
 
 
