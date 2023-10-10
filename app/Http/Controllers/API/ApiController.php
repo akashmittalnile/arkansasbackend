@@ -1654,6 +1654,10 @@ class ApiController extends Controller
                 if ($validator->fails()) {
                     return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
                 }
+                $isPurchase = OrderDetail::join('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('o.user_id', auth()->user()->id)->where('order_product_detail.product_id', $request->id)->where('order_product_detail.product_type', $request->type)->select('o.id')->first();
+                if(!isset($isPurchase->id)){
+                    return response()->json(['status' => false, 'Message' => "Can't review for this ".($request->type==1 ? 'course' : 'product')]);
+                }
                 $user_id = $user->id;
                 $object_id = $request->id;
                 $object_type = $request->type;
