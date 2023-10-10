@@ -46,7 +46,7 @@ class ApiController extends Controller
             $trending_courses = Course::leftJoin('users as u', function($join) {
                 $join->on('course.admin_id', '=', 'u.id');
             })->leftJoin('category as cat', 'course.category_id', '=', 'cat.id')
-            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname')->get(); /*Get data of Treanding Course*/
+            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname', 'u.profile_image')->get(); /*Get data of Treanding Course*/
             $b1 = array();
             $TrendingCourses = array();
             foreach ($trending_courses as $k => $data) {
@@ -170,7 +170,7 @@ class ApiController extends Controller
             $suggested_courses = Course::leftJoin('users as u', function($join) {
                 $join->on('course.admin_id', '=', 'u.id');
             })->leftJoin('category as cat', 'course.category_id', '=', 'cat.id')
-            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname')->get(); /*Get data of Suggested Course*/
+            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname', 'u.profile_image')->get(); /*Get data of Suggested Course*/
             $b3 = array();
             $SuggestedCourses = array();
             foreach ($suggested_courses as $k => $data) {
@@ -2248,76 +2248,52 @@ class ApiController extends Controller
                 if ($validator->fails()) {
                     return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
                 }
-                $orders = Order::where('user_id', $user_id)->get();
+                $orders = OrderDetail::leftJoin('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('order_product_detail.product_type', $request->type)->where('o.user_id', $user_id);
+                if($request->type == 1){
+                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image');
+                } else {
+                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id');
+                }
+                $orders = $orders->orderByDesc('o.id')->get();
                 $response = [];
                 if (count($orders) > 0) {
-                    foreach ($orders as $key => $value) {
-                        if ($request->type == 1) {
-                            $OrderDetails = OrderDetail::where('order_id', $value->id)->where('product_type',1)->first();
-                            if(!isset($OrderDetails)){
-                                return response()->json([
-                                    'status' => true,
-                                    'message' => 'No Order found',
-                                    'data' => $response
-                                ]);
-                            }
-                            $temp['course_valid_date'] = date('d/m/y,H:i', strtotime($value->created_date));
-                            $temp['complete_course_on'] = date('d/m/y,H:i', strtotime($value->created_date));
-                            $Course = Course::where('id', $OrderDetails->product_id)->first();
-                            $temp['title'] = $Course->title;
-                            $temp['course_id'] = $Course->id;
-                            $temp['rating'] = 4.6;
-                            $temp['order_status'] = ($value->status == 1) ? 'Active' : 'Pending';
-                            $exists = Like::where('reaction_by', '=', $value->user_id)->where('object_id', '=', $OrderDetails->product_id)->where('object_type', '=', 1)->first();
-                            if (isset($exists)) {
-                                $temp['isLike'] = 1;
-                            } else {
-                                $temp['isLike'] = 0;
-                            }
-                            $ContentCreator = User::where('id', $Course->admin_id)->first();
-                            if ($ContentCreator->profile_image == '') {
-                                $profile_image = '';
-                            } else {
-                                $profile_image = url('upload/profile-image/' . $ContentCreator->profile_image);
-                            }
-                            $temp['content_creator_image'] = $profile_image;
-                            $temp['content_creator_name'] = $ContentCreator->first_name.' '.$ContentCreator->last_name;
-                            $temp['content_creator_id'] = isset($ContentCreator->id) ? $ContentCreator->id : '';
-                        } else {
-                            $OrderDetails = OrderDetail::where('order_id', $value->id)->where('product_type',2)->first();
-                            if(!isset($OrderDetails)){
-                                return response()->json([
-                                    'status' => true,
-                                    'message' => 'No Order found',
-                                    'data' => $response
-                                ]);
-                            }
-                            $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
-                            $Product = Product::where('id', $OrderDetails->product_id)->first();
-                            $temp['title'] = $Product->name;
-                            $temp['product_id'] = $Product->id;
-                            $temp['product_price'] = $Product->price;
-                            $temp['rating'] = 4.6;
-                            $temp['order_status'] = ($value->status == 1) ? 'Active' : 'Pending';
-                            $exists = Like::where('reaction_by', '=', $value->user_id)->where('object_id', '=', $OrderDetails->product_id)->where('object_type', '=', 2)->first();
-                            if (isset($exists)) {
-                                $temp['isLike'] = 1;
-                            } else {
-                                $temp['isLike'] = 0;
-                            }
-                            $ContentCreator = User::where('id', $Product->added_by)->first();
-                            $temp['creator_name'] = $ContentCreator->first_name.' '.$ContentCreator->last_name;
-                            if ($ContentCreator->profile_image == '') {
-                                $profile_image = '';
-                            } else {
-                                $profile_image = url('upload/profile-image/' . $ContentCreator->profile_image);
-                            }
-                            $temp['creator_image'] = $profile_image;
-                            $temp['creator_id'] = $value->added_by;
-                        }
-                        $temp['order_id'] = $value->id;
+                    foreach($orders as $value){
+                        $temp['order_id'] = $value->order_id;
+                        $temp['order_date'] = date('d M, Y H:iA', strtotime($value->order_date));
                         $temp['order_number'] = $value->order_number;
+
+                        if($request->type==1){
+                            $temp['course_valid_date'] = date('d m, Y', strtotime($value->valid_upto));
+                            $temp['introduction_video'] = url('/upload/disclaimers-introduction/'.$value->introduction_image);
+                            $temp['course_id'] = $value->id ?? 0;
+                        }else{
+                            $temp['product_id'] = $value->id ?? 0;
+                        }
+
+                        $temp['title'] = $value->title ?? "NA";
+                        $temp['description'] = $value->desc ?? "NA";
+                        $temp['total_amount_paid'] = $value->total_amount_paid ?? 0;
+                        $temp['price'] = $value->price ?? 0;
+                        $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', $request->type)->avg('rating');
+                        $temp['avg_rating'] = number_format($avgRating, 1);
+                        $temp['order_status'] = ($value->order_status == 1) ? 'Paid' : 'Payment Pending';
+                        
+                        $ContentCreator = User::where('id', $value->added_by)->first();
+                        if ($ContentCreator->profile_image == '') {
+                            $profile_image = '';
+                        } else {
+                            $profile_image = url('upload/profile-image/' . $ContentCreator->profile_image);
+                        }
+                        $temp['content_creator_image'] = $profile_image;
+                        $temp['content_creator_name'] = $ContentCreator->first_name.' '.$ContentCreator->last_name;
+                        $temp['content_creator_id'] = isset($ContentCreator->id) ? $ContentCreator->id : '';
+
+                        $review = Review::where('object_id', $value->id)->where('object_type', $request->type)->where('userid', $user_id)->first();
+                        if(isset($review->id)) $temp['isReviewed'] = 1;
+                        else $temp['isReviewed'] = 0;
+
                         $response[] = $temp;
+
                     }
                     return response()->json([
                         'status' => true,
