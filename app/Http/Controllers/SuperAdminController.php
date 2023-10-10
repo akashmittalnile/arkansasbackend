@@ -773,7 +773,7 @@ class SuperAdminController extends Controller
             if($request->filled('order_date')){
                 $orders->whereDate('orders.created_date', date('Y-m-d', strtotime($request->order_date)));
             }
-            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->paginate(10);
+            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->orderByDesc('orders.id')->paginate(10);
             return view('super-admin.earnings',compact('orders', 'walletBalance'));
         } catch (\Exception $e) {
             return $e->getMessage();

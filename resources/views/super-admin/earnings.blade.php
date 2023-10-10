@@ -77,7 +77,7 @@
                                 <th>Order Number</th>
                                 <th>Date Of Payment</th>
                                 <th>Payment Mode</th>
-                                <th>Admin Cut</th>
+                                <th>Admin Fee</th>
                                 <th>Total Fees Paid</th>
                                 <th>Status</th>
                             </tr>
@@ -86,13 +86,13 @@
                             @forelse($orders as $index => $val)
                             <tr>
                                 <td><span class="sno">{{ $index+1 }}</span> </td>
-                                <td>{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</td>
+                                <td class="text-capitalize">{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</td>
                                 <td>{{ $val->order_number ?? "NA" }}</td>
                                 <td>{{ date('d M, Y H:iA', strtotime($val->created_date)) }}</td>
                                 <td>STRIPE</td>
                                 <td>${{ number_format((float)$val->admin_amount, 2) }}</td>
                                 <td>${{ number_format((float)$val->total_amount_paid, 2) }}</td>
-                                <td>{{ ($val->status == 1) ? "Active" : "Pending" }}</td>
+                                <td>{{ ($val->status == 1) ? "Paid" : "Payment Pending" }}</td>
                             </tr>
                             @empty
                             <tr class="text-center">

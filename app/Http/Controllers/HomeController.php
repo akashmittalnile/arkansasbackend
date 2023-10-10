@@ -138,6 +138,7 @@ class HomeController extends Controller
                     $card->name_on_card = $request->name ?? null;
                     $card->is_default = 1;
                     $card->is_active = 1;
+                    $card->save();
                 }
 
                 return redirect()->back()->with('message', 'Bank details updated successfully');

@@ -170,25 +170,25 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <h4>Account Number</h4>
-                                    <input type="number" class="form-control" name="acc_number" placeholder="Account Number" value="{{ $bank->account_number }}">
+                                    <input type="number" class="form-control" name="acc_number" placeholder="Account Number" value="{{ $bank->account_number ?? '' }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <h4>Re-enter Account Number</h4>
-                                    <input type="number" class="form-control" name="re_acc_number" placeholder="Re-enter Account Number" value="{{ $bank->account_number }}">
+                                    <input type="number" class="form-control" name="re_acc_number" placeholder="Re-enter Account Number" value="{{ $bank->account_number ?? '' }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <h4>Routine Number</h4>
-                                    <input type="text" class="form-control" name="routine" placeholder="Routine Number" value="{{ $bank->routine_number }}">
+                                    <input type="text" class="form-control" name="routine" placeholder="Routine Number" value="{{ $bank->routine_number ?? '' }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <h4>Account Holder Name (Optional)</h4>
-                                    <input type="text" class="form-control" name="name" placeholder="Account Holder Name" value="{{ $bank->name_on_card }}">
+                                    <input type="text" class="form-control" name="name" placeholder="Account Holder Name" value="{{ $bank->name_on_card ?? '' }}">
                                 </div>
                             </div>
 

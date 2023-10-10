@@ -54,9 +54,9 @@
                             <div class="side-profile-item">
                                 <div class="side-profile-media">
                                     @if (!empty($user->profile_image))
-                                        <img src="{!! url('assets/upload/profile-image/'.$user->profile_image) !!}">
+                                        <img src="{!! url('upload/profile-image/'.$user->profile_image) !!}">
                                     @else
-                                        <img src="{!! url('assets/superadmin-images/no-image.png') !!}">
+                                        <img src="{!! asset('assets/superadmin-images/no-image.png') !!}">
                                     @endif
 
                                 </div>
@@ -138,7 +138,7 @@
                                 <div class="added-bank-info-text">
                                     <h2>Account Number</h2>
                                     @if(isset($account->account_number))
-                                    <p>XXXX XXXX {{ substr($account->account_number,8) }}</p>
+                                    <p>{{ $account->account_number }}</p>
                                     @else
                                     <p>NA</p>
                                     @endif

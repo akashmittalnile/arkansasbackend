@@ -1999,7 +1999,7 @@ class ApiController extends Controller
                     $cart->quantity = 1;
                     $cart->save();
                     if ($cart) {
-                        return response()->json(['status' => true, 'message' => 'Cart Added']);
+                        return response()->json(['status' => true, 'message' => 'Added to cart']);
                     } else {
                         return response()->json(['status' => true, 'message' => 'Something went wrong!']);
                     }

@@ -55,7 +55,11 @@
                                 <div class="creator-table-content">
                                     <div class="creator-profile-info">
                                         <div class="creator-profile-image">
-                                            <img src="{!! url('assets/superadmin-images/user.jpg') !!}">
+                                            @if(empty($data->profile_image))
+                                            <img src="{!! asset('assets/superadmin-images/no-image.png') !!}">
+                                            @else
+                                            <img src="{!! url('upload/profile-image/'.$data->profile_image) !!}">
+                                            @endif
                                         </div>
                                         <div class="creator-profile-text">
                                             <h2>{{ ucfirst($data->first_name) }} {{ ucfirst($data->last_name) }}</</h2>
