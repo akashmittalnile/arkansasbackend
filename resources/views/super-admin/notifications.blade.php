@@ -87,6 +87,9 @@
                     @endforelse
 
                 </div>
+                <div class="pmu-table-pagination">
+                    {{$notify->appends(Request::except('page'))->links('pagination::bootstrap-4')}}
+                </div>
             </div>
         </div>
     </div>

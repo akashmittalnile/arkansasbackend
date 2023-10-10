@@ -1425,11 +1425,13 @@ class ApiController extends Controller
                                 $arr1['description'] = $vals->description;
                                 if($vals->type == 'assignment'){
                                     $arr1['file'] = (isset($isComplete->id) ? (isset($isComplete->file) ? url('upload/course/' . $isComplete->file) : null) : null);
+                                    $arr1['filename'] = $isComplete->file ?? null;
                                 }else{
                                     $arr1['file'] = ($vals->details == null || $vals->details == "") ? null : url('upload/course/' . $vals->details);
+                                    $arr1['filename'] = $vals->details ?? null;
                                 }
                                 
-                                $arr1['filename'] = $vals->details;
+                                
                                 $arr1['prerequisite'] = $vals->prerequisite;
                                 $arr1['sort_order'] = $vals->sort_order;
                                 $question = ChapterQuiz::where('step_id', $vals->id)->get();
@@ -1464,6 +1466,13 @@ class ApiController extends Controller
                         $temp['chapter_quiz_count'] = $chapter_quiz_count;
                         $reviewAvg = DB::table('user_review as ur')->where('object_id', $item->id)->where('object_type', 1)->avg('rating');
                     } else {
+
+                        $isPurchase = OrderDetail::join('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('o.user_id', auth()->user()->id)->where('order_product_detail.product_id', $item->id)->where('order_product_detail.product_type', 2)->select('o.id')->first();
+                        if(isset($isPurchase->id)){
+                            $temp['isPurchased'] = true; 
+                        } else $temp['isPurchased'] = false;
+
+                        
                         $temp['price'] = $item->price;
                         $all_products_image = ProductAttibutes::where('product_id', $item->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                         $datas_image = array();
@@ -1709,7 +1718,7 @@ class ApiController extends Controller
                         $data[$key]['review'] = $c->review;
                         $user_name = User::where('id', $c->userid)->first();
                         $data[$key]['user_name'] = $user_name->first_name . ' ' . $user_name->last_name;
-                        $data[$key]['profile_image'] = isset($user_name->profile_image) ? url('upload/profile-image/' . $user_name->profile_image) : null;
+                        $data[$key]['profile_image'] = (isset($user_name->profile_image) && ($user_name->profile_image!="")) ? url('upload/profile-image/' . $user_name->profile_image) : null;
                     }
                     return response()->json([
                         "status" => true,
@@ -2281,6 +2290,16 @@ class ApiController extends Controller
                             $temp['course_valid_date'] = date('d m, Y', strtotime($value->valid_upto));
                             $temp['introduction_video'] = url('/upload/disclaimers-introduction/'.$value->introduction_image);
                             $temp['course_id'] = $value->id ?? 0;
+                            $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('status', 1)->first();
+                            if(isset($isCourseComplete->id)){
+                                $temp['course_completed'] = 1;
+                                $temp['certificate'] = url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$isCourseComplete->course_id)."/".encrypt_decrypt('encrypt',$user_id);
+                            } 
+                            else{
+                                $temp['course_completed'] = 0;
+                                $temp['certificate'] = null;
+                            } 
+
                         }else{
                             $temp['product_id'] = $value->id ?? 0;
                         }
@@ -2497,8 +2516,10 @@ class ApiController extends Controller
             $userId = encrypt_decrypt('decrypt',$userId);
             $course = CourseChapterStep::where('course_chapter_id', $chapterId)->where('id', $surveyId)->whereIn('type', ['survey'])->first();
             if(isset($course)){
+                // dd($course);
                 $data = [];
                 $quiz = ChapterQuiz::where('step_id', $course->id)->whereIn('type', ['survey'])->get();
+                // dd($quiz);
                 foreach($quiz as $val1){
                     $temp['step_id'] = $course->id;
                     $temp['question_id'] = $val1->id;

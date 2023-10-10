@@ -840,7 +840,7 @@ class SuperAdminController extends Controller
             if($request->filled('date')){
                 $notify->whereDate('created_date', $request->date);
             }
-            $notify = $notify->get();
+            $notify = $notify->paginate(5);
         return view('super-admin.notifications',compact('notify'));
         } catch (\Exception $e) {
             return $e->getMessage();
