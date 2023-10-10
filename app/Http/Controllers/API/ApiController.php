@@ -2246,7 +2246,7 @@ class ApiController extends Controller
                 }
                 $orders = OrderDetail::leftJoin('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('order_product_detail.product_type', $request->type)->where('o.user_id', $user_id);
                 if($request->type == 1){
-                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image');
+                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid');
                     if($request->filled('title')){
                         $orders->where('c.title', 'like', '%' . $request->title . '%');
                     }
@@ -2254,7 +2254,7 @@ class ApiController extends Controller
                         $orders->whereIntegerInRaw('c.category_id', $request->category);
                     }
                 } else {
-                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id');
+                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid');
                     if($request->filled('title')){
                         $orders->where('p.name', 'like', '%' . $request->title . '%');
                     }
@@ -2289,6 +2289,8 @@ class ApiController extends Controller
                         $temp['description'] = $value->desc ?? "NA";
                         $temp['total_amount_paid'] = $value->total_amount_paid ?? 0;
                         $temp['price'] = $value->price ?? 0;
+                        $temp['category_id'] = $value->catid ?? null;
+                        $temp['category_name'] = $value->catname ?? null;
                         $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', $request->type)->avg('rating');
                         $temp['avg_rating'] = number_format($avgRating, 1);
                         $temp['order_status'] = ($value->order_status == 1) ? 'Paid' : 'Payment Pending';

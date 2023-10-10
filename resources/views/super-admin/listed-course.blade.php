@@ -164,7 +164,7 @@
                             </div>
 
                             <div class="Payment-Request-action">
-                                <a href="{{ route('SA.Payment.Request', encrypt_decrypt('encrypt', $user->id)) }}" class="newcourse-btn">See Payment Requests</a>
+                                <a href="{{ route('SA.Payment.Request', encrypt_decrypt('encrypt', $user->id)) }}" class="newcourse-btn">View Payment Requests</a>
                             </div>
                         </div>
                     </div>

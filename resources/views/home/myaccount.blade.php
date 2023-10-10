@@ -218,9 +218,6 @@
                 first_name: {
                     required: true,
                 },
-                last_name: {
-                    required: true,
-                },
                 phone: {
                     required: true,
                 },
@@ -243,9 +240,6 @@
             messages: {
                 first_name: {
                     required: 'Please enter first name',
-                },
-                last_name: {
-                    required: 'Please enter last name',
                 },
                 phone: {
                     required: 'Please enter phone',

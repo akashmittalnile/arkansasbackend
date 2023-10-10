@@ -58,7 +58,6 @@ class HomeController extends Controller
         try {
             $validator = Validator::make($request->all(), [
                 'first_name' => 'required',
-                'last_name' => 'required',
                 'phone' => 'required',
                 'bus_name' => 'required',
                 'bus_title' => 'required',
@@ -95,7 +94,7 @@ class HomeController extends Controller
 
                 $user = User::where('id', auth()->user()->id)->update([
                     'first_name' => $request->first_name,
-                    'last_name' => $request->last_name,
+                    'last_name' => $request->last_name ?? null,
                     'phone' => $request->phone,
                     'company_name' => $request->bus_name,
                     'professional_title' => $request->bus_title,
