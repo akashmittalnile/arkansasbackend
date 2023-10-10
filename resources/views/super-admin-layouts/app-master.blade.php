@@ -53,7 +53,7 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/products.css') !!}">
     @endif
 
-    @if ($currentURL == 'SA.Notifications')
+    @if ($currentURL == 'SA.Notifications' || $currentURL == 'SA.Create.Notifications')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/notifications.css') !!}">
     @endif
 

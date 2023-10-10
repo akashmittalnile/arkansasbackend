@@ -379,6 +379,66 @@ class ApiController extends Controller
                 }
             }
 
+            $users = User::where('role', 3)->pluck('id');
+            $courses = Course::leftJoin('users', function($join) {
+                $join->on('course.admin_id', '=', 'users.id');
+            })->where('course.status', 1)->whereIn('course.admin_id', $users)->orderBy('course.id', 'DESC');
+            $courses = $courses->select('course.*', 'users.first_name', 'users.last_name','users.profile_image','users.category_name')->get();
+            $special_course = [];
+            foreach($courses as $value){
+                $temp['course_fee'] = $value->course_fee;
+                $temp['valid_upto'] = $value->valid_upto;
+                if (!empty($value->certificates)) {
+                    $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                } else {
+                    $temp['certificates_image'] = '';
+                }
+                if (!empty($value->introduction_image)) {
+                    $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                } else {
+                    $temp['introduction_video'] = '';
+                }
+                $exists = Like::where('reaction_by', '=', auth()->user()->id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
+                if (isset($exists)) {
+                    $temp['isLike'] = 1;
+                } else {
+                    $temp['isLike'] = 0;
+                }
+                $wishlist = Wishlist::where('userid', '=', auth()->user()->id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                if (isset($wishlist)) {
+                    $temp['isWishlist'] = 1;
+                } else {
+                    $temp['isWishlist'] = 0;
+                }
+                $temp['title'] = $value->title;
+                if ($value->profile_image) {
+                    $profile_image = url('upload/profile-image/'.$value->profile_image);
+                } else {
+                    $profile_image = '';
+                }
+                $temp['content_creator_image'] = $profile_image;
+                $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
+                $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
+                $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
+                $temp['id'] = $value->id;
+                $temp['description'] = $value->description;
+                $temp['status'] = $value->status;
+                $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
+                $temp['avg_rating'] = number_format($avgRating, 1);
+                $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
+                $tags = [];
+                if(isset($value->tags)){
+                    foreach(unserialize($value->tags) as $val){
+                        $name = Tag::where('id', $val)->first();
+                        $temparory['name'] = $name->tag_name;
+                        $temparory['id'] = $name->id;
+                        $tags[] = $temparory;
+                    }
+                }
+                $temp['tags'] = $tags;
+                $special_course[] = $temp;
+            }
+
             $datas['trending_course'] = $TrendingCourses;
             $datas['top_category'] = $TopCategory;
             $datas['course_category'] = $CourseCategory;
@@ -388,6 +448,7 @@ class ApiController extends Controller
             $datas['suggested_product'] = $SugProducts;
             $datas['suggested_category'] = $SugCategory;
             $datas['all_tags'] = $allTags;
+            $datas['special_course'] = $special_course;
 
 
             return response()->json(['status' => true, 'message' => 'Home Page Listing', 'data' => $datas]);
@@ -659,12 +720,16 @@ class ApiController extends Controller
         }
     }
 
-    public function all_category()
+    public function all_category(Request $request)
     {
         try {
             $user_id = Auth::user();
             if ($user_id) {
-                $category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
+                $category = Category::where('status', 1);
+                if($request->filled('type')){
+                    $category->where('type', $request->type);
+                }
+                $category = $category->orderBy('id', 'DESC')->get(); /*Get data of category*/
                 $response = array();
                 if (isset($category)) {
                     foreach ($category as $keys => $item) {

@@ -13,6 +13,8 @@ use App\Models\CourseChapterStep;
 use App\Models\Tag;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Notification;
+use App\Models\NotificationCreator;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\ProductAttibutes;
@@ -829,11 +831,70 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function notifications() 
+    public function notifications(Request $request) 
     {
         try {
-            $courses = Course::orderBy('id','DESC')->get();
-        return view('super-admin.notifications',compact('courses'));
+            $notify = Notification::orderByDesc('id');
+            if($request->filled('title')){
+                $notify->where('title', 'like' , '%' . $request->title . '%');
+            }
+            if($request->filled('date')){
+                $notify->whereDate('created_date', $request->date);
+            }
+            $notify = $notify->get();
+        return view('super-admin.notifications',compact('notify'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function createNotifications() 
+    {
+        try {
+            $user = User::where('role', 2)->get();
+            return view('super-admin.create-notification', compact('user'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function storeNotifications(Request $request) 
+    {
+        try {
+
+            if ($request->img) {
+                $img = time().'.'.$request->img->extension();  
+                $request->img->move(public_path('upload/notification'), $img);
+            }
+
+            $notify = new Notification;
+            $notify->push_target = $request->PushNotificationTo;
+            $notify->notification_type = null;
+            $creator = ($request->PushNotificationTo==1) ? null : $request->ChooseContenttype;
+            $notify->creators = $creator;
+            $notify->title = $request->title;
+            $notify->description = $request->description;
+            $notify->image = $img;
+            $notify->status = 1;
+            $notify->created_date = date('Y-m-d H:i:s');
+            $notify->created_by = auth()->user()->id;
+            $notify->save();
+
+            if($request->ChooseContenttype == 'S'){
+                if($request->filled('cc')){
+                    if(count($request->cc) > 0){
+                        foreach($request->cc as $val){
+                            $notifyCreator = new NotificationCreator;
+                            $notifyCreator->notification_id = $notify['id '];
+                            $notifyCreator->creator_id = $val;
+                            $notifyCreator->created_date = date('Y-m-d H:i:s');
+                            $notifyCreator->save();
+                        }
+                    }
+                }
+            }
+
+            return redirect()->route('SA.Notifications')->with('message', 'New notification added successfully.');
         } catch (\Exception $e) {
             return $e->getMessage();
         }

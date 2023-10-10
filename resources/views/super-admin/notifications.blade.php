@@ -6,116 +6,86 @@
             <div class="pmu-filter-heading">
                 <h2>Manage Notifications</h2>
             </div>
-            <div class="pmu-search-filter wd50">
-                <div class="row g-2">
-                    <div class="col-md-6">
-                        <div class="form-group search-form-group">
-                            <input type="text" class="form-control" name="Start Date"
-                                placeholder="Enter order ID to get order details">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+            <div class="pmu-search-filter wd60">
+                <form action="">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <div class="form-group search-form-group">
+                                <input type="text" class="form-control" value="{{ request()->title }}" name="title" placeholder="Enter title">
+                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <input type="date" class="form-control" name="date" value="{{ request()->date }}">
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <button class="Create-btn" style="padding: 12px 0px;" type="submit">Search</button>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <a class="Create-btn" style="padding: 12px 0px;" href="{{ route('SA.Notifications') }}"><i class="las la-sync"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <a class="Create-btn" style="padding: 13px 0px;" href="{{ route('SA.Create.Notifications') }}">Create New</a>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <input type="date" class="form-control" name="">
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <a class="Create-btn" href="">Create New</a>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
+
+        @if (session()->has('message'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>{{ session()->get('message') }}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        @endif
 
         <div class="pmu-content-list">
             <div class="pmu-content">
                 <div class="row">
+
+                    @forelse($notify as $key => $val)
                     <div class="col-md-12">
                         <div class="manage-notification-item">
                             <div class="manage-notification-image">
-                                <img src="{!! url('assets/superadmin-images/p1.jpg') !!}">
+                                <img src="{!! url('/upload/notification/'.$val->image) !!}">
                             </div>
 
                             <div class="manage-notification-content">
-                                <div class="notification-date">Pushed on: 06 Dec, 2022 - 09:39Am</div>
+                                <div class="notification-date">Pushed on: {{ date('d M, Y - H:iA', strtotime($val->created_date)) }}</div>
                                 <div class="notification-descr">
-                                    <h2><img src="{!! url('assets/superadmin-images/notification.svg') !!}"> Limited Time Offer - Unbeatable Discounts on
-                                        Arkansas Products!</h2>
-                                    <p>Hey There, Valued Shopper! We’re Thrilled To Share Some Exciting News With You. The
-                                        Arkansas Store Is Offering A Limited-Time Discount On Our Premium Product Range.
-                                        Take Advantage Of This Incredible Opportunity To Shop For High-Quality Items At The
-                                        Best Rates. Don’t Miss Out On The Chance To Grab Your Favorite Products With Huge
-                                        Savings!</p>
+                                    <h2><img src="{!! url('assets/superadmin-images/notification.svg') !!}">{{ $val->title ?? "NA" }}</h2>
+                                    <p>{{ $val->description ?? "NA" }}</p>
                                     <h3><img src="{!! url('assets/superadmin-images/danger.svg') !!}"> Limited Stock Alert </h3>
                                 </div>
                                 <div class="notification-tag">
                                     <h3>Category:</h3>
                                     <div class="tags-list">
-                                        <div class="Tags-text">Students</div>
+                                        <div class="Tags-text">
+                                            @if($val->push_target == 1)
+                                                Student
+                                            @elseif($val->push_target == 2)
+                                                Content Creator
+                                            @endif
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-
-                    <div class="col-md-12">
-                        <div class="manage-notification-item">
-                            <div class="manage-notification-image">
-                                <img src="{!! url('assets/superadmin-images/p1.jpg') !!}">
-                            </div>
-
-                            <div class="manage-notification-content">
-                                <div class="notification-date">Pushed on: 06 Dec, 2022 - 09:39Am</div>
-                                <div class="notification-descr">
-                                    <h2><img src="{!! url('assets/superadmin-images/notification.svg') !!}"> Limited Time Offer - Unbeatable Discounts on
-                                        Arkansas Products!</h2>
-                                    <p>Hey There, Valued Shopper! We’re Thrilled To Share Some Exciting News With You. The
-                                        Arkansas Store Is Offering A Limited-Time Discount On Our Premium Product Range.
-                                        Take Advantage Of This Incredible Opportunity To Shop For High-Quality Items At The
-                                        Best Rates. Don’t Miss Out On The Chance To Grab Your Favorite Products With Huge
-                                        Savings!</p>
-                                    <h3><img src="{!! url('assets/superadmin-images/danger.svg') !!}"> Limited Stock Alert </h3>
-                                </div>
-                                <div class="notification-tag">
-                                    <h3>Category:</h3>
-                                    <div class="tags-list">
-                                        <div class="Tags-text">Students</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
+                    @empty
+                    <div class="d-flex justify-content-center mt-5">
+                        No record found
                     </div>
+                    @endforelse
 
-
-                    <div class="col-md-12">
-                        <div class="manage-notification-item">
-                            <div class="manage-notification-image">
-                                <img src="{!! url('assets/superadmin-images/p1.jpg') !!}">
-                            </div>
-
-                            <div class="manage-notification-content">
-                                <div class="notification-date">Pushed on: 06 Dec, 2022 - 09:39Am</div>
-                                <div class="notification-descr">
-                                    <h2><img src="{!! url('assets/superadmin-images/notification.svg') !!}"> Limited Time Offer - Unbeatable Discounts on
-                                        Arkansas Products!</h2>
-                                    <p>Hey There, Valued Shopper! We’re Thrilled To Share Some Exciting News With You. The
-                                        Arkansas Store Is Offering A Limited-Time Discount On Our Premium Product Range.
-                                        Take Advantage Of This Incredible Opportunity To Shop For High-Quality Items At The
-                                        Best Rates. Don’t Miss Out On The Chance To Grab Your Favorite Products With Huge
-                                        Savings!</p>
-                                    <h3><img src="{!! url('assets/superadmin-images/danger.svg') !!}"> Limited Stock Alert </h3>
-                                </div>
-                                <div class="notification-tag">
-                                    <h3>Category:</h3>
-                                    <div class="tags-list">
-                                        <div class="Tags-text">Students</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>

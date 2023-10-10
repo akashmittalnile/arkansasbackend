@@ -5,10 +5,10 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Notification extends Model
+class NotificationCreator extends Model
 {
     use HasFactory;
-    protected $table = 'notifications';
+    protected $table = 'notifications_creators';
     protected $primaryKey = 'id ';
     public $timestamps = false;
 }

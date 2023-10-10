@@ -135,7 +135,6 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/super-admin/update-product', 'SuperAdminController@updateProduct')->name('SA.Update.Products');
         Route::get('/super-admin/delete-product/{id}', 'SuperAdminController@deleteProduct')->name('SA.Delete.Products');
         Route::get('/super-admin/delete-product-image/{id}', 'SuperAdminController@deleteProductImage')->name('SA.Delete.Products.Image');
-        Route::get('/super-admin/notifications', 'SuperAdminController@notifications')->name('SA.Notifications');
         Route::get('/super-admin/listed-course/{id}', 'SuperAdminController@listed_course')->name('SA.ListedCourse');
         Route::get('/super-admin/inactive/{id}', 'SuperAdminController@InactiveStatus')->name('SA.InactiveStatus');
         Route::post('/super-admin/SaveStatusCourse', 'SuperAdminController@SaveStatusCourse')->name('SaveStatusCourse');
@@ -166,6 +165,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/coupons', 'SuperAdminController@coupons')->name('SA.Coupons');
 
         Route::get('/super-admin/download-earnings', 'SuperAdminController@downloadEarnings')->name('SA.Download.Earnings');
+
+        Route::get('/super-admin/notifications', 'SuperAdminController@notifications')->name('SA.Notifications');
+        Route::get('/super-admin/create-notifications', 'SuperAdminController@createNotifications')->name('SA.Create.Notifications');
+        Route::post('/super-admin/store-notifications', 'SuperAdminController@storeNotifications')->name('SA.Store.Notifications');
        
     });
     
