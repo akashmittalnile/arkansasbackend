@@ -583,10 +583,6 @@ class ApiController extends Controller
             if($request->filled('category')){
                 $course->whereIntegerInRaw('course.category_id', $request->category);
             }
-            if($request->filled('rating')){
-                $course->join('user_review as ur', 'ur.object_id', '=', 'course.id');
-                $course->where('ur.rating', $request->rating)->where('ur.object_type', 1);
-            }
             if($request->filled('price')){
                 if($request->price == 1) $course->orderByDesc('course.course_fee');
                 else $course->orderBy('course.course_fee');
@@ -636,7 +632,7 @@ class ApiController extends Controller
                     } else {
                         $temp['isLike'] = 0;
                     }
-                    $temp['content_creator_name'] = isset($iten->admin_name) ? $item->admin_name : '';
+                    $temp['content_creator_name'] = isset($item->admin_name) ? $item->admin_name : '';
                     $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
                     $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
@@ -2251,13 +2247,32 @@ class ApiController extends Controller
                 $orders = OrderDetail::leftJoin('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('order_product_detail.product_type', $request->type)->where('o.user_id', $user_id);
                 if($request->type == 1){
                     $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image');
+                    if($request->filled('title')){
+                        $orders->where('c.title', 'like', '%' . $request->title . '%');
+                    }
+                    if($request->filled('category')){
+                        $orders->whereIntegerInRaw('c.category_id', $request->category);
+                    }
                 } else {
                     $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id');
+                    if($request->filled('title')){
+                        $orders->where('p.name', 'like', '%' . $request->title . '%');
+                    }
+                    if($request->filled('category')){
+                        $orders->whereIntegerInRaw('p.category_id', $request->category);
+                    }
+                }
+                if($request->filled('start_date')){ 
+                    $orders->whereDate('o.created_date','>=',$request->start_date);   
+                }
+                if($request->filled('end_date')){
+                    $orders->whereDate('o.created_date','<=',$request->end_date);   
                 }
                 $orders = $orders->orderByDesc('o.id')->get();
                 $response = [];
                 if (count($orders) > 0) {
                     foreach($orders as $value){
+                        
                         $temp['order_id'] = $value->order_id;
                         $temp['order_date'] = date('d M, Y H:iA', strtotime($value->order_date));
                         $temp['order_number'] = $value->order_number;
