@@ -879,7 +879,7 @@ class SuperAdminController extends Controller
             $notify->created_by = auth()->user()->id;
             $notify->save();
 
-            if($request->ChooseContenttype == 'S'){
+            if($request->PushNotificationTo==2 && $request->ChooseContenttype == 'S'){
                 if($request->filled('cc')){
                     if(count($request->cc) > 0){
                         foreach($request->cc as $val){

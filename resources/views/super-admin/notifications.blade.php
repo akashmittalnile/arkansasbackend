@@ -63,16 +63,23 @@
                                 <div class="notification-descr">
                                     <h2><img src="{!! url('assets/superadmin-images/notification.svg') !!}">{{ $val->title ?? "NA" }}</h2>
                                     <p>{{ $val->description ?? "NA" }}</p>
-                                    <h3><img src="{!! url('assets/superadmin-images/danger.svg') !!}"> Limited Stock Alert </h3>
+                                    <!-- <h3><img src="{!! url('assets/superadmin-images/danger.svg') !!}"> Limited Stock Alert </h3> -->
                                 </div>
                                 <div class="notification-tag">
-                                    <h3>Category:</h3>
+                                    <h3>Notification for:</h3>
                                     <div class="tags-list">
                                         <div class="Tags-text">
                                             @if($val->push_target == 1)
-                                                Student
+                                                Students
                                             @elseif($val->push_target == 2)
-                                                Content Creator
+                                                @if($val->creators == 'A')
+                                                    Content Creator
+                                                @else
+                                                    @foreach($data = $val->notificationCreator as $key => $item)
+                                                        @php $name = $item->user; @endphp
+                                                        {{ $name->first_name . ' ' . $name->last_name }} @if(count($data) != $key+1) || @endif
+                                                    @endforeach
+                                                @endif
                                             @endif
                                         </div>
                                     </div>

@@ -11,4 +11,9 @@ class Notification extends Model
     protected $table = 'notifications';
     protected $primaryKey = 'id ';
     public $timestamps = false;
+
+    public function notificationCreator()
+    {
+        return $this->hasMany(NotificationCreator::class, 'notification_id', 'id');
+    }
 }

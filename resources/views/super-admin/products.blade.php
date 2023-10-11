@@ -8,7 +8,7 @@
             </div>
             <div class="pmu-search-filter wd80">
                 <div class="row g-2">
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group search-form-group">
                             <input type="text" class="form-control" name="Start Date"
                                 placeholder="Enter order ID to get order details">
@@ -26,12 +26,12 @@
                     </div>
                     <div class="col-md-2">
                         <div class="form-group">
-                            <a class="Create-btn" href="{{ route('SA.AddProduct')}}">New Products</a>
+                            <a class="Create-btn" href="{{ route('SA.AddProduct')}}">Create Products</a>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <div class="form-group">
-                            <a class="Create-btn" href="{{ route('SA.Coupons')}}">manage Coupon</a>
+                            <a class="Create-btn" href="{{ route('SA.Coupons')}}">Manage Coupon</a>
                         </div>
                     </div>
                     <div class="col-md-3">

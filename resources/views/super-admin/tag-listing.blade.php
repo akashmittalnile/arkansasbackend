@@ -55,7 +55,7 @@
 
                             <div class="creator-table-col-2">
                                 <div class="creator-table-box">
-                                    <div class="creator-table-text">Account Status</div>
+                                    <div class="creator-table-text">Tag Status</div>
                                     <div class="creator-table-value">@if ($data->status) Active @else Inactive @endif</div>
                                 </div>
                             </div>

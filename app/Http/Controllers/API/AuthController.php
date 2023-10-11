@@ -28,6 +28,15 @@ class AuthController extends Controller
 
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
+
+            if(auth()->user()->status == 0){
+                Auth::user()->tokens()->delete();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Your account has been deactivated temporarily. Please contact arkansas@gmail.com for the same.'
+                ]);
+            }
+
             $user = Auth::user();
             return response()->json([
                 
@@ -64,6 +73,8 @@ class AuthController extends Controller
         $user->last_name = $request->last_name;
         $user->phone = $request->phone;
         $user->email = $request->email;
+        $user->status = 1;
+        $user->role = $request->role;
         $user->password = $request->password;
         $user->save();
 

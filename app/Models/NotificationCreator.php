@@ -11,4 +11,9 @@ class NotificationCreator extends Model
     protected $table = 'notifications_creators';
     protected $primaryKey = 'id ';
     public $timestamps = false;
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, 'creator_id', 'id')->withDefault(['first_name' => 'NA', 'last_name' => 'NA', 'email' => 'NA']);
+    }
 }

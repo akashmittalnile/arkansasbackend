@@ -27,7 +27,7 @@
                                         <div class="pmu-radio">
                                             <input type="radio" id="Student" checked name="PushNotificationTo" value="1">
                                             <label for="Student">
-                                                Student
+                                                Students
                                             </label>
                                         </div>
                                     </li>
