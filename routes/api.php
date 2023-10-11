@@ -50,6 +50,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('review-list', [ApiController::class,"review_list"]);
     Route::get('home', [ApiController::class, "home"]);
     Route::get('profile', [ApiController::class, "profile"]);
+    Route::post('update-profile', [ApiController::class, "update_profile"]);
     Route::get('certificates', [ApiController::class, "certificates"]);
     Route::get('notifications', [ApiController::class, "notifications"]);
     Route::post('change-password', [ApiController::class,"change_password"]);

@@ -93,6 +93,9 @@ class AuthController extends Controller
         $user->save();
 
         if($user){
+            if(isset($user->profile_image) && $user->profile_image != ""){
+                $user->profile_image = url('upload/profile-image/'.$user->profile_image);
+            }
             return response()->json([
                 'status' => true,
                 'message' => 'User created successfully',

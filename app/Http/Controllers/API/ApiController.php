@@ -32,6 +32,7 @@ use App\Models\UserQuizAnswer;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\File;
 use Mockery\Undefined;
 use PDF;
 
@@ -1748,7 +1749,7 @@ class ApiController extends Controller
                     $temp['first_name'] = ucfirst($user->first_name);
                     $temp['last_name'] = ucfirst($user->last_name);
                     $temp['phone'] = $user->phone;
-                    if ($user->profile_image) {
+                    if (isset($user->profile_image) && $user->profile_image != "") {
                         $temp['profile_image'] = url('upload/profile-image/' . $user->profile_image);
                     } else {
                         $temp['profile_image'] = url('assets/superadmin-images/no-image.png');
@@ -1761,6 +1762,52 @@ class ApiController extends Controller
                 return response()->json(['status' => true, 'message' => 'User Details', 'data' => $temp]);
             } else {
                 return response()->json(['status' => false, 'Message' => 'Please login']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function update_profile(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required|string|max:255',
+                'last_name' => 'required|string|max:255',
+                'phone' => 'required',
+                'profile_image' => 'required|mimes:jpeg,png,jpg|image',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else {
+
+                $img = null;
+                if($request->profile_image){
+                    $img = time().'.'.$request->profile_image->extension();  
+                    $request->profile_image->move(public_path('upload/profile-image'), $img);
+
+                    $image_path = app_path("upload/profile-image/".auth()->user()->profile_image);
+                    if(File::exists($image_path)) {
+                        unlink($image_path);
+                    }
+                }
+
+                User::where('id', auth()->user()->id)->update([
+                    'first_name' => $request->first_name,
+                    'last_name' => $request->last_name,
+                    'phone' => $request->phone,
+                    'profile_image' => $img
+                ]);
+
+                $user = User::where('id', auth()->user()->id)->first();
+                if(isset($user->profile_image) && $user->profile_image != ""){
+                    $user->profile_image = url('upload/profile-image/'.$user->profile_image);
+                }
+                return response()->json([
+                    'status' => true,
+                    'message' => 'Profile updated successfully',
+                    'user' => $user
+                ]);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
