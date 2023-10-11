@@ -52,17 +52,45 @@ use App\Models\Tag;
     }
 
     if (!function_exists('send_notification')) {
-
-        function send_notification($push_message='',$type = "",$id="",$img="",$device_token='',$fire_base_token='',$title='',$id1='')
+        function send_notification($token, $data)
         {
-            $res= shell_exec('curl -X POST --header "Authorization: key='.$fire_base_token.
-            '" --header "Content-Type: application/json" https://fcm.googleapis.com/fcm/send -d "{\"to\":\"'.$device_token.
-            '\",\"priority\":\"high\",\"sound\":\"default\",\"data\":{\"title\":\"'.$title.
-            '\",\"type\":\"'.$type.'\",\"id\":\"'.$id.'\",\"submonument_id\":\"'.$id1.'\",\"body\":\"'.$push_message.
-            '\",\"image_url\":\"'.$img.'\"},\"notification\":{\"title\":\"'.$title.'\",\"type\":\"'.$type.'\",\"id\":\"'.$id.
-            '\",\"submonument_id\":\"'.$id1.'\",\"body\":\"'.$push_message.'\",\"image_url\":\"'.$img.'\"}}"');
-            //dd($res);
-            return $res;
+            $url = 'https://fcm.googleapis.com/fcm/send';
+            $serverKey = env('FIREBASE_SERVER_KEY'); // ADD SERVER KEY HERE PROVIDED BY FCM
+            $msg = array(
+                'body'  => $data['msg'],
+                'title' => "Arkansas",
+                "icon" => "{{ asset('assets/superadmin-images/logo-2.png') }}",
+                'sound' => 'default'
+            );
+            $arr = array(
+                'to' => $token,
+                'notification' => $msg,
+                'data' => $data,
+                "priority" => "high"
+            );
+            $encodedData = json_encode($arr);
+            $headers = [
+                'Authorization:key=' . $serverKey,
+                'Content-Type: application/json',
+            ];
+    
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $url);
+            curl_setopt($ch, CURLOPT_POST, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+            curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+            // Disabling SSL Certificate support temporarly
+            curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
+            // Execute post
+            $result = curl_exec($ch);
+            if ($result === FALSE) {
+                die('Curl failed: ' . curl_error($ch));
+            }
+            // Close connection
+            curl_close($ch);
         }
     }
 

@@ -37,9 +37,12 @@ class AuthController extends Controller
                 ]);
             }
 
+            if($request->filled('fcm_token')){
+                User::where('id', auth()->user()->id)->update(['fcm_token' => $request->fcm_token ?? null]);
+            }
+
             $user = Auth::user();
             return response()->json([
-                
                 'user' => $user,
                 'status' => true,
                 'authorization' => [
@@ -63,18 +66,29 @@ class AuthController extends Controller
             'phone' => 'required',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:6',
+            'profile_image' => 'required|mimes:jpeg,png,jpg|image',
+            'role' => 'required',
+            'fcm_token' => 'required',
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+        }
+
+        $img = null;
+        if($request->profile_image){
+            $img = time().'.'.$request->profile_image->extension();  
+            $request->profile_image->move(public_path('upload/profile-image'), $img);
         }
 
         $user = new User;
         $user->first_name = $request->first_name;
         $user->last_name = $request->last_name;
         $user->phone = $request->phone;
+        $user->profile_image = $img;
         $user->email = $request->email;
         $user->status = 1;
-        $user->role = $request->role;
+        $user->role = $request->role ?? 1;
+        $user->fcm_token = $request->fcm_token ?? null;
         $user->password = $request->password;
         $user->save();
 
