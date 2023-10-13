@@ -491,7 +491,7 @@
                                 @endphp
                                 <div class="edit-pmu-form-item">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text">
+                                        <div class="edit-pmu-text-title">
                                             <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Survey<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
                                         </div>
                                         <div class="edit-pmu-checkbox-list">
