@@ -31,27 +31,33 @@
                                 <div class="Overview-info-card">
                                     <h2>Total Revenue</h2>
                                     <div class="Overview-price">${{ number_format((float)$earn ?? 0, 2) }}</div>
-                                    <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
+                                    @if(isset(request()->month))
+                                    <div class="overview-date">{{ date('M, Y', strtotime(request()->month)) }}</div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="Overview-info-card">
-                                    <h2>Total Course</h2>
+                                    <h2>Total Added Course</h2>
                                     <div class="Overview-price">{{ $course ?? 0 }}</div>
-                                    <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
+                                    @if(isset(request()->month))
+                                    <div class="overview-date">{{ date('M, Y', strtotime(request()->month)) }}</div>
+                                    @endif
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="Overview-info-card">
                                     <h2>Total courses rating</h2>
                                     <div class="Overview-rating"><img src="{!! url('assets/website-images/star.svg') !!}"> {{ number_format((float)$rating ?? 0, 1) }}</div>
-                                    <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
+                                    @if(isset(request()->month))
+                                    <div class="overview-date">{{ date('M, Y', strtotime(request()->month)) }}</div>
+                                    @endif
                                 </div>
                             </div>
 
                             <div class="col-md-3">
                                 <div class="Overview-form-card">
-                                    <input type="month" class="form-control" value="{{ date('Y-m', strtotime($over_month)) }}" name="month" id="overview-input">
+                                    <input type="month" class="form-control" value="{{ request()->month }}" name="month" id="overview-input">
                                 </div>
                             </div>
                         </div>
@@ -65,21 +71,26 @@
         <div class="tab-pane" id="Users">
             <div class="Overview-card">
                 <div class="Overview-card-content">
-                    <div class="row">
-                        <div class="col-md-8">
-                            <div class="Overview-info-card">
-                                <h2>Total Enrolled User</h2>
-                                <div class="Overview-value">12</div>
-                                <div class="overview-date">May,2023</div>
+                    <form action="" id="user-form">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="Overview-info-card">
+                                    <h2>Total Enrolled User</h2>
+                                    <div class="Overview-value">{{ $user ?? 0 }}</div>
+                                    @if(isset(request()->usermonth))
+                                    <div class="overview-date">{{ date('M, Y', strtotime(request()->usermonth)) }}</div>
+                                    @endif
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-md-4">
-                            <div class="Overview-form-card">
-                                <input type="date" class="form-control" name="">
+                            <div class="col-md-4">
+                                <div class="Overview-form-card">
+                                    <input type="month" value="{{ request()->usermonth }}" class="form-control" name="usermonth" id="user-month">
+                                </div>
                             </div>
-                        </div>
-                    </div>
+                        </div> 
+                    </form>
+                    
                 </div>
                 <div class="Overview-card-table pmu-table-card">
                     <table class="table">
@@ -157,6 +168,10 @@
         $("#overview-form").get(0).submit();
     })
 
+    $(document).on('change', '#user-month', function() {
+        $("#user-form").get(0).submit();
+    })
+
 
     let dataOver = [];
     $(document).ready(function() {
@@ -200,7 +215,7 @@
             yaxis: {
                 labels: {
                     formatter: (val) => {
-                        return val / 1000 + "K";
+                        return "$" + val;
                     },
                 },
             },

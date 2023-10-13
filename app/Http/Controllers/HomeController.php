@@ -163,33 +163,35 @@ class HomeController extends Controller
 
     public function performance(Request $request) 
     {
-        $over_month = $request->month ?? date('Y-m');
         // dd(date('m',strtotime($over_month)));
-        $earn = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->whereMonth('opd.created_date', date('m',strtotime($over_month)))->sum(\DB::raw('opd.amount - opd.admin_amount'));
-        $course = Course::where('admin_id', auth()->user()->id)->whereMonth('course.created_date', date('m',strtotime($over_month)))->count();
-        $rating = Course::join('user_review as ur', 'ur.object_id', '=', 'course.id')->where('admin_id', auth()->user()->id)->where('ur.object_type', 1)->whereMonth('ur.created_date', date('m',strtotime($over_month)))->avg('ur.rating');
+        $earn = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id);
+        if($request->month) $earn->whereMonth('opd.created_date', date('m',strtotime($request->month)));
+        $earn = $earn->sum(\DB::raw('opd.amount - opd.admin_amount'));
+
+        $course = Course::where('admin_id', auth()->user()->id);
+        if($request->month) $course->whereMonth('course.created_date', date('m',strtotime($request->month)));
+        $course = $course->count();
+
+        $rating = Course::join('user_review as ur', 'ur.object_id', '=', 'course.id')->where('admin_id', auth()->user()->id)->where('ur.object_type', 1);
+        if(isset($request->month)) $rating->whereMonth('ur.created_date', date('m',strtotime($request->month)));
+        $rating = $rating->avg('ur.rating');
 
         $orders = DB::table('order_product_detail as opd')
             ->leftJoin('course as c', 'c.id', '=', 'opd.product_id')
             ->leftJoin('orders as o', 'o.id', '=', 'opd.order_id')
-            ->leftJoin('users as u', 'u.id', '=', 'o.user_id');
-            if($request->filled('name')){
-                $orders->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
-            }
-            if($request->filled('number')){
-                $orders->where('o.order_number', 'like', '%'.$request->number.'%');
-            }
-            if($request->filled('order_date')){
-                $orders->whereDate('o.created_date', date('Y-m-d', strtotime($request->order_date)));
-            }
-        $orders = $orders->select('opd.admin_amount', 'opd.amount', 'u.first_name','u.last_name')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->orderByDesc('opd.id')->paginate(5);
+            ->leftJoin('users as u', 'u.id', '=', 'o.user_id')->select('opd.admin_amount', 'opd.amount', 'u.first_name','u.last_name')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->orderByDesc('opd.id')->paginate(5);
 
         $over_graph = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->select(
             DB::raw('sum(opd.amount - opd.admin_amount) as y'), 
             DB::raw("DATE_FORMAT(opd.created_date,'%M %Y') as x")
         )->groupBy('x')->orderByDesc('x')->get();
 
-        return view('home.performance', compact('earn', 'course', 'rating', 'over_month', 'orders', 'over_graph'));
+        $user = DB::table('course as c')->leftJoin('user_courses as uc', 'uc.course_id', '=', 'c.id')->where('c.admin_id', auth()->user()->id);
+        if($request->filled('usermonth'))
+            $user->whereMonth('uc.created_date', date('m', strtotime($request->usermonth)));
+        $user = $user->distinct('uc.user_id')->count();
+
+        return view('home.performance', compact('earn', 'course', 'rating', 'orders', 'over_graph', 'user'));
     }
 
     public function editCourse($id) 
