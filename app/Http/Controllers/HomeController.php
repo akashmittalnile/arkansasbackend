@@ -774,7 +774,7 @@ class HomeController extends Controller
                 if($request->filled('order_date')){
                     $orders->whereDate('o.created_date', date('Y-m-d', strtotime($request->order_date)));
                 }
-            $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->paginate(10);
+            $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->orderByDesc('opd.id')->paginate(10);
 
             $myWallet = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
             if(isset($myWallet->id)){
@@ -803,7 +803,7 @@ class HomeController extends Controller
                 if($request->filled('order_date')){
                     $orders->whereDate('o.created_date', date('Y-m-d', strtotime($request->order_date)));
                 }
-            $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->paginate(10);
+            $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->orderByDesc('opd.id')->paginate(10);
 
             return $this->downloadEarningExcelFile($orders);
         } catch (\Exception $e) {
@@ -853,7 +853,7 @@ class HomeController extends Controller
             if($request->filled('order_date')){
                 $payment->whereDate('wallet_history.added_date', $request->order_date);
             }
-            $payment = $payment->where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->select('wallet_history.*')->paginate(10);
+            $payment = $payment->where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->select('wallet_history.*')->orderByDesc('wallet_history.id')->paginate(10);
 
             $requestedAmount = 0;
             $mymoney['balance'] = 0;

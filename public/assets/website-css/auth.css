@@ -1,4 +1,5 @@
 .auth-form-section {
+    height: calc(100vh - 80px);
     position: relative;
     background: url(../../assets/website-images/form-bg.png);
     background-position: center;

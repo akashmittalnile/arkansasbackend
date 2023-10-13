@@ -2756,7 +2756,7 @@ class ApiController extends Controller
 
     public function certificates(Request $request){
         try{
-            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status')->get();
+            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->leftJoin('course as c', 'c.id', '=', 'user_courses.course_id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status')->get();
             $res = [];
             foreach($data as $val){
                 $temp['course_id'] = $val->course_id;

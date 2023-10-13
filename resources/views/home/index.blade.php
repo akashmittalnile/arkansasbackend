@@ -9,7 +9,7 @@
             <div class="pmu-search-filter wd70">
                 <form action="">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="course"
                                     placeholder="Search by course name" value="{{request()->course}}">
@@ -28,6 +28,11 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <button class="add-more py-2" type="">Search</button>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <a href="{{ route('home.index') }}" style="padding: 12px 0px;" class="newcourse-btn"><i class="las la-sync"></i></a>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -95,7 +100,7 @@
                                         </div>
                                         <h2>{{ ($data->title) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->course_fee,2) ? : 0}}</div>
-                                        <p>{{ ($data->description) ? : ''}}</p>
+                                        <p>{{ ($data->description != "" && $data->description != null) ? (strlen($data->description) > 53 ?  substr($data->description, 0, 53)."....." : $data->description) : "NA" }}</p>
                                         <?php
                                             $chapter_count = \App\Models\CourseChapter::where('course_id',$data->id)->count();
                                         ?>

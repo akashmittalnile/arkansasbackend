@@ -1,4 +1,4 @@
-.auth-form-section {position: relative; background: url(../superadmin-images/form-bg.png); background-position: center; padding: 1rem 0; }
+.auth-form-section {height: calc(100vh - 80px); position: relative; background: url(../superadmin-images/form-bg.png); background-position: center; padding: 1rem 0; }
 .auth-form-section:before {content: ''; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: rgb(0 0 0 / 24%); }
 .auth-form{position: relative;background: rgb(38 19 19 / 90%);padding:3rem 15rem;}
 .auth-form .form-group {margin-bottom: 1rem; }

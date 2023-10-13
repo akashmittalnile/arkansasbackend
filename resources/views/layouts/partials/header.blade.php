@@ -17,8 +17,33 @@
                         </div>
                     </a>
 
-                    <div class="dropdown-menu">
-
+                    <div class="dropdown-menu dropdown-menu-lg dropdown-menu-right" data-bs-popper="none">
+                        <div class="notification-head">
+                            <h2>Notifications</h2>
+                        </div>
+                        <div class="notification-body">
+                            
+                            <a href=""  target="_blank"><div class="notification-item">
+                                <div class="notification-item-icon"><i class="la la-bell"></i></div>
+                                <div class="notification-item-text">
+                                    <h2>Dishant registerd as a new vendor</h2>
+                                    <p><span><i class="fas fa-clock"></i> 546546</span></p>
+                                </div>
+                            </div></a>
+                            
+                            <div class="notification-item">
+                                <div class="notification-item-icon"><i class="la la-bell"></i></div>
+                                <div class="notification-item-text">
+                                    <h2>No new notification yet</h2>
+                                </div>
+                            </div>
+                            
+                        </div>
+                        <a href=""  target="_blank">
+                            <div class="notification-foot">
+                                Clear All Notifications 
+                            </div>   
+                        </a> 
                     </div>
                 </li>
                 <li class="nav-item profile-dropdown dropdown">
