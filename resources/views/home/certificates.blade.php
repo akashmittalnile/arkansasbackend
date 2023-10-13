@@ -21,17 +21,19 @@
                                         <tr>
                                             <td valign="top" style="padding: 30px">
                                                 <div style="display: flex;align-items: center;">
-                                                    <img src="{{ url('upload/business-logo/'.$course->business_logo) }}" alt="" width="100" style="width: 100px;height: auto;">
+                                                    <img src="{{ asset('assets/website-images/logo.jpg') }}" alt="" width="100" style="width: 100px;height: auto;">
                                                     <div style="margin-left: 10px;">
                                                         <h3 style="font-size: 25px;font-weight: bold;margin-bottom: 0px;">{{$course->company_name ?? "NA"}}</h3>
                                                         <h5 style="font-size: 20px;font-weight: normal;margin-top: 10px;">{{$course->professional_title ?? "NA"}}</h5>
+
+                                                        <h6 style="margin: 10px 0 10px 0;    text-align: right;color: #2d2f3c;font-size: 16px;font-weight: normal;padding: 0;color: #6A6A6A;">https://arkansaspermanentcosmeticsinstitute.com</h6>
                                                     </div>
                                                 </div>
                                             </td>
                                             <td></td>
-                                            <td valign="top" style="padding: 30px">
+                                            <!-- <td valign="top" style="padding: 30px">
                                                 <img src="{{ asset('assets/website-images/logo.jpg') }}" alt="" style="float: right;" width="200px">
-                                            </td>
+                                            </td> -->
                                         </tr>
                         </tr>
 
@@ -44,17 +46,15 @@
                                 <p style="font-size: 20px;">{{ date('M d, Y', strtotime($date->updated_date)) }}</p>
                             </td>
                             <td></td>
-                            <td valign="top" style="padding: 0px 30px 30px 30px">
-                                <h6 style="margin: 0 0 10px 0;    text-align: right;color: #2d2f3c;font-size: 16px;font-weight: normal;padding: 0;color: #6A6A6A;">https://arkansaspermanentcosmeticsinstitute.com/</p>
-                            </td>
                         </tr>
-
+                        
                         <tr>
                             <td valign="top" style="padding: 0px 30px">
                                 <p style="font-size: 23px; margin-bottom: 0px;">This certificate is awarded to</p>
                                 <h3 style="font-size: 60px;font-weight: bold; color: #E0B220;margin-top: 10px;">{{ $user->first_name ?? "NA" }} {{ $user->last_name ?? "" }}</h3>
                             </td>
                         </tr>
+                        
                         <tr>
                             <td valign="top" style="padding: 0px 30px">
                                 <p style="font-size: 23px;  margin-bottom: 0px;">For completing the requirements of</p>

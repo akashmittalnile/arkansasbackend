@@ -315,7 +315,7 @@ class ApiController extends Controller
             $SugProducts = array();
             foreach ($sug_products as $k => $data) {
                 $b5['id'] = isset($data->id) ? $data->id : '';
-                $b5['title'] = isset($data->title) ? $data->name : '';
+                $b5['title'] = isset($data->name) ? $data->name : '';
                 $b5['description'] = isset($data->description) ? $data->description : '';
                 $User = User::where('id', $data->added_by)->first();
                 $b5['creator_name'] = $User->first_name.' '.$User->last_name;
@@ -2781,13 +2781,20 @@ class ApiController extends Controller
 
     public function certificates(Request $request){
         try{
-            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->leftJoin('users as u', 'c.admin_id', '=', 'u.id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status', 'u.first_name', 'u.last_name')->get();
+            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->leftJoin('users as u', 'c.admin_id', '=', 'u.id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status', 'u.first_name', 'u.last_name', 'u.profile_image', 'c.introduction_image')->get();
             $res = [];
             foreach($data as $val){
                 $temp['course_id'] = $val->course_id;
                 $temp['user_id'] = $val->user_id;
                 $temp['title'] = $val->title;
                 $temp['status'] = $val->status;
+
+                if(isset($val->profile_image)) $temp['creator_image'] = url('upload/profile-image/'.$val->profile_image);
+                else $temp['creator_image'] = null;
+                
+                if(isset($val->introduction_image)) $temp['video'] = url('upload/disclaimers-introduction/'.$val->introduction_image);
+                else $temp['video'] = null;
+
                 $temp['creator_name'] = $val->first_name . ' ' . $val->last_name;
                 $avgRating = DB::table('user_review as ur')->where('object_id', $val->course_id)->where('object_type', 1)->avg('rating');
                 $temp['avg_rating'] = number_format($avgRating, 1);
@@ -2944,6 +2951,7 @@ class ApiController extends Controller
             }
             UserCourse::where('course_id', $courseid)->where('user_id', $uid)->update([
                 'status' => $isComplete ? 1 : 0,
+                'updated_date' => date('Y-m-d H:i:s'),
             ]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
