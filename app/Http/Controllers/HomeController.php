@@ -161,9 +161,14 @@ class HomeController extends Controller
         return view('home.index',compact('courses'));
     }
 
-    public function performance() 
+    public function performance(Request $request) 
     {
-        return view('home.performance');
+        $over_month = $request->month ?? date('Y-m');
+        // dd(date('m',strtotime($over_month)));
+        $earn = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->whereMonth('opd.created_date', date('m',strtotime($over_month)))->sum(\DB::raw('opd.amount - opd.admin_amount'));
+        $course = Course::where('admin_id', auth()->user()->id)->whereMonth('course.created_date', date('m',strtotime($over_month)))->count();
+        $rating = Course::join('user_review as ur', 'ur.object_id', '=', 'course.id')->where('admin_id', auth()->user()->id)->where('ur.object_type', 1)->whereMonth('ur.created_date', date('m',strtotime($over_month)))->avg('ur.rating');
+        return view('home.performance', compact('earn', 'course', 'rating', 'over_month'));
     }
 
     public function editCourse($id) 

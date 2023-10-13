@@ -25,35 +25,37 @@
             <div class="tab-pane active" id="Overview">
                 <div class="Overview-card">
                     <div class="Overview-card-content">
-                        <div class="row">
-                            <div class="col-md-3">
-                                <div class="Overview-info-card">
-                                    <h2>Total Revenue</h2>
-                                    <div class="Overview-price">$1799.00</div>
-                                    <div class="overview-date">May,2023</div>
+                        <form action="" id="overview-form">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <div class="Overview-info-card">
+                                        <h2>Total Revenue</h2>
+                                        <div class="Overview-price">${{ number_format((float)$earn ?? 0, 2) }}</div>
+                                        <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="Overview-info-card">
-                                    <h2>Total Course Enrollments</h2>
-                                    <div class="Overview-price">12</div>
-                                    <div class="overview-date">May,2023</div>
+                                <div class="col-md-3">
+                                    <div class="Overview-info-card">
+                                        <h2>Total Course</h2>
+                                        <div class="Overview-price">{{ $course ?? 0 }}</div>
+                                        <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="col-md-3">
-                                <div class="Overview-info-card">
-                                    <h2>Total courses rating</h2>
-                                    <div class="Overview-rating"><img src="{!! url('assets/website-images/star.svg') !!}"> 4.7</div>
-                                    <div class="overview-date">May,2023</div>
+                                <div class="col-md-3">
+                                    <div class="Overview-info-card">
+                                        <h2>Total courses rating</h2>
+                                        <div class="Overview-rating"><img src="{!! url('assets/website-images/star.svg') !!}"> {{ number_format((float)$rating ?? 0, 1) }}</div>
+                                        <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="col-md-3">
-                                <div class="Overview-form-card">
-                                    <input type="date" class="form-control" name="">
+                                <div class="col-md-3">
+                                    <div class="Overview-form-card">
+                                        <input type="month" class="form-control" value="{{ date('Y-m', strtotime($over_month)) }}" name="month" id="overview-input">
+                                    </div>
                                 </div>
                             </div>
-                        </div>
+                        </form>
                     </div>
                     <div class="Overview-card-chart">
                         <div class="" id="salechart"></div>
@@ -181,4 +183,13 @@
             </div>
         </div>
     </div>
+
+    <script src="{{ asset('assets/website-js/performance.js') }}"></script>
+
+    <script>
+        $(document).on('change', '#overview-input', function(){
+            $("#overview-form").get(0).submit();
+        })
+    </script>
+
 @endsection

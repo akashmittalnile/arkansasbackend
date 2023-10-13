@@ -1704,6 +1704,7 @@ class ApiController extends Controller
                         'object_type' => $object_type,
                         'rating' => $rating,
                         'review' => $comment,
+                        'created_date' => date('Y-m-d H:i:s'),
                         'status' => 1,
                     ]);
                     if ($save) {
