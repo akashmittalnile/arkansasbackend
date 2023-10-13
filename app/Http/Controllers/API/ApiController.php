@@ -2775,7 +2775,12 @@ class ApiController extends Controller
         $course = Course::join('users as u', 'u.id', '=', 'course.admin_id')->where('course.id', $id)->select('course.title', 'u.first_name', 'u.last_name', 'u.company_name', 'u.professional_title', 'u.signature', 'u.business_logo')->first();
         // dd($course);
         $date = UserCourse::where('user_id', $uid)->where('course_id', $id)->first();
-        $pdf = PDF::loadView('home.certificates', compact('course', 'date', 'user', 'admin'));
+        $pdf = PDF::loadView('home.certificates', compact('course', 'date', 'user', 'admin'), [], [ 
+            'mode' => 'utf-8',
+            'title' => 'Certificate',
+            'format' => 'Legal',
+            'orientation' => 'L'
+          ]);
         return $pdf->stream($course->title.' certificate.pdf');
     }
 
