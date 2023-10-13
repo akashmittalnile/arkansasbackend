@@ -6,7 +6,7 @@
         <div class="pmu-content">
             <div class="pmu-filter-section">
                 <div class="pmu-filter-heading">
-                    <h2>Create Notitication </h2>
+                    <h2>Create Notification </h2>
                 </div>
                 <div class="pmu-filter">
                     <div class="row">
@@ -110,7 +110,7 @@
                             <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <h4>Notitication Title</h4>
+                                        <h4>Notification Title</h4>
                                         <input type="text" class="form-control" name="title" placeholder="Title">
                                     </div>
                                 </div>

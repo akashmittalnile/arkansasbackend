@@ -87,7 +87,7 @@
 
                                         <h2>{{ ($data->name) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->price,2) ? : 0}}</div>
-                                        <p>{{ ($data->product_desc) ? : ''}}</p>
+                                        <p>{{ ($data->product_desc != "" && $data->product_desc != null) ? (strlen($data->product_desc) > 53 ?  substr($data->product_desc, 0, 53)."....." : $data->product_desc) : "NA" }}</p>
                                         {{-- <div class="notification-tag">
                                             <h3>Course Tags:</h3>
                                             <div class="tags-list">
