@@ -26,8 +26,8 @@
                             <a href=""  target="_blank"><div class="notification-item">
                                 <div class="notification-item-icon"><i class="la la-bell"></i></div>
                                 <div class="notification-item-text">
-                                    <h2>Dishant registerd as a new vendor</h2>
-                                    <p><span><i class="fas fa-clock"></i> 546546</span></p>
+                                    <h2>Dishant registerd</h2>
+                                    <p><span><i class="fas fa-clock"></i>13-10-2023</span></p>
                                 </div>
                             </div></a>
                             
