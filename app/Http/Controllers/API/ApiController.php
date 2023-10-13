@@ -100,6 +100,12 @@ class ApiController extends Controller
                 } else {
                     $b1['isLike'] = 0;
                 }
+                $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                if (isset($wishlist)) {
+                    $b1['isWishlist'] = 1;
+                } else {
+                    $b1['isWishlist'] = 0;
+                }
 
                 $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 1)->avg('rating');
                 $b1['avg_rating'] = number_format($avgRating, 1);
@@ -225,6 +231,12 @@ class ApiController extends Controller
                 } else {
                     $b3['isLike'] = 0;
                 }
+                $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                if (isset($wishlist)) {
+                    $b3['isWishlist'] = 1;
+                } else {
+                    $b3['isWishlist'] = 0;
+                }
 
                 $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 1)->avg('rating');
                 $b3['avg_rating'] = number_format($avgRating, 1);
@@ -281,6 +293,12 @@ class ApiController extends Controller
                     $b4['isLike'] = 1;
                 } else {
                     $b4['isLike'] = 0;
+                }
+                $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 2)->where('status', 1)->first();
+                if (isset($wishlist)) {
+                    $b4['isWishlist'] = 1;
+                } else {
+                    $b4['isWishlist'] = 0;
                 }
 
                 $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 2)->avg('rating');
@@ -339,6 +357,12 @@ class ApiController extends Controller
                     $b5['isLike'] = 1;
                 } else {
                     $b5['isLike'] = 0;
+                }
+                $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 2)->where('status', 1)->first();
+                if (isset($wishlist)) {
+                    $b5['isWishlist'] = 1;
+                } else {
+                    $b5['isWishlist'] = 0;
                 }
 
                 $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 2)->avg('rating');
@@ -485,7 +509,7 @@ class ApiController extends Controller
                             $value = Course::leftJoin('users', function($join) {
                                 $join->on('course.admin_id', '=', 'users.id');
                             })
-                            ->where('course.status', 1)->where('course.id', $item->object_id)->orderBy('id', 'DESC')->first();
+                            ->where('course.status', 1)->where('course.id', $item->object_id)->orderBy('course.id', 'DESC')->first();
                             $temp['course_fee'] = $value->course_fee;
                             $temp['valid_upto'] = $value->valid_upto;
                             if (!empty($value->certificates)) {
@@ -1524,9 +1548,9 @@ class ApiController extends Controller
 
                     // $chapters = DB::table('course_chapter as cc')->join('course_chapter_steps as ccs', 'cc.id', '=', 'ccs.course_chapter_id')->join('chapter_quiz as cq', 'ccs.id', '=', 'cq.step_id')->join('chapter_quiz_options as cqo', 'cq.id', '=', 'quiz_id')->where('cc.course_id', $id)->get();
 
-                    $reviewCount = Review::where('userid', $user_id)->count();
+                    $reviewCount = Review::where('object_id', $item->id)->where('object_type', $type)->count();
                     
-                    $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date', 'u.profile_image')->where('ur.object_id', $item->id)->where('object_type', $type)->get();
+                    $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date', 'u.profile_image')->where('ur.object_id', $item->id)->where('object_type', $type)->limit(2)->get();
 
                     $reviewArr = [];
                     foreach($review as $valReview){
@@ -2756,13 +2780,16 @@ class ApiController extends Controller
 
     public function certificates(Request $request){
         try{
-            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->leftJoin('course as c', 'c.id', '=', 'user_courses.course_id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status')->get();
+            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->leftJoin('users as u', 'c.admin_id', '=', 'u.id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status', 'u.first_name', 'u.last_name')->get();
             $res = [];
             foreach($data as $val){
                 $temp['course_id'] = $val->course_id;
                 $temp['user_id'] = $val->user_id;
                 $temp['title'] = $val->title;
                 $temp['status'] = $val->status;
+                $temp['creator_name'] = $val->first_name . ' ' . $val->last_name;
+                $avgRating = DB::table('user_review as ur')->where('object_id', $val->course_id)->where('object_type', 1)->avg('rating');
+                $temp['avg_rating'] = number_format($avgRating, 1);
                 $temp['download_pdf'] = url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$val->course_id)."/".encrypt_decrypt('encrypt',$val->user_id);
                 $res[] = $temp;
             }

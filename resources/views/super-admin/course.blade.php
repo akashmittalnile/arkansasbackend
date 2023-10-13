@@ -118,7 +118,7 @@
                                         <a href="{{ route('SA.Course.Chapter', ['courseID' => encrypt_decrypt('encrypt',$data->id)] )}}">
                                         <h2>{{ ($data->title) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->course_fee,2) ? : 0}}</div>
-                                        <p>{{ ($data->description) ? : ''}}</p>
+                                        <p>{{ ($data->description != "" && $data->description != null) ? (strlen($data->description) > 53 ?  substr($data->description, 0, 53)."....." : $data->description) : "NA" }}</p>
                                             <?php
                                                 $chapter_count = \App\Models\CourseChapter::where('course_id',$data->id)->count();
                                             ?>

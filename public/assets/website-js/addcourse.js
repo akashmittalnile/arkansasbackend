@@ -641,28 +641,6 @@ $(document).ready(function () {
                                             </li>
                                         </ul>
                                     </div>
-                                    <div class="add-pmu-checkbox-list">
-                                        <ul>
-                                            <li>
-                                                <div class="pmucheckbox-radio">
-                                                    <input type="radio" id="Optional-${countForm}" value="0"
-                                                        name="required_field[${countForm}]">
-                                                    <label for="Optional-${countForm}">
-                                                        Optional
-                                                    </label>
-                                                </div>
-                                            </li>
-                                            <li>
-                                                <div class="pmucheckbox-radio">
-                                                    <input type="radio" id="Mandatory-${countForm}" value="1"
-                                                        name="required_field[${countForm}]">
-                                                    <label for="Mandatory-${countForm}">
-                                                        Mandatory
-                                                    </label>
-                                                </div>
-                                            </li>
-                                        </ul>
-                                    </div>
                                     <div class="add-pmu-text">
                                         <div class="pmu-add-questionnaire-ans">
                                             <div class="pmu-add-questionnaire-input">

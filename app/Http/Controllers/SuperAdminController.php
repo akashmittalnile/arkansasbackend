@@ -469,7 +469,6 @@ class SuperAdminController extends Controller
                                 $Step->sort_order = $request->queue[$keyS] ?? -1;
                                 $Step->type = 'survey';
                                 $Step->description = null;
-                                $Step->duration = $request->required_field[$keyS] ?? 0;
                                 $Step->prerequisite = $request->prerequisite[$keyS] ?? 0;
                                 $Step->course_chapter_id = $request->chapter_id;
                                 $Step->save();
