@@ -170,17 +170,11 @@ class HomeController extends Controller
 
         $rating = Course::join('user_review as ur', 'ur.object_id', '=', 'course.id')->where('admin_id', auth()->user()->id)->where('ur.object_type', 1)->whereMonth('ur.created_date', date('m',strtotime($over_month)))->whereYear('ur.created_date', date('Y',strtotime($over_month)))->avg('ur.rating');
 
-        $orders = DB::table('order_product_detail as opd')
-            ->leftJoin('course as c', 'c.id', '=', 'opd.product_id')
-            ->leftJoin('orders as o', 'o.id', '=', 'opd.order_id')
-            ->leftJoin('users as u', 'u.id', '=', 'o.user_id')->select('opd.admin_amount', 'opd.amount', 'u.first_name','u.last_name')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->orderByDesc('opd.id')->paginate(5);
-
         $over_graph_data = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->select(
             DB::raw('sum(opd.amount - opd.admin_amount) as y'), 
             DB::raw("DATE_FORMAT(opd.created_date,'%d') as x")
-        )->whereMonth('opd.created_date', date('m',strtotime($over_month)))->whereYear('opd.created_date', date('Y',strtotime($over_month)))->groupBy('x')->orderByDesc('x')->get()->toArray();
-
-        // dd($over_graph_data);
+            )->whereMonth('opd.created_date', date('m',strtotime($over_month)))->whereYear('opd.created_date', date('Y',strtotime($over_month)))->groupBy('x')->orderByDesc('x')->get()->toArray();
+            
         $over_graph = [];
         $days = get_days_in_month(date('m',strtotime($over_month)), date('Y',strtotime($over_month)));
         $x = collect($over_graph_data)->pluck('x')->toArray();
@@ -196,12 +190,14 @@ class HomeController extends Controller
                 $over_graph[$i-1]['y'] = 0;
             }
         }
-        // dd($over_graph);
 
-        $user = DB::table('course as c')->leftJoin('user_courses as uc', 'uc.course_id', '=', 'c.id')->where('c.admin_id', auth()->user()->id);
-        if($request->filled('usermonth'))
-            $user->whereMonth('uc.created_date', date('m', strtotime($request->usermonth)));
-        $user = $user->distinct('uc.user_id')->count();
+        $user_month = $request->usermonth ?? date('Y-m');
+        $orders = DB::table('order_product_detail as opd')
+            ->leftJoin('course as c', 'c.id', '=', 'opd.product_id')
+            ->leftJoin('orders as o', 'o.id', '=', 'opd.order_id')
+            ->leftJoin('users as u', 'u.id', '=', 'o.user_id')->select('opd.admin_amount', 'opd.amount', 'u.first_name','u.last_name', 'o.created_date', 'c.title')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->whereMonth('opd.created_date', date('m', strtotime($user_month)))->whereYear('opd.created_date', date('Y',strtotime($user_month)))->orderByDesc('opd.id')->paginate(5);
+
+        $user = DB::table('course as c')->leftJoin('user_courses as uc', 'uc.course_id', '=', 'c.id')->where('c.admin_id', auth()->user()->id)->whereMonth('uc.created_date', date('m', strtotime($user_month)))->whereYear('uc.created_date', date('Y',strtotime($user_month)))->distinct('uc.user_id')->count();
 
         return view('home.performance', compact('earn', 'course', 'rating', 'orders', 'over_graph', 'user', 'over_month'));
     }

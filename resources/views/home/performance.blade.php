@@ -16,8 +16,7 @@
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" href="#Overview" data-bs-toggle="tab">Overview</a> </li>
             <li class="nav-item"><a class="nav-link" href="#Users" data-bs-toggle="tab">Users</a> </li>
-            <li class="nav-item"><a class="nav-link" href="#CourseEngagement" data-bs-toggle="tab">Course
-                    Engagement</a> </li>
+            <li class="nav-item"><a class="nav-link" href="#CourseEngagement" data-bs-toggle="tab">Course Engagement</a> </li>
         </ul>
     </div>
 
@@ -71,9 +70,7 @@
                                 <div class="Overview-info-card">
                                     <h2>Total Enrolled User</h2>
                                     <div class="Overview-value">{{ $user ?? 0 }}</div>
-                                    @if(isset(request()->usermonth))
-                                    <div class="overview-date">{{ date('M, Y', strtotime(request()->usermonth)) }}</div>
-                                    @endif
+                                    <div class="overview-date">{{ date('M, Y', strtotime(request()->usermonth ?? date('Y-m'))) }}</div>
                                 </div>
                             </div>
 
@@ -92,6 +89,8 @@
                             <tr>
                                 <th>S.no</th>
                                 <th>Name</th>
+                                <th>Course Name</th>
+                                <th>Order Date</th>
                                 <th>Admin Fee</th>
                                 <th>Course fees paid</th>
                             </tr>
@@ -100,7 +99,9 @@
                             @forelse($orders as $index => $val)
                             <tr>
                                 <td><span class="sno">{{ number_format((int)$index)+1 }}</span> </td>
-                                <td>{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</td>
+                                <td class="text-capitalize">{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</td>
+                                <td class="text-capitalize">{{ $val->title ?? "NA" }}</td>
+                                <td>{{ date('d M, Y H:iA', strtotime($val->created_date)) }}</td>
                                 <td>${{ number_format((float)($val->admin_amount), 2) }}</td>
                                 <td>${{ number_format((float)$val->amount, 2) }}</td>
                             </tr>

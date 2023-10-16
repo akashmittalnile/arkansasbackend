@@ -28,7 +28,7 @@ class StripeController extends Controller
                 $total_amount = number_format((float)$request->total_amount,2);
                 Stripe\Stripe::setApiKey(env('STRIPE_SECRET'));
                 $charge = Stripe\Charge::create ([
-                        "amount" => $total_amount*100,
+                        "amount" => $request->total_amount*100,
                         "currency" => "INR",
                         "source" => $request->stripeToken,
                         "description" => "Arkansas order payment",
@@ -38,7 +38,7 @@ class StripeController extends Controller
                         'user_id' => auth()->user()->id,
                         'status' => 1,
                         'transaction_id' => $charge['id'],
-                        'amount' => $total_amount,
+                        'amount' => $request->total_amount,
                         'card_receipt' =>  $charge->receipt_url,
                         'created_date' =>  date('Y-m-d H:i:s'),
                     ]);
