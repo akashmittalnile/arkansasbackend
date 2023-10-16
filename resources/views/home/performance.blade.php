@@ -31,33 +31,27 @@
                                 <div class="Overview-info-card">
                                     <h2>Total Revenue</h2>
                                     <div class="Overview-price">${{ number_format((float)$earn ?? 0, 2) }}</div>
-                                    @if(isset(request()->month))
-                                    <div class="overview-date">{{ date('M, Y', strtotime(request()->month)) }}</div>
-                                    @endif
+                                    <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="Overview-info-card">
                                     <h2>Total Added Course</h2>
                                     <div class="Overview-price">{{ $course ?? 0 }}</div>
-                                    @if(isset(request()->month))
-                                    <div class="overview-date">{{ date('M, Y', strtotime(request()->month)) }}</div>
-                                    @endif
+                                    <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
                                 </div>
                             </div>
                             <div class="col-md-3">
                                 <div class="Overview-info-card">
                                     <h2>Total courses rating</h2>
                                     <div class="Overview-rating"><img src="{!! url('assets/website-images/star.svg') !!}"> {{ number_format((float)$rating ?? 0, 1) }}</div>
-                                    @if(isset(request()->month))
-                                    <div class="overview-date">{{ date('M, Y', strtotime(request()->month)) }}</div>
-                                    @endif
+                                    <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
                                 </div>
                             </div>
 
                             <div class="col-md-3">
                                 <div class="Overview-form-card">
-                                    <input type="month" class="form-control" value="{{ request()->month }}" name="month" id="overview-input">
+                                    <input type="month" class="form-control" value="{{ request()->month ?? date('Y-m') }}" name="month" id="overview-input">
                                 </div>
                             </div>
                         </div>
@@ -85,12 +79,12 @@
 
                             <div class="col-md-4">
                                 <div class="Overview-form-card">
-                                    <input type="month" value="{{ request()->usermonth }}" class="form-control" name="usermonth" id="user-month">
+                                    <input type="month" value="{{ request()->usermonth ?? date('Y-m') }}" class="form-control" name="usermonth" id="user-month">
                                 </div>
                             </div>
-                        </div> 
+                        </div>
                     </form>
-                    
+
                 </div>
                 <div class="Overview-card-table pmu-table-card">
                     <table class="table">
@@ -189,51 +183,68 @@
                 data: dataOver,
             }, ],
             chart: {
-                type: "bar",
                 height: 350,
-                stacked: true,
-            },
-            stroke: {
-                width: 1,
-                colors: ["#fff"],
+                type: 'bar',
+
+                toolbar: {
+                    show: false
+                },
+                zoom: {
+                    enabled: false
+                }
             },
             dataLabels: {
-                formatter: (val) => {
-                    return "$" + val;
-                },
-            },
-            plotOptions: {
-                bar: {
-                    horizontal: false,
-                },
-            },
+                enabled: false,
 
+            },
+            legend: {
+                markers: {
+                    fillColors: ['#e0b220']
+                }
+            },
+            tooltip: {
+                marker: {
+                    fillColors: ['#e0b220'],
+                },
+
+            },
+            stroke: {
+                curve: 'smooth',
+                colors: ['#e0b220']
+            },
             fill: {
-                opacity: 1,
+                colors: ['#e0b220']
             },
-            colors: ["#e0b220"],
-            yaxis: {
-                labels: {
-                    formatter: (val) => {
-                        return "$" + val;
-                    },
-                },
+            markers: {
+                colors: ['#e0b220']
             },
-
             xaxis: {
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            yaxis: {
+                tickAmount: 4,
+                floating: false,
+                labels: {
+                    style: {
+                        colors: '#555',
+                    },
+                    offsetY: -7,
+                    offsetX: 0,
+                },
                 axisBorder: {
                     show: false,
                 },
                 axisTicks: {
-                    show: false,
-                },
-            },
-
-            legend: {
-                position: "top",
-                horizontalAlign: "left",
-            },
+                    show: false
+                }
+            }
         };
+
         var chart = new ApexCharts(document.querySelector("#salechart"), options);
         chart.render();
     });
