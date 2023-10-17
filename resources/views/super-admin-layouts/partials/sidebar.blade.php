@@ -66,7 +66,7 @@
                 </li>
 
 
-                <li class="nav-item @if ($currentURL == 'SA.Notifications') active @endif">
+                <li class="nav-item @if ($currentURL == 'SA.Notifications' || $currentURL == 'SA.Create.Notifications') active @endif">
                     <a class="nav-link" href="{{ route('SA.Notifications') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/notification1.svg') !!}"></span>
                         <span class="menu-title">Manage Notifications</span>

@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Validator;
 use PDO;
+use PDF;
 use DB;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -842,7 +843,7 @@ class HomeController extends Controller
                 if($request->filled('order_date')){
                     $orders->whereDate('o.created_date', date('Y-m-d', strtotime($request->order_date)));
                 }
-            $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->orderByDesc('opd.id')->paginate(10);
+            $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity', 'o.id as order_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->orderByDesc('opd.id')->paginate(10);
 
             $myWallet = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
             if(isset($myWallet->id)){
@@ -983,4 +984,29 @@ class HomeController extends Controller
         }
     }
 
+    public function orderDetails(Request $request, $id) {
+        try{    
+            $id = encrypt_decrypt('decrypt', $id);
+            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status')->first();
+            return view('home.order-details', compact('order'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function downloadInvoice(Request $request, $id) {
+        try{    
+            $id = encrypt_decrypt('decrypt', $id);
+            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status')->first();
+            
+            $pdf = PDF::loadView('home.pdf-invoice', compact('order'), [], [ 
+                'mode' => 'utf-8',
+                'title' => 'Order Invoice',
+                'format' => 'Legal',
+            ]);
+            return $pdf->stream($order->order_number.'-invoice.pdf');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

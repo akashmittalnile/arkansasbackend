@@ -88,10 +88,12 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/admin/change-answer-option/{id}/{val}', 'HomeController@changeAnswerOption')->name('admin.change-answer.option');
 
         Route::get('/earnings', 'HomeController@earnings')->name('Home.earnings');
+        Route::get('/order-details/{id}', 'HomeController@orderDetails')->name('Home.order.details');
         Route::get('/payment-request', 'HomeController@paymentRequest')->name('Home.payment.request');
         Route::post('/payment-request', 'HomeController@paymentRequestStore')->name('Home.payment.request.store');
         
         Route::get('/download-earnings', 'HomeController@downloadEarnings')->name('Home.download.earnings');
+        Route::get('/download-invoice/{id}', 'HomeController@downloadInvoice')->name('Home.download.invoice');
     });
 
     Route::group(['middleware' => ['auth.superadmin']], function() {

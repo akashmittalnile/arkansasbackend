@@ -92,6 +92,7 @@
                                 <th>Earning</th>
                                 <th>Total fees paid</th>
                                 <th>Status</th>
+                                <th>View</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -106,6 +107,9 @@
                                 <td>${{ number_format((float)($val->amount-$val->admin_amount), 2) }}</td>
                                 <td>${{ number_format((float)$val->amount, 2) }}</td>
                                 <td>{{ ($val->status == 1) ? "Payment Done" : "Payment Pending" }}</td>
+                                <td>
+                                    <a title="Order Details" href="{{ route('Home.order.details', encrypt_decrypt('encrypt', $val->order_id)) }}" style="padding: 12px 0px;" class="download-btn"><i class="las la-eye"></i></a>
+                                </td>
                             </tr>
                             <?php  $count += ($val->amount-$val->admin_amount) ?>
                             @empty
