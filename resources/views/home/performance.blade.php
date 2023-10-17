@@ -1,5 +1,5 @@
 @extends('layouts.app-master')
-
+@section('title', 'Makeup University - Performance')
 @section('content')
 <div class="body-main-content">
     <div class="pmu-filter-section">
@@ -14,9 +14,9 @@
 
     <div class="pmu-tab-nav">
         <ul class="nav nav-tabs">
-            <li class="nav-item"><a class="nav-link active" href="#Overview" data-bs-toggle="tab">Overview</a> </li>
-            <li class="nav-item"><a class="nav-link" href="#Users" data-bs-toggle="tab">Users</a> </li>
-            <li class="nav-item"><a class="nav-link" href="#CourseEngagement" data-bs-toggle="tab">Course Engagement</a> </li>
+            <li class="nav-item"><a class="nav-link active" href="#Overview" data-bs-toggle="tab" id="overviewtab">Overview</a> </li>
+            <li class="nav-item"><a class="nav-link" href="#Users" data-bs-toggle="tab" id="userstab">Users</a> </li>
+            <li class="nav-item"><a class="nav-link" href="#CourseEngagement" data-bs-toggle="tab" id="coursetab">Course Engagement</a> </li>
         </ul>
     </div>
 
@@ -47,7 +47,7 @@
                                     <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
                                 </div>
                             </div>
-
+                            <input type="hidden" value="{{encrypt_decrypt('encrypt', 1)}}" name="tab">
                             <div class="col-md-3">
                                 <div class="Overview-form-card">
                                     <input type="month" class="form-control" value="{{ request()->month ?? date('Y-m') }}" name="month" id="overview-input">
@@ -73,7 +73,7 @@
                                     <div class="overview-date">{{ date('M, Y', strtotime(request()->usermonth ?? date('Y-m'))) }}</div>
                                 </div>
                             </div>
-
+                            <input type="hidden" value="{{encrypt_decrypt('encrypt', 2)}}" name="tab">
                             <div class="col-md-4">
                                 <div class="Overview-form-card">
                                     <input type="month" value="{{ request()->usermonth ?? date('Y-m') }}" class="form-control" name="usermonth" id="user-month">
@@ -120,32 +120,38 @@
         <div class="tab-pane" id="CourseEngagement">
             <div class="Overview-card">
                 <div class="Overview-card-content">
-                    <div class="row">
-                        <div class="col-md-3">
-                            <div class="Overview-info-card">
-                                <h2>Total Course</h2>
-                                <div class="Overview-value">23</div>
+                    <form action="" id="course-form">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="Overview-info-card">
+                                    <h2>Total Course</h2>
+                                    <div class="Overview-value">{{ $total_course ?? 0 }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="Overview-info-card">
+                                    <h2>Total Unpublished Course </h2>
+                                    <div class="Overview-value">{{ $unpublish_course ?? 0 }}</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="Overview-info-card">
+                                    <select name="course" class="form-control text-capitalize" id="course-select">
+                                        <option value="">Select Course</option>
+                                        @foreach($courses as $val)
+                                        <option @if(request()->course==encrypt_decrypt('encrypt',$val->id)) selected @endif value="{{encrypt_decrypt('encrypt',$val->id)}}">{{$val->title ?? "NA"}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="hidden" value="{{encrypt_decrypt('encrypt', 3)}}" name="tab">
+                            <div class="col-md-3">
+                                <div class="Overview-info-card">
+                                    <input type="month" class="form-control" value="{{ request()->coursemonth ?? date('Y-m') }}" name="coursemonth" id="course-input">
+                                </div>
                             </div>
                         </div>
-                        <div class="col-md-3">
-                            <div class="Overview-info-card">
-                                <h2>Total Visits</h2>
-                                <div class="Overview-value">109K Visits</div>
-                            </div>
-                        </div>
-                        <div class="col-md-3">
-                            <div class="Overview-info-card">
-                                <h2>Total Unpublished Course </h2>
-                                <div class="Overview-value">03</div>
-                            </div>
-                        </div>
-
-                        <div class="col-md-3">
-                            <div class="Overview-info-card">
-                                <input type="date" class="form-control" name="">
-                            </div>
-                        </div>
-                    </div>
+                    </form>
                 </div>
                 <div class="Overview-card-chart">
                     <div class="" id="visitchart"></div>
@@ -154,9 +160,8 @@
         </div>
     </div>
     <input type="hidden" data-json="{{json_encode($over_graph)}}" id="over_graph">
+    <input type="hidden" data-json="{{json_encode($course_graph)}}" id="course_graph">
 </div>
-
-<script src="{{ asset('assets/website-js/performance.js') }}"></script>
 
 <script>
     $(document).on('change', '#overview-input', function() {
@@ -167,6 +172,15 @@
         $("#user-form").get(0).submit();
     })
 
+    $(document).on('change', '#course-input, #course-select', function() {
+        $("#course-form").get(0).submit();
+    })
+
+    var tab = "{{ encrypt_decrypt('decrypt', $tab) }}";
+    console.log(tab);
+    if(tab==1) $("#overviewtab").get(0).click();
+    if(tab==2) $("#userstab").get(0).click();
+    if(tab==3) $("#coursetab").get(0).click();
 
     let dataOver = [];
     $(document).ready(function() {
@@ -247,6 +261,87 @@
         };
 
         var chart = new ApexCharts(document.querySelector("#salechart"), options);
+        chart.render();
+    });
+
+    let dataOverCourse = [];
+    $(document).ready(function() {
+        let arrOver = $("#course_graph").data('json');
+        arrOver.map(ele => {
+            dataOverCourse.push(ele);
+        })
+    })
+
+    $(function() {
+        var options = {
+            series: [{
+                name: "Sales",
+                data: dataOverCourse,
+            }, ],
+            chart: {
+                height: 350,
+                type: 'bar',
+
+                toolbar: {
+                    show: false
+                },
+                zoom: {
+                    enabled: false
+                }
+            },
+            dataLabels: {
+                enabled: false,
+
+            },
+            legend: {
+                markers: {
+                    fillColors: ['#e0b220']
+                }
+            },
+            tooltip: {
+                marker: {
+                    fillColors: ['#e0b220'],
+                },
+
+            },
+            stroke: {
+                curve: 'smooth',
+                colors: ['#e0b220']
+            },
+            fill: {
+                colors: ['#e0b220']
+            },
+            markers: {
+                colors: ['#e0b220']
+            },
+            xaxis: {
+                axisBorder: {
+                    show: false
+                },
+                axisTicks: {
+                    show: false
+                }
+            },
+            yaxis: {
+                tickAmount: 4,
+                floating: false,
+                labels: {
+                    style: {
+                        colors: '#555',
+                    },
+                    offsetY: -7,
+                    offsetX: 0,
+                },
+                axisBorder: {
+                    show: false,
+                },
+                axisTicks: {
+                    show: false
+                }
+            }
+        };
+
+        var chart = new ApexCharts(document.querySelector("#visitchart"), options);
         chart.render();
     });
 </script>

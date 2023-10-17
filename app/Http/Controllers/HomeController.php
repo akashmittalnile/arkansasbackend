@@ -163,6 +163,8 @@ class HomeController extends Controller
 
     public function performance(Request $request) 
     {
+        $tab = $request->tab ?? encrypt_decrypt('encrypt', 1);
+        if($request->filled('page')) $tab = encrypt_decrypt('encrypt', 2);
         $over_month = $request->month ?? date('Y-m');
         $earn = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->whereMonth('opd.created_date', date('m',strtotime($over_month)))->whereYear('opd.created_date', date('Y',strtotime($over_month)))->sum(\DB::raw('opd.amount - opd.admin_amount'));
 
@@ -199,7 +201,38 @@ class HomeController extends Controller
 
         $user = DB::table('course as c')->leftJoin('user_courses as uc', 'uc.course_id', '=', 'c.id')->where('c.admin_id', auth()->user()->id)->whereMonth('uc.created_date', date('m', strtotime($user_month)))->whereYear('uc.created_date', date('Y',strtotime($user_month)))->distinct('uc.user_id')->count();
 
-        return view('home.performance', compact('earn', 'course', 'rating', 'orders', 'over_graph', 'user', 'over_month'));
+
+        $course_month = $request->coursemonth ?? date('Y-m');
+
+        $total_course = Course::where('admin_id', auth()->user()->id)->count();
+        $unpublish_course = Course::where('admin_id', auth()->user()->id)->where('status', 0)->count();
+        $courses = Course::where('admin_id', auth()->user()->id)->orderByDesc('id')->get();
+
+        $course_graph_data = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id);
+        if($request->filled('course'))
+            $course_graph_data = $course_graph_data->where('c.id', encrypt_decrypt('decrypt', $request->course));
+        $course_graph_data = $course_graph_data->select(
+            DB::raw('sum(opd.amount - opd.admin_amount) as y'), 
+            DB::raw("DATE_FORMAT(opd.created_date,'%d') as x")
+            )->whereMonth('opd.created_date', date('m',strtotime($course_month)))->whereYear('opd.created_date', date('Y',strtotime($course_month)))->groupBy('x')->orderByDesc('x')->get()->toArray();
+            
+        $course_graph = [];
+        $daysC = get_days_in_month(date('m',strtotime($course_month)), date('Y',strtotime($course_month)));
+        $x = collect($course_graph_data)->pluck('x')->toArray();
+        $y = collect($course_graph_data)->pluck('y')->toArray();
+        for($i=1; $i<=$daysC; $i++){
+            if(in_array( $i, $x )){
+                $indx = array_search($i, $x);
+                // dd($x[$indx]);
+                $course_graph[$i-1]['x'] = (string) $i;
+                $course_graph[$i-1]['y'] = $y[$indx];
+            }else{
+                $course_graph[$i-1]['x'] = (string) $i;
+                $course_graph[$i-1]['y'] = 0;
+            }
+        }
+
+        return view('home.performance', compact('tab', 'earn', 'course', 'rating', 'orders', 'over_graph', 'user', 'over_month', 'total_course', 'courses', 'unpublish_course', 'course_graph'));
     }
 
     public function editCourse($id) 
