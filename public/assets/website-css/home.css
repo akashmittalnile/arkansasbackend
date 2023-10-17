@@ -111,6 +111,7 @@ a.add-chapter-btn{background: var(--brown); color: var(--white);    line-height:
 .edit-pmu-heading {display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--white); margin-bottom: 0rem;padding:10px}
 .edit-pmu-heading h3 {cursor:pointer; font-size: 18px; font-weight: 600; margin: 0; padding: 0;color: var(--black); } 
 .edit-pmu-action a{cursor: pointer; color: var(--red); padding: 5px 15px; border-radius: 4px; font-weight: 600; text-transform: uppercase;font-size: 13px; position: relative; background: var(--redlight); box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%); display: inline-block; }
+.edit-pmu-text-title {width: 200px; }
 
 
 .pmu-edit-questionnaire-content {flex: 1; } 
@@ -241,14 +242,20 @@ a.edit-icon-btn {border-radius: 50px; margin-right:10px;background: var(--brown,
 ----------------------------*/
 
 .ro-modal .modal-header {border: none; text-align: center; justify-content: center; }
+.ro-modal h5.modal-title {margin: 0; padding: 0; font-size: 20px; font-weight: bold; color:var(--black); text-align: center;}
+.ro-modal .modal-content {border: none; background:var(--white); border-radius: 0px; }
+.ro-modal button.close {position: absolute; right: 10px; top: 10px;    z-index: 1;background: #F75013;width: 30px;height: 30px;border-radius: 50px;border: none;color: #fff;font-size: 24px;}
+
+/*.ro-modal .modal-header {border: none; text-align: center; justify-content: center; }
 .ro-modal h5.modal-title {margin: 0; padding: 0; font-size: 20px; font-weight: bold; color: #6c7383; text-align: center;}
 .ro-modal .modal-content {border: none; background:var(--black); border-radius: 0px; }
 .ro-modal button.close {position: absolute; right: 10px; top: 10px;    z-index: 1;background: #F75013;width: 30px;height: 30px;border-radius: 50px;border: none;color: #fff;font-size: 24px;}
+*/
 
 
 .becomeacreator-form-info{position: relative; padding: 2rem;}
-.becomeacreator-form-info h2 {font-size: 24px; text-align: center; margin: 0; padding: 0; color: var(--white); }
-.becomeacreator-form-info p {font-size: 14px; text-align: center; margin: 0 0 1rem 0;  color: var(--white); }
+.becomeacreator-form-info h2 {font-size: 24px; text-align: center; margin: 0; padding: 0; color: var(--black); }
+.becomeacreator-form-info p {font-size: 14px; text-align: center; margin: 0 0 1rem 0;  color: var(--black); }
 
 
 .becomeacreator-btn-action{text-align: center;}

@@ -126,7 +126,7 @@
             text-align: center;
             border: 1px solid var(--gray, #ECECEC);
             background: var(--white, #FFF);
-            position: relative;
+            position: relative;margin-bottom: 10px;
         }
 
         .quiz-results-card h3 {
