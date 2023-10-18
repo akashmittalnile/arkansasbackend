@@ -69,7 +69,7 @@
                             @if (!$chapters->isEmpty() && isset($chapterID))
                             <div class="d-flex">
                                 <h2 id="chapterName" class="text-capitalize">Chapter </h2>
-                                <a href="" data-bs-toggle="modal" data-bs-target="#EditChapter" id="edit-chapter-modal-open" data-chapter-id="{{ $chapterID }}"><img width="25" height="25" style="cursor: pointer; margin-top: 14px" src="{{ asset('assets/superadmin-images/edit.png') }}" alt=""></a>
+                                <a href="" data-bs-toggle="modal" data-bs-target="#EditChapter" id="edit-chapter-modal-open" data-chapter-id="{{ $chapterID }}"><img width="17" height="17" style="cursor: pointer; margin-top: 20px" src="{{ asset('assets/superadmin-images/edit.png') }}" alt=""></a>
                             </div>
                             @endif
                             
