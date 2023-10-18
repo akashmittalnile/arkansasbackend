@@ -48,7 +48,14 @@
                 </li>
                 <li class="nav-item profile-dropdown dropdown">
                     <a class="nav-link dropdown-toggle" id="profile" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="profile-pic"><img src="{!! url('assets/website-images/user.jpg') !!}" alt="user"> </div>
+                        <div class="profile-pic">
+                            @php $profile_img = auth()->user()->profile_image;  @endphp
+                            @if($profile_img != "" && $profile_img != null)
+                            <img src="{!! url('upload/profile-image/'.$profile_img) !!}" alt="user">
+                            @else
+                            <img src="{!! url('assets/website-images/user.jpg') !!}" alt="user">
+                            @endif
+                        </div>
                     </a>
 
                     <div class="dropdown-menu">

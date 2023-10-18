@@ -227,6 +227,25 @@ $(document).on('click', '.SaveOption', function () {
     });
 });
 
+$(document).on('click', "input[name='prerequisite']", function () {
+    var val = $(this).val();
+    var answer = ($(this).is(":checked")) ? 1 : 0;
+    $.ajax({
+        url: arkansasUrl + '/change-prerequisite',
+        method: 'GET',
+        data: {
+            val,
+            answer
+        },
+        success: function (data) {
+            if (data.status == 200) {
+                toastr.success(data.message);
+                setInterval(function () {location.reload();}, 2000);
+            }
+        }
+    });
+})
+
 $(document).on('change', '.ordering-select-function', function () {
     var id = $(this).attr("data-id");
     var chapterid = $(this).attr("data-chapter-id");
@@ -240,7 +259,7 @@ $(document).on('change', '.ordering-select-function', function () {
         },
         success: function (data) {
             if (data == 1) {
-                toastr.success("Ordering changed.");
+                toastr.success("Sort order changed successfully");
                 setInterval(function () {location.reload();}, 2000);
             }
         }

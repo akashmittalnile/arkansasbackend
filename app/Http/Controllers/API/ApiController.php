@@ -617,7 +617,7 @@ class ApiController extends Controller
             if ($limit == 0) {
                 $course->limit(2);
             }
-            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid')->get();
+            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image')->get();
 
             $response = array();
             if (isset($course)) {
@@ -657,7 +657,21 @@ class ApiController extends Controller
                     } else {
                         $temp['isLike'] = 0;
                     }
-                    $temp['content_creator_name'] = isset($item->admin_name) ? $item->admin_name : '';
+
+                    $wishlist = Wishlist::where('userid', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 1)->where('status', 1)->first();
+                    if (isset($wishlist)) {
+                        $temp['isWishlist'] = 1;
+                    } else {
+                        $temp['isWishlist'] = 0;
+                    }
+
+                    if ($item->profile_image) {
+                        $profile_image = url('upload/profile-image/'.$item->profile_image);
+                    } else {
+                        $profile_image = '';
+                    }
+                    $temp['content_creator_image'] = $profile_image;
+                    $temp['content_creator_name'] = isset($item->first_name) ? $item->first_name . ' ' . $item->last_name ?? '' : '';
                     $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
                     $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
@@ -1324,10 +1338,10 @@ class ApiController extends Controller
                 if ($type == 1) { /* 1 stand for course ,2 for product */
                     $item = Course::leftJoin('users as u', function($join) {
                         $join->on('course.admin_id', '=', 'u.id');
-                    })
-                    ->where('course.status', 1)->where('course.id', $id)->select('u.first_name', 'u.last_name', 'u.profile_image', 'u.category_name', 'course.*')->orderBy('course.id', 'DESC')->first();
+                    })->leftJoin('category as cat', 'cat.id', '=', 'course.category_id')
+                    ->where('course.status', 1)->where('course.id', $id)->select('u.first_name', 'u.last_name', 'u.profile_image', 'u.category_name', 'course.*', 'cat.id as catid', 'cat.name as catname')->orderBy('course.id', 'DESC')->first();
                 } else {
-                    $item = Product::where('status', 1)->where('id', $id)->orderBy('id', 'DESC')->first();
+                    $item = Product::leftJoin('category as cat', 'cat.id', '=', 'product.category_id')->where('product.status', 1)->where('product.id', $id)->orderBy('product.id', 'DESC')->select('product.*', 'cat.id as catid', 'cat.name as catname')->first();
                 }
 
                 if (!empty($item)) {
@@ -1366,6 +1380,9 @@ class ApiController extends Controller
                         $temp['content_creator_name'] = $item->first_name.' '.$item->last_name;
                         $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
                         $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
+
+                        $temp['category_id'] = $item->catid ?? null;
+                        $temp['category_name'] = $item->catname ?? null;
 
                         $course_chapter = DB::table('course_chapter as cc')->where('cc.course_id', $id)->get();
                         $chapters = [];
@@ -1519,6 +1536,10 @@ class ApiController extends Controller
                         } else {
                             $temp['isWishlist'] = 0;
                         }
+
+                        $temp['category_id'] = $item->catid ?? null;
+                        $temp['category_name'] = $item->catname ?? null;
+
                         $temp['title'] = $item->name;
                         $User = User::where('id', $item->added_by)->first();
                         $temp['creator_name'] = $User->first_name.' '.$User->last_name;
@@ -1624,7 +1645,8 @@ class ApiController extends Controller
                         'status' => $status,
                         'created_date' => date('Y-m-d H:i:s')
                     ]);
-                    return response()->json(['status' => true, 'message' => 'Added to favourites',]);
+                    $type = ($item_type==1) ? 'Course' : 'Product';
+                    return response()->json(['status' => true, 'message' => $type.' has been added to wishlist',]);
                 }
             } else {
                 return response()->json(['status' => false, 'message' => 'Please login']);
@@ -1656,7 +1678,8 @@ class ApiController extends Controller
                 /* Status check for liked post 1 = Already liked , 2 = Create new liked post */
                 if ($exist) {
                     Wishlist::where('userid', $u_id)->where('object_type', $item_type)->where('object_id', $item_id)->delete();
-                    return response()->json(['status' => true, 'message' => 'Removed from favourites',]);
+                    $type = ($item_type==1) ? 'Course' : 'Product';
+                    return response()->json(['status' => true, 'message' => $type.' has been removed from wishlist',]);
                 } else {
                     return response()->json(['status' => false, 'message' => 'Something went wrong.',]);
                 }
@@ -2555,7 +2578,7 @@ class ApiController extends Controller
                         $userChapterStatus->save();
 
                         $this->course_complete(auth()->user()->id, $courseChapter->course_id);
-                        return response()->json(['status' => true, 'message' => $courseStep->type.' is completed.']);
+                        return response()->json(['status' => true, 'message' => ucwords($courseStep->type).' has been marked as completed.']);
                     } else return response()->json(['status' => false, 'message' => 'Something went wrong']);
                 }else return response()->json(['status' => false, 'message' => 'Incorrect step id']);
             }

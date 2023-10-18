@@ -111,6 +111,7 @@ a.add-chapter-btn{background: var(--brown); color: var(--white);    line-height:
 .edit-pmu-heading {display: flex; align-items: center; justify-content: space-between; border-bottom: 2px solid var(--white); margin-bottom: 0rem;padding:10px}
 .edit-pmu-heading h3 {cursor:pointer; font-size: 18px; font-weight: 600; margin: 0; padding: 0;color: var(--black); } 
 .edit-pmu-action a{cursor: pointer; color: var(--red); padding: 5px 15px; border-radius: 4px; font-weight: 600; text-transform: uppercase;font-size: 13px; position: relative; background: var(--redlight); box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%); display: inline-block; }
+.edit-pmu-action button{border: none; cursor: pointer; color: var(--red); padding: 5px 15px; border-radius: 4px; font-weight: 600; text-transform: uppercase;font-size: 13px; position: relative; background: var(--redlight); box-shadow: 0px 8px 13px hsl(123deg 41% 45% / 6%); display: inline-block; }
 .edit-pmu-text-title {width: 200px; }
 
 
@@ -367,7 +368,7 @@ a.red-btn-text{    cursor: pointer;
 .pmucheckbox1 label { position: relative; display: inline-block; line-height: 15px; padding: 0 0 0 1.2rem; margin-bottom: 0px;color: var(--black); cursor: pointer; font-size: 14px; }
 .pmucheckbox1 label::before, 
 .pmucheckbox1 label::after {position: absolute; top: 0; left: 0; display: block; width: 18px; height: 18px; } 
-.pmucheckbox1 label::before {content: " "; border: 1px solid var(--black); -webkit-border-radius: 3px; -moz-border-radius: 3px; -ms-border-radius: 3px; -o-border-radius: 3px; border-radius: 3px; } 
+.pmucheckbox1 label::before {content: " "; border: 1px solid var(--black); -webkit-border-radius: 30px; -moz-border-radius: 30px; -ms-border-radius: 30px; -o-border-radius: 30px; border-radius: 30px; } 
 .pmucheckbox1 input[type="radio"] {position: absolute; opacity: 0; z-index: -1; margin: 0; } 
 .pmucheckbox1 input[type="radio"] + label::after {    content: "\2714"; color: #FFF; line-height: 1.8; text-align: center; border: none; font-size: 12px; }
 .pmucheckbox1 input[type="radio"]:checked + label::before {background:var(--yellow); border-color: var(--yellow); } 

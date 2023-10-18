@@ -91,6 +91,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/order-details/{id}', 'HomeController@orderDetails')->name('Home.order.details');
         Route::get('/payment-request', 'HomeController@paymentRequest')->name('Home.payment.request');
         Route::post('/payment-request', 'HomeController@paymentRequestStore')->name('Home.payment.request.store');
+
+        Route::post('/admin/update-title-percentage/{id}', 'HomeController@updateTitlePercentage')->name('Home.Update.Details');
+        Route::get('/admin/change-prerequisite', 'HomeController@changePrerequisite')->name('Home.change.prerequisite');
         
         Route::get('/download-earnings', 'HomeController@downloadEarnings')->name('Home.download.earnings');
         Route::get('/download-invoice/{id}', 'HomeController@downloadInvoice')->name('Home.download.invoice');
@@ -165,6 +168,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/delete-category/{id}', 'SuperAdminController@delete_categoty')->name('SA.DeleteCategoty');
 
         Route::get('/super-admin/coupons', 'SuperAdminController@coupons')->name('SA.Coupons');
+
+        Route::post('update-title-percentage/{id}', 'SuperAdminController@updateTitlePercentage')->name('SA.update.title.percentage');
+        Route::get('change-prerequisite', 'HomeController@changePrerequisite')->name('SA.change.prerequisite');
 
         Route::get('/super-admin/download-earnings', 'SuperAdminController@downloadEarnings')->name('SA.Download.Earnings');
 

@@ -297,7 +297,7 @@ class SuperAdminController extends Controller
                 'certificates' => null,
                 'category_id' => $request->course_category,
                 'introduction_image' => $disclaimers_introduction,
-                'status' => 0,
+                'status' => 1,
             ]);
 
             return redirect()->route('SA.Course');
@@ -497,7 +497,7 @@ class SuperAdminController extends Controller
 
             $courseID = encrypt_decrypt('encrypt',$request->courseID);
             $chapter_id = encrypt_decrypt('encrypt',$request->chapter_id);
-            return response()->json(['status' => 201, 'message' => 'Question saved successfully']);
+            return response()->json(['status' => 201, 'message' => 'Course has been saved successfully.']);
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1404,6 +1404,47 @@ class SuperAdminController extends Controller
         }
     }
 
+    public function updateTitlePercentage(Request $request, $id) {
+        try{
+            $validator = Validator::make($request->all(), [
+                'description' => 'required',
+            ]);
 
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            } else {
+                $id = encrypt_decrypt('decrypt', $id);
+                $step = CourseChapterStep::where('id', $id)->first();
+                CourseChapterStep::where('id', $id)->update([
+                    'title' => $request->description ?? null,
+                    'passing' => $request->passing_per ?? null,
+                ]);
+                return redirect()->back()->with('message', ucwords($step->type)." details updated successfully.");
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        } 
+    }
+
+    public function changePrerequisite(Request $request) {
+        try{
+            $validator = Validator::make($request->all(), [
+                'val' => 'required',
+                'answer' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            } else {
+                $id = encrypt_decrypt('decrypt', $request->val);
+                $step = CourseChapterStep::where('id', $id)->first();
+                CourseChapterStep::where('id', $id)->update([
+                    'prerequisite' => $request->answer ?? 0,
+                ]);
+                return response()->json(['status' => 200, 'message' => "Prerequisite " . ($request->answer==1 ? 'added' : 'removed') . " for this section"]);
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        } 
+    }
 
 }

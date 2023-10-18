@@ -106,7 +106,7 @@
                                                 <li>
                                                     <div class="pmucheckbox">
                                                         <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                        name="prerequisite" value="">
+                                                        name="prerequisite" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
                                                         <label for="Prerequisite{{$data->id}}">
                                                             Prerequisite
                                                         </label>
@@ -175,13 +175,22 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <h4>Video Title</h4>
-                                                    <input type="text" name="video_description" placeholder="Video Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
-                                                    <!-- <textarea type="text" class="form-control" name="video_description" placeholder="Video Description" disabled>{{ $data->description ?: '' }}</textarea> -->
+                                            <form action="{{ route('SA.update.title.percentage', encrypt_decrypt('encrypt', $data->id)) }}" method="POST">@csrf
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group">
+                                                            <h4>Video Title</h4>
+                                                            <input type="text" name="description" placeholder="Video Title" value="{{ $data->title ?: '' }}" class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group edit-pmu-action mt-3 pt-1">
+                                                            <button class="edit-question-first" type="submit"> &nbsp; &nbsp; &nbsp; &nbsp;Update&nbsp; &nbsp; &nbsp; &nbsp; </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </form>
+
                                         </div>
                                     </div>
                                 </div>
@@ -202,7 +211,7 @@
                                                 <li>
                                                     <div class="pmucheckbox">
                                                         <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                        name="prerequisite" value="">
+                                                        name="prerequisite" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
                                                         <label for="Prerequisite{{$data->id}}">
                                                             Prerequisite
                                                         </label>
@@ -238,20 +247,27 @@
                                     </div>
                                     <div class="edit-pmu-section collapse-course-form collapse" id="collapseExample{{ $data->id }}">
 
-                                        <div class="row">
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <h4>Quiz Title</h4>
-                                                    <input type="text" name="quiz_description" placeholder="Quiz Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
+                                        <form action="{{ route('SA.update.title.percentage', encrypt_decrypt('encrypt', $data->id)) }}" method="POST">@csrf
+                                            <div class="row">
+                                                <div class="col-md-6">
+                                                    <div class="form-group">
+                                                        <h4>Quiz Title</h4>
+                                                        <input type="text" name="description" placeholder="Quiz Title" value="{{ $data->title ?: '' }}" class="form-control" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4">
+                                                    <div class="form-group">
+                                                        <h4>Quiz Minimum Passing Percentage</h4>
+                                                        <input type="number" min="33" step="0.1" name="passing_per" placeholder="Quiz Minimum Passing Percentage" value="{{ $data->passing ?: '' }}" class="form-control" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group edit-pmu-action mt-3 pt-1">
+                                                        <button class="edit-question-first" type="submit"> &nbsp; &nbsp; &nbsp; &nbsp;Update&nbsp; &nbsp; &nbsp; &nbsp; </button>
+                                                    </div>
                                                 </div>
                                             </div>
-                                            <div class="col-md-6">
-                                                <div class="form-group">
-                                                    <h4>Quiz Minimum Passing Percentage</h4>
-                                                    <input type="text" name="quiz_passing_per" placeholder="Quiz Minimum Passing Percentage" disabled value="{{ $data->passing ?: '' }}" class="form-control">
-                                                </div>
-                                            </div>
-                                        </div>
+                                        </form>
                                         
                                         
                                         <?php $v = 'AA'; ?>
@@ -264,7 +280,7 @@
                                                 <input type="text" class="form-control {{ $v . $quiz->id }}" placeholder="Enter Question Title" name="quiz_question" value="{{ $quiz->title }}">
                                             </div>
                                             <div class="pmu-edit-questionnaire-marks" style="margin-right: 5px; width: 10%">
-                                                <input type="number" class="form-control" placeholder="Enter marks" name="questions[2][0][marks]" required="" value="{{ $quiz->marks ?? '' }}">
+                                                <input type="number" class="form-control " placeholder="Enter marks" name="questions[2][0][marks]" required="" value="{{ $quiz->marks ?? '' }}">
                                             </div>
                                             <div class="edit-pmu-action">
                                                 <a class="edit-question-first" data-id="{{ $quiz->id }}" data-param="{{ $v }}">Update
@@ -338,7 +354,7 @@
                                                 <li>
                                                     <div class="pmucheckbox">
                                                         <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                        name="prerequisite" value="">
+                                                        name="prerequisite" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
                                                         <label for="Prerequisite{{$data->id}}">
                                                             Prerequisite
                                                         </label>
@@ -402,13 +418,22 @@
                                                 </div>
                                             </div>
 
-                                            <div class="col-md-12">
-                                                <div class="form-group">
-                                                    <h4>PDF Title</h4>
-                                                    <input type="text" class="form-control" name="PDF_description" placeholder="PDF Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
-                                                    <!-- <textarea type="text" class="form-control" name="PDF_description" placeholder="PDF Description" disabled>{{ $data->description ?: '' }}</textarea> -->
+                                            <form action="{{ route('SA.update.title.percentage', encrypt_decrypt('encrypt', $data->id)) }}" method="POST">@csrf
+                                                <div class="row">
+                                                    <div class="col-md-10">
+                                                        <div class="form-group">
+                                                            <h4>PDF Title</h4>
+                                                            <input type="text" name="description" placeholder="PDF Title" value="{{ $data->title ?: '' }}" class="form-control" required>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group edit-pmu-action mt-3 pt-1">
+                                                            <button class="edit-question-first" type="submit"> &nbsp; &nbsp; &nbsp; &nbsp;Update&nbsp; &nbsp; &nbsp; &nbsp; </button>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
+                                            </form>
+
                                         </div>
                                     </div>
                                 </div>
@@ -428,7 +453,7 @@
                                                 <li>
                                                     <div class="pmucheckbox">
                                                         <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                        name="prerequisite" value="">
+                                                        name="prerequisite" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
                                                         <label for="Prerequisite{{$data->id}}">
                                                             Prerequisite
                                                         </label>
@@ -464,12 +489,21 @@
                                         </div>
                                     </div>
                                     <div class="collapse collapse-course-form" id="{{ 'ASDIV' . $randomNum }}">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <h4>Assignment Title</h4>
-                                                <input type="text" name="assignment_description" placeholder="Assignment Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
+                                        <form action="{{ route('SA.update.title.percentage', encrypt_decrypt('encrypt', $data->id)) }}" method="POST">@csrf
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-group">
+                                                        <h4>Assignment Title</h4>
+                                                        <input type="text" name="description" placeholder="Assignment Title" value="{{ $data->title ?: '' }}" class="form-control" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group edit-pmu-action mt-3 pt-1">
+                                                        <button class="edit-question-first" type="submit"> &nbsp; &nbsp; &nbsp; &nbsp;Update&nbsp; &nbsp; &nbsp; &nbsp; </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </form>
                                     </div>
                                 </div>
                                 @elseif($data->type == 'survey')
@@ -488,7 +522,7 @@
                                                 <li>
                                                     <div class="pmucheckbox">
                                                         <input type="checkbox" @if($data->prerequisite) checked @endif id="Prerequisite{{$data->id}}"
-                                                        name="prerequisite" value="">
+                                                        name="prerequisite" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
                                                         <label for="Prerequisite{{$data->id}}">
                                                             Prerequisite
                                                         </label>
@@ -524,12 +558,21 @@
                                         </div>
                                     </div>
                                     <div class="collapse collapse-course-form" id="{{ 'CPDIV' . $randomNum }}">
-                                        <div class="col-md-12">
-                                            <div class="form-group">
-                                                <h4>Survey Title</h4>
-                                                <input type="text" name="survey_description" placeholder="Survey Title" disabled value="{{ $data->title ?: '' }}" class="form-control">
+                                        <form action="{{ route('SA.update.title.percentage', encrypt_decrypt('encrypt', $data->id)) }}" method="POST">@csrf
+                                            <div class="row">
+                                                <div class="col-md-10">
+                                                    <div class="form-group">
+                                                        <h4>Survey Title</h4>
+                                                        <input type="text" name="description" placeholder="Survey Title" value="{{ $data->title ?: '' }}" class="form-control" required>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group edit-pmu-action mt-3 pt-1">
+                                                        <button class="edit-question-first" type="submit"> &nbsp; &nbsp; &nbsp; &nbsp;Update&nbsp; &nbsp; &nbsp; &nbsp; </button>
+                                                    </div>
+                                                </div>
                                             </div>
-                                        </div>
+                                        </form>
                                         
                                         <?php $sur = 'SSS'; ?>
                                         @foreach ($data->quiz as $survey)
