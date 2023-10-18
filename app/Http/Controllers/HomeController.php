@@ -439,11 +439,14 @@ class HomeController extends Controller
     public function delete_option2($id) 
     {
         $option = ChapterQuizOption::where('id',$id)->first();
-        $value = ChapterQuiz::where('id',$option->quiz_id)->first();
-        $courseID = encrypt_decrypt('encrypt',$value->course_id);
-        $chapterID = encrypt_decrypt('encrypt',$value->chapter_id);
-        $option_id = $id; /*Option Id*/
-        ChapterQuizOption::where('id',$option_id)->delete();
+        if(isset($option)){
+            if($option->is_correct == 1) return redirect()->back()->with('message',"Correct option can't remove.");
+            $value = ChapterQuiz::where('id',$option->quiz_id)->first();
+            $courseID = encrypt_decrypt('encrypt',$value->course_id);
+            $chapterID = encrypt_decrypt('encrypt',$value->chapter_id);
+            $option_id = $id; /*Option Id*/
+            ChapterQuizOption::where('id',$option_id)->delete();
+        }
         return redirect('admin/addcourse2/'.$courseID.'/'.$chapterID)->with('message','Option deleted successfully');
     }
 
@@ -530,22 +533,18 @@ class HomeController extends Controller
                                     $ChapterQuiz->marks = $valueQVal['marks'] ?? 0;
                                     $ChapterQuiz->save();
                                     $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
-                                    $optionCount = 0;
                                     foreach ($valueQVal['options'] as $keyOp => $optionText) {
                                         $isCorrect = '0';
-                                        if($optionCount == 0 && !isset($valueQVal['correct'])){
-                                            $isCorrect = '1';
-                                        }else {
-                                            $isCorrect = '0';
+                                        if(isset($valueQVal['correct'])){
+                                            $isCorrect = ($valueQVal['correct']==$keyOp) ? '1' : '0';
                                         }
                                         $option = new ChapterQuizOption;
                                         $option->quiz_id = $quiz_id->id;
                                         $option->answer_option_key = $optionText;
-                                        $option->is_correct = $valueQVal['correct'][$keyOp] ?? $isCorrect;
+                                        $option->is_correct = $isCorrect;
                                         $option->created_date = date('Y-m-d H:i:s');
                                         $option->status = 1;
                                         $option->save();
-                                        $optionCount++;
                                     }
                                     
                                 }
@@ -810,18 +809,15 @@ class HomeController extends Controller
         }
     }
 
-    public function changeAnswerOption($id, $val) 
+    public function changeAnswerOption($id) 
     {
         try {
             $chapterQuiz = ChapterQuizOption::where('id', $id)->first();
-            $quizOptionCount = ChapterQuizOption::where('quiz_id', $chapterQuiz->quiz_id)->where('is_correct', '1')->count();
-            // $quizOptionsId = ChapterQuizOption::where('quiz_id', $$chapterQuiz->quiz_id)->where('is_correct', 1)->pluck('id');
-            if($quizOptionCount == 1 && $val == 0){
-                return response()->json(['status' => 201, 'message'=> "Question should have atleast one correct answer. Don't try to uncheck."]);
-            }else{
-                $chapter = ChapterQuizOption::where('id', $id)->update(['is_correct' => $val]);
+            if(isset($chapterQuiz->id)){
+                ChapterQuizOption::where('quiz_id', $chapterQuiz->quiz_id)->update(['is_correct' => '0']);
+                $chapter = ChapterQuizOption::where('id', $id)->update(['is_correct' => '1']);
                 return response()->json(['status' => 200, 'message'=> "Answer changed."]);
-            }
+            }else return response()->json(['status' => 201, 'message'=> "Invalid Request"]); 
         } catch (\Exception $e) {
             return $e->getMessage();
         }

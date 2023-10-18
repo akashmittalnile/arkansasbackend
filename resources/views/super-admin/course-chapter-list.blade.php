@@ -97,7 +97,9 @@
                                 <div class="edit-pmu-form-item">
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
-                                            <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Video<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            <div class="edit-pmu-text-title">
+                                                <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Video<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            </div>
                                         </div>
                                         <div class="edit-pmu-checkbox-list">
                                             <ul>
@@ -190,8 +192,10 @@
                                 <div class="edit-pmu-form-item">
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
-                                            <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample{{ $data->id }}">
-                                                Quiz<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            <div class="edit-pmu-text-title">
+                                                <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample{{ $data->id }}">
+                                                    Quiz<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            </div>
                                         </div>
                                         <div class="edit-pmu-checkbox-list">
                                             <ul>
@@ -259,7 +263,7 @@
                                             <div class="pmu-edit-questionnaire-content">
                                                 <input type="text" class="form-control {{ $v . $quiz->id }}" placeholder="Enter Question Title" name="quiz_question" value="{{ $quiz->title }}">
                                             </div>
-                                            <div class="pmu-edit-questionnaire-marks" style="margin-right: 5px;">
+                                            <div class="pmu-edit-questionnaire-marks" style="margin-right: 5px; width: 10%">
                                                 <input type="number" class="form-control" placeholder="Enter marks" name="questions[2][0][marks]" required="" value="{{ $quiz->marks ?? '' }}">
                                             </div>
                                             <div class="edit-pmu-action">
@@ -288,11 +292,11 @@
                                                         </div>
                                                         <div class="pmu-answer-check-item">
                                                             <div class="pmucheckbox1">
-                                                                <input type="checkbox" class="answerEditCheckbox" data-answer-id="{{ $item->id }}" name="answer" id="answer-option-{{ $item->id }}" @if($item->is_correct) checked @endif value="1">
+                                                                <input type="radio" class="answerEditCheckbox" data-answer-id="{{ $item->id }}" name="answer-{{$quiz->id}}" id="answer-option-{{ $item->id }}" @if($item->is_correct) checked @endif value="1">
                                                                 <label for="answer-option-{{ $item->id }}">&nbsp</label>
                                                             </div>
                                                             <div class="pmu-add-questionnaire-tooltip">
-                                                                <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Answer changed">
+                                                                <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
                                                                     <img src="{!! url('assets/website-images/info-icon.svg') !!}">
                                                                 </div> 
                                                                 <script>
@@ -325,7 +329,9 @@
                                 <div class="edit-pmu-form-item">
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
-                                            <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">PDF<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            <div class="edit-pmu-text-title">
+                                                <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">PDF<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            </div>
                                         </div>
                                         <div class="edit-pmu-checkbox-list">
                                             <ul>
@@ -413,7 +419,9 @@
                                 <div class="edit-pmu-form-item">
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
-                                            <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'ASDIV' . $randomNum }}">Assignment<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            <div class="edit-pmu-text-title">
+                                                <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'ASDIV' . $randomNum }}">Assignment<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            </div>
                                         </div>
                                         <div class="edit-pmu-checkbox-list">
                                             <ul>
@@ -471,7 +479,9 @@
                                 <div class="edit-pmu-form-item">
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text">
-                                            <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Survey<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            <div class="edit-pmu-text-title">
+                                                <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Survey<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
+                                            </div>
                                         </div>
                                         <div class="edit-pmu-checkbox-list">
                                             <ul>

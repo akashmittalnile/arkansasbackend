@@ -64,11 +64,11 @@ $(document).on('click', '.add-question-create', function () {
 
                                 <div class="pmu-answer-check-item">
                                     <div class="pmucheckbox1">
-                                        <input type="checkbox" id="answer-option-${oplength}-${questionCounter}-${id}" class="" name="questions[${id}][${questionCounter}][correct][${oplength}]" value="1">
+                                        <input type="radio" id="answer-option-${oplength}-${questionCounter}-${id}" class="" name="questions[${id}][${questionCounter}][correct]" value="${oplength}">
                                         <label for="answer-option-${oplength}-${questionCounter}-${id}">&nbsp</label>
                                     </div>
                                     <div class="pmu-add-questionnaire-tooltip">
-                                        <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select answer using checkbox">
+                                        <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
                                             <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
                                         </div> 
                                         <script>
@@ -111,11 +111,11 @@ $(document).on('click', '.add-option', function () {
                                         </div>
                                         <div class="pmu-answer-check-item">
                                             <div class="pmucheckbox1">
-                                                <input type="checkbox" class="" name="questions[${id[1]}][${id[2] ?? questionCounter}][correct][${oplength}]" id="answer-option-${oplength}-${id[2] ?? questionCounter}-${id[1]}" value="1">
+                                                <input type="radio" class="" name="questions[${id[1]}][${id[2] ?? questionCounter}][correct]" id="answer-option-${oplength}-${id[2] ?? questionCounter}-${id[1]}" value="${oplength}">
                                                 <label for="answer-option-${oplength}-${id[2] ?? questionCounter}-${id[1]}">&nbsp</label>
                                             </div>
                                             <div class="pmu-add-questionnaire-tooltip">
-                                                <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select answer using checkbox">
+                                                <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
                                                     <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
                                                 </div> 
                                                 <script>
@@ -249,11 +249,8 @@ $(document).on('change', '.ordering-select-function', function () {
 
 $(document).on('change', '.answerEditCheckbox', function () {
     var id = $(this).attr("data-answer-id");
-    var val = $(this).is(":checked");
-    if(val) val = 1;
-    else val = 0;
     $.ajax({
-        url: arkansasUrl + '/admin/change-answer-option/' + id + '/' + val,
+        url: arkansasUrl + '/admin/change-answer-option/' + id,
         method: 'GET',
         dataType: 'json',
         headers: {
@@ -548,11 +545,11 @@ $(document).ready(function () {
                                                             
                                                             <div class="pmu-answer-check-item">
                                                                 <div class="pmucheckbox1">
-                                                                    <input type="checkbox" class="" name="questions[${countForm}][${questionCounter}][correct][${oplength}]" id="answer-option-${oplength}-${questionCounter}-${countForm}" value="1">
+                                                                    <input type="radio" class="" name="questions[${countForm}][${questionCounter}][correct]" id="answer-option-${oplength}-${questionCounter}-${countForm}" value="${oplength}">
                                                                     <label for="answer-option-${oplength}-${questionCounter}-${countForm}">&nbsp</label>
                                                                 </div>
                                                                 <div class="pmu-add-questionnaire-tooltip">
-                                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select answer using checkbox">
+                                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
                                                                         <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
                                                                     </div> 
                                                                     <script>
@@ -838,7 +835,7 @@ $(document).ready(function () {
             '<input type="text" class="form-control newop'+id+'" placeholder="Type Here..." name="option[' +
             possible + ']">' +
             '<span class="remove-text remove_newoption mx-5" data-remove-id="' + id + '" id="' + possible + '">Remove</span>' +
-            '<div class="pmucheckbox"> <input type="checkbox" class="answerAddCheckbox'+id+'" name="answer[' + possible + ']" id="answer-option-'+possible+'" value="1"> <label for="answer-option-'+possible+'"></label> </div>' +
+            '<div class="pmucheckbox1 d-none"> <input type="radio" class="answerAddCheckbox'+id+'" name="answer-' + id + '" id="answer-option-'+possible+'" value="1"> <label for="answer-option-'+possible+'"></label> </div>' +
             '</div>' +
             '</div>' + '</div>';
         $('#newinputquizListing'+id).append(newRowAdd);

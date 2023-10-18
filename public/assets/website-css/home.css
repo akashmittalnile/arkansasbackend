@@ -363,6 +363,17 @@ a.red-btn-text{    cursor: pointer;
 .pmucheckbox1 input[type="checkbox"] + label::after {-webkit-transform: scale(0); -moz-transform: scale(0); -ms-transform: scale(0); -o-transform: scale(0); transform: scale(0); } 
 .pmucheckbox1 input[type="checkbox"]:checked + label::after {-webkit-transform: scale(1); -moz-transform: scale(1); -ms-transform: scale(1); -o-transform: scale(1); transform: scale(1); }
 
+.pmucheckbox1{position: relative;}
+.pmucheckbox1 label { position: relative; display: inline-block; line-height: 15px; padding: 0 0 0 1.2rem; margin-bottom: 0px;color: var(--black); cursor: pointer; font-size: 14px; }
+.pmucheckbox1 label::before, 
+.pmucheckbox1 label::after {position: absolute; top: 0; left: 0; display: block; width: 18px; height: 18px; } 
+.pmucheckbox1 label::before {content: " "; border: 1px solid var(--black); -webkit-border-radius: 3px; -moz-border-radius: 3px; -ms-border-radius: 3px; -o-border-radius: 3px; border-radius: 3px; } 
+.pmucheckbox1 input[type="radio"] {position: absolute; opacity: 0; z-index: -1; margin: 0; } 
+.pmucheckbox1 input[type="radio"] + label::after {    content: "\2714"; color: #FFF; line-height: 1.8; text-align: center; border: none; font-size: 12px; }
+.pmucheckbox1 input[type="radio"]:checked + label::before {background:var(--yellow); border-color: var(--yellow); } 
+.pmucheckbox1 input[type="radio"] + label::after {-webkit-transform: scale(0); -moz-transform: scale(0); -ms-transform: scale(0); -o-transform: scale(0); transform: scale(0); } 
+.pmucheckbox1 input[type="radio"]:checked + label::after {-webkit-transform: scale(1); -moz-transform: scale(1); -ms-transform: scale(1); -o-transform: scale(1); transform: scale(1); }
+
 .update-remove-action1 {display: flex; align-items: center; gap: 5px; }
 .pmu-answer-check-item {border-radius: 5px; display: flex; align-items: center; background: var(--body); border: 1px solid #ffffff; padding: 0 5px ; margin-left: 5px; }
 

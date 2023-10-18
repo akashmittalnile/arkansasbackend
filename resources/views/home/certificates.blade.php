@@ -1,102 +1,55 @@
 <!DOCTYPE html>
 <html>
-
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Arkanasas</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link href='https://fonts.googleapis.com/css?family=Tangerine' rel='stylesheet'>
+	<link href='https://fonts.googleapis.com/css?family=Cormorant Garamond' rel='stylesheet'>
+	<title>Arkanasas</title>
 </head>
-
 <body>
-
-    <table align="center" cellpadding="0" cellspacing="0" width="100%" style="font-family: Helvetica , sans-serif; margin:0px auto 10px auto; vertical-align: top; background: #261313; padding: 20px;">
-        <tr>
-            <td>
-                <table align="center" cellpadding="0" cellspacing="0" width="100%" style="border:5px solid #fff">
-                    <tbody>
-                        <tr>
-                            <td valign="top" style="padding: 30px">
-                                <table align="center" cellpadding="0" cellspacing="0" width="100%" style="background: #ffffff;">
-                                    <tbody>
-                                        <tr>
-                                            <td valign="top" style="padding: 30px">
-                                                <div style="display: flex;align-items: center;">
-                                                    <img src="{{ asset('assets/website-images/logo.jpg') }}" alt="" width="100" style="width: 100px;height: auto;">
-                                                    <div style="margin-left: 10px;">
-                                                        <h3 style="font-size: 25px;font-weight: bold;margin-bottom: 0px;">{{$course->company_name ?? "NA"}}</h3>
-                                                        <h5 style="font-size: 20px;font-weight: normal;margin-top: 10px;">{{$course->professional_title ?? "NA"}}</h5>
-
-                                                        <h6 style="margin: 10px 0 10px 0;    text-align: right;color: #2d2f3c;font-size: 16px;font-weight: normal;padding: 0;color: #6A6A6A;">https://arkansaspermanentcosmeticsinstitute.com</h6>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td></td>
-                                            <!-- <td valign="top" style="padding: 30px">
-                                                <img src="{{ asset('assets/website-images/logo.jpg') }}" alt="" style="float: right;" width="200px">
-                                            </td> -->
-                                        </tr>
-                        </tr>
-
-                    </tbody>
-                </table>
-                <table align="center" cellpadding="0" cellspacing="0" width="100%" style="background: #ffffff;">
-                    <tbody>
-                        <tr>
-                            <td valign="top" style="padding: 0px 30px 30px 30px">
-                                <p style="font-size: 20px;">{{ date('M d, Y', strtotime($date->updated_date)) }}</p>
-                            </td>
-                            <td></td>
-                        </tr>
-                        
-                        <tr>
-                            <td valign="top" style="padding: 0px 30px">
-                                <p style="font-size: 23px; margin-bottom: 0px;">This certificate is awarded to</p>
-                                <h3 style="font-size: 60px;font-weight: bold; color: #E0B220;margin-top: 10px;">{{ $user->first_name ?? "NA" }} {{ $user->last_name ?? "" }}</h3>
-                            </td>
-                        </tr>
-                        
-                        <tr>
-                            <td valign="top" style="padding: 0px 30px">
-                                <p style="font-size: 23px;  margin-bottom: 0px;">For completing the requirements of</p>
-                                <h5 style="font-size: 35px;font-weight: bold;margin-top: 10px;">{{ $course->title ?? "NA" }}</h5>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-
-                <table align="center" cellpadding="0" cellspacing="0" width="100%" style="background: #ffffff;">
-                    <tbody>
-                        <tr style="align-items: center;">
-                            <td valign="top" style="padding: 50px 30px 30px 30px; width: 40%;">
-                                <img src="{{ url('upload/signature/'.$course->signature) }}" alt="" width="300px">
-                                <hr>
-                                <p style="font-weight: bold;">Executive Director, Center of supply Chain Research</p>
-                                <p>{{ $course->first_name ?? "NA" }} {{ $course->last_name ?? "" }}</p>
-                            </td>
-                            <td valign="top" style="padding: 50px 30px 30px 30px">
-                                <img src="{{ asset('assets/website-images/badge.jpg') }}" alt="" width="200px" style="margin: 0 auto;display: block;">
-                            </td>
-                            <td valign="top" style="padding: 50px 30px 30px 30px;width: 40%;">
-                                <img src="{{ url('upload/signature/'.$admin->signature) }}" alt="" width="300px">
-                                <hr>
-                                <p style="font-weight: bold;">Associate Dean for Professional Graduate Programs <br> and Executive Education</p>
-                                <p>{{ $admin->first_name ?? "NA" }} {{ $admin->last_name ?? "" }}</p>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </td>
-
-        </tr>
-        </tbody>
-    </table>
-    </td>
-    </tr>
-
-    </table>
+	
+ 	<table align="center" cellpadding="0" cellspacing="0" width="0%"  style="font-size: 23px; margin:0px auto 10px auto; vertical-align: top; background: url('assets/website-images/bg.jpg');background-position: center;background-repeat: no-repeat;background-size: cover;border: 5px solid white;">
+      <tbody>
+		<tr>
+			<td valign="top" style="padding: 50px">
+				<img src="{{ asset('assets/website-images/logo-cer.png') }}" alt="" style="width: 350px;height: auto;">
+			</td> 
+			<td valign="top" style="padding: 30px 50px 60px 50px">
+				<table align="center" cellpadding="0" cellspacing="0" width="100%"  style="font-family: Helvetica , sans-serif; margin:0px auto 10px auto; vertical-align: top;">
+					<tr>
+						<td valign="top" style="padding: 0px 50px">
+							<h1 style="color: white;font-weight: bold; text-align: right;color: #ECC94A;font-family: Cormorant Garamond;font-size: 85px;letter-spacing: 10px;margin-bottom: 0;">CERTIFICATE</h1>
+							<h1 style="color: white;font-weight: 100; text-align: right;color: #ECC94A;font-family: Cormorant Garamond;font-size: 38px;margin-top: 0;">OF COMPLETION</h1>
+							<p style="color: white;text-align: right;color: #ECC94A;font-family: Cormorant Garamond;margin-top: 0;margin-bottom: 0;">This certificate is awarded to</p>
+							<h1 style="color: white;font-weight: 100; text-align: right;color: #ECC94A;font-family: Tangerine;font-size: 95px;margin-top: 0;margin-bottom: 0;letter-spacing: 5px;">{{ $user->first_name ?? "NA" }} {{ $user->last_name ?? "" }}</h1>
+							<hr align="right" style="height:2px;border-width:0;color:gray;width: 70%;opacity: 0.5;margin-top: 0; background-color:#ECC94A">
+							<p style="color: white;font-weight: 100; text-align: right;color: #ECC94A;font-family: Cormorant Garamond;margin-top: 0;">This is certify that [{{ $user->first_name ?? "NA" }} {{ $user->last_name ?? "" }}] has succesfully completed the <br> [{{ $course->title ?? "NA" }}] at Permanent Makeup University. <br>This Achievement is a testament to your hardwork, <br> determination, and passion for lifelong learning. We <br> congratulate you on this remarkable accomplishment and <br> wish you continued success endeavors</p>
+						</td>
+						<table align="right" cellpadding="0" cellspacing="0" width="90%"  style="margin:0px auto 10px auto; vertical-align: top;">
+							<tr>
+								<td valign="top" style="padding: 0px;">
+									<h1 style="color: white;font-weight: 100; text-align: right;color: #ECC94A;font-family: Tangerine;font-size: 48px;margin-top: 0;margin-bottom: 0;">Admin Name</h1>
+									<hr align="right" style="height:2px;border-width:0;color:gray;width: 70%;opacity: 0.5;margin-top: 0; background-color:#ECC94A">
+									<p style="color: white;text-align: right;color: #ECC94A;font-family: Cormorant Garamond;margin-top: 0;margin-bottom: 0;">[{{ $admin->first_name ?? "NA" }} {{ $admin->last_name ?? "" }}]</p>
+									<p style="color: white;text-align: right;color: #ECC94A;font-family: Cormorant Garamond;margin-top: 0;margin-bottom: 0;font-weight: 100;font-size: 20px;">Administrator</p>
+								</td>
+								<td valign="top" style="padding: 0px 50px 0px 0px">
+									<h1 style="color: white;font-weight: 100; text-align: right;color: #ECC94A;font-family: Tangerine;font-size: 48px;margin-top: 0;margin-bottom: 0;">Instructors Name</h1>
+									<hr align="right" style="height:2px;border-width:0;color:gray;width: 55%;opacity: 0.5;margin-top: 0; background-color:#ECC94A">
+									<p style="color: white;text-align: right;color: #ECC94A;font-family: Cormorant Garamond;margin-top: 0;margin-bottom: 0;">[{{ $course->first_name ?? "NA" }} {{ $course->last_name ?? "" }}]</p>
+									<p style="color: white;text-align: right;color: #ECC94A;font-family: Cormorant Garamond;margin-top: 0;margin-bottom: 0;font-weight: 100;font-size: 20px;">Mentor</p>
+								</td>
+							</tr>
+						</table>
+					</tr>
+				</table>
+			</td> 
+		</tr>
+	  </tbody>
+	</table>
 
 
 
 </body>
-
 </html>

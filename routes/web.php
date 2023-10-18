@@ -85,7 +85,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/admin/save-answer', 'HomeController@SaveAnswer')->name('SaveAnswer');
         Route::get('/admin/add-option', 'HomeController@addOption')->name('admin.add-option');
         Route::get('/admin/change-ordering/{chapterid}/{id}/{val}', 'HomeController@changeOrdering')->name('admin.change-answer');
-        Route::get('/admin/change-answer-option/{id}/{val}', 'HomeController@changeAnswerOption')->name('admin.change-answer.option');
+        Route::get('/admin/change-answer-option/{id}', 'HomeController@changeAnswerOption')->name('admin.change-answer.option');
 
         Route::get('/earnings', 'HomeController@earnings')->name('Home.earnings');
         Route::get('/order-details/{id}', 'HomeController@orderDetails')->name('Home.order.details');
@@ -120,7 +120,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/super-admin/save-answer', 'SuperAdminController@SaveAnswer')->name('SA.SaveAnswer');
         Route::get('/super-admin/add-option', 'SuperAdminController@addOption')->name('SA.add-option');
         Route::get('/super-admin/change-ordering/{chapterid}/{id}/{val}', 'SuperAdminController@changeOrdering')->name('SA.change-answer');
-        Route::get('/super-admin/change-answer-option/{id}/{val}', 'SuperAdminController@changeAnswerOption')->name('SA.change-answer.option');
+        Route::get('/super-admin/change-answer-option/{id}', 'SuperAdminController@changeAnswerOption')->name('SA.change-answer.option');
         Route::get('/super-admin/delete-video/{id}', 'SuperAdminController@deleteVideo')->name('SA.DeleteVideo');
         Route::get('/super-admin/delete-pdf/{id}', 'SuperAdminController@deletePdf')->name('SA.DeletePDF');
         Route::get('/super-admin/update-option-list', 'SuperAdminController@updateOptionList')->name('SA.UpdateOptionList');
