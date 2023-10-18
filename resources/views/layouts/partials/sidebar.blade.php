@@ -48,7 +48,7 @@
                 @if ($currentURL == 'Home.HelpSupport')
                     <li class="nav-item active">
                         <a class="nav-link" href="{{ route('Home.HelpSupport') }}">
-                            <span class="menu-icon"><img src="{!! url('assets/website-images/Help.svg') !!}"></span>
+                            <span class="menu-icon"><img src="{!! url('assets/website-images/help.svg') !!}"></span>
                             <span class="menu-title">Help & Support</span>
                         </a>
                     </li>
