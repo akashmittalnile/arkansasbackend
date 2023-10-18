@@ -2403,10 +2403,31 @@ class ApiController extends Controller
                         $response[] = $temp;
 
                     }
+
+                    $top_category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
+                    $b2 = array();
+                    $TopCategory = array();
+                    if(count($top_category) > 0)
+                    {
+                        foreach ($top_category as $k => $data) {
+                            $b2['id'] = isset($data->id) ? $data->id : '';
+                            $b2['category_name'] = isset($data->name) ? $data->name : '';
+                            if (!empty($data->icon)) {
+                                $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                            } else {
+                                $b2['category_image'] = '';
+                            }
+                            $b2['cat_status'] = isset($data->status) ? $data->status : '';
+                            $b2['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
+                            $TopCategory[] = $b2;
+                        }
+                    }
+
                     return response()->json([
                         'status' => true,
                         'message' => 'My Order',
-                        'data' => $response
+                        'data' => $response,
+                        'category' => $top_category
                     ]);
                 } else {
                     return response()->json([
