@@ -156,6 +156,7 @@
                   <tr>
                     <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">Sl.No </th>
                     <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">Title</th>
+                    <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">Type</th>
                     <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Discount</th>
                     <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Net Amount</th>
                     <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Admin Fee</th>
@@ -169,6 +170,11 @@
                   <tr>
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">{{ $key+1 }}</td>
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px; text-transform: uppercase;">{{ $val->title ?? "NA" }}</td>
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px; text-transform: uppercase;">
+                        @if($val->product_type == 1) Course
+                        @else Product
+                        @endif
+                    </td>
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">$0</td>
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->amount-$val->admin_amount }}</td>
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->admin_amount }}</td>

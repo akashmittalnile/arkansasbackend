@@ -3056,4 +3056,56 @@ class ApiController extends Controller
         }
     }
 
+    public function order_detail(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'order_id' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }else{
+                $id = $request->order_id;
+                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status')->first();
+
+                $orderDetails = DB::table('orders')->select(DB::raw("c.title, order_product_detail.product_id as id, order_product_detail.product_type as type, c.status, order_product_detail.amount as total_amount_paid, order_product_detail.admin_amount as admin_fee, c.introduction_image as video"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->where('order_product_detail.product_type', 1)->where('orders.id', $id)->get();
+
+                $detail = [];
+                foreach($orderDetails as $val){
+                    $temp['id'] = $val->id;
+                    $temp['type'] = $val->type;
+                    $temp['type_name'] = ($val->type==1) ? "Course" : "Product";
+                    $temp['title'] = $val->title ?? "NA";
+                    $temp['status'] = $val->status;
+                    $temp['total_amount_paid'] = $val->total_amount_paid;
+                    $temp['admin_fee'] = $val->admin_fee;
+                    $temp['video'] = url('upload/disclaimers-introduction/'.$val->video);
+                    $detail[] = $temp;
+                }
+
+                $invoice = url('/')."/download-invoice/".encrypt_decrypt('encrypt', $order->id);
+
+                return response()->json(['status' => true, 'message' => 'Order details', 'data' => $order, 'items' => $detail, 'invoice' => $invoice]);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function download_invoice($id){
+        try{
+            $id = encrypt_decrypt('decrypt', $id);
+            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status')->first();
+
+            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'Image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
+            
+            $pdf = PDF::loadView('home.pdf-invoice', compact('order', 'orderDetails'), [], [ 
+                'mode' => 'utf-8',
+                'title' => 'Order Invoice',
+                'format' => 'Legal',
+            ]);
+            return $pdf->stream($order->order_number.'-invoice.pdf');
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
 }
