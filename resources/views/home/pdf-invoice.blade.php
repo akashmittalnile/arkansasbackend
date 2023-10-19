@@ -165,7 +165,7 @@
                 <tbody>
 
                   @php $amount = 0; $admin = 0; @endphp
-                  @forelse($order->orderCourse as $key => $val)
+                  @forelse($orderDetails as $key => $val)
                   <tr>
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">{{ $key+1 }}</td>
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px; text-transform: uppercase;">{{ $val->title ?? "NA" }}</td>
