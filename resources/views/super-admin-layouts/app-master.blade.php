@@ -102,7 +102,7 @@
 </body>
 
 <script type="text/javascript">
-    let arkansasUrl = "{{ url('/') }}";
+    let arkansasUrl = "{{ env('APP_URL') }}";
     console.log("url => ", arkansasUrl);
 </script>
 

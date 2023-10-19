@@ -508,15 +508,18 @@ class ApiController extends Controller
                         if ($type == 1) { /* 1 stand for course ,2 for product */
                             $value = Course::leftJoin('users', function($join) {
                                 $join->on('course.admin_id', '=', 'users.id');
-                            })
-                            ->where('course.status', 1)->where('course.id', $item->object_id)->orderBy('course.id', 'DESC')->first();
+                            })->leftJoin('category as cat', 'cat.id', '=', 'course.category_id');
+
+                            if($request->filled('title')) $value->where('product.name', 'like', '%'.$request->title.'%');
+                            if($request->filled('category')) $value->whereIntegerInRaw('course.category_id', $request->category);
+                            if($request->filled('price')){
+                                if($request->price == 1) $value->orderByDesc('course.course_fee');
+                                else $value->orderBy('course.course_fee');
+                            } else $value->orderBy('course.id', 'DESC');
+                            
+                            $value = $value->where('course.status', 1)->where('course.id', $item->object_id)->select('users.first_name', 'users.last_name', 'users.profile_image', 'users.category_name', 'course.*', 'cat.id as catid', 'cat.name as catname')->orderBy('course.id', 'DESC')->first();
                             $temp['course_fee'] = $value->course_fee;
                             $temp['valid_upto'] = $value->valid_upto;
-                            if (!empty($value->certificates)) {
-                                $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
-                            } else {
-                                $temp['certificates_image'] = '';
-                            }
                             if (!empty($value->introduction_image)) {
                                 $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
                             } else {
@@ -536,10 +539,20 @@ class ApiController extends Controller
                             }
                             $temp['content_creator_image'] = $profile_image;
                             $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
-                            $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
+                            $temp['category_id'] = isset($value->catid) ? $value->catid : '';
+                            $temp['category_name'] = isset($value->catname) ? $value->catname : '';
                             $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
                         } else {
-                            $value = Product::where('status', 1)->where('id', $item->object_id)->orderBy('id', 'DESC')->first();
+                            $value = Product::leftJoin('category as cat', 'cat.id', '=', 'product.category_id');
+
+                            if($request->filled('title')) $value->where('product.name', 'like', '%'.$request->title.'%');
+                            if($request->filled('category')) $value->whereIntegerInRaw('product.category_id', $request->category);
+                            if($request->filled('price')){
+                                if($request->price == 1) $value->orderByDesc('product.price');
+                                else $value->orderBy('product.price');
+                            } else $value->orderBy('product.id', 'DESC');
+                            
+                            $value = $value->where('product.status', 1)->where('product.id', $item->object_id)->orderBy('product.id', 'DESC')->select('product.*', 'cat.id as catid', 'cat.name as catname')->first();
                             $temp['price'] = $value->price;
                             $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                             $datas_image = array();
@@ -564,20 +577,56 @@ class ApiController extends Controller
                             }
                             $temp['creator_image'] = $profile_image;
                             $temp['creator_id'] = $value->added_by;
+                            $temp['category_id'] = $value->catid ?? null;
+                            $temp['category_name'] = $value->catname ?? null;
                         }
                         $temp['id'] = $value->id;
                         $temp['description'] = $value->description;
-                        $temp['tags'] = $value->tags;
+                        $tags = [];
+                        if(isset($value->tags)){
+                            foreach(unserialize($value->tags) as $valu){
+                                $name = Tag::where('id', $valu)->first();
+                                if(isset($name->id)){
+                                    $temparory['name'] = $name->tag_name ?? null;
+                                    $temparory['id'] = $name->id ?? null;
+                                    $tags[] = $temparory;
+                                }
+                            }
+                        }
+                        $temp['tags'] = $tags;
                         $temp['status'] = $value->status;
-                        $temp['rating'] = 4.6;
+                        $reviewAvg = DB::table('user_review as ur')->where('object_id', $item->object_id)->where('object_type', $type)->avg('rating');
+                        $temp['avg_rating'] = number_format($reviewAvg, 1);
+                        if($request->filled('rating'))
+                            if($reviewAvg < min($request->rating)) continue;
+                        $temp['rating'] = number_format((float)$reviewAvg, 1);
                         $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                         $response[] = $temp;
                     }
                 }
+                $category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
+                $b2 = array();
+                $TopCategory = array();
+                if(count($category) > 0)
+                {
+                    foreach ($category as $k => $data) {
+                        $b2['id'] = isset($data->id) ? $data->id : '';
+                        $b2['category_name'] = isset($data->name) ? $data->name : '';
+                        if (!empty($data->icon)) {
+                            $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                        } else {
+                            $b2['category_image'] = '';
+                        }
+                        $b2['type'] = isset($data->type) ? $data->type : '';
+                        $b2['status'] = isset($data->status) ? $data->status : '';
+                        $b2['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
+                        $TopCategory[] = $b2;
+                    }
+                }
                 if ($type == 1) {
-                    return response()->json(['status' => true, 'message' => 'Course Listing', 'data' => $response]);
+                    return response()->json(['status' => true, 'message' => 'Course Listing', 'data' => $response, 'category' => $category]);
                 } else {
-                    return response()->json(['status' => true, 'message' => 'Product Listing', 'data' => $response]);
+                    return response()->json(['status' => true, 'message' => 'Product Listing', 'data' => $response, 'category' => $category]);
                 }
             }else{
                 return response()->json(['status' => false, 'Message' => 'Please login']);
