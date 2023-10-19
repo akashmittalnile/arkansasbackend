@@ -34,6 +34,7 @@ Route::post('survey-form', [ApiController::class, "surveyForm"])->name('survey.f
 Route::get('thank-you/{quizId}/{userId}', [ApiController::class, "resultSurvey"]);
 
 Route::get('download-pdf/{id}/{uid}', [ApiController::class, "generate_pdf"]);
+Route::get('download-invoice/{id}', [ApiController::class, "download_invoice"]);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, "logout"]);
@@ -76,7 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('my-order', [ApiController::class, "my_order"]);
 
     Route::post('order-detail', [ApiController::class, "order_detail"]);
-    Route::get('download-invoice/{id}', [ApiController::class, "download_invoice"]);
+    
 
     Route::get("cart-count", [ApiController::class, "cart_count"]);
     Route::post("assignment-upload-file", [ApiController::class, "assignment_upload_file"]);

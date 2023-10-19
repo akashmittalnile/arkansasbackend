@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\CardDetail;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Transaction;
@@ -34,8 +35,22 @@ class StripeController extends Controller
                         "description" => "Arkansas order payment",
                 ]);
                 if ($charge['status'] == 'succeeded') {
+                    $cardExist = CardDetail::where('userid', auth()->user()->id)->where('card_no', $charge['source']['last4'])->where('expiry', $charge['source']['exp_month'] . '/' .$charge['source']['exp_year'])->first();
+                    if(isset($cardExist->id)) {
+                        $cardId = $cardExist->id;
+                    }else{
+                       $cardId = CardDetail::insertGetId([
+                            'userid' => auth()->user()->id,
+                            'method_type' => $charge['source']['object'] ?? "NA",
+                            'card_no' => $charge['source']['last4'] ?? '0000',
+                            'card_type' => $charge['source']['brand'] ?? "NA",
+                            'expiry' => $charge['source']['exp_month'] . '/' .$charge['source']['exp_year'],
+                            'modified_date' => date('Y-m-d H:i:s')
+                        ]); 
+                    }
                     $transactionId = Transaction::insertGetId([
                         'user_id' => auth()->user()->id,
+                        'card_id' => $cardId ?? 0,
                         'status' => 1,
                         'transaction_id' => $charge['id'],
                         'amount' => $request->total_amount,

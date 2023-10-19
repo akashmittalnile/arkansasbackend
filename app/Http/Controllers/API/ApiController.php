@@ -2399,7 +2399,7 @@ class ApiController extends Controller
                 }
                 $orders = OrderDetail::leftJoin('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('order_product_detail.product_type', $request->type)->where('o.user_id', $user_id);
                 if($request->type == 1){
-                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid');
+                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid', 'order_product_detail.id as itemid');
                     if($request->filled('title')){
                         $orders->where('c.title', 'like', '%' . $request->title . '%');
                     }
@@ -2407,7 +2407,7 @@ class ApiController extends Controller
                         $orders->whereIntegerInRaw('c.category_id', $request->category);
                     }
                 } else {
-                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid');
+                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid', 'order_product_detail.id as itemid');
                     if($request->filled('title')){
                         $orders->where('p.name', 'like', '%' . $request->title . '%');
                     }
@@ -2448,6 +2448,7 @@ class ApiController extends Controller
                             $temp['product_id'] = $value->id ?? 0;
                         }
 
+                        $temp['item_id'] = $value->itemid ?? null;
                         $temp['title'] = $value->title ?? "NA";
                         $temp['description'] = $value->desc ?? "NA";
                         $temp['total_amount_paid'] = $value->total_amount_paid ?? 0;
@@ -3060,31 +3061,58 @@ class ApiController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'order_id' => 'required',
+                'item_id' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             }else{
                 $id = $request->order_id;
-                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status')->first();
+                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', DB::raw("orders.amount + orders.admin_amount as total_amount"))->first();
 
-                $orderDetails = DB::table('orders')->select(DB::raw("c.title, order_product_detail.product_id as id, order_product_detail.product_type as type, c.status, order_product_detail.amount as total_amount_paid, order_product_detail.admin_amount as admin_fee, c.introduction_image as video"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->where('order_product_detail.product_type', 1)->where('orders.id', $id)->get();
+                $order->total_amount = number_format((float) $order->total_amount, 2);
+                $order->created_date = date('d M, Y H:iA', strtotime($order->created_date));
 
-                $detail = [];
-                foreach($orderDetails as $val){
-                    $temp['id'] = $val->id;
-                    $temp['type'] = $val->type;
-                    $temp['type_name'] = ($val->type==1) ? "Course" : "Product";
-                    $temp['title'] = $val->title ?? "NA";
-                    $temp['status'] = $val->status;
-                    $temp['total_amount_paid'] = $val->total_amount_paid;
-                    $temp['admin_fee'] = $val->admin_fee;
-                    $temp['video'] = url('upload/disclaimers-introduction/'.$val->video);
-                    $detail[] = $temp;
+                $avgRating = DB::table('order_product_detail as opd')->leftJoin('user_review as ur', 'ur.object_id', '=', DB::raw('opd.product_id AND ur.object_type = opd.product_type'))->where('opd.id', $request->item_id)->avg('ur.rating');
+                $order->avg_rating = number_format($avgRating, 1);
+
+                $item = OrderDetail::where('id', $request->item_id)->first();
+                if(isset($item->id)){
+                    if($item->product_type == 1){
+                        $data = DB::table('course as c')->leftJoin('users as u', 'u.id', '=', 'c.admin_id')->select('u.first_name', 'u.last_name', 'u.profile_image', 'c.title')->where('c.id', $item->product_id)->first();
+                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? url('/upload/profile-image/'.$data->profile_image) : null;
+                    } else {
+                        $data = DB::table('product as p')->leftJoin('users as u', 'u.id', '=', 'p.added_by')->select('u.first_name', 'u.last_name', 'u.profile_image', 'p.name as title')->where('p.id', $item->product_id)->first();
+                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? url('/upload/profile-image/'.$data->profile_image) : null;
+                    }
+                    $order->creator_name = $data;
                 }
 
-                $invoice = url('/')."/download-invoice/".encrypt_decrypt('encrypt', $order->id);
+                $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.admin_id, p.added_by) as added_by, ifnull(c.title,p.name) title, order_product_detail.id as itemid, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'Image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
 
-                return response()->json(['status' => true, 'message' => 'Order details', 'data' => $order, 'items' => $detail, 'invoice' => $invoice]);
+                $other_detail = [];
+                foreach($orderDetails as $val){
+                    $temp['id'] = $val->product_id;
+                    $temp['item_id'] = $val->itemid;
+                    $temp['is_primary'] = ($val->itemid==$request->item_id) ? true : false;
+                    $temp['type'] = $val->product_type;
+                    $temp['type_name'] = ($val->product_type==1) ? "Course" : "Product";
+                    $temp['title'] = $val->title ?? "NA";
+                    $temp['status'] = $val->status;
+                    $temp['total_amount_paid'] = $val->amount;
+                    $temp['admin_fee'] = $val->admin_amount;
+                    $temp['video'] = ($val->product_type==1) ? url('upload/disclaimers-introduction/'.$val->image) : null;
+                    $temp['image'] = ($val->product_type==2) ? url('upload/products/'.$val->image) : null;
+                    $avgRating = DB::table('user_review as ur')->where('ur.object_id', $val->product_id)->where('ur.object_type', $val->product_type)->avg('ur.rating');
+                    $temp['avg_rating'] = number_format((float)$avgRating, 1);
+                    $user = User::where('id', $val->added_by)->first();
+                    $temp['creator_name'] = $user->first_name . ' ' . $user->last_name;
+                    $temp['creator_image'] = ($user->profile_image!="" && isset($user->profile_image)) ? url('/upload/profile-image/'.$user->profile_image) : null;
+                    $other_detail[] = $temp;
+                }
+
+                $invoice = url('/')."/api/download-invoice/".encrypt_decrypt('encrypt', $order->id);
+
+                return response()->json(['status' => true, 'message' => 'Order details', 'data' => $order, 'items' => $other_detail, 'invoice' => $invoice]);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
