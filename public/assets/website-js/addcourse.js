@@ -64,7 +64,7 @@ $(document).on('click', '.add-question-create', function () {
 
                                 <div class="pmu-answer-check-item">
                                     <div class="pmucheckbox1">
-                                        <input type="radio" id="answer-option-${oplength}-${questionCounter}-${id}" class="" name="questions[${id}][${questionCounter}][correct]" value="${oplength}">
+                                        <input checked type="radio" id="answer-option-${oplength}-${questionCounter}-${id}" class="" name="questions[${id}][${questionCounter}][correct]" value="${oplength}">
                                         <label for="answer-option-${oplength}-${questionCounter}-${id}">&nbsp</label>
                                     </div>
                                     <div class="pmu-add-questionnaire-tooltip">
@@ -564,7 +564,7 @@ $(document).ready(function () {
                                                             
                                                             <div class="pmu-answer-check-item">
                                                                 <div class="pmucheckbox1">
-                                                                    <input type="radio" class="" name="questions[${countForm}][${questionCounter}][correct]" id="answer-option-${oplength}-${questionCounter}-${countForm}" value="${oplength}">
+                                                                    <input checked type="radio" class="" name="questions[${countForm}][${questionCounter}][correct]" id="answer-option-${oplength}-${questionCounter}-${countForm}" value="${oplength}">
                                                                     <label for="answer-option-${oplength}-${questionCounter}-${countForm}">&nbsp</label>
                                                                 </div>
                                                                 <div class="pmu-add-questionnaire-tooltip">
@@ -859,6 +859,203 @@ $(document).ready(function () {
             '</div>' + '</div>';
         $('#newinputquizListing'+id).append(newRowAdd);
     });
+
+
+    $(document).on('click', "#addListingQuestionQuiz", function () {
+        let id = $(this).attr('data-id');
+        let newAddQuestionQuiz = $(`#newQuestionQuizListing${id} .question`).length;
+        let oplength = $(`#newQuestionQuizListing${id} .question .options .pmu-answer-option-list .hidden${id}${newAddQuestionQuiz}`).length;
+        $(".saveQuestionQuiz"+id).removeClass('d-none');
+
+        newRowAdd = `<div class="question">
+            <div class="pmu-edit-questionnaire-box">
+                <div class="pmu-edit-label">
+                    <div class="pmu-q-badge">Q</div>
+                </div>
+                <div class="pmu-edit-questionnaire-content">
+                    <input type="text" class="form-control"
+                        placeholder="Enter Question Title" name="questions[${id}][${newAddQuestionQuiz}][text]" required>
+                </div>
+                <div class="pmu-edit-questionnaire-marks">
+                    <input type="number" class="form-control" placeholder="Enter marks" name="questions[${id}][${newAddQuestionQuiz}][marks]" required>
+                </div>
+            </div>
+            <div class="options">
+                <div class="pmu-answer-option-list">
+                    <input type="hidden" class="hidden${id}${newAddQuestionQuiz}" value="0">
+                    <div class="pmu-answer-box">
+                        <div class="pmu-edit-questionnaire-ans">
+                            <div class="pmu-edit-questionnaire-text d-flex">
+                                <input type="text" class="form-control" placeholder="Type Here..." name="questions[${id}][${newAddQuestionQuiz}][options][]" required>
+
+                                <div class="pmu-answer-check-item">
+                                    <div class="pmucheckbox1">
+                                        <input checked type="radio" id="answer-option-${oplength}-${newAddQuestionQuiz}-${id}" class="" name="questions[${id}][${newAddQuestionQuiz}][correct]" value="${oplength}">
+                                        <label for="answer-option-${oplength}-${newAddQuestionQuiz}-${id}">&nbsp</label>
+                                    </div>
+                                    <div class="pmu-add-questionnaire-tooltip">
+                                        <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
+                                            <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                        </div> 
+                                        <script>
+                                        $(function() {
+                                            $('[data-bs-toggle="tooltip"]').tooltip();
+                                        });
+                                        </script>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="add-option-for-new-question" id="addOption-${id}-${newAddQuestionQuiz}">Add Option</button>
+            <button type="button" class="remove-new-question" data-id="${id}">Remove Question</button>
+        </div>`;
+        $('#newQuestionQuizListing'+id).append(newRowAdd);
+    });
+
+    $(document).on('click', '.add-option-for-new-question', function () {
+        let id = ($(this).attr('id').split('-'));
+        let newAddQuestionQuiz = id[2];
+        let oplength = $(`#newQuestionQuizListing${id[1]} .question .options .pmu-answer-option-list .hidden${id[1]}${newAddQuestionQuiz}`).length;
+        var op_html = `<div class="options">
+                            <div class="pmu-answer-option-list">
+                            <input type="hidden" class="hidden${id[1]}${newAddQuestionQuiz}" value="0">
+                                <div class="pmu-answer-box">
+                                    <div class="pmu-edit-questionnaire-ans">
+                                        <div class="pmu-edit-questionnaire-text d-flex">
+                                            <input type="text" class="form-control" placeholder="Type Here..." name="questions[${id[1]}][${id[2] ?? newAddQuestionQuiz}][options][]" required>
+    
+                                            <div class="update-remove-action1">
+                                            <button type="button" class="remove-option remove-option1">Remove Option</button>
+                                            </div>
+                                            <div class="pmu-answer-check-item">
+                                                <div class="pmucheckbox1">
+                                                    <input type="radio" class="" name="questions[${id[1]}][${id[2] ?? newAddQuestionQuiz}][correct]" id="answer-option-${oplength}-${id[2] ?? newAddQuestionQuiz}-${id[1]}" value="${oplength}">
+                                                    <label for="answer-option-${oplength}-${id[2] ?? newAddQuestionQuiz}-${id[1]}">&nbsp</label>
+                                                </div>
+                                                <div class="pmu-add-questionnaire-tooltip">
+                                                    <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
+                                                        <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                                    </div> 
+                                                    <script>
+                                                    $(function() {
+                                                        $('[data-bs-toggle="tooltip"]').tooltip();
+                                                    });
+                                                    </script>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div> 
+                            
+                        </div>`;
+        $(this).siblings('.options').append(op_html);
+    });
+
+    $(document).on('click', '.remove-new-question', function () {
+        $(this).closest('.question').remove();
+        let id = $(this).attr('data-id');
+        let newAddQuestionQuiz = $(`#newQuestionQuizListing${id} .question`).length;
+        console.log(newAddQuestionQuiz);
+        if(newAddQuestionQuiz==0) $(".saveQuestionQuiz"+id).addClass('d-none');
+    });
+
+    $(document).on('click', "#addListingQuestionSurvey", function () {
+        let id = $(this).attr('data-id');
+        let newAddQuestionQuiz = $(`#newQuestionSurveyListing${id} .survey-question`).length;
+        let oplength = $(`#newQuestionSurveyListing${id} .survey-question .options .pmu-answer-option-list .hidden${id}${newAddQuestionQuiz}`).length;
+        $(".saveQuestionSurvey"+id).removeClass('d-none');
+
+        newRowAdd = `<div class="survey-question">
+                <div class="pmu-edit-questionnaire-box">
+                <div class="pmu-edit-label">
+                    <div class="pmu-q-badge">Q</div>
+                </div>
+                <div class="pmu-edit-questionnaire-content">
+                    <input type="text" class="form-control"
+                        placeholder="Enter Question Title" name="survey_question[${id}][${newAddQuestionQuiz}][text]"
+                        value="">
+                </div>
+            </div>
+            <div class="pmu-answer-option-list survey-op-${id}-${newAddQuestionQuiz}">
+                <div class="pmu-answer-box">
+                    <div class="pmu-edit-questionnaire-ans">
+                        <div class="pmu-edit-questionnaire-text">
+                            <input type="text" class="form-control"
+                                placeholder="Type Here..." name="survey_question[${id}][${newAddQuestionQuiz}][options][]" value=""
+                                required>
+                        </div>
+                    </div>
+                </div>
+                <div class="pmu-answer-box">
+                    <div class="pmu-edit-questionnaire-ans">
+                        <div class="pmu-edit-questionnaire-text">
+                            <input type="text" class="form-control"
+                                placeholder="Type Here..." name="survey_question[${id}][${newAddQuestionQuiz}][options][]" value=""
+                                required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <button type="button" class="add-survey-option-for-question" id="addOption-${id}-${newAddQuestionQuiz}">Add Option</button>
+            <button type="button" class="remove-new-question-survey" data-id="${id}">Remove Question</button>
+        </div>`;
+        $('#newQuestionSurveyListing'+id).append(newRowAdd);
+    });
+
+    $(document).on('click', '.remove-new-question-survey', function () {
+        $(this).closest('.survey-question').remove();
+        let id = $(this).attr('data-id');
+        let newAddQuestionQuiz = $(`#newQuestionSurveyListing${id} .survey-question`).length;
+        console.log(newAddQuestionQuiz);
+        if(newAddQuestionQuiz==0) $(".saveQuestionSurvey"+id).addClass('d-none');
+    });
+
+    $(document).on('click', '.add-survey-option-for-question', function () {
+        let id = ($(this).attr('id').split('-'));
+        var op_html = `<div class="pmu-answer-box">
+                <div class="pmu-edit-questionnaire-ans">
+                    <div class="pmu-edit-questionnaire-text">
+                        <input type="text" class="form-control"
+                            placeholder="Type Here..." name="survey_question[${id[1]}][${id[2]}][options][]" value=""
+                            required>
+                    </div>
+                    <div class="pmu-add-questionnaire-action">
+                        <button type="button" class="remove-survey-option remove-question1" style="margin-bottom: 5px;">Remove Option</button>
+                    </div> 
+                </div>
+            </div>`;
+        $(this).siblings(".survey-op-"+id[1] + '-' + id[2]).append(op_html);
+    });
+
+    // $('#addNewQuestionOptionForm').on('submit', function(e){
+    //     e.preventDefault();
+    //     alert(1);
+    //     var form = $(this);
+    //     let formData = new FormData(this);
+    //     $.ajax({
+    //         type: "POST",
+    //         url: arkansasUrl + "/admin/add-new-question",
+    //         data: formData,
+    //         dataType: 'json',
+    //         contentType: false,
+    //         processData: false,
+    //         success: function() {
+    //             if (response.status == 200) {
+    //                 toastr.success(response.message);
+    //                 setInterval(function () {location.reload();}, 2000);
+    //                 // return false;
+    //             }
+    //             if (response.status == 201) {
+    //                 toastr.error(response.message);
+    //                 return false;
+    //             }
+    //         }
+    //    });
+    // });
 
     $(document).on('click', "#addListingSurveyOption", function () {
         let id = $(this).attr('data-id');

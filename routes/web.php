@@ -86,6 +86,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/admin/add-option', 'HomeController@addOption')->name('admin.add-option');
         Route::get('/admin/change-ordering/{chapterid}/{id}/{val}', 'HomeController@changeOrdering')->name('admin.change-answer');
         Route::get('/admin/change-answer-option/{id}', 'HomeController@changeAnswerOption')->name('admin.change-answer.option');
+        Route::post('/admin/add-new-question', 'HomeController@addNewQuestion')->name('admin.add.new.Question');
+        Route::post('/admin/add-new-question-survey', 'HomeController@addNewSurveyQuestion')->name('admin.add.new.survey.Question');
 
         Route::get('/earnings', 'HomeController@earnings')->name('Home.earnings');
         Route::get('/order-details/{id}', 'HomeController@orderDetails')->name('Home.order.details');
@@ -128,6 +130,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/delete-pdf/{id}', 'SuperAdminController@deletePdf')->name('SA.DeletePDF');
         Route::get('/super-admin/update-option-list', 'SuperAdminController@updateOptionList')->name('SA.UpdateOptionList');
         Route::get('/super-admin/update-question-list', 'SuperAdminController@updateQuestionList')->name('SA.UpdateQuestionList');
+
+        Route::post('/super-admin/add-new-question', 'SuperAdminController@addNewQuestion')->name('SA.add.new.Question');
+        Route::post('/super-admin/add-new-question-survey', 'SuperAdminController@addNewSurveyQuestion')->name('SA.add.new.survey.Question');
 
         Route::get('/super-admin/edit-course/{id}', 'SuperAdminController@editCourse')->name('SA.edit.course');
         Route::post('/super-admin/edit-course', 'SuperAdminController@updateCourseDetails')->name('SA.updateCourseDetails');

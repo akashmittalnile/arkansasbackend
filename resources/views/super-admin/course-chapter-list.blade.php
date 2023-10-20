@@ -335,7 +335,13 @@
                                         </div>
                                         <?php $v = 'AA'; ?>
                                         @endforeach
-
+                                        <form action="{{ route('SA.add.new.Question') }}" method="POST" id="addNewQuestionOptionForm">@csrf
+                                            <div id="newQuestionQuizListing{{ $quiz->id }}"></div>
+                                            <div class="pmu-add-answer-info">
+                                                <button type="submit" style="padding: 5px 2%;" class="d-none add-more saveQuestionQuiz{{$quiz->id}}">Save</button>
+                                                <a class="add-answer" data-id="{{ $quiz->id }}" id="addListingQuestionQuiz">Add Question</a>
+                                            </div>
+                                        </form>
                                     </div>
                                 </div>
                                 @elseif($data->type == 'pdf')
@@ -622,6 +628,14 @@
                                         <?php $sur = 'SSS'; ?>
                                         @endforeach
 
+                                        <form action="{{ route('SA.add.new.survey.Question') }}" method="POST" id="addNewQuestionSurveyForm">@csrf
+                                            <div id="newQuestionSurveyListing{{ $survey->id }}"></div>
+                                            <div class="pmu-add-answer-info">
+                                                <button type="submit" style="padding: 5px 2%;" class="d-none add-more saveQuestionSurvey{{$survey->id}}">Save</button>
+                                                <a class="add-answer" data-id="{{ $survey->id }}" id="addListingQuestionSurvey">Add Question</a>
+                                            </div>
+                                        </form>
+
                                     </div>
                                 </div>
                                 @else
@@ -844,7 +858,7 @@
             cursor: pointer;
             border-radius: 5px;
         }
-        .add-survey-option {
+        .add-option-for-new-question, .add-survey-option, .add-survey-option-for-question {
             margin-top: 5px;
             /* Add some top margin to separate from options */
             /* background: var(--yellow);
@@ -862,7 +876,7 @@
         } */
 
         /* Style for the remove question button */
-        .remove-question {
+        .remove-question, .remove-new-question-survey, .remove-new-question {
             margin-top: 10px;
             /* Adjust the value as needed */
             background-color: #f44336;

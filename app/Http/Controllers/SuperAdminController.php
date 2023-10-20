@@ -583,7 +583,7 @@ class SuperAdminController extends Controller
         $question_id = $id; /*question_id*/
         $data = ChapterQuiz::where('id',$question_id)->delete();
         ChapterQuizOption::where('quiz_id',$question_id)->delete();
-        return redirect('super-admin/course/'.$courseID.'/'.$chapterID)->with('message', 'Question deleted successfully');
+        return redirect()->back()->with('message', 'Question deleted successfully');
     }
 
     public function deleteOption($id) 
@@ -1448,6 +1448,84 @@ class SuperAdminController extends Controller
                 ]);
                 return response()->json(['status' => 200, 'message' => "Prerequisite " . ($request->answer==1 ? 'added' : 'removed') . " for this section"]);
             }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        } 
+    }
+
+    public function addNewQuestion(Request $request) {
+        try{
+
+            if(isset($request->questions) && count($request->questions) > 0){
+                foreach($request->questions as $key => $value){
+                    $quiz = ChapterQuiz::where('id', $key)->first();
+                    if(count($value) > 0){
+                        foreach($value as $keyQ => $valQ){
+                            $ChapterQuiz = new ChapterQuiz;
+                            $ChapterQuiz->title = $valQ['text'];
+                            $ChapterQuiz->type = 'quiz';
+                            $ChapterQuiz->chapter_id = $request->chapter_id;
+                            $ChapterQuiz->course_id = $request->courseID;
+                            $ChapterQuiz->step_id = $quiz->step_id;
+                            $ChapterQuiz->marks = $valQ['marks'] ?? 0;
+                            $ChapterQuiz->save();
+                            $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
+                            foreach ($valQ['options'] as $keyOp => $optionText) {
+                                $isCorrect = '0';
+                                if(isset($valQ['correct'])){
+                                    $isCorrect = ($valQ['correct']==$keyOp) ? '1' : '0';
+                                }
+                                $option = new ChapterQuizOption;
+                                $option->quiz_id = $quiz_id->id;
+                                $option->answer_option_key = $optionText;
+                                $option->is_correct = $isCorrect;
+                                $option->created_date = date('Y-m-d H:i:s');
+                                $option->status = 1;
+                                $option->save();
+                            }
+                        }
+                    }
+                }
+            }
+            return redirect()->back()->with('message', 'New question has been added successfully.');
+            // return response()->json(['status' => 200, 'message' => 'New question has been added successfully.']);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        } 
+    }
+
+    public function addNewSurveyQuestion(Request $request) {
+        try{
+
+            if(isset($request->survey_question) && count($request->survey_question) > 0){
+                foreach($request->survey_question as $key => $value){
+                    $quiz = ChapterQuiz::where('id', $key)->first();
+                    if(count($value) > 0){
+                        foreach($value as $keyQ => $valQ){
+                            $ChapterQuiz = new ChapterQuiz;
+                            $ChapterQuiz->title = $valQ['text'];
+                            $ChapterQuiz->type = 'survey';
+                            $ChapterQuiz->chapter_id = $request->chapter_id;
+                            $ChapterQuiz->course_id = $request->courseID;
+                            $ChapterQuiz->step_id = $quiz->step_id;
+                            $ChapterQuiz->save();
+                            $quiz_id = ChapterQuiz::orderBy('id','DESC')->first();
+                            foreach ($valQ['options'] as $keyOp => $optionText) {
+                                // dd($optionText);
+                                $option = new ChapterQuizOption;
+                                $option->quiz_id = $quiz_id->id;
+                                $option->answer_option_key = $optionText;
+                                $option->is_correct = '0';
+                                $option->created_date = date('Y-m-d H:i:s');
+                                $option->status = 1;
+                                $option->save();
+                            }
+                        }
+                    }
+                }
+            }
+            return redirect()->back()->with('message', 'New question has been added successfully.');
+            // return response()->json(['status' => 200, 'message' => 'New question has been added successfully.']);
         } catch (\Exception $e) {
             return $e->getMessage();
         } 
