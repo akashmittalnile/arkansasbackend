@@ -346,9 +346,15 @@ class SuperAdminController extends Controller
     public function courseChapter(Request $request, $courseID, $chapterID=null){
         try {
             $courseID = encrypt_decrypt('decrypt',$courseID);
-            if($chapterID != null && isset($chapterID)) $chapterID = encrypt_decrypt('decrypt',$chapterID);
-            else $chapterID = null;
             $chapters = CourseChapter::where('course_id',$courseID)->get();
+            if($chapterID != null && isset($chapterID)) {
+                $chapterID = encrypt_decrypt('decrypt',$chapterID);
+            } else {
+                if(count($chapters)>0){
+                   $firstChapter = CourseChapter::where('course_id',$courseID)->first();
+                    $chapterID = $firstChapter->id;  
+                } else $chapterID = null;
+            } 
             $datas = CourseChapterStep::where('course_chapter_id', $chapterID)->orderBy('sort_order')->get();
             return view('super-admin.course-chapter-list',compact('datas','chapters','courseID','chapterID'));
         } catch (\Exception $e) {
