@@ -368,21 +368,19 @@ class HomeController extends Controller
         return view('home.help-support');
     }
 
-    public function Addcourse2($courseID) 
+    public function add_course2($courseID) 
     {
         $courseID = encrypt_decrypt('decrypt',$courseID);
         $chapters = CourseChapter::where('course_id',$courseID)->get();
         if (count($chapters)>0) {
-            $chapterID = null;
-            $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
-            $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
+            $chapterID = CourseChapter::where('course_id',$courseID)->first();
+            return redirect()->route('Home.CourseList', ['courseID'=> encrypt_decrypt('encrypt', $courseID), 'chapterID'=> encrypt_decrypt('encrypt', $chapterID->id)]);
         } else {
             $chapterID = null;
             $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->get();
             $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->get();
+            return view('home.addcourse2-new',compact('quizes','datas','chapters','courseID','chapterID'));
         }
-        
-        return view('home.addcourse2-new',compact('quizes','datas','chapters','courseID','chapterID'));
     }
 
     public function course_list($courseID,$chapterID) 

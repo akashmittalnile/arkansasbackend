@@ -65,7 +65,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/performance', 'HomeController@performance')->name('Home.Performance');
         Route::get('/help-support', 'HomeController@helpSupport')->name('Home.HelpSupport');
         Route::get('/addcourse', 'HomeController@addcourse')->name('Home.Addcourse');
-        Route::get('/admin/addcourse2/{courseID}', 'HomeController@addcourse2')->name('Home.Addcourse2');
+        Route::get('/admin/addcourse2/{courseID}', 'HomeController@add_course2')->name('Home.Addcourse2');
         Route::get('/admin/addcourse2/{courseID}/{chapterID}', 'HomeController@course_list')->name('Home.CourseList');
         Route::post('/submitcourse', 'HomeController@submitcourse')->name('Home.submitcourse');
         Route::post('/submitquestion', 'HomeController@submitquestion')->name('Home.SaveQuestion');

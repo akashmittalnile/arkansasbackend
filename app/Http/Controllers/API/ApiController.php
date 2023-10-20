@@ -510,7 +510,7 @@ class ApiController extends Controller
                                 $join->on('course.admin_id', '=', 'users.id');
                             })->leftJoin('category as cat', 'cat.id', '=', 'course.category_id');
 
-                            if($request->filled('title')) $value->where('product.name', 'like', '%'.$request->title.'%');
+                            if($request->filled('title')) $value->where('course.title', 'like', '%'.$request->title.'%');
                             if($request->filled('category')) $value->whereIntegerInRaw('course.category_id', $request->category);
                             if($request->filled('price')){
                                 if($request->price == 1) $value->orderByDesc('course.course_fee');
