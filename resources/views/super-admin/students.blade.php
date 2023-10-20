@@ -8,14 +8,14 @@
             </div>
             <div class="pmu-search-filter wd70">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group search-form-group">
                             <input type="text" class="form-control" name="Start Date"
                                 placeholder="Search by Student name, order id etc">
                             <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-6">
                         <div class="form-group">
                             <select class="form-control">
                                 <option>Select Account Type!</option>
@@ -24,11 +24,11 @@
                             </select>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <!-- <div class="col-md-4">
                         <div class="form-group">
                             <a class="Accountapproval-btn" href="">Account approval Request</a>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
             </div>
         </div>
@@ -48,16 +48,16 @@
                                 <div class="creator-table-content">
                                     <div class="creator-profile-info">
                                         <div class="creator-profile-image">
-                                            @if (!empty($data->profile_image))
-                                                <img src="{!! url('assets/upload/profile-image/'.$data->profile_image) !!}">
+                                            @if ($data->profile_image!=null && $data->profile_image!="")
+                                                <img src="{!! url('/upload/profile-image/'.$data->profile_image) !!}">
                                             @else
                                                 <img src="{!! url('assets/superadmin-images/no-image.png') !!}">
                                             @endif
                                             
                                         </div>
                                         <div class="creator-profile-text">
-                                            <h2>{{ ucfirst($data->first_name) }}{{ ucfirst($data->last_name) }}</h2>
-                                            <p>02 Completed Course</p>
+                                            <h2>{{ ucfirst($data->first_name) }} {{ ucfirst($data->last_name) }}</h2>
+                                            <!-- <p>02 Completed Course</p> -->
                                         </div>
                                     </div>
                                 </div>

@@ -29,8 +29,8 @@
                         <div class="user-side-profile">
                             <div class="side-profile-item">
                                 <div class="side-profile-media">
-                                    @if (!empty($data->profile_image))
-                                        <img src="{!! url('assets/upload/profile-image/'.$user->profile_image) !!}">
+                                    @if ($data->profile_image!=null && $data->profile_image!="")
+                                        <img src="{!! url('upload/profile-image/'.$data->profile_image) !!}">
                                     @else
                                         <img src="{!! url('assets/superadmin-images/no-image.png') !!}">
                                     @endif
@@ -50,7 +50,7 @@
                                             </div>
                                             <div class="side-profile-total-content">
                                                 <h2>Email Address</h2>
-                                                <p>{{ $data->email }}</p>
+                                                <p>{{ $data->email ?? "NA" }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -62,7 +62,7 @@
                                             </div>
                                             <div class="side-profile-total-content">
                                                 <h2>Phone No.</h2>
-                                                <p>{{ $data->phone }}</p>
+                                                <p>{{ $data->phone ?? "NA" }}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -111,7 +111,7 @@
                                             </select>
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-4">
                                         <div class="form-group search-form-group">
                                             <input type="text" class="form-control" name="Start Date"
                                                 placeholder="Search by course name, Tags Price">
@@ -123,6 +123,11 @@
                                             <input type="date" class="form-control">
                                         </div>
                                     </div>
+                                    <div class="col-md-2">
+                                        <div class="form-group">
+                                            <button type="submit" class="cancel-btn">Search</button>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -130,6 +135,8 @@
                         <div class="pmu-content-list">
                             <div class="pmu-content">
                                 <div class="row">
+
+                                    @forelse($course as $val)
                                     <div class="col-md-12">
                                         <div class="course-item">
                                             <div class="course-item-inner">
@@ -137,16 +144,16 @@
                                                     <a data-fancybox="" data-type="iframe"
                                                         data-src="https://www.facebook.com/plugins/video.php?height=314&amp;href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&amp;show_text=false&amp;width=560&amp;t=0"
                                                         href="javascript:;">
-                                                        <img src="{!! url('assets/superadmin-images/1.png') !!}">
-                                                        <div class="course-video-icon"><img src="{!! url('assets/superadmin-images/video.svg') !!}">
-                                                        </div>
+                                                        <video src="{{ asset('upload/disclaimers-introduction/'.$val->introduction_image) }}"></video>
+                                                        <!-- <div class="course-video-icon"><img src="{!! url('assets/superadmin-images/video.svg') !!}"></div> -->
                                                     </a>
                                                 </div>
                                                 <div class="course-item-content">
-                                                    <div class="coursestatus"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
-                                                        Completed Course Successfully</div>
-                                                    <h2>What Do You Know About Tattoos and Body Piercing?</h2>
-                                                    <div class="course-price">$499.00</div>
+                                                    <div class="{{ ($val->status==1) ? 'coursestatus' : 'coursestatus-unpublish' }}"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
+                                                        @if($val->status==1) Completed Course Successfully @else Incompleted Course @endif
+                                                    </div>
+                                                    <h2>{{ $val->title ?? "NA" }}</h2>
+                                                    <div class="course-price">${{ number_format((float)$val->buy_price, 2) }}</div>
                                                     <div class="chapter-test-info">
                                                         <div class="chapter-text">Chapter 34</div>
                                                         <div class="chapter-action"><a href="#">Test Results</a>
@@ -197,73 +204,11 @@
                                             </div>
                                         </div>
                                     </div>
+                                    @empty
+                                    @endforelse
 
-                                    <div class="col-md-12">
-                                        <div class="course-item">
-                                            <div class="course-item-inner">
-                                                <div class="course-item-image">
-                                                    <a data-fancybox="" data-type="iframe"
-                                                        data-src="https://www.facebook.com/plugins/video.php?height=314&amp;href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&amp;show_text=false&amp;width=560&amp;t=0"
-                                                        href="javascript:;">
-                                                        <img src="{!! url('assets/superadmin-images/1.png') !!}">
-                                                        <div class="course-video-icon"><img src="{!! url('assets/superadmin-images/video.svg') !!}">
-                                                        </div>
-                                                    </a>
-                                                </div>
-                                                <div class="course-item-content">
-                                                    <div class="coursestatus"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
-                                                        Completed Course Successfully</div>
-                                                    <h2>What Do You Know About Tattoos and Body Piercing?</h2>
-                                                    <div class="course-price">$499.00</div>
-                                                    <div class="chapter-test-info">
-                                                        <div class="chapter-text">Chapter 34</div>
-                                                        <div class="chapter-action"><a href="#">Test Results</a>
-                                                        </div>
-                                                    </div>
-
-                                                </div>
-                                            </div>
-                                            <div class="course-info-list">
-                                                <ul>
-                                                    <li>
-                                                        <div class="course-info-box">
-                                                            <div class="course-info-text">Course Start Date:
-                                                            </div>
-                                                            <div class="course-info-value">26 Jun 2023</div>
-                                                        </div>
-                                                    </li>
-
-                                                    <li>
-                                                        <div class="course-info-box">
-                                                            <div class="course-info-text">Reattempt Test Date:
-                                                            </div>
-                                                            <div class="course-info-value">26 Jul 2023</div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <div class="course-info-box">
-                                                            <div class="course-info-text">Last Open: </div>
-                                                            <div class="course-info-value"> 26 May, 2023;
-                                                                09:30AM</div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <div class="course-info-box">
-                                                            <div class="course-info-text">Payment completed via
-                                                                Credit Card:</div>
-                                                            <div class="course-info-value">XXXX8987 </div>
-                                                        </div>
-                                                    </li>
-
-                                                    <li>
-                                                        <div class="course-info-action">
-                                                            <a href="">Send Invoice to email</a>
-                                                            <a href="">Download Invoice</a>
-                                                        </div>
-                                                    </li>
-                                                </ul>
-                                            </div>
-                                        </div>
+                                    <div class="pmu-table-pagination">
+                                        {{$course->appends(Request::except('page'))->links('pagination::bootstrap-4')}}
                                     </div>
                                 </div>
                             </div>

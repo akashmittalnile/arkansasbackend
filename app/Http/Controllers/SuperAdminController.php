@@ -749,12 +749,20 @@ class SuperAdminController extends Controller
         }
     }
     
-    public function student_detail($id) 
+    public function student_detail($id, Request $request) 
     {
         try {
             $user_id = encrypt_decrypt('decrypt',$id);
             $data = User::where('id',$user_id)->first();
-        return view('super-admin.student-detail',compact('data'));
+
+            $course = DB::table('user_courses as uc')->leftJoin('course as c', 'c.id', '=', 'uc.course_id');
+            if($request->filled('status')) $course->where('uc.status', $request->status);
+            if($request->filled('title')) $course->where('c.title', 'like', '%' . $request->title . '%');
+            if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
+            $course = $course->where('uc.user_id', $user_id)->select('uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image')->paginate(3);
+
+
+        return view('super-admin.student-detail',compact('data', 'course'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

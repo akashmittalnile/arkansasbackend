@@ -42,6 +42,9 @@ class AuthController extends Controller
             }
 
             $user = Auth::user();
+            if($user->profile_image!="" && $user->profile_image!=null){
+                $user->profile_image = url('/upload/profile-image/'.$user->profile_image);
+            }else $user->profile_image= null;
             return response()->json([
                 'user' => $user,
                 'status' => true,

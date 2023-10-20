@@ -518,30 +518,34 @@ class ApiController extends Controller
                             } else $value->orderBy('course.id', 'DESC');
                             
                             $value = $value->where('course.status', 1)->where('course.id', $item->object_id)->select('users.first_name', 'users.last_name', 'users.profile_image', 'users.category_name', 'course.*', 'cat.id as catid', 'cat.name as catname')->orderBy('course.id', 'DESC')->first();
-                            $temp['course_fee'] = $value->course_fee;
-                            $temp['valid_upto'] = $value->valid_upto;
-                            if (!empty($value->introduction_image)) {
-                                $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
-                            } else {
-                                $temp['introduction_video'] = '';
+
+                            if(isset($value->id)){
+                                $temp['course_fee'] = $value->course_fee ?? null;
+                                $temp['valid_upto'] = $value->valid_upto ?? null;
+                                if (!empty($value->introduction_image)) {
+                                    $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                                } else {
+                                    $temp['introduction_video'] = '';
+                                }
+                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
+                                if (isset($exists)) {
+                                    $temp['isLike'] = 1;
+                                } else {
+                                    $temp['isLike'] = 0;
+                                }
+                                $temp['title'] = $value->title;
+                                if ($value->profile_image) {
+                                    $profile_image = url('upload/profile-image/'.$value->profile_image);
+                                } else {
+                                    $profile_image = '';
+                                }
+                                $temp['content_creator_image'] = $profile_image;
+                                $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
+                                $temp['category_id'] = isset($value->catid) ? $value->catid : '';
+                                $temp['category_name'] = isset($value->catname) ? $value->catname : '';
+                                $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
                             }
-                            $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 1)->first();
-                            if (isset($exists)) {
-                                $temp['isLike'] = 1;
-                            } else {
-                                $temp['isLike'] = 0;
-                            }
-                            $temp['title'] = $value->title;
-                            if ($value->profile_image) {
-                                $profile_image = url('upload/profile-image/'.$value->profile_image);
-                            } else {
-                                $profile_image = '';
-                            }
-                            $temp['content_creator_image'] = $profile_image;
-                            $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
-                            $temp['category_id'] = isset($value->catid) ? $value->catid : '';
-                            $temp['category_name'] = isset($value->catname) ? $value->catname : '';
-                            $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
+                            
                         } else {
                             $value = Product::leftJoin('category as cat', 'cat.id', '=', 'product.category_id');
 
@@ -553,55 +557,60 @@ class ApiController extends Controller
                             } else $value->orderBy('product.id', 'DESC');
                             
                             $value = $value->where('product.status', 1)->where('product.id', $item->object_id)->orderBy('product.id', 'DESC')->select('product.*', 'cat.id as catid', 'cat.name as catname')->first();
-                            $temp['price'] = $value->price;
-                            $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
-                            $datas_image = array();
-                            foreach ($all_products_image as $k => $val) {
-                                $datasImage = url('upload/products/' . $val->attribute_value);
-                                $datas_image[] = $datasImage;
+
+                            if(isset($value->id)){
+                               $temp['price'] = $value->price;
+                                $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                                $datas_image = array();
+                                foreach ($all_products_image as $k => $val) {
+                                    $datasImage = url('upload/products/' . $val->attribute_value);
+                                    $datas_image[] = $datasImage;
+                                }
+                                $temp['Product_image'] = $datas_image;
+                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
+                                if (isset($exists)) {
+                                    $temp['isLike'] = 1;
+                                } else {
+                                    $temp['isLike'] = 0;
+                                }
+                                $temp['title'] = $value->name;
+                                $User = User::where('id', $value->added_by)->first();
+                                $temp['creator_name'] = $User->first_name.' '.$User->last_name;
+                                if ($User->profile_image == '') {
+                                    $profile_image = '';
+                                } else {
+                                    $profile_image = url('upload/profile-image/' . $User->profile_image);
+                                }
+                                $temp['creator_image'] = $profile_image;
+                                $temp['creator_id'] = $value->added_by;
+                                $temp['category_id'] = $value->catid ?? null;
+                                $temp['category_name'] = $value->catname ?? null; 
                             }
-                            $temp['Product_image'] = $datas_image;
-                            $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
-                            if (isset($exists)) {
-                                $temp['isLike'] = 1;
-                            } else {
-                                $temp['isLike'] = 0;
-                            }
-                            $temp['title'] = $value->name;
-                            $User = User::where('id', $value->added_by)->first();
-                            $temp['creator_name'] = $User->first_name.' '.$User->last_name;
-                            if ($User->profile_image == '') {
-                                $profile_image = '';
-                            } else {
-                                $profile_image = url('upload/profile-image/' . $User->profile_image);
-                            }
-                            $temp['creator_image'] = $profile_image;
-                            $temp['creator_id'] = $value->added_by;
-                            $temp['category_id'] = $value->catid ?? null;
-                            $temp['category_name'] = $value->catname ?? null;
                         }
-                        $temp['id'] = $value->id;
-                        $temp['description'] = $value->description;
-                        $tags = [];
-                        if(isset($value->tags)){
-                            foreach(unserialize($value->tags) as $valu){
-                                $name = Tag::where('id', $valu)->first();
-                                if(isset($name->id)){
-                                    $temparory['name'] = $name->tag_name ?? null;
-                                    $temparory['id'] = $name->id ?? null;
-                                    $tags[] = $temparory;
+                        if(isset($value->id)){
+                            $temp['id'] = $value->id;
+                            $temp['description'] = $value->description;
+                            $tags = [];
+                            if(isset($value->tags)){
+                                foreach(unserialize($value->tags) as $valu){
+                                    $name = Tag::where('id', $valu)->first();
+                                    if(isset($name->id)){
+                                        $temparory['name'] = $name->tag_name ?? null;
+                                        $temparory['id'] = $name->id ?? null;
+                                        $tags[] = $temparory;
+                                    }
                                 }
                             }
+                            $temp['tags'] = $tags;
+                            $temp['status'] = $value->status;
+                            $reviewAvg = DB::table('user_review as ur')->where('object_id', $item->object_id)->where('object_type', $type)->avg('rating');
+                            $temp['avg_rating'] = number_format($reviewAvg, 1);
+                            if($request->filled('rating'))
+                                if($reviewAvg < min($request->rating)) continue;
+                            $temp['rating'] = number_format((float)$reviewAvg, 1);
+                            $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
+                            $response[] = $temp;
                         }
-                        $temp['tags'] = $tags;
-                        $temp['status'] = $value->status;
-                        $reviewAvg = DB::table('user_review as ur')->where('object_id', $item->object_id)->where('object_type', $type)->avg('rating');
-                        $temp['avg_rating'] = number_format($reviewAvg, 1);
-                        if($request->filled('rating'))
-                            if($reviewAvg < min($request->rating)) continue;
-                        $temp['rating'] = number_format((float)$reviewAvg, 1);
-                        $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
-                        $response[] = $temp;
                     }
                 }
                 $category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
@@ -1872,7 +1881,7 @@ class ApiController extends Controller
                 'first_name' => 'required|string|max:255',
                 'last_name' => 'required|string|max:255',
                 'phone' => 'required',
-                'profile_image' => 'required|mimes:jpeg,png,jpg|image',
+                'profile_image' => 'mimes:jpeg,png,jpg|image',
             ]);
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
@@ -1887,7 +1896,7 @@ class ApiController extends Controller
                     if(File::exists($image_path)) {
                         unlink($image_path);
                     }
-                }
+                }else $img = auth()->user()->profile_image;
 
                 User::where('id', auth()->user()->id)->update([
                     'first_name' => $request->first_name,
