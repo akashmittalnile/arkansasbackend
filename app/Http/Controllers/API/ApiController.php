@@ -3110,6 +3110,14 @@ class ApiController extends Controller
                     $other_detail[] = $temp;
                 }
 
+                $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
+                $transaction->card_type = $transaction->card_type ?? "Mastercard";
+                $transaction->method_type = $transaction->method_type ?? "Card";
+                $transaction->card_no = $transaction->card_no ?? "7878";
+                $transaction->expiry = $transaction->expiry ?? "12/2026";
+
+                $order->transaction = $transaction;
+
                 $invoice = url('/')."/api/download-invoice/".encrypt_decrypt('encrypt', $order->id);
 
                 return response()->json(['status' => true, 'message' => 'Order details', 'data' => $order, 'items' => $other_detail, 'invoice' => $invoice]);

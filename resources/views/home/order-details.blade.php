@@ -161,6 +161,7 @@
                                 </div>
 
                                 <div class="col-md-4">
+
                                     <div class="cart-summary-info">
                                         <div class="cart-summary-item">
                                             <div class="cart-summary-text">Total Amount</div>
@@ -179,6 +180,38 @@
                                             <div class="cart-summary-total-value" id="total-cost">${{$amount}}</div>
                                         </div>
                                     </div>
+
+                                    @if($order->status == 1)
+                                    <div class="cart-summary-info">
+                                        <div class="added-bank-info-card">
+                                            <div class="added-bank-info-ico">
+                                                @if(strtolower($transaction->card_type)=='visa')
+                                                <img width="50" src="{{ asset('assets/website-images/visa-logo.png') }}">
+                                                @else
+                                                <img width="50" src="{{ asset('assets/website-images/mastercard.png') }}">
+                                                @endif
+                                            </div>
+                                            <div class="added-bank-info-text mx-2">
+                                                <h2>XXXX XXXX XXXX {{ $transaction->card_no ?? "7878" }}</h2>
+                                                <ul class="added-summary-list d-flex flex-column mt-2" style="gap: 0px">
+                                                    <li class="text-capitalize">{{ $transaction->method_type ?? "Card" }} Type : 
+                                                        <span>
+                                                            {{ $transaction->card_type ?? "Mastercard" }}
+                                                        </span>
+                                                    </li>
+                                                    <li>Expiry : <span>{{ $transaction->expiry ?? "12/2026" }}</span></li>
+                                                </ul>
+                                            </div>
+                                            <div class="added-bank-action">
+                                                <a class="edit-icon" href="https://www.google.com/"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                                                <a class="delete-icon" href="https://www.google.com/"><i class="fa fa-times" aria-hidden="true"></i></a>
+                                            </div>
+                                            <div class="added-bank-info-action">
+                                                <i class="fa fa-check-circle" aria-hidden="true"></i>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @endif
 
                                 </div>
                             </div>
