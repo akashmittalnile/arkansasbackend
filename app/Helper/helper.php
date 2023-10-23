@@ -14,13 +14,12 @@ use App\Models\Tag;
             $serverKey = 'AAAAxTieAd0:APA91bFIz4NpuYXv7Oxb5IF7yXTk5HnoabteitGl6_Qo3Eea6LNn60WiAf1QMYUkRJSYUqIg-jqsWcb6VHnkq1NwExtF910zJKjNo1mz0-nzfx6_sLSAGaCpRuQtVItUJRY6eCaNixVV';
             $msg = array(
                 'body'  => $data['msg'],
-                'title' => "ROADMANN",
-                'icon'  => "https://nileprojects.in/roadman/dev/public/assets/user_images/logo-icon.png", //Default Icon
+                'title' => "ARKANSAS",
+                'icon'  => "{{ asset('assets/website-images/logo-2.png') }}", //Default Icon
                 'sound' => 'default'
             );
             $arr= array(
-                //'to' => $token,
-                'to' => 'ff53h-6WRYmdJ7vi7_ogyH:APA91bGsWHXHpIBpEe6n7hu5dLJKsEVhBqVj29qstz3WliSWqnykJdrTk4B2LkjJlrug7v426VzMubzrhcvdM3WxW24hl2RyzogcUAqaGFVhQeOhzoS5K_8SolPRQ65-my8_MMCXsSnH',
+                'to' => $token,
                 'notification' => $msg,
                 'data' => $data,
                 "priority" => "high"

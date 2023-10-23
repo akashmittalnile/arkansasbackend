@@ -109,7 +109,7 @@
                                                 <select class="form-control" name="status">
                                                     <option @if(request()->status == "") selected @endif value="">Select Status</option>
                                                     <option @if(request()->status == '1') selected @endif value="1">Complete</option>
-                                                    <option @if(request()->status == '0') selected @endif value="0">Incomplete</option>
+                                                    <option @if(request()->status == '0') selected @endif value="0">Ongoing</option>
                                                 </select>
                                             </div>
                                         </div>
@@ -158,7 +158,7 @@
                                                 </div>
                                                 <div class="course-item-content">
                                                     <div class="{{ ($val->status==1) ? 'coursestatus' : 'coursestatus-unpublish' }}"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
-                                                        @if($val->status==1) Completed Course Successfully @else Incompleted Course @endif
+                                                        @if($val->status==1) Completed Course Successfully @else Ongoing Course @endif
                                                     </div>
                                                     <h2>{{ $val->title ?? "NA" }}</h2>
                                                     <div class="course-price">${{ number_format((float)$val->buy_price, 2) }}</div>

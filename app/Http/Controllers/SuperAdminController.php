@@ -15,6 +15,7 @@ use App\Models\Product;
 use App\Models\Category;
 use App\Models\Notification;
 use App\Models\NotificationCreator;
+use App\Models\Notify;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\ProductAttibutes;
@@ -903,6 +904,43 @@ class SuperAdminController extends Controller
                     }
                 }
             }
+
+            if(($request->PushNotificationTo == 1) || ($request->PushNotificationTo==2 && $request->ChooseContenttype == 'A')){
+                $user = User::where('role', $request->PushNotificationTo)->pluck('fcm_token', 'id');
+                foreach($user as $val){
+                    $data = array(
+                        'msg' => $request->description,
+                        'title' => $request->title
+                    );
+                    if($request->PushNotificationTo == 1){
+                        sendNotification($val->fcm_token ?? "fAzPdq6wSKymZfj6W7PDK1:APA91bEJKGPoiSmtGEnbm_zuJqX1yTCuDq-eV8RBnN9eCD7iH3sixluw8nHFx673uIt3KTsmbrTY5iA2wHYOawkOCXxrVE-TvfjF7diWHb8rMkwwEWrft6Y18bHxniMLI5XdhgqivSfz", $data);  
+                    }
+                    $notify = new Notify;
+                    $notify->added_by = auth()->user()->id;
+                    $notify->user_id = $val->id ?? null;
+                    $notify->title = $request->title;
+                    $notify->message = $request->description;
+                    $notify->is_seen = '0';
+                    $notify->created_at = date('Y-m-d H:i:s');
+                    $notify->updated_at = date('Y-m-d H:i:s');
+                    $notify->save();
+                }
+            } else if($request->PushNotificationTo==2 && $request->ChooseContenttype == 'A'){
+                if(count($request->cc) > 0){
+                    foreach($request->cc as $val){
+                        $notify = new Notify;
+                        $notify->added_by = auth()->user()->id;
+                        $notify->user_id = $val;
+                        $notify->title = $request->title;
+                        $notify->message = $request->description;
+                        $notify->is_seen = '0';
+                        $notify->created_at = date('Y-m-d H:i:s');
+                        $notify->updated_at = date('Y-m-d H:i:s');
+                        $notify->save();
+                    }
+                }
+                
+            } 
 
             return redirect()->route('SA.Notifications')->with('message', 'New notification added successfully.');
         } catch (\Exception $e) {

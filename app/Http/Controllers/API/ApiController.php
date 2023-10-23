@@ -2151,8 +2151,9 @@ class ApiController extends Controller
                     $cart->admin_cut_value = $admin_value;
                     $cart->quantity = 1;
                     $cart->save();
+                    $cart_count = AddToCart::where('userid', $user_id)->count();
                     if ($cart) {
-                        return response()->json(['status' => true, 'message' => 'Added to cart']);
+                        return response()->json(['status' => true, 'message' => 'Added to cart', 'cart_count' => $cart_count ?? 0]);
                     } else {
                         return response()->json(['status' => true, 'message' => 'Something went wrong!']);
                     }
@@ -2455,6 +2456,8 @@ class ApiController extends Controller
 
                         }else{
                             $temp['product_id'] = $value->id ?? 0;
+                            $productImg = ProductAttibutes::where('product_id', $value->id)->where('attribute_code', 'Image')->first();
+                            $temp['Product_image'][0] = (isset($productImg->attribute_value) && $productImg->attribute_value!="") ? url('upload/products/'.$productImg->attribute_value):null;
                         }
 
                         $temp['item_id'] = $value->itemid ?? null;
@@ -3152,5 +3155,51 @@ class ApiController extends Controller
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
+    }
+
+    public function sendNotification($request)
+    {
+        $url = 'https://fcm.googleapis.com/fcm/send';
+        //$serverKey = env('FIREBASE_SERVER_KEY'); // ADD SERVER KEY HERE PROVIDED BY FCM
+        $data = array(
+            'msg' => "hey",
+            'title' => "hi"
+        );
+        $serverKey = 'AAAAxTieAd0:APA91bFIz4NpuYXv7Oxb5IF7yXTk5HnoabteitGl6_Qo3Eea6LNn60WiAf1QMYUkRJSYUqIg-jqsWcb6VHnkq1NwExtF910zJKjNo1mz0-nzfx6_sLSAGaCpRuQtVItUJRY6eCaNixVV';
+        $msg = array(
+            'body'  => $data['msg'],
+            'title' => "ARKANSAS",
+            'icon'  => "{{ asset('assets/website-images/logo-2.png') }}", //Default Icon
+            'sound' => 'default'
+        );
+        $arr= array(
+            'to' => $request->token,
+            'notification' => $msg,
+            'data' => $data,
+            "priority" => "high"
+        );
+        $encodedData = json_encode($arr);
+        $headers = [
+            'Authorization:key=' . $serverKey,
+            'Content-Type: application/json',
+        ];
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($ch, CURLOPT_HTTP_VERSION, CURL_HTTP_VERSION_1_1);
+        // Disabling SSL Certificate support temporarly
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
+        // Execute post
+        $result = curl_exec($ch);
+        if ($result === FALSE) {
+            die('Curl failed: ' . curl_error($ch));
+        }
+        // Close connection
+        curl_close($ch);
     }
 }

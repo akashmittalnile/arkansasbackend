@@ -10,6 +10,7 @@ use App\Models\Transaction;
 use App\Models\UserCourse;
 use App\Models\WalletBalance;
 use App\Models\WalletHistory;
+use App\Models\AddToCart;
 use Illuminate\Http\Request;
 use Stripe;
 use Illuminate\Support\Facades\Validator;
@@ -98,8 +99,9 @@ class StripeController extends Controller
                         $history->status = 1;
                         $history->save();
                     }
+                    $cart_count = AddToCart::where('userid', auth()->user()->id)->count();
                     return response()->json(["status" => true, "message" => "Payment successfully done.", 'receipt URL' => $charge->receipt_url,
-                    ]);
+                    'cart_count' => $cart_count ?? 0]);
                 } else {
                     return response()->json(["status" => false, "message" => "Something went wrong.", 'receipt URL' => $charge->receipt_url ]);
                 }
