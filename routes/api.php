@@ -36,6 +36,8 @@ Route::get('thank-you/{quizId}/{userId}', [ApiController::class, "resultSurvey"]
 Route::get('download-pdf/{id}/{uid}', [ApiController::class, "generate_pdf"]);
 Route::get('download-invoice/{id}', [ApiController::class, "download_invoice"]);
 
+Route::post('push-notification', [ApiController::class, "sendNotificationApi"]);
+
 Route::middleware('auth:sanctum')->group(function () {
     Route::post('logout', [AuthController::class, "logout"]);
     Route::get('course-listing', [ApiController::class, "course_listing"]);

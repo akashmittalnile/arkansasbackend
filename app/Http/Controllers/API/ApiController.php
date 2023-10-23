@@ -3157,25 +3157,22 @@ class ApiController extends Controller
         }
     }
 
-    public function sendNotification($request)
+    public function sendNotificationApi(Request $request)
     {
         $url = 'https://fcm.googleapis.com/fcm/send';
-        //$serverKey = env('FIREBASE_SERVER_KEY'); // ADD SERVER KEY HERE PROVIDED BY FCM
-        $data = array(
-            'msg' => "hey",
-            'title' => "hi"
-        );
-        $serverKey = 'AAAAxTieAd0:APA91bFIz4NpuYXv7Oxb5IF7yXTk5HnoabteitGl6_Qo3Eea6LNn60WiAf1QMYUkRJSYUqIg-jqsWcb6VHnkq1NwExtF910zJKjNo1mz0-nzfx6_sLSAGaCpRuQtVItUJRY6eCaNixVV';
+        $serverKey = 'AAAArLOz8H4:APA91bEFEqNkNlnmUsegFRwkU2nlX5FZ9z7G7LzLzuolkmqwLTIR0jijjmTMAKg1Ik4thMroyPU82NYsxzEVH4OXvhiZQLTgxjMamiIpPXSUy7N71A1OtcjXtVJlLHn3-nMkVNqHVpcV'; // ADD SERVER KEY HERE PROVIDED BY FCM
         $msg = array(
-            'body'  => $data['msg'],
-            'title' => "ARKANSAS",
-            'icon'  => "{{ asset('assets/website-images/logo-2.png') }}", //Default Icon
+            'body'  => "Testing",
+            'title' => "Arkansas",
             'sound' => 'default'
         );
-        $arr= array(
+        $arr = array(
             'to' => $request->token,
             'notification' => $msg,
-            'data' => $data,
+            'data' => array(
+                'title' => 'Testing',
+                'msg' => "Only for testing purpose",
+            ),
             "priority" => "high"
         );
         $encodedData = json_encode($arr);
@@ -3196,6 +3193,7 @@ class ApiController extends Controller
         curl_setopt($ch, CURLOPT_POSTFIELDS, $encodedData);
         // Execute post
         $result = curl_exec($ch);
+        die($result);
         if ($result === FALSE) {
             die('Curl failed: ' . curl_error($ch));
         }

@@ -11,7 +11,7 @@ use App\Models\Tag;
         {
             $url = 'https://fcm.googleapis.com/fcm/send';
             //$serverKey = env('FIREBASE_SERVER_KEY'); // ADD SERVER KEY HERE PROVIDED BY FCM
-            $serverKey = 'AAAAxTieAd0:APA91bFIz4NpuYXv7Oxb5IF7yXTk5HnoabteitGl6_Qo3Eea6LNn60WiAf1QMYUkRJSYUqIg-jqsWcb6VHnkq1NwExtF910zJKjNo1mz0-nzfx6_sLSAGaCpRuQtVItUJRY6eCaNixVV';
+            $serverKey = 'AAAArLOz8H4:APA91bEFEqNkNlnmUsegFRwkU2nlX5FZ9z7G7LzLzuolkmqwLTIR0jijjmTMAKg1Ik4thMroyPU82NYsxzEVH4OXvhiZQLTgxjMamiIpPXSUy7N71A1OtcjXtVJlLHn3-nMkVNqHVpcV';
             $msg = array(
                 'body'  => $data['msg'],
                 'title' => "ARKANSAS",
