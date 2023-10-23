@@ -90,4 +90,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('remove-cart', [ApiController::class, "remove_cart"]);
     Route::post('make-payment', [StripeController::class, "makePayment"]);
 
+    Route::get('notifications', [ApiController::class, 'getNotification']);
+    Route::get('clear-notifications', [ApiController::class, 'clearNotification']);
+
 });

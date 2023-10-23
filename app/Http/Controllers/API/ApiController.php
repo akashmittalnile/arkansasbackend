@@ -25,6 +25,7 @@ use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
 use App\Models\CourseChapter;
 use App\Models\CourseChapterStep;
+use App\Models\Notify;
 use App\Models\Tag;
 use App\Models\UserChapterStatus;
 use App\Models\UserCourse;
@@ -3152,6 +3153,24 @@ class ApiController extends Controller
                 'format' => 'Legal',
             ]);
             return $pdf->stream($order->order_number.'-invoice.pdf');
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function getNotification(){
+        try{
+            $notify = Notify::where('user_id', auth()->user()->id)->get();
+            return response()->json(['status' => true, 'message' => 'Notifications', 'data'=> $notify]);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function clearNotification(){
+        try{
+            $notify = Notify::where('user_id', auth()->user()->id)->delete();
+            return response()->json(['status' => true, 'message' => 'All Notifications Cleared']);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
