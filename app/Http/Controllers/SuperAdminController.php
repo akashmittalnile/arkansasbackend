@@ -26,6 +26,7 @@ use VideoThumbnail;
 use Illuminate\Support\Facades\File;
 use DB;
 use Maatwebsite\Excel\Facades\Excel;
+use PDF;
 
 class SuperAdminController extends Controller
 {
@@ -755,14 +756,15 @@ class SuperAdminController extends Controller
             $user_id = encrypt_decrypt('decrypt',$id);
             $data = User::where('id',$user_id)->first();
 
-            $course = DB::table('user_courses as uc')->leftJoin('course as c', 'c.id', '=', 'uc.course_id');
+            $course = DB::table('user_courses as uc')->join('course as c', 'c.id', '=', 'uc.course_id');
             if($request->filled('status')) $course->where('uc.status', $request->status);
             if($request->filled('title')) $course->where('c.title', 'like', '%' . $request->title . '%');
             if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
-            $course = $course->where('uc.user_id', $user_id)->select('uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image')->paginate(3);
+            $course = $course->where('uc.user_id', $user_id)->select('uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = c.id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND product_id = c.id) as order_id"))->orderByDesc('uc.id')->paginate(3);
 
 
-        return view('super-admin.student-detail',compact('data', 'course'));
+
+        return view('super-admin.student-detail',compact('data', 'course', 'id'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1537,6 +1539,26 @@ class SuperAdminController extends Controller
         } catch (\Exception $e) {
             return $e->getMessage();
         } 
+    }
+
+    public function downloadInvoice(Request $request, $id) {
+        try{    
+            $id = encrypt_decrypt('decrypt', $id);
+            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status')->first();
+
+            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'Image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
+
+            $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
+            
+            $pdf = PDF::loadView('home.pdf-invoice', compact('order', 'orderDetails', 'transaction'), [], [ 
+                'mode' => 'utf-8',
+                'title' => 'Order Invoice',
+                'format' => 'Legal',
+            ]);
+            return $pdf->stream($order->order_number.'-invoice.pdf');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 
 }

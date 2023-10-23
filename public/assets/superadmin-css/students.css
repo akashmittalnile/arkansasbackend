@@ -106,6 +106,9 @@ a.newcourse-btn {cursor: pointer; border-radius: 5px; background: var(--brown, #
 .course-info-list ul {margin: 0; padding: 0; list-style: none; }
 .course-info-list ul li{display: inline-block; margin-right: 20px}
 
+.coursestatus-unpublish {background: var(--white);color: var(--yellow);display: inline-block;padding: 8px 10px;border-radius: 5px;line-height: normal;margin-bottom: 10px; border: 1px solid var(--yellow);}
+.coursestatus-unpublish img {margin-right: 5px; vertical-align: text-bottom; display: none;}
+
 .course-info-box {display: flex; align-items: center; }
 .course-info-text {font-size: 14px; font-weight: 500; margin: 0; padding: 0; color: #212529; }
 .course-info-value {font-size: 14px; font-weight: 500; margin: 0; padding: 0; color:#8C9AA1; }

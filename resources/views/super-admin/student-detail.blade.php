@@ -102,33 +102,41 @@
                                 <h2>Courses</h2>
                             </div>
                             <div class="pmu-search-filter wd80">
-                                <div class="row g-2">
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <select class="form-control">
-                                                <option>Course</option>
-                                                <option>Products</option>
-                                            </select>
+                                <form action="">
+                                    <div class="row g-2">
+                                        <div class="col-md-3">
+                                            <div class="form-group">
+                                                <select class="form-control" name="status">
+                                                    <option @if(request()->status == "") selected @endif value="">Select Status</option>
+                                                    <option @if(request()->status == '1') selected @endif value="1">Complete</option>
+                                                    <option @if(request()->status == '0') selected @endif value="0">Incomplete</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group search-form-group">
+                                                <input type="text" class="form-control" name="title"
+                                                    placeholder="Search by course name" value="{{ request()->title ?? '' }}">
+                                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <input type="date" name="date" value="{{ request()->date ?? '' }}" class="form-control">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+                                                <a class="cancel-btn" style="padding: 12px 17px;" href="{{ route('SA.StudentDetail', $id) }}"><i class="las la-sync"></i></a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <button type="submit" style="padding: 13px 17px;" class="cancel-btn">Search</button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group search-form-group">
-                                            <input type="text" class="form-control" name="Start Date"
-                                                placeholder="Search by course name, Tags Price">
-                                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
-                                        </div>
-                                    </div>
-                                    <div class="col-md-3">
-                                        <div class="form-group">
-                                            <input type="date" class="form-control">
-                                        </div>
-                                    </div>
-                                    <div class="col-md-2">
-                                        <div class="form-group">
-                                            <button type="submit" class="cancel-btn">Search</button>
-                                        </div>
-                                    </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
 
@@ -144,7 +152,7 @@
                                                     <a data-fancybox="" data-type="iframe"
                                                         data-src="https://www.facebook.com/plugins/video.php?height=314&amp;href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&amp;show_text=false&amp;width=560&amp;t=0"
                                                         href="javascript:;">
-                                                        <video src="{{ asset('upload/disclaimers-introduction/'.$val->introduction_image) }}"></video>
+                                                        <video width="350" height="200" src="{{ asset('upload/disclaimers-introduction/'.$val->introduction_image) }}"></video>
                                                         <!-- <div class="course-video-icon"><img src="{!! url('assets/superadmin-images/video.svg') !!}"></div> -->
                                                     </a>
                                                 </div>
@@ -155,9 +163,11 @@
                                                     <h2>{{ $val->title ?? "NA" }}</h2>
                                                     <div class="course-price">${{ number_format((float)$val->buy_price, 2) }}</div>
                                                     <div class="chapter-test-info">
-                                                        <div class="chapter-text">Chapter 34</div>
-                                                        <div class="chapter-action"><a href="#">Test Results</a>
-                                                        </div>
+                                                        <div class="chapter-text">Chapter {{ $val->chapter_count ?? 0 }}</div>
+                                                        @if($val->status==1)
+                                                        <div class="chapter-action"><a href="">Test Results</a></div>
+                                                        @endif
+                                                        
                                                     </div>
 
                                                 </div>
@@ -166,38 +176,16 @@
                                                 <ul>
                                                     <li>
                                                         <div class="course-info-box">
-                                                            <div class="course-info-text">Course Start Date:
+                                                            <div class="course-info-text">Course Buy Date:
                                                             </div>
-                                                            <div class="course-info-value">26 Jun 2023</div>
-                                                        </div>
-                                                    </li>
-
-                                                    <li>
-                                                        <div class="course-info-box">
-                                                            <div class="course-info-text">Reattempt Test Date:
-                                                            </div>
-                                                            <div class="course-info-value">26 Jul 2023</div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <div class="course-info-box">
-                                                            <div class="course-info-text">Last Open: </div>
-                                                            <div class="course-info-value"> 26 May, 2023;
-                                                                09:30AM</div>
-                                                        </div>
-                                                    </li>
-                                                    <li>
-                                                        <div class="course-info-box">
-                                                            <div class="course-info-text">Payment completed via
-                                                                Credit Card:</div>
-                                                            <div class="course-info-value">XXXX8987 </div>
+                                                            <div class="course-info-value"> {{ date('d M Y', strtotime($val->created_date)) }}</div>
                                                         </div>
                                                     </li>
 
                                                     <li>
                                                         <div class="course-info-action">
                                                             <a href="">Send Invoice to email</a>
-                                                            <a href="">Download Invoice</a>
+                                                            <a target="_blank" href="{{ route('SA.download.invoice', encrypt_decrypt('encrypt', $val->order_id)) }}">Download Invoice</a>
                                                         </div>
                                                     </li>
                                                 </ul>
@@ -205,6 +193,14 @@
                                         </div>
                                     </div>
                                     @empty
+                                    <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+                                        <div>
+                                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                        </div>
+                                        <div class="font-weight-bold">
+                                            <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
+                                        </div>
+                                    </div>
                                     @endforelse
 
                                     <div class="pmu-table-pagination">
