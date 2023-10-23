@@ -1599,4 +1599,13 @@ class SuperAdminController extends Controller
         }
     }
 
+    public function clearNotification(Request $request) {
+        try{    
+            Notify::where('user_id', auth()->user()->id)->delete();
+            return redirect()->back()->with('message', 'All notification cleared.');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
 }

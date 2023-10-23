@@ -44,7 +44,7 @@
                             
                         </div>
                         @if(!empty(getNotification()) && count(getNotification()) > 0)
-                        <a href=""  target="_blank">
+                        <a href="{{ route('SA.clear.notification') }}" onclick="return confirm('Are you sure you want to clear all notifications?');">
                             <div class="notification-foot">
                                 Clear All Notifications 
                             </div>   

@@ -99,6 +99,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         
         Route::get('/download-earnings', 'HomeController@downloadEarnings')->name('Home.download.earnings');
         Route::get('/download-invoice/{id}', 'HomeController@downloadInvoice')->name('Home.download.invoice');
+
+        Route::get('/admin/clear-notification', 'HomeController@clearNotification')->name('Home.clear.notification');
     });
 
     Route::group(['middleware' => ['auth.superadmin']], function() {
@@ -175,7 +177,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/coupons', 'SuperAdminController@coupons')->name('SA.Coupons');
 
         Route::post('update-title-percentage/{id}', 'SuperAdminController@updateTitlePercentage')->name('SA.update.title.percentage');
-        Route::get('change-prerequisite', 'HomeController@changePrerequisite')->name('SA.change.prerequisite');
+        Route::get('change-prerequisite', 'SuperAdminController@changePrerequisite')->name('SA.change.prerequisite');
 
         Route::get('/super-admin/download-earnings', 'SuperAdminController@downloadEarnings')->name('SA.Download.Earnings');
 
@@ -184,6 +186,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/super-admin/store-notifications', 'SuperAdminController@storeNotifications')->name('SA.Store.Notifications');
        
         Route::get('/super-admin/download-invoice/{id}', 'SuperAdminController@downloadInvoice')->name('SA.download.invoice');
+
+        Route::get('/super-admin/clear-notification', 'SuperAdminController@clearNotification')->name('SA.clear.notification');
     });
     
 });

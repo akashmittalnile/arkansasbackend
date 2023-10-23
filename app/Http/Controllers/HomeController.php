@@ -10,6 +10,7 @@ use App\Models\CourseChapter;
 use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
 use App\Models\CourseChapterStep;
+use App\Models\Notify;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Tag;
@@ -1130,5 +1131,14 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             return $e->getMessage();
         } 
+    }
+
+    public function clearNotification(Request $request) {
+        try{    
+            Notify::where('user_id', auth()->user()->id)->delete();
+            return redirect()->back()->with('message', 'All notification cleared.');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
     }
 }
