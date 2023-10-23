@@ -23,27 +23,33 @@
                         </div>
                         <div class="notification-body">
                             
-                            <a href=""  target="_blank"><div class="notification-item">
-                                <div class="notification-item-icon"><i class="la la-bell"></i></div>
-                                <div class="notification-item-text">
-                                    <h2>Dishant registerd</h2>
-                                    <p><span><i class="fas fa-clock"></i>13-10-2023</span></p>
-                                </div>
-                            </div></a>
-                            
+                            @forelse(getNotification() as $val)
                             <div class="notification-item">
                                 <div class="notification-item-icon"><i class="la la-bell"></i></div>
                                 <div class="notification-item-text">
-                                    <h2>No new notification yet</h2>
+                                    <h2>{{ $val->message }}</h2>
+                                    <p><span><i class="fas fa-clock"></i>{{ date('d M, Y H:i') }}</span></p>
                                 </div>
                             </div>
+                            @empty
+                            <div class="d-flex flex-column align-items-center justify-content-center">
+                                <div>
+                                    <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                </div>
+                                <div class="font-weight-bold">
+                                    <p class="font-weight-bold" style="font-size: 1.2rem;">No notifications found </p> 
+                                </div>
+                            </div>
+                            @endforelse
                             
                         </div>
+                        @if(!empty(getNotification()) && count(getNotification()) > 0)
                         <a href=""  target="_blank">
                             <div class="notification-foot">
                                 Clear All Notifications 
                             </div>   
                         </a> 
+                        @endif
                     </div>
                 </li>
                 <li class="nav-item profile-dropdown dropdown">

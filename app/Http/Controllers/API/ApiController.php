@@ -1777,7 +1777,7 @@ class ApiController extends Controller
                 $exist = Review::where('userid', $user_id)->where('object_id', $object_id)->where('object_type', $object_type)->first();
                 if (isset($exist)) {
                     Review::where('id', $exist->id)->update(['rating' => $rating, 'review' => $comment]);
-                    return response()->json(['status' => true, 'Message' => 'Updated to Reviews']);
+                    return response()->json(['status' => true, 'Message' => 'Review updated successfully']);
                 } else {
                     $save = Review::create([
                         'userid' => $user_id,
@@ -1789,9 +1789,9 @@ class ApiController extends Controller
                         'status' => 1,
                     ]);
                     if ($save) {
-                        return response()->json(['status' => true, 'Message' => 'Review added successfully']);
+                        return response()->json(['status' => true, 'message' => 'Review added successfully']);
                     } else {
-                        return response()->json(['status' => false, 'Message' => 'Already reviewed']);
+                        return response()->json(['status' => false, 'message' => 'Already reviewed']);
                     }
                 }
             } else {

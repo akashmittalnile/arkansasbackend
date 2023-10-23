@@ -4,6 +4,7 @@ use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use App\Models\ChapterQuiz;
+use App\Models\Notify;
 use App\Models\Tag;
 
     if (!function_exists('sendNotification')) {
@@ -14,7 +15,7 @@ use App\Models\Tag;
             $serverKey = 'AAAArLOz8H4:APA91bEFEqNkNlnmUsegFRwkU2nlX5FZ9z7G7LzLzuolkmqwLTIR0jijjmTMAKg1Ik4thMroyPU82NYsxzEVH4OXvhiZQLTgxjMamiIpPXSUy7N71A1OtcjXtVJlLHn3-nMkVNqHVpcV';
             $msg = array(
                 'body'  => $data['msg'],
-                'title' => "ARKANSAS",
+                'title' => $data['title'] ?? "ARKANSAS",
                 'icon'  => "{{ asset('assets/website-images/logo-2.png') }}", //Default Icon
                 'sound' => 'default'
             );
@@ -183,5 +184,12 @@ use App\Models\Tag;
                  $output = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
             }
             return $output;
+        } 
+    }
+
+    if(! function_exists('getNotification')){
+        function getNotification() {
+            $notify = Notify::where('user_id', auth()->user()->id)->get();
+            return $notify;
         } 
     }

@@ -115,6 +115,9 @@ class AuthController extends Controller
 
     public function logout()
     {
+        User::where('id', auth()->user()->id)->update([
+            'fcm_token' => null
+        ]);
         Auth::user()->tokens()->delete();
         return response()->json([
             'status' => true,

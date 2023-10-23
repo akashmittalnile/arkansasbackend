@@ -906,14 +906,15 @@ class SuperAdminController extends Controller
             }
 
             if(($request->PushNotificationTo == 1) || ($request->PushNotificationTo==2 && $request->ChooseContenttype == 'A')){
-                $user = User::where('role', $request->PushNotificationTo)->pluck('fcm_token', 'id');
+                if($request->PushNotificationTo == 1) $user = User::where('role', 1)->orderByDesc('id')->get();
+                if($request->PushNotificationTo == 2) $user = User::where('role', 2)->orderByDesc('id')->get();
                 foreach($user as $val){
                     $data = array(
                         'msg' => $request->description,
                         'title' => $request->title
                     );
                     if($request->PushNotificationTo == 1){
-                        sendNotification($val->fcm_token ?? "fAzPdq6wSKymZfj6W7PDK1:APA91bEJKGPoiSmtGEnbm_zuJqX1yTCuDq-eV8RBnN9eCD7iH3sixluw8nHFx673uIt3KTsmbrTY5iA2wHYOawkOCXxrVE-TvfjF7diWHb8rMkwwEWrft6Y18bHxniMLI5XdhgqivSfz", $data);  
+                        sendNotification($val->fcm_token ?? "", $data);  
                     }
                     $notify = new Notify;
                     $notify->added_by = auth()->user()->id;
@@ -925,7 +926,7 @@ class SuperAdminController extends Controller
                     $notify->updated_at = date('Y-m-d H:i:s');
                     $notify->save();
                 }
-            } else if($request->PushNotificationTo==2 && $request->ChooseContenttype == 'A'){
+            } else if($request->PushNotificationTo==2 && $request->ChooseContenttype == 'S'){
                 if(count($request->cc) > 0){
                     foreach($request->cc as $val){
                         $notify = new Notify;
@@ -939,8 +940,7 @@ class SuperAdminController extends Controller
                         $notify->save();
                     }
                 }
-                
-            } 
+            }
 
             return redirect()->route('SA.Notifications')->with('message', 'New notification added successfully.');
         } catch (\Exception $e) {
