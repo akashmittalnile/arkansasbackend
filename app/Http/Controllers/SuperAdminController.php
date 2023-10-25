@@ -163,11 +163,109 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function performance() 
+    public function performance(Request $request) 
     {
         try {
-            $courses = Course::orderBy('id','DESC')->get();
-        return view('super-admin.performance',compact('courses'));
+            // dd(auth()->user()->id);
+            $tab = $request->tab ?? encrypt_decrypt('encrypt', 1);
+            if($request->filled('page')) $tab = encrypt_decrypt('encrypt', 3);
+            $over_month = $request->month ?? date('Y-m');
+            $earn = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->whereMonth('opd.created_date', date('m',strtotime($over_month)))->whereYear('opd.created_date', date('Y',strtotime($over_month)))->sum(\DB::raw('opd.admin_amount'));
+            $course = Course::where('admin_id', auth()->user()->id)->whereMonth('course.created_date', date('m',strtotime($over_month)))->whereYear('course.created_date', date('Y',strtotime($over_month)))->count();
+            $rating = Course::join('user_review as ur', 'ur.object_id', '=', 'course.id')->where('course.admin_id', auth()->user()->id)->where('ur.object_type', 1)->whereMonth('ur.created_date', date('m',strtotime($over_month)))->whereYear('ur.created_date', date('Y',strtotime($over_month)))->avg('ur.rating');
+            $over_graph_data = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->select(
+                DB::raw('sum(opd.admin_amount) as y'), 
+                DB::raw("DATE_FORMAT(opd.created_date,'%d') as x")
+                )->whereMonth('opd.created_date', date('m',strtotime($over_month)))->whereYear('opd.created_date', date('Y',strtotime($over_month)))->groupBy('x')->orderByDesc('x')->get()->toArray(); 
+            $over_graph = [];
+            $days = get_days_in_month(date('m',strtotime($over_month)), date('Y',strtotime($over_month)));
+            $x = collect($over_graph_data)->pluck('x')->toArray();
+            $y = collect($over_graph_data)->pluck('y')->toArray();
+            for($i=1; $i<=$days; $i++){
+                if(in_array( $i, $x )){
+                    $indx = array_search($i, $x);
+                    // dd($x[$indx]);
+                    $over_graph[$i-1]['x'] = (string) $i;
+                    $over_graph[$i-1]['y'] = $y[$indx];
+                }else{
+                    $over_graph[$i-1]['x'] = (string) $i;
+                    $over_graph[$i-1]['y'] = 0;
+                }
+            }
+
+
+
+            $creator_month = $request->creatormonth ?? date('Y-m');
+            $creator_earn = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', '!=', auth()->user()->id)->whereMonth('opd.created_date', date('m',strtotime($creator_month)))->whereYear('opd.created_date', date('Y',strtotime($creator_month)))->sum(\DB::raw('opd.amount - opd.admin_amount'));
+            $creator_course = Course::where('course.admin_id', '!=', auth()->user()->id)->whereMonth('course.created_date', date('m',strtotime($creator_month)))->whereYear('course.created_date', date('Y',strtotime($creator_month)))->count();
+            $creator_rating = Course::join('user_review as ur', 'ur.object_id', '=', 'course.id')->where('course.admin_id', '!=', auth()->user()->id)->where('ur.object_type', 1)->whereMonth('ur.created_date', date('m',strtotime($creator_month)))->whereYear('ur.created_date', date('Y',strtotime($creator_month)))->avg('ur.rating');
+            $creator_over_graph_data = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', '!=', auth()->user()->id)->select(
+                DB::raw('sum(opd.amount - opd.admin_amount) as y'), 
+                DB::raw("DATE_FORMAT(opd.created_date,'%d') as x")
+                )->whereMonth('opd.created_date', date('m',strtotime($creator_month)))->whereYear('opd.created_date', date('Y',strtotime($creator_month)))->groupBy('x')->orderByDesc('x')->get()->toArray(); 
+            $creator_over_graph = [];
+            $creator_days = get_days_in_month(date('m',strtotime($creator_month)), date('Y',strtotime($creator_month)));
+            $creator_x = collect($creator_over_graph_data)->pluck('x')->toArray();
+            $creator_y = collect($creator_over_graph_data)->pluck('y')->toArray();
+            for($i=1; $i<=$creator_days; $i++){
+                if(in_array( $i, $creator_x )){
+                    $indx = array_search($i, $creator_x);
+                    // dd($x[$indx]);
+                    $creator_over_graph[$i-1]['x'] = (string) $i;
+                    $creator_over_graph[$i-1]['y'] = $creator_y[$indx];
+                }else{
+                    $creator_over_graph[$i-1]['x'] = (string) $i;
+                    $creator_over_graph[$i-1]['y'] = 0;
+                }
+            }
+            
+
+
+
+            $user_month = $request->usermonth ?? date('Y-m');
+            $user_type = $request->type ?? 0;
+            $orders = DB::table('order_product_detail as opd')
+                ->leftJoin('course as c', 'c.id', '=', 'opd.product_id')
+                ->leftJoin('orders as o', 'o.id', '=', 'opd.order_id')
+                ->leftJoin('users as cc', 'cc.id', '=', 'c.admin_id')
+                ->leftJoin('users as u', 'u.id', '=', 'o.user_id')->select('opd.admin_amount', 'opd.amount', 'u.first_name','u.last_name', 'o.created_date', 'c.title', 'cc.first_name as ccf_name', 'cc.last_name as ccl_name', 'u.email')->where('opd.product_type', 1);
+            if($user_type==0) $orders->where('c.admin_id', auth()->user()->id);
+            else $orders->where('c.admin_id', '!=', auth()->user()->id);
+            $orders = $orders->whereMonth('opd.created_date', date('m', strtotime($user_month)))->whereYear('opd.created_date', date('Y',strtotime($user_month)))->orderByDesc('opd.id')->paginate(5);
+            $user = DB::table('course as c')->leftJoin('user_courses as uc', 'uc.course_id', '=', 'c.id');
+            if($user_type==0) $user->where('c.admin_id', auth()->user()->id);
+            else $user->where('c.admin_id', '!=', auth()->user()->id);
+            $user = $user->whereMonth('uc.created_date', date('m', strtotime($user_month)))->whereYear('uc.created_date', date('Y',strtotime($user_month)))->distinct('uc.user_id')->count();
+
+
+
+            $product_month = $request->productmonth ?? date('Y-m');
+            $total_product = Product::count();
+            $unpublish_product = Product::where('status', 0)->count();
+            $product = Product::orderByDesc('id')->get();
+            $product_graph_data = DB::table('order_product_detail as opd')->leftJoin('product as p', 'p.id', '=', 'opd.product_id')->where('opd.product_type', 2);
+            if($request->filled('product')) $product_graph_data->where('opd.product_id', encrypt_decrypt('decrypt', $request->product));
+            $product_graph_data = $product_graph_data->select(
+                DB::raw('sum(opd.amount) as y'), 
+                DB::raw("DATE_FORMAT(opd.created_date,'%d') as x")
+                )->whereMonth('opd.created_date', date('m',strtotime($product_month)))->whereYear('opd.created_date', date('Y',strtotime($product_month)))->groupBy('x')->orderByDesc('x')->get()->toArray(); 
+            $product_graph = [];
+            $product_days = get_days_in_month(date('m',strtotime($product_month)), date('Y',strtotime($product_month)));
+            $product_x = collect($product_graph_data)->pluck('x')->toArray();
+            $product_y = collect($product_graph_data)->pluck('y')->toArray();
+            for($i=1; $i<=$product_days; $i++){
+                if(in_array( $i, $product_x )){
+                    $indx = array_search($i, $product_x);
+                    // dd($x[$indx]);
+                    $product_graph[$i-1]['x'] = (string) $i;
+                    $product_graph[$i-1]['y'] = $product_y[$indx];
+                }else{
+                    $product_graph[$i-1]['x'] = (string) $i;
+                    $product_graph[$i-1]['y'] = 0;
+                }
+            }
+
+            return view('super-admin.performance',compact('tab', 'earn', 'course', 'rating', 'orders', 'over_graph', 'user', 'over_month', 'creator_earn', 'creator_course', 'creator_rating','creator_over_graph', 'creator_month', 'user_type', 'total_product', 'unpublish_product', 'product', 'product_graph'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

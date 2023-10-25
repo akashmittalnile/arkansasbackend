@@ -67,10 +67,10 @@ class StripeController extends Controller
                     foreach($orderDetails as $val){
                         $userCourse = UserCourse::where('course_id', $val->product_id)->where('user_id', auth()->user()->id)->update(['payment_id'=>$transactionId]);
                     }
-                    $walletBalance = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
+                    $walletBalance = WalletBalance::where('owner_id', 1)->where('owner_type', 3)->first();
                     $orderAdminAmount = Order::where('id', $request->order_id)->first();
                     if(isset($walletBalance->id)){
-                        WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->update([
+                        WalletBalance::where('owner_id', 1)->where('owner_type', 3)->update([
                             'balance' => $walletBalance->balance + $orderAdminAmount->admin_amount,
                             'updated_date' => date('Y-m-d H:i:s')
                         ]);
@@ -84,8 +84,8 @@ class StripeController extends Controller
                         $history->save();
                     }else{
                         $balance = new WalletBalance;
-                        $balance->owner_id = auth()->user()->id;
-                        $balance->owner_type = auth()->user()->role;
+                        $balance->owner_id = 1;
+                        $balance->owner_type = 3;
                         $balance->balance = $orderAdminAmount->admin_amount ?? 0;
                         $balance->created_date = date('Y-m-d H:i:s');
                         $balance->updated_date = date('Y-m-d H:i:s');

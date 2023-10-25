@@ -625,6 +625,22 @@ class HomeController extends Controller
             $course = new CourseChapter;
             $course->course_id = $last_id->id;
             $course->save();
+
+            $user = User::where('role', 3)->get();
+            if(count($user) > 0){
+                foreach($user as $val){
+                    $notify = new Notify;
+                    $notify->added_by = auth()->user()->id;
+                    $notify->user_id = $val->id;
+                    $notify->title = 'New Course';
+                    $notify->message = 'New Course ('.$request->input('title') . ') added by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name;
+                    $notify->is_seen = '0';
+                    $notify->created_at = date('Y-m-d H:i:s');
+                    $notify->updated_at = date('Y-m-d H:i:s');
+                    $notify->save();
+                }
+            }
+            
             return redirect('/');
 
         } catch (\Exception $e) {

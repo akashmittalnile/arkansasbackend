@@ -135,8 +135,8 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="Overview-info-card">
-                                    <select name="course" class="form-control text-capitalize" id="course-select">
+                                <div class="Overview-form-card">
+                                    <select name="course" class="form-control text-capitalize" id="course-select" style="padding: 16.5px 15px;">
                                         <option value="">Select Course</option>
                                         @foreach($courses as $val)
                                         <option @if(request()->course==encrypt_decrypt('encrypt',$val->id)) selected @endif value="{{encrypt_decrypt('encrypt',$val->id)}}">{{$val->title ?? "NA"}}</option>
@@ -146,7 +146,7 @@
                             </div>
                             <input type="hidden" value="{{encrypt_decrypt('encrypt', 3)}}" name="tab">
                             <div class="col-md-3">
-                                <div class="Overview-info-card">
+                                <div class="Overview-form-card">
                                     <input type="month" class="form-control" value="{{ request()->coursemonth ?? date('Y-m') }}" name="coursemonth" id="course-input">
                                 </div>
                             </div>

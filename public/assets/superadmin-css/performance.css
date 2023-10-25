@@ -39,3 +39,4 @@
 .Overview-rating {display: inline-block; padding: 5px; background: var(--yellow); color: #fff; border-radius: 5px; line-height: normal; text-transform: uppercase; font-weight: 600; }
 .Overview-rating img{vertical-align: bottom;}
  .Overview-form-card input.form-control {background: var(--white, #FFF); border-radius: 5px; font-size: 14px; border: 1px solid var(--brown); font-weight: 400; height: auto; padding: 0.8rem 0.6rem; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; color: var(--light-black, #6A6A6A); appearance: revert; }
+ .Overview-form-card select.form-control {background: var(--white, #FFF); border-radius: 5px; font-size: 14px; border: 1px solid var(--brown); font-weight: 400; height: auto; padding: 0.8rem 0.6rem; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; color: var(--light-black, #6A6A6A); appearance: revert; }
