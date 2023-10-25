@@ -2131,6 +2131,16 @@ class ApiController extends Controller
                         }  
                     }
                     
+                    if($request->object_type == 2){
+                        $alreadyAddedCart = AddToCart::where('userid', $user_id)->where('object_id', $request->object_id)->where('object_type', $request->object_type)->first();
+                        if(isset($alreadyAddedCart->id)){
+                            AddToCart::where('userid', $user_id)->where('object_id', $request->object_id)->where('object_type', $request->object_type)->update([
+                                'quantity' => $alreadyAddedCart->quantity + 1,
+                            ]);
+                            $cart_count = AddToCart::where('userid', $user_id)->count();
+                            return response()->json(['status' => true, 'message' => 'Added to cart', 'cart_count' => $cart_count ?? 0]);
+                        }
+                    }
                     $cart = new AddToCart;
                     $cart->userid = $user_id;
                     $cart->object_id = $request->object_id;
