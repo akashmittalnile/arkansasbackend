@@ -57,7 +57,7 @@
                             <div class="col-md-4">
                                 <div class="pmu-course-item">
                                     <div class="pmu-course-media">
-                                        <a href="products-details.html">
+                                        <a href="javascript:void(0)">
                                             <?php
                                                 $first_image = \App\Models\ProductAttibutes::where('product_id', $data->id)->first();
                                             ?>

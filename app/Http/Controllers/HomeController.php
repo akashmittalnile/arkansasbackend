@@ -14,6 +14,9 @@ use App\Models\Notify;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Tag;
+use App\Models\UserChapterStatus;
+use App\Models\UserCourse;
+use App\Models\UserQuizAnswer;
 use App\Models\WalletBalance;
 use App\Models\WalletHistory;
 use Illuminate\Support\Facades\Auth;
@@ -641,7 +644,7 @@ class HomeController extends Controller
                 }
             }
             
-            return redirect('/');
+            return redirect()->route('Home.CourseList', ['courseID'=> encrypt_decrypt('encrypt', $last_id->id), 'chapterID'=> encrypt_decrypt('encrypt', $course['id '])])->with('message', 'Chapter created successfully');
 
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -711,11 +714,11 @@ class HomeController extends Controller
             $image_name = $quiz->details;
             $image_path = public_path('upload/course/'.$image_name);
             if(File::exists($image_path)) {
-                CourseChapterStep::where('id',$id)->update([
-                    'details' => null,
-                    ]);
                 File::delete($image_path);
             }
+            CourseChapterStep::where('id',$id)->update([
+                'details' => null,
+            ]);
             return redirect('admin/addcourse2/'.$courseID.'/'.$chapterID)->with('message','Video deleted successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -734,11 +737,11 @@ class HomeController extends Controller
             $image_name = $quiz->details;
             $image_path = public_path('upload/course/'.$image_name);
             if(File::exists($image_path)) {
-                CourseChapterStep::where('id',$id)->update([
-                    'details' => null,
-                    ]);
                 File::delete($image_path);
             }
+            CourseChapterStep::where('id',$id)->update([
+                'details' => null,
+            ]);
             return redirect('admin/addcourse2/'.$courseID.'/'.$chapterID)->with('message','PDF deleted successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1153,6 +1156,96 @@ class HomeController extends Controller
         try{    
             Notify::where('user_id', auth()->user()->id)->delete();
             return redirect()->back()->with('message', 'All notification cleared.');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function students(Request $request) {
+        try{    
+            $datas = DB::table('order_product_detail as opd')
+            ->leftJoin('course as c', 'c.id', '=', 'opd.product_id')
+            ->leftJoin('orders as o', 'o.id', '=', 'opd.order_id')
+            ->leftJoin('users as u', 'u.id', '=', 'o.user_id');
+            if($request->filled('name')) {
+                $datas->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%'");
+            }  
+            if($request->filled('status')) {
+                $datas->where("u.status", $request->status);
+            } 
+            $datas = $datas->select('u.first_name', 'u.last_name', 'u.status', 'u.profile_image', 'u.email', 'u.phone', 'u.id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->distinct('u.id')->orderByDesc('u.id')->paginate(10);
+            // dd($datas);
+            return view('home.student')->with(compact('datas'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function studentDetails(Request $request, $id) {
+        try{    
+            $id = encrypt_decrypt('decrypt',$id);
+            $data = User::where('id',$id)->first();
+
+            $course = DB::table('user_courses as uc')->join('course as c', 'c.id', '=', 'uc.course_id');
+            if($request->filled('status')) $course->where('uc.status', $request->status);
+            if($request->filled('title')) $course->where('c.title', 'like', '%' . $request->title . '%');
+            if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
+            $course = $course->where('uc.user_id', $id)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = c.id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $id AND product_id = c.id) as order_id"))->distinct('uc.id')->orderByDesc('uc.id')->paginate(3);
+
+            $course;
+
+            return view('home.student-details')->with(compact('data', 'course', 'id'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function progressReport(Request $request, $courseId, $id) {
+        try{    
+            $courseId = encrypt_decrypt('decrypt',$courseId);
+            $id = encrypt_decrypt('decrypt',$id);
+
+            $course = Course::where('id', $courseId)->first();
+            $course->tags = unserialize($course->tags);
+            $tags = Tag::all();
+            $combined = array();
+            foreach ($tags as $arr) {
+                $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
+                foreach ($course->tags as $arr2) {
+                    if ($arr2 == $arr['id']) {
+                        $comb['selected'] = true;
+                        break;
+                    }
+                }
+                $combined[] = $comb;
+            }
+            $reviewAvg = DB::table('user_review as ur')->where('object_id', $courseId)->where('object_type', 1)->avg('rating');
+            $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date')->where('object_id', $courseId)->where('object_type', 1)->get();
+
+            $userCourse = UserCourse::where('user_id', $id)->where('course_id', $courseId)->where('status', 1)->first();
+            if(isset($userCourse->id)){
+                $complete = true;
+                $chapters = UserChapterStatus::leftJoin('course_chapter as cc', 'cc.id', '=', 'user_chapter_status.chapter_id')->where('user_chapter_status.userid', $id)->where('user_chapter_status.course_id', $courseId)->select('cc.chapter', 'cc.id')->distinct('cc.id')->get();
+            }else{
+                $complete = false;
+                $chapters = CourseChapter::where('course_chapter.course_id', $courseId)->select('course_chapter.chapter', 'course_chapter.id')->distinct('course_chapter.id')->get();
+            }
+
+            return view('home.progress-course-details')->with(compact('course', 'combined', 'review', 'reviewAvg', 'id', 'chapters'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function studentResult($id, Request $request){
+        try{
+            $quizId = encrypt_decrypt('decrypt',$request->quizId);
+            $userId = encrypt_decrypt('decrypt',$id);
+            $total = ChapterQuiz::where('step_id', $quizId)->whereIn('type', ['quiz', 'survey'])->sum('marks');
+            $obtained = UserQuizAnswer::where('quiz_id', $quizId)->where('userid',$userId)->sum('marks_obtained');
+            $courseStep = CourseChapterStep::where('id', $quizId)->whereIn('type', ['quiz'])->first();
+            $passingPercentage = $courseStep->passing ?? 33;
+            return response()->json(['status'=> true, 'total' => $total, 'obtained' => $obtained, 'percen' => $passingPercentage]);
         } catch (\Exception $e) {
             return $e->getMessage();
         }

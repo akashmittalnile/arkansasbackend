@@ -338,7 +338,12 @@ class SuperAdminController extends Controller
             $course->status = 1;
             $course->save();
 
-            return redirect('/super-admin/course')->with('message','Course created successfully');
+            $last_id = Course::orderBy('id','DESC')->first();
+            $course = new CourseChapter;
+            $course->course_id = $last_id->id;
+            $course->save();
+
+            return redirect()->route('SA.Course.Chapter', ['courseID'=> encrypt_decrypt('encrypt', $last_id->id), 'chapterID'=> encrypt_decrypt('encrypt', $course['id '])])->with('message', 'Chapter created successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -712,11 +717,11 @@ class SuperAdminController extends Controller
             $image_name = $quiz->details;
             $image_path = public_path('upload/course/'.$image_name);
             if(File::exists($image_path)) {
-                CourseChapterStep::where('id',$id)->update([
-                    'details' => null,
-                    ]);
                 File::delete($image_path);
             }
+            CourseChapterStep::where('id',$id)->update([
+                'details' => null,
+            ]);
             return redirect('super-admin/course/'.$courseID.'/'.$chapterID)->with('message','Video deleted successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -735,11 +740,11 @@ class SuperAdminController extends Controller
             $image_name = $quiz->details;
             $image_path = public_path('upload/course/'.$image_name);
             if(File::exists($image_path)) {
-                CourseChapterStep::where('id',$id)->update([
-                    'details' => null,
-                    ]);
                 File::delete($image_path);
             }
+            CourseChapterStep::where('id',$id)->update([
+                'details' => null,
+            ]);
             return redirect('super-admin/course/'.$courseID.'/'.$chapterID)->with('message','PDF deleted successfully');
         } catch (\Exception $e) {
             return $e->getMessage();

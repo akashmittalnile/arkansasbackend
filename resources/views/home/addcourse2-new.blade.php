@@ -147,14 +147,17 @@
                                                 <div class="form-group">
                                                     <h4>Uploaded Video</h4>
                                                     <div class="upload-signature">
-                                                        @if ($data->details)
+                                                        @if ($data->details!="" && $data->details!=null)
                                                         <div class="upload-file-item col-md-6">
                                                             <div class="upload-file-icon">
                                                                 <img src="{!! url('assets/website-images/video-icon.svg') !!}">
                                                             </div>
                                                             <div class="upload-file-text">
-                                                                <h3>video</h3>
-                                                                {{-- <h5>10 kb</h5> --}}
+                                                                <h3>Video</h3>
+                                                                <video width="165" height="90" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
+                                                                    <source src="{{ url( 'upload/course/' . $data->details) }}" type="video/mp4">
+                                                                    Your browser does not support the video tag.
+                                                                </video>
                                                             </div>
                                                             <div class="upload-file-action">
                                                                 <a class="delete-btn" href="{{ url('admin/delete-video/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this video?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
@@ -405,14 +408,18 @@
                                             <div class="col-md-12">
                                                 <div class="form-group">
                                                     <h4>Uploaded PDF</h4>
-                                                    @if ($data->details)
+                                                    @if ($data->details!="" && $data->details!=null)
                                                     <div class="upload-file-item col-md-6">
                                                         <div class="upload-file-icon">
                                                             <img src="{!! url('assets/website-images/document-text.svg') !!}">
                                                         </div>
                                                         <div class="upload-file-text">
                                                             <h3>Document</h3>
-                                                            {{-- <h5>2 KB</h5> --}}
+                                                            <h5>
+                                                                <a target="_black" href="{{ asset('upload/course/'.$data->details) }}">
+                                                                    <img src="{{ asset('assets/website-images/pdf.svg') }}" class="mx-3" alt="No pdf found">
+                                                                </a>
+                                                            </h5>
                                                         </div>
                                                         <div class="upload-file-action">
                                                             <a class="delete-btn" href="{{ url('admin/delete-pdf/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this pdf?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}"></a>

@@ -310,6 +310,22 @@ $(document).on('click', '#edit-chapter-modal-open', function(){
 // Submit form And Mange all Hide and Show field(Append)
 $(document).ready(function () {
 
+    $(document).on('change', "input[accept='video/mp4']", function(event){
+        let count = $(this).attr('data-count');
+        $(`#prev-vid-${count}`).hide();
+        $(`#small-tag1-${count}`).hide();
+        $(`#vid-prev-tag-${count}`).removeClass('d-none');
+        $(`#vid-prev-tag-${count}`).attr({"src": URL.createObjectURL(event.target.files[0]), style: "object-fit: cover; object-position: center; border-radius: 8px", width: "160", height: "80",})
+        $(`#small-tag2-${count}`).removeClass('d-none');
+    }); 
+
+    $(document).on('change', "input[accept='application/pdf']", function(event){
+        let count = $(this).attr('data-count');
+        $(`#pdf-small-${count}`).html('Click here to change PDF');
+        $(`#view-pdf-${count}`).removeClass('d-none');
+        $(`#view-pdf-${count}`).attr({"href": URL.createObjectURL(event.target.files[0])})
+    }); 
+
     $("#chapterName").html(($(".chapter-item.active").attr('data-index')) ? $(".chapter-item.active").attr('data-index') : "NA");
     // $("#chapterName").html(($(".chapter-item.active").attr('data-index')) ? "Chapter" + ' ' + $(".chapter-item.active").attr('data-index') : "Chapter");
 
@@ -393,12 +409,14 @@ $(document).ready(function () {
                                             <div class="form-group">
                                                 <h4>Upload Video</h4>
                                                 <div class="upload-signature">
-                                                    <input type="file" name="video[${countForm}]" id="video-${countForm}"
-                                                        class="uploadsignature addsignature" required accept="video/mp4">
+                                                    <input data-count="${countForm}" type="file" name="video[${countForm}]" id="video-${countForm}" class="uploadsignature addsignature" required accept="video/mp4">
                                                     <label for="video-${countForm}">
                                                         <div class="signature-text">
-                                                            <span id="video_file_name-${countForm}">
-                                                                <img src="${arkansasUrl}/assets/website-images/upload.svg"> Click here to Upload</span>
+                                                            <span id="video_file_nam-${countForm}">
+                                                                <img id="prev-vid-${countForm}" src="${arkansasUrl}/assets/website-images/upload.svg"><small id="small-tag1-${countForm}">Click here to Upload</small> 
+
+                                                                <video controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume src="" id="vid-prev-tag-${countForm}" class="d-none"></video><small id="small-tag2-${countForm}" class="d-none">Click here to change video</small>
+                                                            </span>
                                                         </div>
                                                     </label>
                                                 </div>
@@ -459,13 +477,16 @@ $(document).ready(function () {
                                         <div class="form-group">
                                             <h4>Upload PDF</h4>
                                             <div class="upload-signature">
-                                                <input type="file" name="pdf[${countForm}]" id="pdf_file-${countForm}"
+                                                <input data-count="${countForm}" type="file" name="pdf[${countForm}]" id="pdf_file-${countForm}"
                                                     class="uploadsignature addsignature" required accept="application/pdf">
                                                 <label for="pdf_file-${countForm}">
                                                     <div class="signature-text">
-                                                        <span id="pdf_file_name-${countForm}"><img
-                                                                src="${arkansasUrl}/assets/website-images/upload.svg"> Click here
-                                                            to Upload</span>
+                                                        <span id="pdf_file_name-${countForm}">
+                                                            <img src="${arkansasUrl}/assets/website-images/upload.svg"> <small class="pdf-small-${countForm}"> Click here to Upload </small> 
+                                                        </span>
+                                                        <a id="view-pdf-${countForm}" target="_black" href="javascript:void(0)" class="d-none">
+                                                            <img src="${arkansasUrl}/assets/website-images/pdf.svg" class="mx-3" alt="No pdf found">
+                                                        </a>
                                                     </div>
                                                 </label>
                                             </div>

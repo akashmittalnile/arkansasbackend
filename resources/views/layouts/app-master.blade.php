@@ -32,12 +32,16 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/product-details.css') !!}">
     @endif
 
-    @if ($currentURL == 'Home.earnings' || $currentURL == 'Home.payment.request' || $currentURL == 'Home.CourseList')
+    @if ($currentURL == 'Home.students' || $currentURL == 'Home.student.details')
+        <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/students.css') !!}">
+    @endif
+
+    @if ($currentURL == 'Home.earnings' || $currentURL == 'Home.payment.request' || $currentURL == 'Home.CourseList' || $currentURL == 'Home.progress.report')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/earnings.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
     @endif
 
-    @if ($currentURL == 'home.index' || $currentURL == 'Home.Addcourse'|| $currentURL == 'Home.Addcourse2' || $currentURL == 'Home.CourseList' || $currentURL == 'Home.edit.course' || $currentURL == 'Home.view.course')
+    @if ($currentURL == 'home.index' || $currentURL == 'Home.Addcourse'|| $currentURL == 'Home.Addcourse2' || $currentURL == 'Home.CourseList' || $currentURL == 'Home.edit.course' || $currentURL == 'Home.view.course' || $currentURL == 'Home.progress.report')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">
         <script src="{!! url('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>

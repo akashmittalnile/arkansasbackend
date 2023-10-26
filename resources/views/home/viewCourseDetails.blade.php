@@ -185,7 +185,7 @@
                                     @endif
                                 </div>
                                 <div class="pmu-comment-head-action">
-                                    <a class="addcomment-btn"><i class="las la-plus"></i> See More Reviews</a>
+                                    <!-- <a class="addcomment-btn"><i class="las la-plus"></i> See More Reviews</a> -->
                                 </div>
                             </div>
 

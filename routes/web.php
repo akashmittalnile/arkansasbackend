@@ -101,6 +101,11 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/download-invoice/{id}', 'HomeController@downloadInvoice')->name('Home.download.invoice');
 
         Route::get('/admin/clear-notification', 'HomeController@clearNotification')->name('Home.clear.notification');
+
+        Route::get('/admin/students', 'HomeController@students')->name('Home.students');
+        Route::get('/admin/student-details/{id}', 'HomeController@studentDetails')->name('Home.student.details');
+        Route::get('/admin/progress-report/{courseId}/{id}', 'HomeController@progressReport')->name('Home.progress.report');
+        Route::get('/admin/students-result/{id}', 'HomeController@studentResult')->name('Home.student.result');
     });
 
     Route::group(['middleware' => ['auth.superadmin']], function() {

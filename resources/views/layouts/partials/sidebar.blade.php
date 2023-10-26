@@ -67,6 +67,13 @@
                         <span class="menu-title">Earnings</span>
                     </a>
                 </li>
+
+                <li class="nav-item @if ($currentURL == 'Home.students' || $currentURL == 'Home.student.details' || $currentURL == 'Home.progress.report') active @endif">
+                    <a class="nav-link" href="{{ route('Home.students') }}">
+                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/students.svg') !!}"></span>
+                        <span class="menu-title">Students</span>
+                    </a>
+                </li>
                 
                 
 
