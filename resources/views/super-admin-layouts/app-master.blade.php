@@ -22,7 +22,7 @@
     @endif
 
     @if ($currentURL == 'SA.HelpSupport')
-        <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/help-support.css') !!}">
+        <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/help-support.css') !!}">
     @endif
 
     @if ($currentURL == 'SA.Performance')

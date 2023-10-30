@@ -369,7 +369,8 @@ class HomeController extends Controller
 
     public function helpSupport() 
     {
-        return view('home.help-support');
+        $user =  User::where('role', 3)->first();
+        return view('home.help-support')->with(compact('user'));
     }
 
     public function add_course2($courseID) 

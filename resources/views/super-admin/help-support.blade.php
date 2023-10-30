@@ -1,137 +1,275 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Makeup University - Help-Support')
+@section('title', 'Makeup University - Help Support')
 @section('content')
-    <div class="body-main-content">
-        <div class="pmu-filter-section">
-            <div class="pmu-filter-heading">
-                <h2>Help & Support</h2>
-            </div>
-            <div class="pmu-search-filter wd40">
+<link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/help.css') !!}">
+<div class="body-main-content">
+    <div class="message-section">
+        <section style="background-color: #e6e6e6; border-radius: 30px;">
+            <div class="container p-4">
 
-            </div>
-        </div>
-
-        <div class="help-card">
-            <div class="help-card-content">
                 <div class="row">
-                    <div class="col-md-6">
-                        <div class="help-info-card">
-                            <h2>Total Query raised</h2>
-                            <div class="help-value">12</div>
-                            <div class="help-date">May,2023</div>
+                    <div class="col-md-12">
+
+                        <div class="card" id="chat3" style="border-radius: 15px;">
+                            <div class="card-body">
+
+                                <div class="row">
+                                    <div class="col-md-6 col-lg-5 col-xl-4 mb-4 mb-md-0">
+
+                                        <div class="p-3">
+
+                                            <div class="input-group rounded mb-3">
+                                                <input type="search" class="form-control rounded border me-2" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+                                                <span class="input-group-text border-0" id="search-addon" style="background: #E0B220;">
+                                                    <i class="las la-search"></i>
+                                                </span>
+                                            </div>
+
+                                            <div data-mdb-perfect-scrollbar="true" style="position: relative; height: 400px; overflow-y: scroll;">
+                                                <ul class="list-unstyled mb-0">
+                                                    @forelse($user as $val)
+                                                    <li class="p-2 border-bottom user-info" data-id="{{$val->id}}" data-fname="{{$val->first_name ?? 'NA'}}" data-lname="{{$val->last_name ?? 'NA'}}" data-img="{{( ($val->profile_image=='' || $val->profile_image==null) ? null : asset('upload/profile-image/'.$val->profile_image) )}}">
+                                                        <a href="javascript:void(0)" class="d-flex justify-content-between">
+                                                            <div class="d-flex flex-row">
+                                                                <div>
+                                                                    @if($val->profile_image!="" && $val->profile_image!=null)
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('upload/profile-image/'.$val->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60">
+                                                                    @else
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60">
+                                                                    @endif
+                                                                    <span class="badge bg-success badge-dot"></span>
+                                                                </div>
+                                                                <div class="pt-1">
+                                                                    <p class="chat-name fw-bold mb-0" style="color: #E0B220;">{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</p>
+                                                                    <p class="small text-muted">Hello, Admin</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="pt-1">
+                                                                <!-- <p class="small text-muted mb-1">Just now</p> -->
+                                                                <!-- <span class="badge bg-danger rounded-pill float-end">3</span> -->
+                                                            </div>
+                                                        </a>
+                                                    </li>
+                                                    @empty
+                                                    @endforelse
+                                                </ul>
+                                            </div>
+
+                                        </div>
+
+                                    </div>
+
+                                    <div class="col-md-6 col-lg-7 col-xl-8 body-chat-message-user d-none">
+
+                                        <div class="pt-3 pe-3 messages-card" data-mdb-perfect-scrollbar="true" style="position: relative; height: 400px; overflow-y: scroll;">
+
+                                            
+
+                                        </div>
+
+                                        <div class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2">
+                                            <img style="border-radius: 50%;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" id="userAvatar">
+                                            <input type="text" class="form-control form-control-lg border ms-3" id="message-input" placeholder="Type message">
+                                            <a class="fs-24 ms-3 text-muted" href="#!"><i class="las la-paperclip"></i></a>
+                                            <a class="fs-24 ms-3 text-muted" href="#!"><i class="las la-smile"></i></a>
+                                            <a class="fs-24 ms-3" href="#!"><i class="las la-paper-plane btnSend"></i></a>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group search-form-group">
-                            <input type="text" class="form-control" name="Start Date"
-                                placeholder="Enter order ID to get order details">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <input type="date" class="form-control" name="">
-                        </div>
+                        <input type="hidden" id="ajax-chat-url" value="">
+                        <input type="hidden" id="ajax-chat-url-first" value="">
+                        <input type="hidden" id="ajax-chat-url-last" value="">
+                        <input type="hidden" id="ajax-chat-url-img" value="">
                     </div>
                 </div>
+
             </div>
-            <div class="help-card-query">
-                <div class="help-card-query-card">
-                    <div class="help-card-query-head">
-                        <div class="help-card-query-icon">
-                            <img src="{!! url('assets/superadmin-images/message.svg') !!}">
-                        </div>
-                        <div class="help-card-query-text">
-                            <h3>Uploaded Content With Related To Tattoo And Also Created Question & Answer, Waiting For The
-                                Review To Approved</h3>
-                        </div>
-                    </div>
-                    <div class="help-card-query-body">
-                        <div class="help-card-respond-card">
-                            <div class="help-card-respond-icon">
-                                <img src="{!! url('assets/superadmin-images/admin.svg') !!}">
-                            </div>
-                            <div class="help-card-respond-text">
-                                <h3>Admin Respond</h3>
-                                <div class="">
-                                    <p>Dear Creator,</p>
-                                    <p>Thank You For Reaching Out To Us Through The Help & Support App Section. We Are Sorry
-                                        To Hear That You Are Experiencing An Issue With Your Points Estimate Not Increasing
-                                        After Applying A Coupon. To Help You With This Issue, Please Provide Us With The
-                                        Following Information:</p>
-                                    <p>- Your Account Username Or Email Address</p>
-                                    <p>- The Date And Time You Uploaded The Course</p>
-                                    <p>- A Screenshot Of The Coupon Code And Any Error Message You Received, If Applicable
-                                    </p>
-                                    <p>Once We Receive This Information, We Will Investigate The Issue And Work Towards
-                                        Resolving It As Soon As Possible.</p>
-                                    <p>Thank You For Your Patience And Understanding.</p>
-                                    <p>Best Regards,</p>
-                                    <p>Timeshare Simplified App Owner Admin</p>
-                                </div>
-                                <div class="help-card-respond-form">
-                                    <div class="form-group">
-                                        <textarea class="form-control" placeholder="Type your Message Here…"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <button class="Submit-btn">Submit</button>
-                                    </div>
-                                </div>
-                            </div>
-
-
-                        </div>
-
-                    </div>
-                </div>
-
-                <div class="help-card-query-card">
-                    <div class="help-card-query-head">
-                        <div class="help-card-query-icon">
-                            <img src="{!! url('assets/superadmin-images/message.svg') !!}">
-                        </div>
-                        <div class="help-card-query-text">
-                            <h3>Uploaded Content With Related To Tattoo And Also Created Question & Answer, Waiting For The
-                                Review To Approved</h3>
-                        </div>
-                    </div>
-                    <div class="help-card-query-body">
-                        <div class="help-card-respond-card">
-                            <div class="help-card-respond-icon">
-                                <img src="{!! url('assets/superadmin-images/admin.svg') !!}">
-                            </div>
-                            <div class="help-card-respond-text">
-                                <h3>Admin Respond</h3>
-                                <div class="">
-                                    <p>Dear Creator,</p>
-                                    <p>Thank You For Reaching Out To Us Through The Help & Support App Section. We Are Sorry
-                                        To Hear That You Are Experiencing An Issue With Your Points Estimate Not Increasing
-                                        After Applying A Coupon. To Help You With This Issue, Please Provide Us With The
-                                        Following Information:</p>
-                                    <p>- Your Account Username Or Email Address</p>
-                                    <p>- The Date And Time You Uploaded The Course</p>
-                                    <p>- A Screenshot Of The Coupon Code And Any Error Message You Received, If Applicable
-                                    </p>
-                                    <p>Once We Receive This Information, We Will Investigate The Issue And Work Towards
-                                        Resolving It As Soon As Possible.</p>
-                                    <p>Thank You For Your Patience And Understanding.</p>
-                                    <p>Best Regards,</p>
-                                    <p>Timeshare Simplified App Owner Admin</p>
-                                </div>
-                                <div class="help-card-respond-form">
-                                    <div class="form-group">
-                                        <textarea class="form-control" placeholder="Type your Message Here…"></textarea>
-                                    </div>
-                                    <div class="form-group">
-                                        <button class="Submit-btn">Submit</button>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                    </div>
-                </div>
-            </div>
-        </div>
+        </section>
     </div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script>
+    $(document).on('click', '.user-info', function(){
+        $("#ajax-chat-url").val($(this).attr('data-id'));
+        $("#ajax-chat-url-first").val($(this).attr('data-fname'));
+        $("#ajax-chat-url-last").val($(this).attr('data-lname'));
+        $("#ajax-chat-url-img").val($(this).attr('data-img'));
+        $(".body-chat-message-user").removeClass('d-none');
+        let userAvaImg = ($("#ajax-chat-url-img").val()=="") ? "{{ asset('assets/website-images/user.jpg') }}" : $("#ajax-chat-url-img").val();
+        // console.log(userAvaImg);
+        $("#userAvatar").attr('src', userAvaImg);
+    })
+</script>
+<script type="module">
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-auth.js"
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/9.1.3/firebase-app.js";
+    import { getFirestore, collection, getDocs, addDoc, orderBy, query} from "https://www.gstatic.com/firebasejs/9.1.3/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyCRUook3bb04i2tonzu-25R03iUcOVk5Hg",
+        authDomain: "arkansas-2309b.firebaseapp.com",
+        databaseURL: "https://arkansas-2309b-default-rtdb.firebaseio.com",
+        projectId: "arkansas-2309b",
+        storageBucket: "arkansas-2309b.appspot.com",
+        messagingSenderId: "741749289086",
+        appId: "1:741749289086:web:8dd855ebb34e133e47e82f",
+        measurementId: "G-YYEB9LE852"
+    };
+
+    const receiver_id = $("#ajax-chat-url").val();
+    const group_id = "1-" + receiver_id;
+    const app = initializeApp(firebaseConfig);
+    let defaultFirestore = getFirestore(app);
+    console.log("Firestore => ", defaultFirestore);
+    const auth = getAuth(app);
+    signInAnonymously(auth)
+        .then((result) => {
+        console.log(result);
+    })
+    .catch((error) => {
+      	console.log('error',error);
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        // ...
+    });
+
+    length = 36;
+    const characters = '0123456789abcdefghijklmnopqrstuvwxyz'; // characters used in string
+    let result = ''; // initialize the result variable passed out of the function
+    for (let i = length; i > 0; i--) {
+        result += characters[Math.floor(Math.random() * characters.length)];
+    }
+    let random = result;
+
+    window.sendNewMessage = async function(group_id_new2, message, receiver_id, userName) {
+        //alert(6);
+        const chatCol = collection(defaultFirestore, 'arkansas_support/' + group_id_new2 + '/messages');
+        let data = {
+            text: message ?? "HHH",
+            sendBy: '1',
+            sendto: receiver_id,
+            adminName: 'Arkansas',
+            userName: userName,
+            user: {
+                _id: 1
+            },
+            _id: random,
+            createdAt: new Date()
+        };
+
+        console.log("Data => ",data);
+
+        const add = await addDoc(chatCol, data);
+        const chatCols = query(collection(defaultFirestore, 'arkansas_support/' + group_id_new2 + '/messages'), orderBy('createdAt', 'asc'));
+        const chatSnapshot = await getDocs(chatCols);
+        const chatList = chatSnapshot.docs.map(doc => doc.data());
+        showAllMessages(chatList);
+        //location.reload();
+    }
+
+
+    window.getClientChat = async function(group_id, ajax_call = false) {
+        console.log("Group ID => ",group_id);
+        const chatCols = query(collection(defaultFirestore, 'arkansas_support/' + group_id + '/messages'), orderBy('createdAt',
+            'asc'));
+        const chatSnapshot = await getDocs(chatCols);
+        const chatList = chatSnapshot.docs.map(doc => doc.data());
+        console.log("get client chat => ", chatList);
+
+        showAllMessages(chatList);
+    }
+    $(document).on('click', '.user-info', function(){
+        getClientChat(group_id);
+    })
+    
+</script>
+
+<script>
+    $(document).ready(function() {
+
+        const receiver_id = $("#ajax-chat-url").val();
+        
+
+        $(document).on('click', '.btnSend', function() {
+            const user_firstName = $("#ajax-chat-url-first").val();
+            const user_lastName = $("#ajax-chat-url-last").val();
+            const userName = user_firstName + user_lastName;
+            const receiver_id = $("#ajax-chat-url").val();
+            const group_id = "1-" + receiver_id;
+            let message = $('#message-input');
+            let time = moment().format('MMM DD, YYYY HH:mm A');
+            if (message.val() != '') {
+                sendNewMessage(group_id, message.val(), receiver_id, userName);
+                showMessage(message.val(), time, userName);
+                message.val('').focus();
+            }
+
+        })
+    });
+
+    function showAllMessages(list, ajax_call = false) {
+        $('.messages-card').html('');
+        if (list.length == 0) return false;
+        let html = `${list.map(row => admin(row,ajax_call)).join('')}`;
+        $('.messages-card').html(html);
+        if (ajax_call == false) {
+            $(".body-chat-message-user").stop().animate({
+                scrollTop: $(".body-chat-message-user")[0].scrollHeight
+            }, 1000);
+        }
+    }
+
+    function showMessage(message, time, userName) {
+        let msg = `<div class="d-flex flex-row justify-content-end">
+                <div>
+                    <p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${message}</p>
+                    <p class="small me-3 mb-3 rounded-3 text-muted">${time}</p>
+                </div>
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 100%; border-radius: 50%">
+            </div>`;
+        $('.messages-card').append(msg);
+
+        $(".body-chat-message-user").stop().animate({
+            scrollTop: $(".body-chat-message-user")[0].scrollHeight
+        }, 1000);
+    }
+
+    
+    function admin(row) {
+        let userProImg = ($("#ajax-chat-url-img").val()=="") ? "{{ asset('assets/website-images/user.jpg') }}" : $("#ajax-chat-url-img").val();
+        let html = '';
+        var formattedDate = moment.unix(row.createdAt.seconds).format('MMM DD, YYYY HH:mm A');
+        if (row.sendto == 1) {
+
+            html = `<div class="d-flex flex-row justify-content-start">
+                    <img style="border-radius: 50%;" src="${userProImg}" alt="avatar" class="d-flex align-self-center me-3" width="60">
+                    <div>
+                        <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">${row.text}</p>
+                        <p class="small ms-3 mb-3 rounded-3 text-muted float-end">${formattedDate}</p>
+                    </div>
+                </div>`;
+        } else {
+            html = `<div class="d-flex flex-row justify-content-end">
+                <div>
+                    <p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${row.text}</p>
+                    <p class="small me-3 mb-3 rounded-3 text-muted">${formattedDate}</p>
+                </div>
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 100%; border-radius: 50%">
+            </div>`;
+        }
+        return html;
+    }
+</script>
+<script>
+    setInterval(function() {
+        const receiver_id = $("#ajax-chat-url").val();
+        const group_id = "1-" + receiver_id;
+        getClientChat(group_id, true);
+    }, 5000);
+</script>
+
 @endsection

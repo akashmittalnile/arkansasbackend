@@ -156,8 +156,9 @@ class SuperAdminController extends Controller
     public function help_support() 
     {
         try {
+            $user = User::where('role', 2)->where('status', 1)->get();
             $courses = Course::orderBy('id','DESC')->get();
-        return view('super-admin.help-support',compact('courses'));
+        return view('super-admin.help-support',compact('courses', 'user'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
