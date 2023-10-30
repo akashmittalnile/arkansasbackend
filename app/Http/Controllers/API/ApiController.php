@@ -26,6 +26,7 @@ use App\Models\ChapterQuizOption;
 use App\Models\CourseChapter;
 use App\Models\CourseChapterStep;
 use App\Models\Notify;
+use App\Models\Setting;
 use App\Models\Tag;
 use App\Models\UserChapterStatus;
 use App\Models\UserCourse;
@@ -2255,13 +2256,17 @@ class ApiController extends Controller
                     // $shipping_amount = 10;
                     $discount = 0;
                     $total_amount = ($cart_value) - $discount;
+                    $tax = Setting::where('attribute_code','tax')->first();
+                    if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
+                        $tax_amount = ($total_amount*$tax->attribute_value)/100;
+                    else $tax_amount = 0;
                     return response()->json([
                         'status' => true,
                         'message' => 'Cart Listing',
                         'sub_total' => (int)$cart_value,
                         'discount' => $discount,
-                        // 'shipping' => $shipping_amount,
-                        'total' => $total_amount,
+                        'tax' => number_format((float)$tax_amount, 2),
+                        'total' => number_format((float)($total_amount+$tax_amount), 2),
                         'data' => $response
                     ]);
                 } else {
@@ -2270,7 +2275,7 @@ class ApiController extends Controller
                         'message' => 'Cart Listing',
                         'sub_total' => 0,
                         'discount' => 0,
-                        'shipping' => 0,
+                        'tax' => 0,
                         'total' => 0,
                         'data' => $response
                     ]);
@@ -2326,12 +2331,18 @@ class ApiController extends Controller
                     $order_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
                     $total_price = $order_price;
 
+                    $tax = Setting::where('attribute_code','tax')->first();
+                    if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
+                        $tax_amount = ($total_price*$tax->attribute_value)/100;
+                    else $tax_amount = 0;
+
                     $insertedId = Order::insertGetId([
                         'user_id' => $user_id,
                         'order_number' => $order_no,
                         'amount' => $order_price - $admin_cut_price,
                         'admin_amount' => $admin_cut_price,
-                        'total_amount_paid' => $total_price,/*Total amount of order*/
+                        'taxes' => number_format((float)$tax_amount, 2),
+                        'total_amount_paid' => number_format((float)($total_price+$tax_amount), 2),/*Total amount of order*/
                         'payment_id' => null,
                         'payment_type' => null,
                         'created_date' => date('Y-m-d H:i:s'),
@@ -2367,7 +2378,7 @@ class ApiController extends Controller
                     $data['status'] = 1;
                     $data['message'] = 'Order placed successfully';
                     $data['order_id'] = $insertedId;
-                    $data['total_amount'] = $total_price;
+                    $data['total_amount'] = number_format((float)($total_price+$tax_amount), 2);
                     return response()->json($data);
                 } else {
                     $data['status'] = 0;
@@ -2420,7 +2431,7 @@ class ApiController extends Controller
                 }
                 $orders = OrderDetail::leftJoin('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('order_product_detail.product_type', $request->type)->where('o.user_id', $user_id);
                 if($request->type == 1){
-                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid', 'order_product_detail.id as itemid');
+                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes');
                     if($request->filled('title')){
                         $orders->where('c.title', 'like', '%' . $request->title . '%');
                     }
@@ -2428,7 +2439,7 @@ class ApiController extends Controller
                         $orders->whereIntegerInRaw('c.category_id', $request->category);
                     }
                 } else {
-                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid', 'order_product_detail.id as itemid');
+                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes');
                     if($request->filled('title')){
                         $orders->where('p.name', 'like', '%' . $request->title . '%');
                     }
@@ -2475,6 +2486,7 @@ class ApiController extends Controller
                         $temp['title'] = $value->title ?? "NA";
                         $temp['description'] = $value->desc ?? "NA";
                         $temp['total_amount_paid'] = $value->total_amount_paid ?? 0;
+                        $temp['tax'] = $value->taxes ?? 0;
                         $temp['price'] = $value->price ?? 0;
                         $temp['category_id'] = $value->catid ?? null;
                         $temp['category_name'] = $value->catname ?? null;
@@ -3090,9 +3102,10 @@ class ApiController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             }else{
                 $id = $request->order_id;
-                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', DB::raw("orders.amount + orders.admin_amount as total_amount"))->first();
+                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', DB::raw("orders.amount + orders.admin_amount as total_amount"))->first();
 
                 $order->total_amount = number_format((float) $order->total_amount, 2);
+                $order->taxes = number_format((float) $order->taxes, 2);
                 $order->created_date = date('d M, Y H:iA', strtotime($order->created_date));
 
                 $avgRating = DB::table('order_product_detail as opd')->leftJoin('user_review as ur', 'ur.object_id', '=', DB::raw('opd.product_id AND ur.object_type = opd.product_type'))->where('opd.id', $request->item_id)->avg('ur.rating');
