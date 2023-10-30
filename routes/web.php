@@ -112,6 +112,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/dashboard', 'SuperAdminController@dashboard')->name('SA.Dashboard');
         Route::get('/super-admin/my-account', 'SuperAdminController@myAccount')->name('SA.My.Account');
         Route::post('/super-admin/my-data', 'SuperAdminController@storeMyData')->name('SA.Store.Mydata');
+        Route::post('/super-admin/setting', 'SuperAdminController@storeSetting')->name('SA.Store.Setting');
+
         Route::get('/super-admin/addcourse', 'SuperAdminController@add_course')->name('SA.AddCourse');
         Route::get('/super-admin/addproduct', 'SuperAdminController@add_product')->name('SA.AddProduct');
         Route::post('/super-admin/submitcourse', 'SuperAdminController@submitcourse')->name('SA.SubmitCourse');

@@ -617,7 +617,7 @@ class HomeController extends Controller
             $course->title = $request->input('title');
             $course->description = $request->input('description');
             $course->course_fee = $request->input('course_fee');
-            $course->valid_upto = $request->input('valid_upto');
+            $course->valid_upto = $request->input('valid_upto') ?? null;
             $course->tags = serialize($request->input('tags'));
             $course->certificates = null;
             $course->category_id = $request->course_category;

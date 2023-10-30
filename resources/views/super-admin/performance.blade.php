@@ -242,7 +242,6 @@
     })
 
     var tab = "{{ encrypt_decrypt('decrypt', $tab) }}";
-    console.log(tab);
     if (tab == 1) $("#arkansascoursetab").get(0).click();
     if (tab == 2) $("#creatorcoursetab").get(0).click();
     if (tab == 3) $("#userstab").get(0).click();

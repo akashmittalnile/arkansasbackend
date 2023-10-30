@@ -37,7 +37,7 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/creators.css')!!}">
     @endif
 
-    @if ($currentURL == 'SA.Course')
+    @if ($currentURL == 'SA.Course' || $currentURL == 'SA.AddCourse')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
     @endif
 
@@ -63,7 +63,7 @@
         <script src="{!! url('assets/superadmin-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>
     @endif
 
-    @if ($currentURL == 'SA.AddCourse'||$currentURL == 'SA.AddProduct' ||$currentURL == 'SA.AddCategory'||$currentURL == 'SA.EditCategory' || $currentURL == 'SA.view.course' || $currentURL == 'SA.edit.course' || $currentURL == 'SA.Edit.Products')
+    @if ($currentURL == 'SA.AddProduct' ||$currentURL == 'SA.AddCategory'||$currentURL == 'SA.EditCategory' || $currentURL == 'SA.view.course' || $currentURL == 'SA.edit.course' || $currentURL == 'SA.Edit.Products')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-plugins/fancybox/jquery.fancybox.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
         <script src="{!! url('assets/superadmin-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>
@@ -73,7 +73,7 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/creators.css') !!}">
     @endif
 
-    @if ($currentURL == 'SA.Addcourse2' || $currentURL == 'SA.CourseList' ||  $currentURL == 'SA.Course'||$currentURL == 'SA.AddCourse' || $currentURL == 'SA.view.course' || $currentURL == 'SA.edit.course')
+    @if ($currentURL == 'SA.Addcourse2' || $currentURL == 'SA.CourseList' ||  $currentURL == 'SA.Course'|| $currentURL == 'SA.AddCourse' || $currentURL == 'SA.view.course' || $currentURL == 'SA.edit.course')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">
         <script src="{!! url('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>

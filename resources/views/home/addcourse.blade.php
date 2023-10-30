@@ -66,7 +66,7 @@
                                             </div>
                                         </div> --}}
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Course Fees</h4>
                                                 <input type="number" class="form-control" name="course_fee"
@@ -74,14 +74,14 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-4">
+                                        <!-- <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Valid Up-To</h4>
                                                 <input type="date" class="form-control" name="valid_upto" placeholder="4 Month" required>
                                             </div>
-                                        </div>
+                                        </div> -->
 
-                                        <div class="col-md-4">
+                                        <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Category</h4>
                                                 <select name="course_category" id="" class="form-control">
@@ -207,9 +207,6 @@
                     },
                     course_fee: {
                         required: true,
-                    },
-                    valid_upto: {
-                        required:true,
                     },
                     "tags[]": {
                         required: true,

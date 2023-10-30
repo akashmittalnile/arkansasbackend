@@ -22,7 +22,7 @@
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" href="#Profile" data-bs-toggle="tab">Profile</a> </li>
             <li class="nav-item"><a class="nav-link" href="#Password" data-bs-toggle="tab">Password</a> </li>
-            <li class="nav-item"><a class="nav-link" href="#TaxSetting" data-bs-toggle="tab">Payout & Tax Setting</a> </li>
+            <li class="nav-item"><a class="nav-link" href="#TaxSetting" data-bs-toggle="tab" id="arkansasSetting">Arkansas Setting</a> </li>
         </ul>
     </div>
 
@@ -162,8 +162,42 @@
             </div>
         </div>
         <div class="tab-pane" id="TaxSetting">
-            <div class="Overview-card">
-
+            <div class="myaccount-card">
+                <div class="myaccount-card-form">
+                    <form action="{{ route('SA.Store.Setting') }}" method="POST">@csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <h4>Tax <span class="text-danger">(in %)</span></h4>
+                                    <input type="number" min="1" step="0.1" max="99.9" class="form-control" name="value" placeholder="Tax (in %)" required value="{{ $tax->attribute_value ?? '' }}">
+                                    <input type="hidden" value="{{ encrypt_decrypt('encrypt', 'tax') }}" name="attribute">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <button type="submit" class="Createbtn mt-3">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    <form action="{{ route('SA.Store.Setting') }}" method="POST">@csrf
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <h4>Course Purchased Validity <span class="text-danger">(in days)</span></h4>
+                                    <input type="number" min="1" step="1" max="365" class="form-control" name="value" placeholder="Course Purchased Validity (in days)" required value="{{ $course->attribute_value ?? '' }}">
+                                    <input type="hidden" value="{{ encrypt_decrypt('encrypt', 'course') }}" name="attribute">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <button type="submit" class="Createbtn mt-3">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -171,6 +205,10 @@
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
+
+    var tab = "{{ session()->get('tab') ?? false }}";
+    if (tab == 2) $("#arkansasSetting").get(0).click();
+
     $(document).ready(function() {
         $.validator.addMethod('filesize', function(value, element, param) {
             return this.optional(element) || (element.files[0].size <= param * 1000000)

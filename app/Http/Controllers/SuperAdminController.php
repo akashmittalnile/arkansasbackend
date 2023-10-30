@@ -19,6 +19,7 @@ use App\Models\Notify;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\ProductAttibutes;
+use App\Models\Setting;
 use App\Models\WalletBalance;
 use App\Models\WalletHistory;
 use Auth;
@@ -90,7 +91,9 @@ class SuperAdminController extends Controller
     {
         try {
             $user = User::where('id', auth()->user()->id)->first();
-            return view('super-admin.my-account')->with(compact('user'));
+            $tax = Setting::where('attribute_code', 'tax')->first();
+            $course = Setting::where('attribute_code', 'course_purchase_validity')->first();
+            return view('super-admin.my-account')->with(compact('user', 'tax', 'course'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -148,6 +151,49 @@ class SuperAdminController extends Controller
 
                 return redirect()->back()->with('message', 'Profile updated successfully');
             }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function storeSetting(Request $request) 
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'value' => 'required',
+                'attribute' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }else{
+                $attr = encrypt_decrypt('decrypt', $request->attribute);
+                if($attr=='tax' || $attr=='course'){
+                    if($attr=='tax'){
+                        $attr_name = 'Tax';
+                        $attr_code = 'tax';
+                    }else{
+                        $attr_name = 'Course Purchase Validity';
+                        $attr_code = 'course_purchase_validity';
+                    }
+                    $isExist = Setting::where('attribute_code', $attr_code)->first();
+                    if(isset($isExist->id)){
+                        Setting::where('attribute_code', $attr_code)->update([
+                            'attribute_value'=> $request->value,
+                            'updated_at' => date('Y-m-d H:i:s')
+                        ]);
+                    }else{
+                        $setting = new Setting;
+                        $setting->attribute_name = $attr_name;
+                        $setting->attribute_code = $attr_code;
+                        $setting->attribute_value = $request->value;
+                        $setting->save();
+                    }
+                    
+                    return redirect()->back()->with(['message'=> 'Setting save successfully.', 'tab'=> 2]);
+                } return redirect()->back()->with(['message'=> 'Invalid Request.', 'tab'=> 2]);
+            }
+        return view('super-admin.help-support',compact('courses', 'user'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -307,7 +353,6 @@ class SuperAdminController extends Controller
                 'disclaimers_introduction' => 'required',
                 'title' => 'required',
                 'description' => 'required',
-                'valid_upto' => 'required',
                 'tags' => 'required',
                 'course_fee' => 'required',
             ]);
@@ -331,7 +376,7 @@ class SuperAdminController extends Controller
             $course->title = $request->title;
             $course->description = $request->description;
             $course->course_fee = $request->course_fee;
-            $course->valid_upto = $request->valid_upto;
+            $course->valid_upto = $request->valid_upto ?? null;
             $course->category_id = $request->course_category;
             $course->tags = serialize($request->tags);
             $course->certificates = null;
