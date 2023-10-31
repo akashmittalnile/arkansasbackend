@@ -160,8 +160,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/super-admin/save-course-fee', 'SuperAdminController@save_course_fee')->name('Savecoursefee');
         Route::get('/super-admin/account-approval-request', 'SuperAdminController@account_approval_request')->name('SA.AccountApprovalRequest');
         Route::get('/super-admin/update-approval-request/{id}/{status}', 'SuperAdminController@update_approval_request')->name('SA.UpdateApprovalRequest');
-        Route::get('/super-admin/addcourse2/{userID}/{courseID}', 'SuperAdminController@addcourse2')->name('SA.Addcourse2');
-        Route::get('/super-admin/addcourse2/{userID}/{courseID}/{chapterID}', 'SuperAdminController@course_list')->name('SA.CourseList');
+        Route::get('/super-admin/addcourse2/{userID}/{courseID}/{chapterID?}', 'SuperAdminController@addcourse2')->name('SA.Addcourse2');
+        // Route::get('/super-admin/addcourse2/{userID}/{courseID}/{chapterID}', 'SuperAdminController@course_list')->name('SA.CourseList');
 
         Route::get('/super-admin/payment-requests/{userID}', 'SuperAdminController@payment_request')->name('SA.Payment.Request');
         Route::get('/super-admin/changes-payout-status/{id}/{status}', 'SuperAdminController@change_payout_status')->name('SA.Change.Payout.Status');

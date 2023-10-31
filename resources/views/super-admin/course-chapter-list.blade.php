@@ -41,7 +41,11 @@
                                 @else
                                 <div class="chapter-item">
                                     @endif
+                                    @if(isset($ccreator) && $ccreator)
+                                    <a href="{{ route('SA.Addcourse2', ['userID' => $userID, 'courseID'=>encrypt_decrypt('encrypt',$chapter->course_id), 'chapterID'=> encrypt_decrypt('encrypt',$chapter->id)] ) }}"><span>{{ $chapter->chapter ?? "NA" }}</span></a>
+                                    @else
                                     <a href="{{ route('SA.Course.Chapter', ['courseID'=>encrypt_decrypt('encrypt',$chapter->course_id), 'chapterID'=> encrypt_decrypt('encrypt',$chapter->id)] ) }}"><span>{{ $chapter->chapter ?? "NA" }}</span></a>
+                                    @endif
                                     <a href="{{ url('super-admin/delete-chapter/' . $chapter->id) }}" onclick="return confirm('Are you sure you want to delete this chapter?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}">
                                     </a>
                                 </div>

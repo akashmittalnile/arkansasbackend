@@ -1097,12 +1097,15 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function listed_course($id) 
+    public function listed_course($id, Request $request) 
     {
         try {
             $id = encrypt_decrypt('decrypt',$id);
             $user = User::where('id',$id)->first();
-            $courses = Course::where('admin_id',$id)->orderBy('id','DESC')->get();
+            $courses = Course::where('admin_id',$id);
+            if($request->filled('name')) $courses->where('title', 'like', '%'.$request->name.'%');
+            if($request->filled('date')) $courses->whereDate('title', $request->date);
+            $courses = $courses->orderBy('id','DESC')->get();
             $user = User::where('id', $id)->first();
 
             $payment = WalletHistory::join('wallet_balance as wb', 'wb.id', '=', 'wallet_history.wallet_id')->where('owner_id', $user->id)->where('owner_type', $user->role)->select('wb.id')->first();
@@ -1429,21 +1432,22 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function Addcourse2($userID,$courseID) 
+    public function Addcourse2($userID,$courseID, $chapterID=null) 
     {
         $courseID = encrypt_decrypt('decrypt',$courseID);
         $chapters = CourseChapter::where('course_id',$courseID)->get();
-        if (count($chapters)>0) {
-            $chapterID = null;
-            $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
-            $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->where('chapter_id',$chapterID)->get();
+        if($chapterID != null && isset($chapterID)) {
+            $chapterID = encrypt_decrypt('decrypt',$chapterID);
         } else {
-            $chapterID = null;
-            $quizes = ChapterQuiz::orderBy('id','DESC')->where('type','quiz')->where('course_id',$courseID)->get();
-            $datas = ChapterQuiz::orderBy('id','DESC')->where('type','!=','quiz')->where('course_id',$courseID)->get();
-        }
+            if(count($chapters)>0){
+               $firstChapter = CourseChapter::where('course_id',$courseID)->first();
+                $chapterID = $firstChapter->id;  
+            } else $chapterID = null;
+        } 
+        $datas = CourseChapterStep::where('course_chapter_id', $chapterID)->orderBy('sort_order')->get();
+        $ccreator = true;
         
-        return view('super-admin.addcourse2',compact('quizes','datas','chapters','courseID','chapterID','userID'));
+        return view('super-admin.course-chapter-list',compact('datas','chapters','courseID','chapterID','userID', "ccreator"));
     }
 
     public function course_list($userID,$courseID,$chapterID) 

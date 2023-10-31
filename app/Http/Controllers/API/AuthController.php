@@ -21,6 +21,10 @@ class AuthController extends Controller
         $validator = Validator::make($request->all(), [
             'email' => 'required|string|email',
             'password' => 'required|string',
+        ],
+        [
+            'email.required' => 'Please enter email address',
+            'email.email' => 'Please enter a valid email address',
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
@@ -72,6 +76,10 @@ class AuthController extends Controller
             'profile_image' => 'required|mimes:jpeg,png,jpg|image',
             'role' => 'required',
             'fcm_token' => 'required',
+        ],
+        [
+            'email.required' => 'Please enter email address',
+            'email.email' => 'Please enter a valid email address',
         ]);
         if ($validator->fails()) {
             return response()->json(['status' => false, 'message' => $validator->errors()->first()]);

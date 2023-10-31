@@ -110,7 +110,7 @@ class ApiController extends Controller
                 }
 
                 $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 1)->avg('rating');
-                $b1['avg_rating'] = number_format($avgRating, 1);
+                $b1['avg_rating'] = number_format($avgRating, 1, '.', '');
 
                 $TrendingCourses[] = $b1;
             }
@@ -241,7 +241,7 @@ class ApiController extends Controller
                 }
 
                 $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 1)->avg('rating');
-                $b3['avg_rating'] = number_format($avgRating, 1);
+                $b3['avg_rating'] = number_format($avgRating, 1, '.', '');
 
                 $SuggestedCourses[] = $b3;
             }
@@ -304,7 +304,7 @@ class ApiController extends Controller
                 }
 
                 $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 2)->avg('rating');
-                $b4['avg_rating'] = number_format($avgRating, 1);
+                $b4['avg_rating'] = number_format($avgRating, 1, '.', '');
 
                 $AllProducts[] = $b4;
             }
@@ -368,7 +368,7 @@ class ApiController extends Controller
                 }
 
                 $avgRating = DB::table('user_review as ur')->where('object_id', $data->id)->where('object_type', 2)->avg('rating');
-                $b5['avg_rating'] = number_format($avgRating, 1);
+                $b5['avg_rating'] = number_format($avgRating, 1, '.', '');
 
                 $SugProducts[] = $b5;
             }
@@ -451,7 +451,7 @@ class ApiController extends Controller
                 $temp['description'] = $value->description;
                 $temp['status'] = $value->status;
                 $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
-                $temp['avg_rating'] = number_format($avgRating, 1);
+                $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                 $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                 $tags = [];
                 if(isset($value->tags)){
@@ -606,10 +606,10 @@ class ApiController extends Controller
                             $temp['tags'] = $tags;
                             $temp['status'] = $value->status;
                             $reviewAvg = DB::table('user_review as ur')->where('object_id', $item->object_id)->where('object_type', $type)->avg('rating');
-                            $temp['avg_rating'] = number_format($reviewAvg, 1);
+                            $temp['avg_rating'] = number_format($reviewAvg, 1, '.', '');
                             if($request->filled('rating'))
                                 if($reviewAvg < min($request->rating)) continue;
-                            $temp['rating'] = number_format((float)$reviewAvg, 1);
+                            $temp['rating'] = number_format((float)$reviewAvg, 1, '.', '');
                             $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
                             $response[] = $temp;
                         }
@@ -736,7 +736,7 @@ class ApiController extends Controller
                     $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
                     $avgRating = DB::table('user_review as ur')->where('object_id', $item->id)->where('object_type', 1)->avg('rating');
-                    $temp['avg_rating'] = number_format($avgRating, 1);
+                    $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                     if($request->filled('rating'))
                         if($avgRating < min($request->rating)) continue;
                     $response[] = $temp;
@@ -1125,7 +1125,7 @@ class ApiController extends Controller
                         $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
                         $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
                         $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 1)->avg('rating');
-                        $temp['avg_rating'] = number_format($avgRating, 1);
+                        $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                         if($request->filled('rating'))
                             if($avgRating < min($request->rating)) continue;
                     } else {
@@ -1160,7 +1160,7 @@ class ApiController extends Controller
                         $temp['creator_image'] = $profile_image;
                         $temp['creator_id'] = $value->added_by;
                         $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
-                        $temp['avg_rating'] = number_format($avgRating, 1);
+                        $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                         if($request->filled('rating'))
                             if($avgRating < min($request->rating)) continue;
                     }
@@ -1308,7 +1308,7 @@ class ApiController extends Controller
                             $temp['content_creator_category'] = isset($value->category_name) ? $value->category_name : '';
                             $temp['content_creator_id'] = isset($value->admin_id) ? $value->admin_id : '';
                             $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 1)->avg('rating');
-                            $temp['avg_rating'] = number_format($avgRating, 1);
+                            $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                             if($request->filled('rating'))
                                 if($avgRating < min($request->rating)) continue;
                     } else {
@@ -1343,7 +1343,7 @@ class ApiController extends Controller
                             $temp['creator_image'] = $profile_image;
                             $temp['creator_id'] = $value->added_by;
                             $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
-                            $temp['avg_rating'] = number_format($avgRating, 1);
+                            $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                             if($request->filled('rating'))
                                 if($avgRating < min($request->rating)) continue;
                     }
@@ -1503,8 +1503,8 @@ class ApiController extends Controller
                                         $arr1['total_question'] = $totalQuestion ?? 0;
                                         $arr1['total_correct'] = $totalCorrect ?? 0;
                                         if($total != 0 && $total != null){
-                                            $arr1['percentage_obtained'] = number_format((float)(($obtained * 100) / $total), 1);
-                                            $arr1['pass_status'] = (number_format((float)(($obtained * 100) / $total), 1) >= $vals->passing) ? "Pass" : "Fail! Please retake test.";
+                                            $arr1['percentage_obtained'] = number_format((float)(($obtained * 100) / $total), 1, '.', '');
+                                            $arr1['pass_status'] = (number_format((float)(($obtained * 100) / $total), 1, '.', '') >= $vals->passing) ? "Pass" : "Fail! Please retake test.";
                                         } else {
                                             $arr1['percentage_obtained'] = 0;
                                             $arr1['pass_status'] = null;
@@ -1662,7 +1662,7 @@ class ApiController extends Controller
                     $temp['description'] = $item->description;
                     $temp['tags'] = $tags;
                     $temp['status'] = $item->status;
-                    $temp['avg_rating'] = number_format($reviewAvg, 1);
+                    $temp['avg_rating'] = number_format($reviewAvg, 1, '.', '');
                     $temp['review_count'] = $reviewCount;
                     $temp['review'] = $reviewArr;
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
@@ -1847,7 +1847,7 @@ class ApiController extends Controller
                         "review_list" => $data
                     ]);
                 } else {
-                    return response()->json(['status' => false, 'message' => 'No data', 'review_list' => []]);
+                    return response()->json(['status' => false, 'message' => 'No data found', 'review_list' => []]);
                 }
             } else {
                 return response()->json(['status' => false, 'message' => 'Please login']);
@@ -1950,7 +1950,7 @@ class ApiController extends Controller
                     $id = User::where('id', $u_id)->update($updatedata);
                     if ($id) {
                         $data['status'] = true;
-                        $data['message'] = "Password change successfully";
+                        $data['message'] = "Password Changed Successfully";
                         return response()->json($data);
                     } else {
                         $data['status'] = false;
@@ -1959,7 +1959,7 @@ class ApiController extends Controller
                     }
                 } else {
                     $data['status'] = true;
-                    $data['message'] = "Password does not match";
+                    $data['message'] = "Old Password Doesn't Matched";
                     return response()->json($data);
                 }
             } else {
@@ -2167,7 +2167,7 @@ class ApiController extends Controller
                         if(isset($user->id) && $user->role == 3){
                             $admin_value = $request->cart_value;
                         } else if(isset($user->id) && $user->role == 2){
-                            $admin_value = number_format((float)(($request->cart_value * $user->admin_cut)/100), 2);
+                            $admin_value = number_format((float)(($request->cart_value * $user->admin_cut)/100), 2, '.', '');
                         }
                     }
 
@@ -2262,7 +2262,7 @@ class ApiController extends Controller
                             $temp['Product_image'] = $datas_image;
                         }
                         $avgRating = DB::table('user_review as ur')->where('object_id', $item->object_id)->where('object_type', $item->object_type)->avg('rating');
-                        $temp['avg_rating'] = number_format($avgRating, 1);
+                        $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                         $response[] = $temp;
                     }
                     // $shipping_amount = 10;
@@ -2275,10 +2275,10 @@ class ApiController extends Controller
                     return response()->json([
                         'status' => true,
                         'message' => 'Cart Listing',
-                        'sub_total' => (int)$cart_value,
+                        'sub_total' => number_format((float)$cart_value, 2, '.', ''),
                         'discount' => $discount,
-                        'tax' => number_format((float)$tax_amount, 2),
-                        'total' => number_format((float)($total_amount+$tax_amount), 2),
+                        'tax' => number_format((float)$tax_amount, 2, '.', ''),
+                        'total' => number_format((float)($total_amount+$tax_amount), 2, '.', ''),
                         'data' => $response
                     ]);
                 } else {
@@ -2310,13 +2310,20 @@ class ApiController extends Controller
                 $cart_count = AddToCart::where('userid', $user_id)->count();
                 $discount = 0;
                 $total_amount = ($cart_value) - $discount;
+
+                $tax = Setting::where('attribute_code','tax')->first();
+                if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
+                    $tax_amount = ($total_amount*$tax->attribute_value)/100;
+                else $tax_amount = 0;
+
                 return response()->json([
                     'status' => true,
                     'message' => 'Cart details.',
-                    'sub_total' => (int)$cart_value,
+                    'sub_total' => number_format((float) $cart_value, 2, '.', ''),
                     'order_count' => $cart_count,
                     'discount' => $discount,
-                    'total' => $total_amount,
+                    'tax' => number_format((float) $tax_amount, 2, '.', ''),
+                    'total' => number_format((float) ($total_amount+$tax_amount),2, '.', ''),
                 ]);
             } else {
                 return response()->json(['status' => false, 'Message' => 'Please login']);
@@ -2353,8 +2360,8 @@ class ApiController extends Controller
                         'order_number' => $order_no,
                         'amount' => $order_price - $admin_cut_price,
                         'admin_amount' => $admin_cut_price,
-                        'taxes' => number_format((float)$tax_amount, 2),
-                        'total_amount_paid' => number_format((float)($total_price+$tax_amount), 2),/*Total amount of order*/
+                        'taxes' => number_format((float)$tax_amount, 2, '.', ''),
+                        'total_amount_paid' => number_format((float)($total_price+$tax_amount), 2, '.', ''),/*Total amount of order*/
                         'payment_id' => null,
                         'payment_type' => null,
                         'created_date' => date('Y-m-d H:i:s'),
@@ -2390,7 +2397,7 @@ class ApiController extends Controller
                     $data['status'] = 1;
                     $data['message'] = 'Order placed successfully';
                     $data['order_id'] = $insertedId;
-                    $data['total_amount'] = number_format((float)($total_price+$tax_amount), 2);
+                    $data['total_amount'] = number_format((float)($total_price+$tax_amount), 2, '.', '');
                     return response()->json($data);
                 } else {
                     $data['status'] = 0;
@@ -2503,7 +2510,7 @@ class ApiController extends Controller
                         $temp['category_id'] = $value->catid ?? null;
                         $temp['category_name'] = $value->catname ?? null;
                         $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', $request->type)->avg('rating');
-                        $temp['avg_rating'] = number_format($avgRating, 1);
+                        $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                         $temp['order_status'] = ($value->order_status == 1) ? 'Paid' : 'Payment Pending';
                         
                         $ContentCreator = User::where('id', $value->added_by)->first();
@@ -2841,7 +2848,7 @@ class ApiController extends Controller
             if(isset($courseStep->course_chapter_id)){
                 $chapterId = $courseStep->course_chapter_id;
                 $courseChapter = CourseChapter::where('id', $courseStep->course_chapter_id)->first();
-                if( number_format((float)(($obtained * 100) / $total), 1) >= $passingPercentage ){
+                if( number_format((float)(($obtained * 100) / $total), 1, '.', '') >= $passingPercentage ){
                     $status = 1;
                 }else{
                     $status = 2;
@@ -2943,7 +2950,7 @@ class ApiController extends Controller
 
                 $temp['creator_name'] = $val->first_name . ' ' . $val->last_name;
                 $avgRating = DB::table('user_review as ur')->where('object_id', $val->course_id)->where('object_type', 1)->avg('rating');
-                $temp['avg_rating'] = number_format($avgRating, 1);
+                $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                 $temp['download_pdf'] = url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$val->course_id)."/".encrypt_decrypt('encrypt',$val->user_id);
                 $res[] = $temp;
             }
@@ -3014,7 +3021,7 @@ class ApiController extends Controller
                 $temp['description'] = $value->description;
                 $temp['status'] = $value->status;
                 $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', 2)->avg('rating');
-                $temp['avg_rating'] = number_format($avgRating, 1);
+                $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
                 if($request->filled('rating'))
                     if($avgRating < min($request->rating)) continue;
                 $temp['created_date'] = date('d/m/y,H:i', strtotime($value->created_date));
@@ -3116,12 +3123,12 @@ class ApiController extends Controller
                 $id = $request->order_id;
                 $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', DB::raw("orders.amount + orders.admin_amount as total_amount"))->first();
 
-                $order->total_amount = number_format((float) $order->total_amount, 2);
-                $order->taxes = number_format((float) $order->taxes, 2);
+                $order->total_amount = number_format((float) $order->total_amount, 2, '.', '');
+                $order->taxes = number_format((float) $order->taxes, 2, '.', '');
                 $order->created_date = date('d M, Y H:iA', strtotime($order->created_date));
 
                 $avgRating = DB::table('order_product_detail as opd')->leftJoin('user_review as ur', 'ur.object_id', '=', DB::raw('opd.product_id AND ur.object_type = opd.product_type'))->where('opd.id', $request->item_id)->avg('ur.rating');
-                $order->avg_rating = number_format($avgRating, 1);
+                $order->avg_rating = number_format($avgRating, 1, '.', '');
 
                 $item = OrderDetail::where('id', $request->item_id)->first();
                 if(isset($item->id)){
@@ -3151,7 +3158,7 @@ class ApiController extends Controller
                     $temp['video'] = ($val->product_type==1) ? url('upload/disclaimers-introduction/'.$val->image) : null;
                     $temp['image'] = ($val->product_type==2) ? url('upload/products/'.$val->image) : null;
                     $avgRating = DB::table('user_review as ur')->where('ur.object_id', $val->product_id)->where('ur.object_type', $val->product_type)->avg('ur.rating');
-                    $temp['avg_rating'] = number_format((float)$avgRating, 1);
+                    $temp['avg_rating'] = number_format((float)$avgRating, 1, '.', '');
                     $user = User::where('id', $val->added_by)->first();
                     $temp['creator_name'] = $user->first_name . ' ' . $user->last_name;
                     $temp['creator_image'] = ($user->profile_image!="" && isset($user->profile_image)) ? url('/upload/profile-image/'.$user->profile_image) : null;

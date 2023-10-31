@@ -173,21 +173,33 @@
                             <div class="pmu-filter-heading">
                                 <h2>Listed Course</h2>
                             </div>
-                            <div class="pmu-search-filter wd60">
-                                <div class="row g-2">
-                                    <div class="col-md-8">
-                                        <div class="form-group search-form-group">
-                                            <input type="text" class="form-control" name="Start Date"
-                                                placeholder="Search by course name, Tags Price">
-                                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                            <div class="pmu-search-filter wd80">
+                                <form action="">
+                                    <div class="row g-2">
+                                        <div class="col-md-5">
+                                            <div class="form-group search-form-group">
+                                                <input type="text" class="form-control" name="name"
+                                                    placeholder="Search by course name" value="{{ request()->name ?? '' }}">
+                                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <input type="date" class="form-control" name="date" value="{{ request()->date ?? '' }}">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1">
+                                            <div class="form-group">
+                                                <a class="Create-btn" style="padding: 12px 0px;" href="{{ route('SA.ListedCourse', encrypt_decrypt('encrypt', $user->id)) }}"><i class="las la-sync"></i></a>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group">
+                                                <button class="save-btn" style="padding: 13px 17px;" type="submit">Search</button>
+                                            </div>
                                         </div>
                                     </div>
-                                    <div class="col-md-4">
-                                        <div class="form-group">
-                                            <input type="date" class="form-control">
-                                        </div>
-                                    </div>
-                                </div>
+                                </form>
                             </div>
                         </div>
 
@@ -195,11 +207,14 @@
                             <div class="pmu-content">
                                 <div class="row">
                                     @if ($courses->isEmpty())
-                                        <tr>
-                                            <td colspan="11" class="text-center">
-                                                No record found
-                                            </td>
-                                        </tr>
+                                    <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+                                        <div>
+                                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                        </div>
+                                        <div class="font-weight-bold">
+                                            <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
+                                        </div>
+                                    </div>
                                     @elseif(!$courses->isEmpty())
                                         @foreach ($courses as $data)
                                             <div class="col-md-6">
@@ -249,7 +264,7 @@
                                                         <h2>{{ $data->title ?: '' }}</h2>
                                                         <div class="pmu-course-price">
                                                             ${{ number_format($data->course_fee, 2) ?: 0 }}</div>
-                                                        <p>{{ $data->description ?: '' }}</p>
+                                                        <p>{{ ($data->description != "" && $data->description != null) ? (strlen($data->description) > 53 ?  substr($data->description, 0, 53)."....." : $data->description) : "NA" }}</p>
                                                         <a href="{{ route('SA.Addcourse2', [ 'userID'=> encrypt_decrypt('encrypt', $user->id), 'courseID'=> encrypt_decrypt('encrypt',$data->id) ] ) }}">
                                                         <?php
                                                         $chapter_count = \App\Models\CourseChapter::where('course_id', $data->id)->count();
