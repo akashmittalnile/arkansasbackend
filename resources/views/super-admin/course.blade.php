@@ -9,7 +9,7 @@
             <div class="pmu-search-filter wd70">
                 <form action="">
                     <div class="row">
-                        <div class="col-md-4">
+                        <div class="col-md-3">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="course"
                                     placeholder="Search by course name" value="{{request()->course}}">
@@ -25,14 +25,19 @@
                                 </select>
                             </div>
                         </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <a class="Create-btn" style="padding: 13px 20px;" href="{{ route('SA.Course') }}"><i class="las la-sync"></i></a>
+                            </div>
+                        </div>
                         <div class="col-md-2">
                             <div class="form-group">
-                                <button class="add-more py-2" type="">Search</button>
+                                <button class="add-more" style="padding: 7.5px 41px;" type="">Search</button>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
-                                <a class="Create-btn" href="{{ route('SA.AddCourse')}}">Create New Course</a>
+                                <a class="Create-btn" style="padding: 14.4px 10px;" href="{{ route('SA.AddCourse')}}">Create New Course</a>
                             </div>
                         </div>
                     </div>

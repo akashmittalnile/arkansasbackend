@@ -26,14 +26,14 @@
                                 <input type="date" name="order_date" class="form-control" value="{{ request()->order_date }}">
                             </div>
                         </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <button class="download-btn" style="padding: 12px 0px;" type="">Search</button>
-                            </div>
-                        </div>
                         <div class="col-md-1">
                             <div class="form-group">
                                 <a href="{{ route('SA.Earnings') }}" style="padding: 12px 0px;" class="download-btn"><i class="las la-sync"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <button class="download-btn" style="padding: 12px 0px;" type="">Search</button>
                             </div>
                         </div>
                     </div>

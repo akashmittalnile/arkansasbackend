@@ -80,8 +80,10 @@ class SuperAdminController extends Controller
     public function dashboard() 
     {
         try {
-            $courses = Course::orderBy('id','DESC')->get();
-        return view('super-admin.dashboard',compact('courses'));
+            $cc = User::where('role', 2)->where('status', 1)->count();
+            $stu = User::where('role', 1)->where('status', 1)->count();
+            $pro = Product::where('status', 1)->count();
+        return view('super-admin.dashboard',compact('pro', 'stu', 'cc'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -318,10 +320,13 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function content_creators() 
+    public function content_creators(Request $request) 
     {
         try {
-            $users = User::where('status',1)->where('role',2)->orderBy('id','DESC')->get();
+            $users = User::where('status',1)->where('role',2);
+            if($request->filled('name')) $users->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
+            if($request->filled('status')) $users->where('status', $request->status);
+            $users = $users->orderBy('id','DESC')->get();
         return view('super-admin.content-creators',compact('users'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -890,10 +895,13 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function students() 
+    public function students(Request $request) 
     {
         try {
-            $datas = User::where('role',1)->orderBy('id','DESC')->get();
+            $datas = User::where('role',1);
+            if($request->filled('name')) $datas->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
+            if($request->filled('status')) $datas->where('status', $request->status);
+            $datas = $datas->orderBy('id','DESC')->paginate(10);
         return view('super-admin.students',compact('datas'));
         } catch (\Exception $e) {
             return $e->getMessage();

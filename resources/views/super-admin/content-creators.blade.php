@@ -8,7 +8,7 @@
             </div>
             <div class="pmu-search-filter wd80">
                 <form action="">
-                    <div class="row">
+                    <div class="row g-2">
                         <div class="col-md-4">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="name"
@@ -25,13 +25,18 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-1">
                             <div class="form-group">
-                                <button class="add-more py-2" type="">Search</button>
+                                <a class="Accountapproval-btn" style="padding: 13px 20px;" href="{{ route('SA.ContentCreators') }}"><i class="las la-sync"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <button class="add-more" style="padding: 8px 14px;" type="">Search</button>
                             </div>
                         </div>
                         <div class="col-md-3">
-                            <div class="form-group">
+                            <div class="form-group ml-2">
                                 <a class="Accountapproval-btn" href="{{ route('SA.AccountApprovalRequest') }}">Account approval Request</a>
                             </div>
                         </div>
@@ -43,11 +48,14 @@
         <div class="creator-table-section">
             <div class="creator-table-list">
                 @if($users->isEmpty())
-                    <tr>
-                        <td colspan="11" class="text-center">
-                            No record found
-                        </td>
-                    </tr>
+                <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+                    <div>
+                        <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                    </div>
+                    <div class="font-weight-bold">
+                        <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
+                    </div>
+                </div>
                 @elseif(!$users->isEmpty())
                     @foreach($users as $data)
                         <div class="creator-table-item">

@@ -7,8 +7,8 @@
                 <div class="col-md-4">
                     <div class="pmu-overview-item">
                         <div class="pmu-overview-content">
-                            <h2>1452</h2>
-                            <p>Total Content Creator</p>
+                            <h2>{{ $cc ?? 0 }}</h2>
+                            <p>Total Active Content Creator</p>
                         </div>
                         <div class="pmu-overview-media">
                             <img src="{!! url('assets/superadmin-images/Content-Creator.svg') !!}">
@@ -19,8 +19,8 @@
                 <div class="col-md-4">
                     <div class="pmu-overview-item">
                         <div class="pmu-overview-content">
-                            <h2>9888</h2>
-                            <p>Total Students</p>
+                            <h2>{{ $stu ?? 0 }}</h2>
+                            <p>Total Active Students</p>
                         </div>
                         <div class="pmu-overview-media">
                             <img src="{!! url('assets/superadmin-images/students-icon.svg') !!}">
@@ -32,8 +32,8 @@
                 <div class="col-md-4">
                     <div class="pmu-overview-item">
                         <div class="pmu-overview-content">
-                            <h2>9888</h2>
-                            <p>Total Listed Products</p>
+                            <h2>{{ $pro ?? 0 }}</h2>
+                            <p>Total Active Listed Products</p>
                         </div>
                         <div class="pmu-overview-media">
                             <img src="{!! url('assets/superadmin-images/products-icon.svg') !!}">
