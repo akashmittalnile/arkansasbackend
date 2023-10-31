@@ -1454,9 +1454,21 @@ class ApiController extends Controller
                         $temp['isPurchased'] = $isPurchased;
                         if(isset($isPurchase->id)){
                             $temp['courseCompleted'] = $isPurchase->status;
+                            $course_purchase = Setting::where('attribute_code','course_purchase_validity')->first();
+                            if(isset($course_purchase->id) && $course_purchase->attribute_value != '' && $course_purchase->attribute_value != 0){
+                                $valid = date('d M, Y', strtotime($isPurchase->created_date . '+' . $course_purchase->attribute_value . 'days'));
+                            }  
+                            $temp['course_status'] = courseExpire(date('d M, Y', strtotime($isPurchase->created_date)), $valid) ? 2 : 1;
+                            $temp['course_status_name'] = courseExpire(date('d M, Y', strtotime($isPurchase->created_date)), $valid) ? 'Course Validity Expired' : 'Course Validity is Active';
+                            $temp['course_purchase_date'] = date('d M, Y', strtotime($isPurchase->created_date));
+                            $temp['course_expire_date'] = $valid;
                             $temp['certificate'] = ($isPurchase->status==1) ? url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$id)."/".encrypt_decrypt('encrypt',$user_id) : null;
                         } else {
                             $temp['courseCompleted'] = 0;
+                            $temp['course_status'] = 0;
+                            $temp['course_status_name'] = 'Not Purchased Yet';
+                            $temp['course_purchase_date'] = null;
+                            $temp['course_expire_date'] = null;
                             $temp['certificate'] = null;
                         }
                         
@@ -2126,8 +2138,8 @@ class ApiController extends Controller
                     return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
                 }else{
                     if($request->object_type == 1){
-                        $orderDetail = Order::join('order_product_detail as opd', 'opd.order_id', '=', 'orders.id')->where('orders.user_id', auth()->user()->id)->where('orders.status', 1)->where('product_id', $request->object_id)->where('product_type', 1)->select('orders.id')->first();
-                        if(isset($orderDetail->id)){
+                        $isPurchase = UserCourse::where('course_id', $request->object_id)->where('user_id', $user_id)->first();
+                        if(isset($isPurchase->id)){
                             return response()->json(['status' => false, 'message' => 'Already purchased this course!. Please try another courses.']);
                         }  
                     }

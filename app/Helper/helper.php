@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Http;
 use App\Models\ChapterQuiz;
 use App\Models\Notify;
 use App\Models\Tag;
+use Illuminate\Support\Carbon;
 
     if (!function_exists('sendNotification')) {
         function sendNotification($token, $data)
@@ -191,5 +192,15 @@ use App\Models\Tag;
         function getNotification() {
             $notify = Notify::where('user_id', auth()->user()->id)->get();
             return $notify;
+        } 
+    }
+
+    if(! function_exists('courseExpire')){
+        function courseExpire($start, $end) {
+            $now = Carbon::now();
+            if ($now->between($start, $end)) 
+                return false;
+            else 
+                return true;
         } 
     }

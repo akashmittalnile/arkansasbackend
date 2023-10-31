@@ -787,7 +787,7 @@ $(document).ready(function () {
             contentType: false,
             processData: false,
             beforeSend: function () {
-                toastr.info('Form submit.');
+                toastr.info('Form submitted.');
             },
             success: function (response) {
                 if (response.status == 201) {
