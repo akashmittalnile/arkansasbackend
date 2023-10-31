@@ -3142,7 +3142,7 @@ class ApiController extends Controller
                     $order->creator_name = $data;
                 }
 
-                $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.admin_id, p.added_by) as added_by, ifnull(c.title,p.name) title, order_product_detail.id as itemid, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'Image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
+                $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.admin_id, p.added_by) as added_by, ifnull(c.title,p.name) title, order_product_detail.id as itemid, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'Image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
 
                 $other_detail = [];
                 foreach($orderDetails as $val){
@@ -3153,7 +3153,8 @@ class ApiController extends Controller
                     $temp['type_name'] = ($val->product_type==1) ? "Course" : "Product";
                     $temp['title'] = $val->title ?? "NA";
                     $temp['status'] = $val->status;
-                    $temp['total_amount_paid'] = $val->amount;
+                    $temp['total_amount_paid'] = $val->amount*$val->quantity;
+                    $temp['quantity'] = $val->quantity;
                     $temp['admin_fee'] = $val->admin_amount;
                     $temp['video'] = ($val->product_type==1) ? url('upload/disclaimers-introduction/'.$val->image) : null;
                     $temp['image'] = ($val->product_type==2) ? url('upload/products/'.$val->image) : null;

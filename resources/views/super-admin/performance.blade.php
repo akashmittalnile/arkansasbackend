@@ -251,6 +251,7 @@
     $(document).ready(function() {
         let arrOver = $("#over_graph").data('json');
         arrOver.map(ele => {
+            ele.y = (ele.y).toFixed(2);
             dataOver.push(ele);
         })
     })
@@ -333,6 +334,7 @@
     $(document).ready(function() {
         let arrOver = $("#product_graph").data('json');
         arrOver.map(ele => {
+            ele.y = (ele.y).toFixed(2);
             dataOverProduct.push(ele);
         })
     })
@@ -414,6 +416,7 @@
     $(document).ready(function() {
         let arrOver = $("#creator_graph").data('json');
         arrOver.map(ele => {
+            ele.y = (ele.y).toFixed(2);
             dataOverCreator.push(ele);
         })
     })

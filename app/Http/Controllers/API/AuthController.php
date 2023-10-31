@@ -101,6 +101,7 @@ class AuthController extends Controller
         $user->role = $request->role ?? 1;
         $user->fcm_token = $request->fcm_token ?? null;
         $user->password = $request->password;
+        $user->created_at = date('Y-m-d H:i:s');
         $user->save();
 
         if($user){

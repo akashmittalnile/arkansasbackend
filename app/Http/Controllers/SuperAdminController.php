@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\File;
 use DB;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
+use Illuminate\Support\Carbon;
 
 class SuperAdminController extends Controller
 {
@@ -80,10 +81,89 @@ class SuperAdminController extends Controller
     public function dashboard() 
     {
         try {
-            $cc = User::where('role', 2)->where('status', 1)->count();
-            $stu = User::where('role', 1)->where('status', 1)->count();
-            $pro = Product::where('status', 1)->count();
-        return view('super-admin.dashboard',compact('pro', 'stu', 'cc'));
+            $cc = User::where('role', 2)->count();
+            $stu = User::where('role', 1)->count();
+            $pro = Product::count();
+            $course = Course::count();
+
+            $month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+            $wallet = WalletBalance::join('wallet_history as wh', 'wh.wallet_id', '=', 'wallet_balance.id')->select(
+                DB::raw('sum(wh.balance) as y'), 
+                DB::raw("DATE_FORMAT(added_date,'%m') as x")
+            )->whereYear('wallet_balance.created_date', date('Y'))->where('owner_id', auth()->user()->id)->where('owner_type', 3)->groupBy('x')->orderByDesc('x')->get()->toArray();
+            $xw = collect($wallet)->pluck('x')->toArray();
+            $yw = collect($wallet)->pluck('y')->toArray();
+            $walletArr = [];
+            for ($i = 0; $i < 12; $i++) {
+                if(in_array( $i+1, $xw )){
+                    $indx = array_search($i+1, $xw);
+                    $walletArr[$i]['y'] = $yw[$indx];
+                }else
+                    $walletArr[$i]['y'] = 0;
+                $walletArr[$i]['x'] = $month[($i+1) - 1];
+            }
+
+            $users = User::select(
+                DB::raw('count(id) as y'), 
+                DB::raw("DATE_FORMAT(created_at,'%m') as x")
+            )->whereYear('created_at', date('Y'))->groupBy('x')->orderByDesc('x')->get()->toArray();
+            $x = collect($users)->pluck('x')->toArray();
+            $y = collect($users)->pluck('y')->toArray();
+            $userArr = [];
+            for ($i = 0; $i < 12; $i++) {
+                if(in_array( $i+1, $x )){
+                    $indx = array_search($i+1, $x);
+                    $userArr[$i]['y'] = $y[$indx];
+                }else{
+                    $userArr[$i]['y'] = 0;
+                }
+                $userArr[$i]['x'] = $month[($i+1) - 1];
+            }
+
+            $over_graph_data = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->select(
+                DB::raw('sum(opd.admin_amount) as y'), 
+                DB::raw("DATE_FORMAT(opd.created_date,'%d') as x")
+                )->whereMonth('opd.created_date', date('m'))->whereYear('opd.created_date', date('Y'))->groupBy('x')->orderByDesc('x')->get()->toArray(); 
+            $over_graph = [];
+            $days = get_days_in_month(date('m'), date('Y'));
+            $x = collect($over_graph_data)->pluck('x')->toArray();
+            $y = collect($over_graph_data)->pluck('y')->toArray();
+            for($i=1; $i<=$days; $i++){
+                if(in_array( $i, $x )){
+                    $indx = array_search($i, $x);
+                    // dd($x[$indx]);
+                    $over_graph[$i-1]['x'] = (string) $i;
+                    $over_graph[$i-1]['y'] = $y[$indx];
+                }else{
+                    $over_graph[$i-1]['x'] = (string) $i;
+                    $over_graph[$i-1]['y'] = 0;
+                }
+            }
+
+            $creator_over_graph_data = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', '!=', auth()->user()->id)->select(
+                DB::raw('sum(opd.amount - opd.admin_amount) as y'), 
+                DB::raw("DATE_FORMAT(opd.created_date,'%d') as x")
+                )->whereMonth('opd.created_date', date('m'))->whereYear('opd.created_date', date('Y'))->groupBy('x')->orderByDesc('x')->get()->toArray(); 
+            $creator_over_graph = [];
+            $creator_days = get_days_in_month(date('m'), date('Y'));
+            $creator_x = collect($creator_over_graph_data)->pluck('x')->toArray();
+            $creator_y = collect($creator_over_graph_data)->pluck('y')->toArray();
+            for($i=1; $i<=$creator_days; $i++){
+                if(in_array( $i, $creator_x )){
+                    $indx = array_search($i, $creator_x);
+                    // dd($x[$indx]);
+                    $creator_over_graph[$i-1]['x'] = (string) $i;
+                    $creator_over_graph[$i-1]['y'] = $creator_y[$indx];
+                }else{
+                    $creator_over_graph[$i-1]['x'] = (string) $i;
+                    $creator_over_graph[$i-1]['y'] = 0;
+                }
+            }
+
+            $user = User::where('role', 1)->orderByDesc('id')->limit(3)->get();
+            $contentcreator = User::where('role', 2)->orderByDesc('id')->limit(3)->get();
+
+            return view('super-admin.dashboard',compact('course', 'pro', 'stu', 'cc', 'userArr', 'walletArr', 'creator_over_graph', 'over_graph', 'user', 'contentcreator'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
