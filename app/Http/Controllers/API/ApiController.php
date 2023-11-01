@@ -2278,6 +2278,7 @@ class ApiController extends Controller
                         'sub_total' => number_format((float)$cart_value, 2, '.', ''),
                         'discount' => $discount,
                         'tax' => number_format((float)$tax_amount, 2, '.', ''),
+                        'shipping_cost' => '0.00',
                         'total' => number_format((float)($total_amount+$tax_amount), 2, '.', ''),
                         'data' => $response
                     ]);
@@ -2288,6 +2289,7 @@ class ApiController extends Controller
                         'sub_total' => 0,
                         'discount' => 0,
                         'tax' => 0,
+                        'shipping_cost' => '0.00',
                         'total' => 0,
                         'data' => $response
                     ]);
@@ -2514,13 +2516,13 @@ class ApiController extends Controller
                         $temp['order_status'] = ($value->order_status == 1) ? 'Paid' : 'Payment Pending';
                         
                         $ContentCreator = User::where('id', $value->added_by)->first();
-                        if ($ContentCreator->profile_image == '') {
-                            $profile_image = '';
-                        } else {
+                        if (isset($ContentCreator->profile_image) && $ContentCreator->profile_image != '' && $ContentCreator->profile_image != null) {
                             $profile_image = url('upload/profile-image/' . $ContentCreator->profile_image);
+                        } else {
+                            $profile_image = '';
                         }
                         $temp['content_creator_image'] = $profile_image;
-                        $temp['content_creator_name'] = $ContentCreator->first_name.' '.$ContentCreator->last_name;
+                        $temp['content_creator_name'] = $ContentCreator->first_name ?? 'NA' .' '.$ContentCreator->last_name ?? '';
                         $temp['content_creator_id'] = isset($ContentCreator->id) ? $ContentCreator->id : '';
 
                         $review = Review::where('object_id', $value->id)->where('object_type', $request->type)->where('userid', $user_id)->first();
@@ -3121,9 +3123,10 @@ class ApiController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             }else{
                 $id = $request->order_id;
-                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', DB::raw("orders.amount + orders.admin_amount as total_amount"))->first();
+                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('orders.total_amount_paid', 'u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', DB::raw("orders.amount + orders.admin_amount as total_amount"))->first();
 
                 $order->total_amount = number_format((float) $order->total_amount, 2, '.', '');
+                $order->total_amount_paid = number_format((float) $order->total_amount_paid, 2, '.', '');
                 $order->taxes = number_format((float) $order->taxes, 2, '.', '');
                 $order->created_date = date('d M, Y H:iA', strtotime($order->created_date));
 

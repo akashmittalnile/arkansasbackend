@@ -102,7 +102,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    
                     @forelse($user as $key => $val)
                     <tr>
                         <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
@@ -113,19 +112,51 @@
                                 <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('assets/superadmin-images/no-image.png') !!}">
                             @endif
                         </td>
-                        <td class="text-capitalize">{{ $val->first_name ?? 'NA' }} {{ $val->last_name ?? '' }}</td>
-                        <td class="text-lowercase">{{ $val->email ?? 'NA' }}</td>
-                        <td>{{ $val->phone ?? 'NA' }}</td>
+                        <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
+                        <td class="text-lowercase">{{ dataSet($val->email) }}</td>
+                        <td>{{ dataSet($val->phone) }}</td>
                     </tr>
                     @empty
                     @endforelse
-
                 </tbody>
             </table>
+        </div>
+    </div>
 
-            <div class="pmu-table-pagination">
-                
-            </div>
+    <div class="Overview-card">
+        <div class="Overview-card-content pb-0">
+            <h5 style="color: #000">Recent Content Creator</h5>
+        </div>
+        <div class="Overview-card-table pmu-table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>S.no</th>
+                        <th>Profile Image</th>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($contentcreator as $key => $val)
+                    <tr>
+                        <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
+                        <td>
+                            @if ($val->profile_image!=null && $val->profile_image!="")
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('/upload/profile-image/'.$val->profile_image) !!}">
+                            @else
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('assets/superadmin-images/no-image.png') !!}">
+                            @endif
+                        </td>
+                        <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
+                        <td class="text-lowercase">{{ dataSet($val->email) }}</td>
+                        <td>{{ dataSet($val->phone) }}</td>
+                    </tr>
+                    @empty
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -277,7 +308,6 @@
     $(document).ready(function() {
         let arrOverRevenue = $("#revenue_graph").data('json');
         arrOverRevenue.map(ele => {
-            ele.y = (ele.y).toFixed(2);
             dataOverRevenue.push(ele);
         })
     })
@@ -378,7 +408,6 @@
     $(document).ready(function() {
         let arrOverArkansas = $("#arkansas_graph").data('json');
         arrOverArkansas.map(ele => {
-            ele.y = (ele.y).toFixed(2);
             dataOverArkansas.push(ele);
         })
     })
@@ -476,7 +505,6 @@
     $(document).ready(function() {
         let arrOverCreator = $("#creator_graph").data('json');
         arrOverCreator.map(ele => {
-            ele.y = (ele.y).toFixed(2);
             dataOverCreator.push(ele);
         })
     })

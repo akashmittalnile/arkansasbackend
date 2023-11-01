@@ -7,6 +7,7 @@ use App\Models\ChapterQuiz;
 use App\Models\Notify;
 use App\Models\Tag;
 use Illuminate\Support\Carbon;
+use Mockery\Undefined;
 
     if (!function_exists('sendNotification')) {
         function sendNotification($token, $data)
@@ -202,5 +203,12 @@ use Illuminate\Support\Carbon;
                 return false;
             else 
                 return true;
+        } 
+    }
+
+    if(! function_exists('dataSet')){
+        function dataSet($val) {
+            if($val == '' || $val == null) return 'NA';
+            else return $val;
         } 
     }
