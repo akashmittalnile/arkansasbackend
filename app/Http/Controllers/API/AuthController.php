@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Notify;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -156,6 +157,23 @@ class AuthController extends Controller
             } else {
                 $user->password = bcrypt($request->password);
                 if ($user->save()) {
+                    $notify = new Notify;
+                    $notify->added_by = auth()->user()->id;
+                    $notify->user_id = auth()->user()->id;
+                    $notify->module_name = 'password';
+                    $notify->title = 'Password Reset Successfully';
+                    $notify->message = 'Hello, ' . auth()->user()->first_name . "\nYour password has been reset successfully.";
+                    $notify->is_seen = '0';
+                    $notify->created_at = date('Y-m-d H:i:s');
+                    $notify->updated_at = date('Y-m-d H:i:s');
+                    $notify->save();
+
+                    $data = array(
+                        'msg' => 'Hello, ' . auth()->user()->first_name . "\nYour password has been reset successfully.",
+                        'title' => 'Password Reset Successfully'
+                    );
+                    sendNotification(auth()->user()->fcm_token ?? "", $data);
+
                     return response()->json([
                         'status' => true,
                         'message' => 'Password reset successfully.'

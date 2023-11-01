@@ -11,6 +11,7 @@ use App\Models\UserCourse;
 use App\Models\WalletBalance;
 use App\Models\WalletHistory;
 use App\Models\AddToCart;
+use App\Models\Notify;
 use Illuminate\Http\Request;
 use Stripe;
 use Illuminate\Support\Facades\Validator;
@@ -99,6 +100,23 @@ class StripeController extends Controller
                         $history->status = 1;
                         $history->save();
                     }
+                    $notify = new Notify;
+                    $notify->added_by = auth()->user()->id;
+                    $notify->user_id = auth()->user()->id;
+                    $notify->module_name = 'order';
+                    $notify->title = 'Order Placed';
+                    $notify->message = 'Hello, ' . auth()->user()->first_name . "\nOrder number " . $orderAdminAmount->order_number . ' has been successfully placed.';
+                    $notify->is_seen = '0';
+                    $notify->created_at = date('Y-m-d H:i:s');
+                    $notify->updated_at = date('Y-m-d H:i:s');
+                    $notify->save();
+
+                    $data = array(
+                        'msg' => 'Hello, ' . auth()->user()->first_name . "\nOrder number " . $orderAdminAmount->order_number . ' has been successfully placed.',
+                        'title' => 'Order Placed'
+                    );
+                    sendNotification(auth()->user()->fcm_token ?? "", $data); 
+
                     $cart_count = AddToCart::where('userid', auth()->user()->id)->count();
                     return response()->json(["status" => true, "message" => "Payment successfully done.", 'receipt URL' => $charge->receipt_url,
                     'cart_count' => $cart_count ?? 0]);

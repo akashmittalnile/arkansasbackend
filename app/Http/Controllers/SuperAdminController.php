@@ -1156,6 +1156,7 @@ class SuperAdminController extends Controller
                     $notify = new Notify;
                     $notify->added_by = auth()->user()->id;
                     $notify->user_id = $val->id ?? null;
+                    $notify->module_name = 'course';
                     $notify->title = $request->title;
                     $notify->message = $request->description;
                     $notify->is_seen = '0';
@@ -1169,6 +1170,7 @@ class SuperAdminController extends Controller
                         $notify = new Notify;
                         $notify->added_by = auth()->user()->id;
                         $notify->user_id = $val;
+                        $notify->module_name = 'course';
                         $notify->title = $request->title;
                         $notify->message = $request->description;
                         $notify->is_seen = '0';

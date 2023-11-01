@@ -1949,6 +1949,23 @@ class ApiController extends Controller
                     $updatedata = array('password' => bcrypt($new_password));
                     $id = User::where('id', $u_id)->update($updatedata);
                     if ($id) {
+                        $notify = new Notify;
+                        $notify->added_by = auth()->user()->id;
+                        $notify->user_id = auth()->user()->id;
+                        $notify->module_name = 'password';
+                        $notify->title = 'Password Changed Successfully';
+                        $notify->message = 'Hello, ' . auth()->user()->first_name . "\nYour password has been changed successfully.";
+                        $notify->is_seen = '0';
+                        $notify->created_at = date('Y-m-d H:i:s');
+                        $notify->updated_at = date('Y-m-d H:i:s');
+                        $notify->save();
+
+                        $data = array(
+                            'msg' => 'Hello, ' . auth()->user()->first_name . "\nYour password has been changed successfully.",
+                            'title' => 'Password Changed Successfully'
+                        );
+                        sendNotification(auth()->user()->fcm_token ?? "", $data);
+
                         $data['status'] = true;
                         $data['message'] = "Password Changed Successfully";
                         return response()->json($data);

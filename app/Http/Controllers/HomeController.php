@@ -636,6 +636,7 @@ class HomeController extends Controller
                     $notify = new Notify;
                     $notify->added_by = auth()->user()->id;
                     $notify->user_id = $val->id;
+                    $notify->module_name = 'course';
                     $notify->title = 'New Course';
                     $notify->message = 'New Course ('.$request->input('title') . ') added by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name;
                     $notify->is_seen = '0';
