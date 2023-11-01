@@ -108,9 +108,9 @@
                         <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
                         <td>
                             @if ($val->profile_image!=null && $val->profile_image!="")
-                                <img width="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('/upload/profile-image/'.$val->profile_image) !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('/upload/profile-image/'.$val->profile_image) !!}">
                             @else
-                                <img width="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('assets/superadmin-images/no-image.png') !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('assets/superadmin-images/no-image.png') !!}">
                             @endif
                         </td>
                         <td class="text-capitalize">{{ $val->first_name ?? 'NA' }} {{ $val->last_name ?? '' }}</td>
