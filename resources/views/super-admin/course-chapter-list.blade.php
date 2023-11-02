@@ -11,7 +11,11 @@
         <div class="pmu-filter">
             <div class="row">
                 <div class="col-md-12">
+                    @if(isset($ccreator) && $ccreator)
+                    <a href="{{ route('SA.ListedCourse', $userID) }}" class="add-more">Back</a>
+                    @else
                     <a href="{{ route('SA.Course') }}" class="add-more">Back</a>
+                    @endif
                     {{-- <a class="add-more" data-bs-toggle="modal" data-bs-target="#SaveContinue">Save &
                             Continue</a> --}}
                     {{-- <a class="add-more" id="form">Save & Continue</a> --}}

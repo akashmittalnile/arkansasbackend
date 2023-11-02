@@ -88,7 +88,7 @@
 
     <div class="Overview-card">
         <div class="Overview-card-content pb-0">
-            <h5 style="color: #000">Recent User</h5>
+            <h5 style="color: #000">Recent Students</h5>
         </div>
         <div class="Overview-card-table pmu-table-card">
             <table class="table">
@@ -99,6 +99,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -115,6 +116,13 @@
                         <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
                         <td class="text-lowercase">{{ dataSet($val->email) }}</td>
                         <td>{{ dataSet($val->phone) }}</td>
+                        <td>
+                            <div class="mon-table-box">
+                                <a href="{{ route('SA.StudentDetail', encrypt_decrypt('encrypt',$val->id)) }}" class="btn-go">
+                                    <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}">
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     @empty
                     @endforelse
@@ -125,7 +133,7 @@
 
     <div class="Overview-card">
         <div class="Overview-card-content pb-0">
-            <h5 style="color: #000">Recent Content Creator</h5>
+            <h5 style="color: #000">Recent Content Creators</h5>
         </div>
         <div class="Overview-card-table pmu-table-card">
             <table class="table">
@@ -136,6 +144,7 @@
                         <th>Name</th>
                         <th>Email</th>
                         <th>Phone</th>
+                        <th>Action</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -152,6 +161,58 @@
                         <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
                         <td class="text-lowercase">{{ dataSet($val->email) }}</td>
                         <td>{{ dataSet($val->phone) }}</td>
+                        <td>
+                            <div class="mon-table-box">
+                                <a href="{{ route('SA.ListedCourse', encrypt_decrypt('encrypt',$val->id)) }}" class="btn-go">
+                                    <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}">
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    @empty
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <div class="Overview-card">
+        <div class="Overview-card-content pb-0">
+            <h5 style="color: #000">Recent Content Creator Courses</h5>
+        </div>
+        <div class="Overview-card-table pmu-table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>S.no</th>
+                        <th>Creator Profile Image</th>
+                        <th>Creator Name</th>
+                        <th>Course title</th>
+                        <th>Course Fee</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($newCourse as $key => $val)
+                    <tr>
+                        <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
+                        <td>
+                            @if ($val->profile_image!=null && $val->profile_image!="")
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('/upload/profile-image/'.$val->profile_image) !!}">
+                            @else
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('assets/superadmin-images/no-image.png') !!}">
+                            @endif
+                        </td>
+                        <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
+                        <td class="text-capitalize">{{ dataSet($val->title) }}</td>
+                        <td>${{ dataSet($val->course_fee) }}</td>
+                        <td>
+                            <div class="mon-table-box">
+                                <a href="{{ route('SA.Addcourse2', [ 'userID'=> encrypt_decrypt('encrypt', $val->id), 'courseID'=> encrypt_decrypt('encrypt',$val->courseid) ] ) }}" class="btn-go">
+                                    <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}">
+                                </a>
+                            </div>
+                        </td>
                     </tr>
                     @empty
                     @endforelse

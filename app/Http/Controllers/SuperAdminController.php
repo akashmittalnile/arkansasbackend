@@ -162,8 +162,9 @@ class SuperAdminController extends Controller
 
             $user = User::where('role', 1)->orderByDesc('id')->limit(3)->get();
             $contentcreator = User::where('role', 2)->orderByDesc('id')->limit(3)->get();
+            $newCourse = Course::leftJoin('users as u', 'u.id', '=', 'course.admin_id')->where('u.role', 2)->select('course.title', 'course.course_fee', 'u.id', 'u.first_name', 'u.last_name', 'u.profile_image', 'course.id as courseid')->orderByDesc('course.id')->limit(3)->get();
 
-            return view('super-admin.dashboard',compact('course', 'pro', 'stu', 'cc', 'userArr', 'walletArr', 'creator_over_graph', 'over_graph', 'user', 'contentcreator'));
+            return view('super-admin.dashboard',compact('course', 'pro', 'stu', 'cc', 'userArr', 'walletArr', 'creator_over_graph', 'over_graph', 'user', 'contentcreator', 'newCourse'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1143,8 +1144,8 @@ class SuperAdminController extends Controller
             }
 
             if(($request->PushNotificationTo == 1) || ($request->PushNotificationTo==2 && $request->ChooseContenttype == 'A')){
-                if($request->PushNotificationTo == 1) $user = User::where('role', 1)->orderByDesc('id')->get();
-                if($request->PushNotificationTo == 2) $user = User::where('role', 2)->orderByDesc('id')->get();
+                if($request->PushNotificationTo == 1) $user = User::where('role', 1)->where('status', 1)->orderByDesc('id')->get();
+                if($request->PushNotificationTo == 2) $user = User::where('role', 2)->where('status', 1)->orderByDesc('id')->get();
                 foreach($user as $val){
                     $data = array(
                         'msg' => $request->description,
@@ -1267,6 +1268,33 @@ class SuperAdminController extends Controller
             $admin_id = $request->admin_id;
             $adminID = encrypt_decrypt('encrypt',$admin_id);
             Course::where('id',$course_id)->update(['status' => $status]);
+            $cc = Course::where('id',$course_id)->first();
+            if(isset($cc->id) && $request->status==1){
+                $ccUser = User::where('id', $cc->admin_id)->first();
+                $user = User::where('role', 1)->where('status', 1)->get();
+                if(count($user) > 0){
+                    foreach($user as $val){
+                        $notify = new Notify;
+                        $notify->added_by = auth()->user()->id;
+                        $notify->user_id = $val->id;
+                        $notify->module_name = 'course';
+                        $notify->title = 'New Course';
+                        $notify->message = 'New Course ('.$cc->title . ') added by ' . $ccUser->first_name . ' ' . $ccUser->last_name;
+                        $notify->is_seen = '0';
+                        $notify->created_at = date('Y-m-d H:i:s');
+                        $notify->updated_at = date('Y-m-d H:i:s');
+                        $notify->save();
+
+                        $data = array(
+                            'msg' => 'New Course ('.$cc->title . ') added by ' . $ccUser->first_name . ' ' . $ccUser->last_name,
+                            'title' => 'New Course'
+                        );
+                        sendNotification($val->fcm_token ?? "", $data);
+                    }
+                }  
+            }
+            
+
             return redirect()->back()->with('message','Status Changed successfully');
         } catch (\Exception $e) {
             return $e->getMessage();

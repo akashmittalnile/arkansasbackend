@@ -270,7 +270,7 @@
                                                         $chapter_count = \App\Models\CourseChapter::where('course_id', $data->id)->count();
                                                         ?>
                                                         @if ($chapter_count == 0)
-                                                            <div class="chapter-text">Chapter 0</div>
+                                                            
                                                         @elseif ($chapter_count == 1)
                                                             <div class="chapter-text">Chapter 1</div>
                                                         @else

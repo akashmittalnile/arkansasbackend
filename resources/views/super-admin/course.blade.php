@@ -125,15 +125,15 @@
                                             </div>
                                         </form>
 
-                                        <a href="{{ route('SA.Course.Chapter', ['courseID' => encrypt_decrypt('encrypt',$data->id)] )}}">
                                         <h2>{{ ($data->title) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->course_fee,2) ? : 0}}</div>
                                         <p>{{ ($data->description != "" && $data->description != null) ? (strlen($data->description) > 53 ?  substr($data->description, 0, 53)."....." : $data->description) : "NA" }}</p>
+                                        <a href="{{ route('SA.Course.Chapter', ['courseID' => encrypt_decrypt('encrypt',$data->id)] )}}">
                                             <?php
                                                 $chapter_count = \App\Models\CourseChapter::where('course_id',$data->id)->count();
                                             ?>
                                             @if ($chapter_count == 0)
-                                                <div class="chapter-text">Chapter 0</div>
+                                                
                                             @elseif ($chapter_count == 1)
                                                 <div class="chapter-text">Chapter 1</div>
                                             @else
