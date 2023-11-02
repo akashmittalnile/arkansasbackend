@@ -32,7 +32,7 @@
                     </a>
                 </li>
 
-                <li class="nav-item @if ($currentURL == 'SA.Students' ||$currentURL ==  'SA.StudentDetail') active @endif">
+                <li class="nav-item @if ($currentURL == 'SA.Students' ||$currentURL ==  'SA.StudentDetail' || $currentURL == 'SA.progress.report') active @endif">
                     <a class="nav-link" href="{{ route('SA.Students') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/students.svg') !!}"></span>
                         <span class="menu-title">Students</span>

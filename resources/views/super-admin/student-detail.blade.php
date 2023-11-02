@@ -107,7 +107,7 @@
                                         <div class="col-md-3">
                                             <div class="form-group">
                                                 <select class="form-control" name="status">
-                                                    <option @if(request()->status == "") selected @endif value="">Select Status</option>
+                                                    <option @if(request()->status == "") selected @endif value="">Select Completion Status</option>
                                                     <option @if(request()->status == '1') selected @endif value="1">Complete</option>
                                                     <option @if(request()->status == '0') selected @endif value="0">Ongoing</option>
                                                 </select>
@@ -116,7 +116,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group search-form-group">
                                                 <input type="text" class="form-control" name="title"
-                                                    placeholder="Search by course name" value="{{ request()->title ?? '' }}">
+                                                    placeholder="Search by Course Name" value="{{ request()->title ?? '' }}">
                                                 <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
                                             </div>
                                         </div>
@@ -164,10 +164,7 @@
                                                     <div class="course-price">${{ number_format((float)$val->buy_price, 2) }}</div>
                                                     <div class="chapter-test-info">
                                                         <div class="chapter-text">Chapter {{ $val->chapter_count ?? 0 }}</div>
-                                                        @if($val->status==1)
-                                                        <div class="chapter-action"><a href="">Test Results</a></div>
-                                                        @endif
-                                                        
+                                                        <div class="chapter-action"><a href="{{ route('SA.progress.report', ['courseId' => encrypt_decrypt('encrypt', $val->id), 'id' => $id]) }}">Progress Report</a></div>
                                                     </div>
 
                                                 </div>
@@ -176,7 +173,7 @@
                                                 <ul>
                                                     <li>
                                                         <div class="course-info-box">
-                                                            <div class="course-info-text">Course Buy Date:
+                                                            <div class="course-info-text">Purchased On : &nbsp;
                                                             </div>
                                                             <div class="course-info-value"> {{ date('d M Y', strtotime($val->created_date)) }}</div>
                                                         </div>

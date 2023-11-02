@@ -20,6 +20,8 @@ use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\ProductAttibutes;
 use App\Models\Setting;
+use App\Models\UserChapterStatus;
+use App\Models\UserCourse;
 use App\Models\WalletBalance;
 use App\Models\WalletHistory;
 use Auth;
@@ -999,9 +1001,7 @@ class SuperAdminController extends Controller
             if($request->filled('status')) $course->where('uc.status', $request->status);
             if($request->filled('title')) $course->where('c.title', 'like', '%' . $request->title . '%');
             if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
-            $course = $course->where('uc.user_id', $user_id)->select('uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = c.id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND product_id = c.id) as order_id"))->orderByDesc('uc.id')->paginate(3);
-
-
+            $course = $course->where('uc.user_id', $user_id)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = c.id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND product_id = c.id) as order_id"))->orderByDesc('uc.id')->paginate(3);
 
         return view('super-admin.student-detail',compact('data', 'course', 'id'));
         } catch (\Exception $e) {
@@ -1301,10 +1301,13 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function tag_listing() 
+    public function tag_listing(Request $request) 
     {
         try {
-            $datas = Tag::orderBy('id','DESC')->get();
+            $datas = Tag::orderBy('id','DESC');
+            if($request->filled('name')) $datas->where('tag_name', 'like', '%'.$request->name.'%');
+            if($request->filled('status')) $datas->where('status', $request->status);
+            $datas = $datas->paginate(10);
             return view('super-admin.tag-listing',compact('datas'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1357,10 +1360,13 @@ class SuperAdminController extends Controller
         return view('super-admin.add-course');
     }
 
-    public function products() 
+    public function products(Request $request) 
     {
         try {
-            $datas = Product::orderBy('id','DESC')->get();
+            $datas = Product::orderBy('id','DESC');
+            if($request->filled('name')) $datas->where('name', 'like', '%'.$request->name.'%');
+            if($request->filled('status')) $datas->where('status', $request->status);
+            $datas = $datas->paginate(6);
         return view('super-admin.products',compact('datas'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1578,10 +1584,13 @@ class SuperAdminController extends Controller
         return view('super-admin.course-chapter-list',compact('quizes','datas','chapters','courseID','chapterID','userID'));
     }
 
-    public function category() 
+    public function category(Request $request) 
     {
         try {
-            $datas = Category::orderBy('id','DESC')->get();
+            $datas = Category::orderBy('id','DESC');
+            if($request->filled('name')) $datas->where('name', 'like', '%'.$request->name.'%');
+            if($request->filled('status')) $datas->where('status', $request->status);
+            $datas = $datas->paginate(10);
             return view('super-admin.category-listing',compact('datas'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1692,7 +1701,7 @@ class SuperAdminController extends Controller
             if($request->filled('order_date')){
                 $payment->whereDate('wallet_history.added_date', $request->order_date);
             }
-            $payment = $payment->where('owner_id', $user->id)->where('owner_type', $user->role)->select('wallet_history.*')->paginate(10);
+            $payment = $payment->where('owner_id', $user->id)->where('owner_type', $user->role)->select('wallet_history.*')->orderByDesc('wallet_history.id')->paginate(10);
             $amount = 0;
             if(isset($payment[0]->id)){
                 $amount = WalletHistory::where('wallet_id', $payment[0]->wallet_id)->where('status', 1)->sum('wallet_history.balance');
@@ -1874,6 +1883,43 @@ class SuperAdminController extends Controller
         try{    
             Notify::where('user_id', auth()->user()->id)->delete();
             return redirect()->back()->with('message', 'All notification cleared.');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function progressReport(Request $request, $courseId, $id) {
+        try{    
+            $courseId = encrypt_decrypt('decrypt',$courseId);
+            $id = encrypt_decrypt('decrypt',$id);
+
+            $course = Course::where('id', $courseId)->first();
+            $course->tags = unserialize($course->tags);
+            $tags = Tag::all();
+            $combined = array();
+            foreach ($tags as $arr) {
+                $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
+                foreach ($course->tags as $arr2) {
+                    if ($arr2 == $arr['id']) {
+                        $comb['selected'] = true;
+                        break;
+                    }
+                }
+                $combined[] = $comb;
+            }
+            $reviewAvg = DB::table('user_review as ur')->where('object_id', $courseId)->where('object_type', 1)->avg('rating');
+            $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date')->where('object_id', $courseId)->where('object_type', 1)->get();
+
+            $userCourse = UserCourse::where('user_id', $id)->where('course_id', $courseId)->where('status', 1)->first();
+            if(isset($userCourse->id)){
+                $complete = true;
+                $chapters = UserChapterStatus::leftJoin('course_chapter as cc', 'cc.id', '=', 'user_chapter_status.chapter_id')->where('user_chapter_status.userid', $id)->where('user_chapter_status.course_id', $courseId)->select('cc.chapter', 'cc.id')->distinct('cc.id')->get();
+            }else{
+                $complete = false;
+                $chapters = CourseChapter::where('course_chapter.course_id', $courseId)->select('course_chapter.chapter', 'course_chapter.id')->distinct('course_chapter.id')->get();
+            }
+
+            return view('super-admin.progress-course-details')->with(compact('course', 'combined', 'review', 'reviewAvg', 'id', 'chapters'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

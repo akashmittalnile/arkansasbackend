@@ -195,6 +195,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/download-invoice/{id}', 'SuperAdminController@downloadInvoice')->name('SA.download.invoice');
 
         Route::get('/super-admin/clear-notification', 'SuperAdminController@clearNotification')->name('SA.clear.notification');
+
+        Route::get('/super-admin/progress-report/{courseId}/{id}', 'SuperAdminController@progressReport')->name('SA.progress.report');
+
     });
     
 });

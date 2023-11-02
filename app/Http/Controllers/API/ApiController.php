@@ -2342,6 +2342,7 @@ class ApiController extends Controller
                     'order_count' => $cart_count,
                     'discount' => $discount,
                     'tax' => number_format((float) $tax_amount, 2, '.', ''),
+                    'shipping_cost' => '0.00',
                     'total' => number_format((float) ($total_amount+$tax_amount),2, '.', ''),
                 ]);
             } else {
@@ -2501,7 +2502,7 @@ class ApiController extends Controller
                         $temp['order_number'] = $value->order_number;
 
                         if($request->type==1){
-                            $temp['course_valid_date'] = date('d m, Y', strtotime($value->valid_upto));
+                            $temp['course_valid_date'] = date('d M, Y', strtotime($value->valid_upto));
                             $temp['introduction_video'] = url('/upload/disclaimers-introduction/'.$value->introduction_image);
                             $temp['course_id'] = $value->id ?? 0;
                             $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('status', 1)->first();
@@ -2626,10 +2627,13 @@ class ApiController extends Controller
     public function cart_count(Request $request){
         try{
             $cart = AddToCart::where('userid', auth()->user()->id)->count();
+            $notification = Notify::where('user_id', auth()->user()->id)->count();
             return response()->json([
                 'status' => true,
                 'message' => 'Cart count',
-                'data' => $cart
+                'data' => $cart,
+                'notification' => ($notification > 0) ? true : false,
+                'notification_count' => $notification,
             ]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -3146,6 +3150,7 @@ class ApiController extends Controller
                 $order->total_amount_paid = number_format((float) $order->total_amount_paid, 2, '.', '');
                 $order->taxes = number_format((float) $order->taxes, 2, '.', '');
                 $order->created_date = date('d M, Y H:iA', strtotime($order->created_date));
+                $order->shipping_cost = "0.00";
 
                 $avgRating = DB::table('order_product_detail as opd')->leftJoin('user_review as ur', 'ur.object_id', '=', DB::raw('opd.product_id AND ur.object_type = opd.product_type'))->where('opd.id', $request->item_id)->avg('ur.rating');
                 $order->avg_rating = number_format($avgRating, 1, '.', '');

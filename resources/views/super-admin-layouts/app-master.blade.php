@@ -37,7 +37,7 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/creators.css')!!}">
     @endif
 
-    @if ($currentURL == 'SA.Course' || $currentURL == 'SA.AddCourse')
+    @if ($currentURL == 'SA.Course' || $currentURL == 'SA.AddCourse' || $currentURL == 'SA.progress.report')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
     @endif
 

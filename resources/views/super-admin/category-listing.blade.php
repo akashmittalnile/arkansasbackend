@@ -6,39 +6,55 @@
             <div class="pmu-filter-heading">
                 <h2>Manage Category</h2>
             </div>
-            <div class="pmu-search-filter wd70">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-
+            <div class="pmu-search-filter wd80">
+                <form action="">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group search-form-group">
+                                <input type="text" placeholder="Search by Category Name" name="name" class="form-control" value="{{ request()->name ?? '' }}">
+                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control" name="status">
+                                    <option @if(request()->status=="") selected @endif value="">Select Category Status</option>
+                                    <option @if(request()->status=="1") selected @endif value="1">Active</option>
+                                    <option @if(request()->status=="0") selected @endif value="0">In-Active</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <a class="Accountapproval-btn" style="padding: 12px 0px;" href="{{ route('SA.Category') }}"><i class="las la-sync"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <button class="Accountapproval-btn" style="padding: 12px 0px;" type="submit">Search</button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <a class="Accountapproval-btn" style="padding: 13.8px 0px;" href="{{ route('SA.AddCategory') }}">Add Category</a>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <select class="form-control">
-                                <option>Select Account Type!</option>
-                                <option>Active</option>
-                                <option>Inactive</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <a class="Accountapproval-btn" href="{{ route('SA.AddCategory') }}">Add Category</a>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
         @include('layouts.partials.messages')
         <div class="creator-table-section">
             <div class="creator-table-list">
                 @if($datas->isEmpty())
-                    <tr>
-                        <td colspan="11" class="text-center">
-                            No record found
-                        </td>
-                    </tr>
+                <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+                    <div>
+                        <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                    </div>
+                    <div class="font-weight-bold">
+                        <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
+                    </div>
+                </div>
                 @elseif(!$datas->isEmpty())
                     <?php $s_no = 1;?>
                     @foreach($datas as $data)
@@ -89,6 +105,9 @@
                         </div>
                         <?php $s_no++;?>
                     @endforeach
+                    <div class="pmu-table-pagination">
+                        {{$datas->appends(Request::except('page'))->links('pagination::bootstrap-4')}}
+                    </div>
                 @endif
             </div>
         </div>

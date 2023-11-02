@@ -12,7 +12,7 @@
                     <div class="col-md-4">
                         <div class="form-group search-form-group">
                             <select name="status" class="form-control" id="">
-                                <option @if(request()->status == "") selected @endif value="">Select status</option>
+                                <option @if(request()->status == "") selected @endif value="">Select Request Status</option>
                                 <option @if(request()->status == "0") selected @endif value="0">Pending</option>
                                 <option @if(request()->status == "1") selected @endif value="1">Accepted</option>
                                 <option @if(request()->status == "2") selected @endif value="2">Rejected</option>
@@ -24,14 +24,14 @@
                             <input type="date" name="order_date" class="form-control" value="{{ request()->order_date }}">
                         </div>
                     </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <button class="download-btn" style="padding: 12px 0px;" type="">Search</button>
-                        </div>
-                    </div>
                     <div class="col-md-1">
                         <div class="form-group">
                             <a class="download-btn" style="padding: 12px 0px;" href="{{ route('SA.Payment.Request', encrypt_decrypt('encrypt', $userID)) }}"><i class="las la-sync"></i></a>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <button class="download-btn" style="padding: 12px 0px;" type="">Search</button>
                         </div>
                     </div>
                     <div class="col-md-1">

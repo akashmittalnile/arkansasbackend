@@ -12,7 +12,7 @@
                         <div class="col-md-3">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="course"
-                                    placeholder="Search by course name" value="{{request()->course}}">
+                                    placeholder="Search by Course Name" value="{{request()->course}}">
                                 <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg')!!}"></span>
                             </div>
                         </div>

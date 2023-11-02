@@ -7,39 +7,50 @@
                 <h2>Manage Products</h2>
             </div>
             <div class="pmu-search-filter wd80">
-                <div class="row g-2">
-                    <div class="col-md-3">
-                        <div class="form-group search-form-group">
-                            <input type="text" class="form-control" name="Start Date"
-                                placeholder="Enter order ID to get order details">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                <form action="">
+                    <div class="row g-2">
+                        <div class="col-md-4">
+                            <div class="form-group search-form-group">
+                                <input type="text" class="form-control" value="{{ request()->name }}" name="name" placeholder="Search by Product Name">
+                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <select class="form-control">
-                                <option>Select Products Type!</option>
-                                <option>Published</option>
-                                <option>Deleted</option>
-                            </select>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control" name="status">
+                                    <option @if(request()->status=="") selected @endif value="">Select Product Type</option>
+                                    <option @if(request()->status=="1") selected @endif value="1">Published</option>
+                                    <option @if(request()->status=="0") selected @endif value="0">Unpublished</option>
+                                </select>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <a class="Create-btn" href="{{ route('SA.AddProduct')}}">Create Products</a>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <a class="Create-btn" style="padding: 12px 0px;" href="{{ route('SA.Products') }}"><i class="las la-sync"></i></a>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <a class="Create-btn" href="{{ route('SA.Coupons')}}">Manage Coupon</a>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <button class="Create-btn" style="padding: 12px 0px;" type="submit">Search</button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group">
-                            <a class="Create-btn" href="">View Product Orders</a>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <a class="Create-btn" style="padding: 13.8px 0px;" href="{{ route('SA.AddProduct')}}">Create Products</a>
+                            </div>
                         </div>
+                        <!-- <div class="col-md-2">
+                            <div class="form-group">
+                                <a class="Create-btn" href="{{ route('SA.Coupons')}}">Manage Coupon</a>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <a class="Create-btn" href="">View Product Orders</a>
+                            </div>
+                        </div> -->
                     </div>
-                </div>
+                </form>
             </div>
         </div>
 
@@ -47,11 +58,14 @@
             <div class="pmu-content">
                 <div class="row">
                     @if($datas->isEmpty())
-                        <tr>
-                            <td colspan="11" class="text-center">
-                                No record found
-                            </td>
-                        </tr>
+                    <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+                        <div>
+                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                        </div>
+                        <div class="font-weight-bold">
+                            <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
+                        </div>
+                    </div>
                     @elseif(!$datas->isEmpty())
                         @foreach($datas as $data)
                             <div class="col-md-4">
@@ -98,6 +112,9 @@
                                 </div>
                             </div>
                         @endforeach
+                        <div class="pmu-table-pagination">
+                            {{$datas->appends(Request::except('page'))->links('pagination::bootstrap-4')}}
+                        </div>
                     @endif
                 </div>
             </div>

@@ -179,7 +179,7 @@
                                         <div class="col-md-5">
                                             <div class="form-group search-form-group">
                                                 <input type="text" class="form-control" name="name"
-                                                    placeholder="Search by course name" value="{{ request()->name ?? '' }}">
+                                                    placeholder="Search by Course Name" value="{{ request()->name ?? '' }}">
                                                 <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
                                             </div>
                                         </div>
@@ -430,30 +430,8 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="PaymentRequest-form-info">
-                        <h2>Payment Request</h2>
+                        <h2>Admin Fee</h2>
                         <div class="row">
-
-                            <div class="col-md-12">
-                                <div class="modal-settled-info-text">
-                                    <img src="{!! url('assets/superadmin-images/dollar-circle.svg')!!}">
-                                    <p>Total Course Payment Received</p>
-                                    <h4>3207.55</h4>
-                                </div>
-                            </div>
-                            <div class="col-md-12">
-                                <div class="modal-settled-info-text">
-                                    <img src="{!! url('assets/superadmin-images/dollar-circle.svg') !!}">
-                                    <p>Total Creator Settled Payment May, 2023</p>
-                                    <h4>2234.65</h4>
-                                </div>
-                            </div>
-
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <input type="date" class="form-control">
-                                </div>
-                            </div>
-
                             <form method="POST" action="{{ route('Savecoursefee') }}">
                                 <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 <div class="col-md-12">

@@ -12,16 +12,16 @@
                         <div class="col-md-4">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="name"
-                                    placeholder="Search by name" value="{{request()->name}}">
+                                    placeholder="Search by Content Creator Name" value="{{request()->name}}">
                                 <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg')!!}"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group">
                                 <select class="form-control" name="status">
-                                    <option @if(request()->status=="") selected @endif value="">Select Account Type!</option>
+                                    <option @if(request()->status=="") selected @endif value="">Select Account Status</option>
                                     <option @if(request()->status=="1") selected @endif value="1">Active</option>
-                                    <option @if(request()->status=="0") selected @endif value="0">Pending</option>
+                                    <option @if(request()->status=="0") selected @endif value="0">In-Active</option>
                                 </select>
                             </div>
                         </div>
