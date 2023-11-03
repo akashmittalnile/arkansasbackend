@@ -1402,6 +1402,8 @@ class SuperAdminController extends Controller
         try{
             $id = encrypt_decrypt('decrypt', $id);
             $attr = ProductAttibutes::where('id', $id)->first();
+            $count = ProductAttibutes::where('product_id', $attr->product_id)->count();
+            if($count == 1) return redirect()->back()->with('message', "Minimum one product image must be required. Can't Remove");
             $image_path = app_path("upload/products/{$attr->attribute_value}");
                 if(File::exists($image_path)) {
                     unlink($image_path);

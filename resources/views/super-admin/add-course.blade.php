@@ -44,7 +44,7 @@
                                             <div class="form-group">
                                                 <h4>Course Fees</h4>
                                                 <input type="number" class="form-control" name="course_fee"
-                                                    placeholder="Enter Course Fees" step="0.01" required>
+                                                    placeholder="Enter Course Fees" min="1" step="0.01" required>
                                             </div>
                                         </div>
 
@@ -192,6 +192,8 @@
                     },
                     course_fee: {
                         required: true,
+                        minlength: 1,
+                        maxlength: 6
                     },
                     course_category: {
                         required:true,
@@ -215,7 +217,7 @@
                         required: 'Please enter course fee',
                     },
                     course_category: {
-                        required: 'Please enter course category',
+                        required: 'Please select course category',
                     },
                     "tags[]": {
                         required: 'Please enter tags',

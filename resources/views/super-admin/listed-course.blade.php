@@ -429,6 +429,7 @@
         <div class="modal-dialog">
             <div class="modal-content">
                 <div class="modal-body">
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     <div class="PaymentRequest-form-info">
                         <h2>Admin Fee</h2>
                         <div class="row">
@@ -451,7 +452,7 @@
                                         </div>
                                         
                                         <input type="hidden" name="admin_id" value="{{ $user->id }}" />
-                                        <input type="number" class="form-control" name="course_fee" placeholder="Custom %" value="{{$user->admin_cut}}">
+                                        <input type="number" min="1" step="0.1" max="100" class="form-control" name="course_fee" placeholder="Custom %" value="{{$user->admin_cut}}" required>
                                         <div class="note">On every Course Purchases Creator will get the % revenue Cut</div>
                                     </div>
                                 </div>

@@ -1,10 +1,10 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Makeup University - Content Creators')
+@section('title', 'Makeup University - Tags')
 @section('content')
 <div class="body-main-content">
     <div class="pmu-filter-section">
         <div class="pmu-filter-heading">
-            <h2>Content Creators</h2>
+            <h2>Tags</h2>
         </div>
         <div class="pmu-search-filter wd70">
             <form action="">
@@ -106,16 +106,16 @@
                 <div class="PaymentRequest-form-info">
                     <h2>Create Tags</h2>
                     <div class="row">
-                        <form method="POST" action="{{ route('SA.SaveTag') }}">
+                        <form method="POST" action="{{ route('SA.SaveTag') }}" id="create-tags">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="tag_name" placeholder="Enter Tag Name" required>
+                                    <input type="text" class="form-control" name="tag_name" placeholder="Enter Tag Name">
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <select name="status" id="status" class="form-control" required>
+                                    <select name="status" id="status" class="form-control">
                                         <option value="" selected>Select Status</option>
                                         <option value="1">Active</option>
                                         <option value="0">Inactive</option>
@@ -124,7 +124,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <select name="type" id="type" class="form-control" required>
+                                    <select name="type" id="type" class="form-control">
                                         <option value="" selected>Select Tags For</option>
                                         <option value="1">Course</option>
                                         <option value="2">Product</option>
@@ -153,17 +153,17 @@
                 <div class="PaymentRequest-form-info">
                     <h2>Update Tags</h2>
                     <div class="row">
-                        <form method="POST" action="{{ route('SA.UpdateTag') }}">
+                        <form method="POST" action="{{ route('SA.UpdateTag') }}" id="update-tags">
                             <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                             <input type="hidden" class="form-control" name="tag_id" id="tag_id" value="">
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <input type="text" class="form-control" name="tag_name" id="tag_name_value" placeholder="Enter Tag Name" value="" required>
+                                    <input type="text" class="form-control" name="tag_name" id="tag_name_value" placeholder="Enter Tag Name" value="">
                                 </div>
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <select name="status" id="status" class="form-control form-field-user-edit" required>
+                                    <select name="status" id="status" class="form-control form-field-user-edit">
                                         <option value="">Select Status</option>
                                         <option value="1">Active</option>
                                         <option value="0">Inactive</option>
@@ -172,7 +172,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <select name="type" id="tag_type" class="form-control" required>
+                                    <select name="type" id="tag_type" class="form-control">
                                         <option value="" selected>Select Tags For</option>
                                         <option value="1">Course</option>
                                         <option value="2">Product</option>
@@ -192,7 +192,8 @@
         </div>
     </div>
 </div>
-
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 <!-- Show data on edit form -->
 <script>
     function accept_order(tag_name, status, id, type) {
@@ -204,5 +205,95 @@
         $('#Editcourses').modal('show');
 
     }
+</script>
+<script>
+    $(document).ready(function() {
+        $.validator.addMethod('filesize', function (value, element, param) {
+            return this.optional(element) || (element.files[0].size <= param * 1000000)
+        }, 'File size must be less than {0} MB');
+        $('#create-tags').validate({
+            rules: {
+                tag_name: {
+                    required: true,
+                },
+                status: {
+                    required: true,
+                },
+                type: {
+                    required: true,
+                },
+            },
+            messages: {
+                tag_name: {
+                    required: 'Please enter tag name',
+                },
+                status: {
+                    required: 'Please select the status',
+                },
+                "type": {
+                    required: 'Please select the type',
+                },
+            },
+            submitHandler: function(form) {
+                form.submit();
+            },
+            errorElement: "span",
+            errorPlacement: function(error, element) {
+                error.addClass("invalid-feedback");
+                element.closest(".form-group").append(error);
+            },
+            highlight: function(element, errorClass, validClass) {
+                $(element).addClass("is-invalid");
+            },
+            unhighlight: function(element, errorClass, validClass) {
+                $(element).removeClass("is-invalid");
+            },
+        });
+    });
+</script>
+<script>
+    $(document).ready(function() {
+        $.validator.addMethod('filesize', function (value, element, param) {
+            return this.optional(element) || (element.files[0].size <= param * 1000000)
+        }, 'File size must be less than {0} MB');
+        $('#update-tags').validate({
+            rules: {
+                tag_name: {
+                    required: true,
+                },
+                status: {
+                    required: true,
+                },
+                type: {
+                    required: true,
+                },
+            },
+            messages: {
+                tag_name: {
+                    required: 'Please enter tag name',
+                },
+                status: {
+                    required: 'Please select the status',
+                },
+                "type": {
+                    required: 'Please select the type',
+                },
+            },
+            submitHandler: function(form) {
+                form.submit();
+            },
+            errorElement: "span",
+            errorPlacement: function(error, element) {
+                error.addClass("invalid-feedback");
+                element.closest(".form-group").append(error);
+            },
+            highlight: function(element, errorClass, validClass) {
+                $(element).addClass("is-invalid");
+            },
+            unhighlight: function(element, errorClass, validClass) {
+                $(element).removeClass("is-invalid");
+            },
+        });
+    });
 </script>
 @endsection

@@ -92,7 +92,7 @@
 
                                         <div class="col-md-12">
                                             <div class="form-group">
-                                                <h4>Upload Product Image(jpg,jpeg,png only|Size:2048)</h4>
+                                                <h4>Upload Product Image(jpg,jpeg,png only)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="image[]" id="PDFJPEGOrPNG"
                                                         class="uploadsignature addsignature" multiple required accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">

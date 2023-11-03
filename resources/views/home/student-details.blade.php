@@ -158,7 +158,7 @@
 
                                                 <li>
                                                     <div class="course-info-action">
-                                                        <a href="">Send Invoice to email</a>
+                                                        <!-- <a href="">Send Invoice to email</a> -->
                                                         <a target="_blank" href="{{ route('Home.download.invoice', encrypt_decrypt('encrypt', $val->order_id)) }}">Download Invoice</a>
                                                     </div>
                                                 </li>

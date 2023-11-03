@@ -70,7 +70,7 @@
                                             <div class="form-group">
                                                 <h4>Course Fees</h4>
                                                 <input type="number" class="form-control" name="course_fee"
-                                                    placeholder="Enter Course Fees" step="0.01" required>
+                                                    placeholder="Enter Course Fees" min="1" step="0.01" required>
                                             </div>
                                         </div>
 
@@ -207,6 +207,8 @@
                     },
                     course_fee: {
                         required: true,
+                        minlength: 1,
+                        maxlength: 6
                     },
                     "tags[]": {
                         required: true,
@@ -227,7 +229,7 @@
                         required: 'Please enter description',
                     },
                     course_category: {
-                        required: 'Please enter course category',
+                        required: 'Please select course category',
                     },
                     disclaimers_introduction: {
                         required: "Please choose a file to upload.",
