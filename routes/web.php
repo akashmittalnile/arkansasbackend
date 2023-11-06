@@ -20,6 +20,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
      */
     
 
+    Route::get('/check_sku_code', 'SuperAdminController@checkSkuCode')->name('checkSkuCode');
     Route::group(['middleware' => ['guest']], function() {
         /**
          * Register Routes
@@ -27,6 +28,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/register', 'RegisterController@show')->name('register.show');
         Route::post('/register', 'RegisterController@register')->name('register.perform');
         Route::get('/check_status', 'HomeController@check_status')->name('admin.check_status');
+
 
         /**
          * Login Routes

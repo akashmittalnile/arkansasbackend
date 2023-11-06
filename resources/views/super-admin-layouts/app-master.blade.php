@@ -51,6 +51,7 @@
 
     @if ($currentURL == 'SA.Products'||$currentURL == 'SA.Coupons')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/products.css') !!}">
+        <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/create-product.css') !!}">
     @endif
 
     @if ($currentURL == 'SA.Notifications' || $currentURL == 'SA.Create.Notifications')
@@ -66,6 +67,7 @@
     @if ($currentURL == 'SA.AddProduct' ||$currentURL == 'SA.AddCategory'||$currentURL == 'SA.EditCategory' || $currentURL == 'SA.view.course' || $currentURL == 'SA.edit.course' || $currentURL == 'SA.Edit.Products')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-plugins/fancybox/jquery.fancybox.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
+        <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/create-product.css') !!}">
         <script src="{!! url('assets/superadmin-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>
     @endif
 

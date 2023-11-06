@@ -1433,8 +1433,8 @@ class SuperAdminController extends Controller
                 }
                 $combined[] = $comb;
             }
-            $attr = ProductAttibutes::where('product_id', $id)->get();
-            return view('super-admin.editProductDetails')->with(compact('product', 'combined', 'attr'));
+            $coverimg = ProductAttibutes::where('product_id', $id)->where('attribute_code', 'cover_image')->first();
+            return view('super-admin.editProductDetails')->with(compact('product', 'combined', 'coverimg'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1444,12 +1444,31 @@ class SuperAdminController extends Controller
     {
         try{
             $validator = Validator::make($request->all(), [
-                'title' => 'required',
-                'price' => 'required',
-                'qnt' => 'required',
-                'product_category' => 'required',
-                'description' => 'required',
-                //'livesearch' => 'required',
+                'tags' => 'required|array',
+                'name' => 'required',
+                'short_description' => 'required',
+                'product_weight' => 'required',
+                'product_length' => 'required',
+                'product_width' => 'required',
+                'product_height' => 'required',
+                'product_weight_unit' => 'required',
+                'product_length_unit' => 'required',
+                'product_width_unit' => 'required',
+                'product_height_unit' => 'required',
+                'package_weight' => 'required',
+                'package_length' => 'required',
+                'package_width' => 'required',
+                'package_height' => 'required',
+                'package_weight_unit' => 'required',
+                'package_length_unit' => 'required',
+                'package_width_unit' => 'required',
+                'package_height_unit' => 'required',
+                'product_image' => 'image:jpeg,png,jpg',
+                'category' => 'required',
+                'sku_code' => 'required',
+                'status' => 'required',
+                'regular_price' => 'required',
+                'stock_quantity' => 'required',
             ]);
 
             if ($validator->fails()) {
@@ -1458,28 +1477,45 @@ class SuperAdminController extends Controller
             
             $id = encrypt_decrypt('decrypt', $request->id);
             $product = Product::where('id', $id)->update([
-                'name' => $request->title,
-                'price' => $request->price,
-                'unit' => $request->qnt,
+                'name' => $request->input('name'),
+                'product_desc' => $request->input('short_description'),
+                'price' => $request->input('regular_price'),
+                'sale_price' => $request->sale_price ?? null,
+                'category_id' => $request->category,
+                'unit' => $request->input('stock_quantity'),
                 'tags' => serialize($request->tags),
-                'category_id' => $request->product_category,
-                'product_desc' => $request->description,
+                'status' => $request->status,
+                'full_description' => $request->full_description ?? null,
+                'refund_policy' => $request->refund_policy ?? null,
+                'product_weight' => $request->product_weight,
+                'product_length' => $request->product_length,
+                'product_width' => $request->product_width,
+                'product_height' => $request->product_height,
+                'product_weight_unit' => $request->product_weight_unit,
+                'product_length_unit' => $request->product_length_unit,
+                'product_width_unit' => $request->product_width_unit,
+                'product_height_unit' => $request->product_height_unit,
+                'package_weight' => $request->package_weight,
+                'package_length' => $request->package_length,
+                'package_width' => $request->package_width,
+                'package_height' => $request->package_height,
+                'package_weight_unit' => $request->package_weight_unit,
+                'package_length_unit' => $request->package_length_unit,
+                'package_width_unit' => $request->package_width_unit,
+                'package_height_unit' => $request->package_height_unit,
+                'sku_code' => $request->sku_code,
+                'stock_available' => $request->stock_avail ?? 0
             ]);
             
             
-            if ($files=$request->file('image')){
-                foreach ($files as $j => $file){
-                    $destination = public_path('upload/products/');
-                    $name = time().'.'.$file->extension();
-                    $file->move($destination, $name);
-                    $profile_image_url = $name;
-                    $course = ProductAttibutes::create([
-                        'product_id' => $id,
-                        'attribute_type' => 'Image',
-                        'attribute_code' => 'Image',
-                        'attribute_value' => $profile_image_url,
-                    ]);
-                }
+            if(isset($request->product_image)){
+                $destination = public_path('upload/products/');
+                $name = time().'.'.$request->product_image->extension();
+                $request->product_image->move($destination, $name);
+                $profile_image_url = $name;
+                $course = ProductAttibutes::where('product_id', $id)->update([
+                    'attribute_value' => $profile_image_url,
+                ]);
             }
             
             return redirect()->route('SA.Products')->with('message','Product updated successfully');
@@ -1492,57 +1528,87 @@ class SuperAdminController extends Controller
     {
         try {
             $validator = Validator::make($request->all(), [
-                'image' => 'required|array|min:1',
-                'image.*' => 'image|mimes:jpeg,png,jpg,gif,webp|max:2048',
-                'title' => 'required',
-                'price' => 'required',
-                'qnt' => 'required',
-                'product_category' => 'required',
-                'description' => 'required',
-                //'livesearch' => 'required',
+                'tags' => 'required|array',
+                'name' => 'required',
+                'short_description' => 'required',
+                'product_weight' => 'required',
+                'product_length' => 'required',
+                'product_width' => 'required',
+                'product_height' => 'required',
+                'product_weight_unit' => 'required',
+                'product_length_unit' => 'required',
+                'product_width_unit' => 'required',
+                'product_height_unit' => 'required',
+                'package_weight' => 'required',
+                'package_length' => 'required',
+                'package_width' => 'required',
+                'package_height' => 'required',
+                'package_weight_unit' => 'required',
+                'package_length_unit' => 'required',
+                'package_width_unit' => 'required',
+                'package_height_unit' => 'required',
+                'product_image' => 'required|image:jpeg,png,jpg',
+                'category' => 'required',
+                'sku_code' => 'required',
+                'status' => 'required',
+                'regular_price' => 'required',
+                'stock_quantity' => 'required',
             ]);
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
-            }
-            
-            $user = User::where('role',3)->first();
-            $USERID = $user->id;
-            $course = Product::create([
-                'name' => $request->input('title'),
-                'product_desc' => $request->input('description'),
-                'price' => $request->input('price'),
-                'category_id' => $request->product_category,
-                'unit' => $request->input('qnt'),
-                'tags' => serialize($request->tags),
-                //'Product_image' => ($imageName)?json_encode($imageName):$imageName,
-                'status' => 1,
-                'added_by' => 1
-            ]);
-            $product_id = Product::orderBy('id','DESC')->first();
-            $imageName = array();
-            if ($files=$request->file('image')){
-                $type_a = false;
-                $type_b = false;
-                foreach ($files as $j => $file){
+            } else {
+                // dd($request->all());
+                $user = User::where('role',3)->first();
+
+                $product = new Product;
+                $product->name = $request->input('name');
+                $product->product_desc = $request->input('short_description');
+                $product->price = $request->input('regular_price');
+                $product->sale_price = $request->sale_price ?? null;
+                $product->category_id = $request->category;
+                $product->unit = $request->input('stock_quantity');
+                $product->tags = serialize($request->tags);
+                $product->status = $request->status;
+                $product->added_by = $user->id;
+                $product->full_description = $request->full_description ?? null;
+                $product->refund_policy = $request->refund_policy ?? null;
+                $product->product_weight = $request->product_weight;
+                $product->product_length = $request->product_length;
+                $product->product_width = $request->product_width;
+                $product->product_height = $request->product_height;
+                $product->product_weight_unit = $request->product_weight_unit;
+                $product->product_length_unit = $request->product_length_unit;
+                $product->product_width_unit = $request->product_width_unit;
+                $product->product_height_unit = $request->product_height_unit;
+                $product->package_weight = $request->package_weight;
+                $product->package_length = $request->package_length;
+                $product->package_width = $request->package_width;
+                $product->package_height = $request->package_height;
+                $product->package_weight_unit = $request->package_weight_unit;
+                $product->package_length_unit = $request->package_length_unit;
+                $product->package_width_unit = $request->package_width_unit;
+                $product->package_height_unit = $request->package_height_unit;
+                $product->sku_code = $request->sku_code;
+                $product->stock_available = $request->stock_avail ?? 0;
+                $product->save();
+                
+                $product_id = Product::orderBy('id','DESC')->first();
+                if(isset($request->product_image)){
                     $destination = public_path('upload/products/');
-                    $name = time().'.'.$file->extension();
-                    $file->move($destination, $name);
+                    $name = time().'.'.$request->product_image->extension();
+                    $request->product_image->move($destination, $name);
                     $profile_image_url = $name;
                     $course = ProductAttibutes::create([
                         'product_id' => $product_id->id,
-                        'attribute_type' => 'Image',
-                        'attribute_code' => 'Image',
+                        'attribute_type' => 'Cover Image',
+                        'attribute_code' => 'cover_image',
                         'attribute_value' => $profile_image_url,
                     ]);
-                    //$imageName[]= $profile_image_url;
                 }
+                    
+                return redirect('/super-admin/products')->with('message','Product created successfully');
             }
-
-            // $arr_tag = $request->input('livesearch');
-            // $tag = implode(",",$arr_tag);
-            
-            return redirect('/super-admin/products')->with('message','Product created successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1922,6 +1988,29 @@ class SuperAdminController extends Controller
             }
 
             return view('super-admin.progress-course-details')->with(compact('course', 'combined', 'review', 'reviewAvg', 'id', 'chapters'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function checkSkuCode(Request $request)
+    {
+        $check_user = Product::where('sku_code','=',$request->sku_code);
+        if($request->filled('pro_id')){
+            $check_user->where('id', '!=', $request->pro_id);
+        }
+        $check_user = $check_user->first();
+        if($check_user)
+        {
+            echo json_encode('This SKU Code is already exist.');
+        }else{
+            echo json_encode(true);
+        }
+    }
+
+    public function coupons(Request $request){
+        try{
+            return view('super-admin.coupons');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
