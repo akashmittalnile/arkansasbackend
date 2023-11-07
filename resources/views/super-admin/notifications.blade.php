@@ -11,7 +11,7 @@
                     <div class="row g-2">
                         <div class="col-md-4">
                             <div class="form-group search-form-group">
-                                <input type="text" class="form-control" value="{{ request()->title }}" name="title" placeholder="Serach by Title">
+                                <input type="text" class="form-control" value="{{ request()->title }}" name="title" placeholder="Search by Title">
                                 <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
                             </div>
                         </div>

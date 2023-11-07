@@ -13,6 +13,7 @@ use App\Models\CourseChapterStep;
 use App\Models\Tag;
 use App\Models\Product;
 use App\Models\Category;
+use App\Models\Coupon;
 use App\Models\Notification;
 use App\Models\NotificationCreator;
 use App\Models\Notify;
@@ -33,6 +34,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx\Rels;
 
 class SuperAdminController extends Controller
 {
@@ -2075,14 +2077,6 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function coupons(Request $request){
-        try{
-            return view('super-admin.coupons');
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-    }
-
     public function checkPassword(Request $request){
         try{
             $user = User::where('id', auth()->user()->id)->first();
@@ -2094,4 +2088,109 @@ class SuperAdminController extends Controller
         }
     }
 
+    public function coupons(Request $request){
+        try{
+            $coupon = DB::table('coupons as c');
+            if($request->filled('coupon_code')) $coupon->where('coupon_code', 'like', '%'.$request->coupon_code.'%');
+            $coupon = $coupon->orderByDesc('id')->paginate(12);
+            return view('super-admin.coupons')->with(compact('coupon'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function checkCouponCode(Request $request){
+        try{
+            $id = encrypt_decrypt('decrypt', $request->coupon_id);
+            $coupon = Coupon::where('coupon_code', $request->code);
+            if($request->filled('coupon_id')) $coupon->where('id', '!=', $id);
+            $coupon = $coupon->first();
+            if(isset($coupon->id))
+            {
+                echo json_encode('This Coupon Code is already exist.');
+            }else{
+                echo json_encode(true);
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function add_coupon(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'code' => 'required',
+                'type' => 'required',
+                'amount' => 'required',
+                'date' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            } else {
+                $coupon = new Coupon;
+                $coupon->coupon_code = $request->code;
+                $coupon->object_type = $request->object_type ?? 2;
+                $coupon->coupon_expiry_date = $request->date;
+                $coupon->coupon_discount_type = $request->type;
+                $coupon->coupon_discount_amount = $request->amount;
+                $coupon->description = $request->description ?? null;
+                $coupon->status = 1;
+                $coupon->save();
+                return redirect()->back()->with('message', 'New coupon added successfully.');
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function get_coupon_details(Request $request){
+        try{
+            $id = encrypt_decrypt('decrypt', $request->id);
+            $coupon = Coupon::where('id', $id)->first();
+            if(isset($coupon->id)){
+                return response()->json(['status'=> true, 'message'=> 'Coupon found', 'data'=> $coupon]);
+            } else return response()->json(['status'=> false, 'message'=> 'No coupon found']);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function update_coupon(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'id' => 'required',
+                'code' => 'required',
+                'type' => 'required',
+                'amount' => 'required',
+                'date' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            } else {
+                $id = encrypt_decrypt('decrypt', $request->id);
+                Coupon::where('id', $id)->update([
+                    'coupon_code' => $request->code,
+                    'object_type' => $request->object_type ?? 2,
+                    'coupon_expiry_date' => $request->date,
+                    'coupon_discount_type' => $request->type,
+                    'coupon_discount_amount' => $request->amount,
+                    'description' => $request->description ?? null,
+                    'status' => 1
+                ]);
+                return redirect()->back()->with('message', 'Coupon updated successfully.');
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function delete_coupon($id){
+        try{
+            $id = encrypt_decrypt('decrypt', $id);
+            Coupon::where('id', $id)->delete();
+            return redirect()->back()->with('message', 'Coupon Deleted successfully.');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

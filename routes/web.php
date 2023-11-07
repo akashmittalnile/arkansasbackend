@@ -20,6 +20,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
      */
     
     Route::get('/check_sku_code', 'SuperAdminController@checkSkuCode')->name('checkSkuCode');
+    Route::get('/check_coupon_code', 'SuperAdminController@checkCouponCode')->name('checkCouponCode');
     Route::post('/image-upload', 'SuperAdminController@imageUpload')->name('imageUpload');
     Route::post('/image-delete', 'SuperAdminController@destroy')->name('imageDelete');
     Route::get('/check_password', 'SuperAdminController@checkPassword')->name('checkPassword');
@@ -188,6 +189,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/delete-category/{id}', 'SuperAdminController@delete_categoty')->name('SA.DeleteCategoty');
 
         Route::get('/super-admin/coupons', 'SuperAdminController@coupons')->name('SA.Coupons');
+        Route::post('/super-admin/add-coupon', 'SuperAdminController@add_coupon')->name('SA.Store.Coupon');
+        Route::get('/super-admin/get-coupon-details', 'SuperAdminController@get_coupon_details')->name('SA.Get.Detail.Coupon');
+        Route::post('/super-admin/update-coupon', 'SuperAdminController@update_coupon')->name('SA.Update.Coupon');
+        Route::get('/super-admin/delete-coupon/{id}', 'SuperAdminController@delete_coupon')->name('SA.Coupon.Delete');
 
         Route::post('update-title-percentage/{id}', 'SuperAdminController@updateTitlePercentage')->name('SA.update.title.percentage');
         Route::get('change-prerequisite', 'SuperAdminController@changePrerequisite')->name('SA.change.prerequisite');

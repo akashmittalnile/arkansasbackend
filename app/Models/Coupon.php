@@ -9,18 +9,5 @@ class Coupon extends Model
 {
     use HasFactory;
     protected $table = 'coupons';
-    protected $primaryKey = 'id ';
-    public $timestamps = false;
-
-    protected $fillable = [
-        'id',
-        'title',
-        'description',
-        'fee_type',
-        'course_fee',
-        'valid_upto',
-        'tags',
-        'certificates',
-        'status'
-    ];
+    protected $primaryKey = 'id';
 }
