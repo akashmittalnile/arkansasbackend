@@ -21,6 +21,7 @@ use App\Models\ProductAttibutes;
 use App\Models\Transaction;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
+use App\Models\Address;
 use App\Models\ChapterQuiz;
 use App\Models\ChapterQuizOption;
 use App\Models\CourseChapter;
@@ -3239,6 +3240,143 @@ class ApiController extends Controller
         try{
             $notify = Notify::where('user_id', auth()->user()->id)->delete();
             return response()->json(['status' => true, 'message' => 'All Notifications Cleared']);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function storeAddress(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'email' => 'required|email',
+                'phone' => 'required',
+                'address_line_1' => 'required',
+                'latitude' => 'required',
+                'longitude' => 'required',
+                'city' => 'required',
+                'state' => 'required',
+                'country' => 'required',
+                'zip_code' => 'required',
+                'address_type' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else {
+                if(isset($request->is_default) && $request->is_default==1){
+                    Address::where('user_id', auth()->user()->id)->update(['default_address'=> 0]);
+                }
+                $address = new Address;
+                $address->user_id = auth()->user()->id;
+                $address->first_name = $request->first_name;
+                $address->middle_name = $request->middle_name ?? null;
+                $address->last_name = $request->last_name;
+                $address->email = $request->email;
+                $address->phone = $request->phone;
+                $address->company_name = $request->company_name ?? null;
+                $address->address_line_1 = $request->address_line_1;
+                $address->address_line_2 = $request->address_line_2 ?? null;
+                $address->latitude = $request->latitude;
+                $address->longitude = $request->longitude;
+                $address->city = $request->city;
+                $address->state = $request->state;
+                $address->country = $request->country;
+                $address->zip_code = $request->zip_code;
+                $address->address_type = $request->address_type;
+                $address->default_address = $request->is_default ?? 0;
+                $address->created_at = date('Y-m-d H:i:s');
+                $address->updated_at = date('Y-m-d H:i:s');
+                if($address->save()){
+                    return response()->json(['status' => true, 'message'=> 'New Address Added Successfully.']);
+                }else{
+                    return response()->json(['status' => false, 'message'=> 'Something went wrong.']);
+                }
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function getAddress(){
+        try{
+            $address = Address::where('user_id', auth()->user()->id)->get();
+            if(count($address) > 0){
+                return response()->json(['status' => true, 'message'=> 'Addresses', 'data'=> $address]);
+            }else {
+                return response()->json(['status' => false, 'message'=> 'No address found']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function getAddressDetails($id){
+        try{
+            $address = Address::where('user_id', auth()->user()->id)->where('id', $id)->first();
+            if(isset($address)){
+                return response()->json(['status' => true, 'message'=> 'Address', 'data'=> $address]);
+            }else {
+                return response()->json(['status' => false, 'message'=> 'No address found']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function deleteAddress($id){
+        try{
+            $address = Address::where('user_id', auth()->user()->id)->where('id', $id)->delete();
+            return response()->json(['status' => true, 'message'=> 'Address Deleted Successfully']);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function updateAddress(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'id' => 'required',
+                'first_name' => 'required',
+                'last_name' => 'required',
+                'email' => 'required|email',
+                'phone' => 'required',
+                'address_line_1' => 'required',
+                'latitude' => 'required',
+                'longitude' => 'required',
+                'city' => 'required',
+                'state' => 'required',
+                'country' => 'required',
+                'zip_code' => 'required',
+                'address_type' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else {
+                if(isset($request->is_default) && $request->is_default==1){
+                    Address::where('user_id', auth()->user()->id)->update(['default_address'=> 0]);
+                }
+                Address::where('user_id', auth()->user()->id)->where('id', $request->id)->update([
+                    'first_name' => $request->first_name,
+                    'middle_name' => $request->middle_name ?? null,
+                    'last_name' => $request->last_name,
+                    'email' => $request->email,
+                    'phone' => $request->phone,
+                    'company_name' => $request->company_name ?? null,
+                    'address_line_1' => $request->address_line_1,
+                    'address_line_2' => $request->address_line_2 ?? null,
+                    'latitude' => $request->latitude,
+                    'longitude' => $request->longitude,
+                    'city' => $request->city,
+                    'state' => $request->state,
+                    'country' => $request->country,
+                    'zip_code' => $request->zip_code,
+                    'address_type' => $request->address_type,
+                    'default_address' => $request->is_default ?? 0,
+                    'updated_at' => date('Y-m-d H:i:s'),
+                ]);
+                return response()->json(['status' => true, 'message'=> 'Address Updated Successfully.']);
+            }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }

@@ -21,7 +21,7 @@
     <div class="pmu-tab-nav">
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" href="#Profile" data-bs-toggle="tab">Profile</a> </li>
-            <li class="nav-item"><a class="nav-link" href="#Password" data-bs-toggle="tab">Password</a> </li>
+            <li class="nav-item"><a class="nav-link" href="#Password" data-bs-toggle="tab" id="passwordTab">Password</a> </li>
             <li class="nav-item"><a class="nav-link" href="#TaxSetting" data-bs-toggle="tab" id="arkansasSetting">Arkansas Setting</a> </li>
         </ul>
     </div>
@@ -131,33 +131,35 @@
         <div class="tab-pane" id="Password">
             <div class="myaccount-card">
                 <div class="myaccount-card-form">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <h4>Old Password</h4>
-                                <input type="password" class="form-control" name="" placeholder="Old Password">
+                    <form action="{{ route('SA.Change.Password') }}" method="POST" id="password-form">@csrf
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>Old Password</h4>
+                                    <input type="password" class="form-control" name="old_pswd" id="old_pswd" placeholder="Old Password">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <h4>New Password </h4>
-                                <input type="password" class="form-control" name="" placeholder="Enter New Password ">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>New Password </h4>
+                                    <input type="password" class="form-control" name="new_pswd" id="new_pswd" placeholder="Enter New Password ">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <h4>Confirm New Password </h4>
-                                <input type="password" class="form-control" name="" placeholder="Confirm New Password ">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>Confirm New Password </h4>
+                                    <input type="password" class="form-control" name="c_new_pswd" id="c_new_pswd" placeholder="Confirm New Password ">
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <button class="cancelbtn">Cancel</button>
-                                <button class="Createbtn">Save</button>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <button class="cancelbtn" type="button">Cancel</button>
+                                    <button class="Createbtn" type="submit">Save</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -207,9 +209,70 @@
 <script>
 
     var tab = "{{ session()->get('tab') ?? false }}";
+    if (tab == 1) $("#passwordTab").get(0).click();
     if (tab == 2) $("#arkansasSetting").get(0).click();
 
     $(document).ready(function() {
+
+        $.validator.addMethod("notEqual", function(value, element, param) {
+            return this.optional(element) || value != $(param).val();
+        }, 'Old password and New password should not same.');
+
+        $('#password-form').validate({
+            rules: {
+                old_pswd: {
+                    required: true,
+                    minlength: 6,
+                    remote: {
+                        type: 'get',
+                        url: arkansasUrl + '/check_password',
+                        data: {
+                            'password': function () { return $("#old_pswd").val(); }
+                        },
+                        dataType: 'json'
+                    }
+                },
+                new_pswd: {
+                    required: true,
+                    maxlength: 15,
+                    minlength: 6,
+                    notEqual: "input[name='old_pswd']"
+                },
+                c_new_pswd: {
+                    required: true,
+                    equalTo: "input[name='new_pswd']"
+                },
+            },
+            messages: {
+                old_pswd: {
+                    required: 'Please enter old password'
+                },
+                new_pswd: {
+                    required: 'Please enter new password'
+                },
+                c_new_pswd: {
+                    required: 'Please enter confirm new password',
+                    equalTo: "New password and Confirm new password must be same."
+                },
+            },
+            submitHandler: function(form) {
+                // This function will be called when the form is valid and ready to be submitted
+                form.submit();
+            },
+            errorElement: "span",
+            errorPlacement: function(error, element) {
+                error.addClass("invalid-feedback");
+                element.closest(".form-group").append(error);
+
+            },
+            highlight: function(element, errorClass, validClass) {
+                $(element).addClass("is-invalid");
+            },
+            unhighlight: function(element, errorClass, validClass) {
+                $(element).removeClass("is-invalid");
+            },
+        });
+
         $.validator.addMethod('filesize', function(value, element, param) {
             return this.optional(element) || (element.files[0].size <= param * 1000000)
         }, 'File size must be less than {0} MB');

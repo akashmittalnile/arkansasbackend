@@ -81,7 +81,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="notificationsr-section">
+                        <!-- <div class="notificationsr-section">
                             <h1>Notifications</h1>
                             <div class="notificationsr-list">
                                 <div class="notificationsr-card">
@@ -94,7 +94,7 @@
                                     <p>Product Order Placed Successfully<a href=""> Order Details</a></p>
                                 </div>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="col-md-8">
                         <div class="pmu-filter-section">

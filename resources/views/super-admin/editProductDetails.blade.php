@@ -1,10 +1,11 @@
 @extends('super-admin-layouts.app-master')
 @section('title', 'Makeup University - Edit Product Details')
 @section('content')
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/min/dropzone.min.css">
+<meta name="_token" content="{{csrf_token()}}" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.0/dropzone.min.css">
 <div class="body-main-content">
     <div class="d-flex justify-content-between">
         <div class="pmu-filter-section">
@@ -274,8 +275,27 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
+
+                <div class="product-item-card">
+                    <div class="card-header form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h2>Upload Product Multiple Image (jpg,jpeg,png only)</h2>
+                            <button class="file-upload" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                upload Multiple image
+                            </button>
+                        </div>
+                        <div class="d-flex row">
+                            @foreach($attr as $valAttr)
+                            <div class="col-2 mx-2 my-4" style="width: 160px; height: 80px;">
+                                <img class="p-0" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" src="{!! url('upload/products/'.$valAttr->attribute_value) !!}" />
+                                <a href="{{ route('SA.Delete.Products.Image', encrypt_decrypt('encrypt', $valAttr->id)) }}" onclick="return confirm('Are you sure you want to delete this product image?');"><i style="border: 1px solid red; background: red; border-radius: 50%; padding: 5px; color: white; position: relative; top: -90px; right: -144px;" class="las la-trash"></i></a>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-12">
                     <div class="product-item-card update-card">
                         <div class="pmu-item-content bg-white">
@@ -284,6 +304,26 @@
                     </div>
                 </div>
             </form>
+            
+        </div>
+    </div>
+</div>
+
+<div class="modal ro-modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Upload Product Multiple Image (jpg,jpeg,png only)</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{{ route('imageUpload') }}" enctype="multipart/form-data" class="dropzone" id="dropzone">
+                    <input type="hidden" name="id" id="img-id" value="{{ encrypt_decrypt('encrypt', $product->id) }}">
+                    @csrf
+                </form> 
+            </div>
         </div>
     </div>
 </div>
@@ -295,13 +335,13 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/min/dropzone.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script src="{{ asset('assets/superadmin-js/create-product.js') }}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.0/dropzone.js"></script>
 
 <!-- Style of h2 tag and error message  jQuery Validation -->
 <style>
@@ -313,6 +353,48 @@
         color: white;
     }
 </style>
+<script type="text/javascript">
+Dropzone.options.dropzone = {
+    maxFilesize: 1,
+    renameFile: function(file) {
+        var dt = new Date();
+        var time = dt.getTime();
+       return time+file.name;
+    },
+    acceptedFiles: ".jpeg,.jpg,.png",
+    timeout: 5000,
+    addRemoveLinks: true,
+    removedfile: function(file) 
+    {
+        var name = file.upload.filename;
+        $.ajax({
+            headers: {
+                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                    },
+            type: 'POST',
+            url: '{{ route("imageDelete") }}',
+            data: {filename: name, id: $("#img-id").val()},
+            success: function (data){
+                console.log("File deleted successfully!!");
+            },
+            error: function(e) {
+                console.log(e);
+            }
+        });
+        var fileRef;
+        return (fileRef = file.previewElement) != null ? 
+        fileRef.parentNode.removeChild(file.previewElement) : void 0;
+    },
+    success: function(file, response) 
+    {
+        // console.log(response);
+    },
+    error: function(file, response)
+    {
+       return false;
+    }
+};
+</script>
 
 <!-- Include jQuery Validation -->
 <script>
@@ -403,7 +485,7 @@
                     required: true,
                     remote: {
                         type: 'get',
-                        url: "{{ route('checkSkuCode') }}",
+                        url: arkansasUrl + '/check_sku_code',
                         data: {
                             'sku_code': function () { return $("#code").val(); },
                             'pro_id': function () { return "{{ $product->id }}" }

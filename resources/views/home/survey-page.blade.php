@@ -1,3 +1,4 @@
+<meta name="_token" content="{{csrf_token()}}" />
 <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/header-footer.css') !!}">
 <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/iconsax/iconsax.css') !!}">
 <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/auth.css') !!}">
@@ -7,7 +8,6 @@
 <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/becomeacreator.css') !!}">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
-
 <div class="course-player-quiz">
     <div class="course-player-quiz-inner">
         <h3 id="question">SURVEY QUESTION 1 OF {{ $questionCount }}</h3>

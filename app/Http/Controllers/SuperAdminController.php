@@ -32,6 +32,7 @@ use DB;
 use Maatwebsite\Excel\Facades\Excel;
 use PDF;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class SuperAdminController extends Controller
 {
@@ -235,6 +236,26 @@ class SuperAdminController extends Controller
                 ]);
 
                 return redirect()->back()->with('message', 'Profile updated successfully');
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function changePassword(Request $request) {
+        try{
+            $validator = Validator::make($request->all(), [
+                'old_pswd' => 'required',
+                'new_pswd' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            } else {
+                User::where('id', auth()->user()->id)->update([
+                    'password' => Hash::make($request->new_pswd)
+                ]);
+                return redirect()->back()->with('message', 'Password changed successfully');
             }
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1434,7 +1455,8 @@ class SuperAdminController extends Controller
                 $combined[] = $comb;
             }
             $coverimg = ProductAttibutes::where('product_id', $id)->where('attribute_code', 'cover_image')->first();
-            return view('super-admin.editProductDetails')->with(compact('product', 'combined', 'coverimg'));
+            $attr = ProductAttibutes::where('product_id', $id)->where('attribute_code', 'slide_image')->get();
+            return view('super-admin.editProductDetails')->with(compact('product', 'combined', 'coverimg', 'attr'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1604,7 +1626,17 @@ class SuperAdminController extends Controller
                         'attribute_type' => 'Cover Image',
                         'attribute_code' => 'cover_image',
                         'attribute_value' => $profile_image_url,
+                        'created_date' => date('Y-m-d H:i:s')
                     ]);
+                }
+
+                $array_of_image = json_decode($request->array_of_image);
+                if(is_array($array_of_image) && count($array_of_image)>0){
+                    foreach($array_of_image as $val){
+                        ProductAttibutes::where('attribute_value', $val)->update([
+                            'product_id' => $product_id->id,
+                        ]);
+                    }
                 }
                     
                 return redirect('/super-admin/products')->with('message','Product created successfully');
@@ -1612,6 +1644,41 @@ class SuperAdminController extends Controller
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    public function imageUpload(Request $request) 
+    { 
+        $image = $request->file('file');
+        $name = $image->getClientOriginalName();
+        
+        $image->move(public_path('upload/products/'),$name);
+        $pro_id = isset($request->id) ? encrypt_decrypt('decrypt', $request->id) : null;
+            
+        $course = ProductAttibutes::create([
+            'product_id' => $pro_id,
+            'attribute_type' => 'Slide Image',
+            'attribute_code' => 'slide_image',
+            'attribute_value' => $name,
+            'created_date' => date('Y-m-d H:i:s')
+        ]);
+
+        return response()->json(['status'=>true, 'file_name'=> $name, 'key'=> 1]);  
+    }
+
+    public function destroy(Request $request)
+    {
+        $filename =  $request->get('filename');
+
+        $pro = ProductAttibutes::where('attribute_value',$filename);
+        if($request->filled('id')) $pro->where('product_id', encrypt_decrypt('decrypt', $request->id));
+        else $pro->where('product_id', null);
+        $pro = $pro->delete();
+
+        $path=public_path('upload/products/').$filename;
+        if (file_exists($path)) {
+            unlink($path);
+        }
+        return response()->json(['status'=>true, 'file_name'=> $filename, 'key'=> 2]);  
     }
 
     public function account_approval_request() 
@@ -2011,6 +2078,17 @@ class SuperAdminController extends Controller
     public function coupons(Request $request){
         try{
             return view('super-admin.coupons');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function checkPassword(Request $request){
+        try{
+            $user = User::where('id', auth()->user()->id)->first();
+            if(!(Hash::check($request->old_pswd, $user->password))){
+                echo json_encode("Old Password doesn't match with Current Password.");
+            } else echo json_encode(true);
         } catch (\Exception $e) {
             return $e->getMessage();
         }

@@ -1,6 +1,7 @@
 @extends('super-admin-layouts.app-master')
 @section('title', 'Makeup University - Add Product')
 @section('content')
+<meta name="_token" content="{{csrf_token()}}" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/min/dropzone.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.css">
@@ -259,6 +260,7 @@
                             </div>
                             <div class="pmu-item-content search-select form-group">
                                 <input type="number" min="1" step="1" max="100000" class="form-control percentage-input" placeholder="Stock Quantity" id="stock_quantity" name="stock_quantity" value="{{ old('stock_quantity') }}">
+                                <input type="hidden" id="arrayOfImage" name="array_of_image" value="">
                             </div>
                         </div>
                         <div class="product-item-card right-card">
@@ -272,8 +274,19 @@
                             </div>
                         </div>
                     </div>
-
                 </div>
+
+                <div class="product-item-card">
+                    <div class="card-header form-group">
+                        <div class="d-flex align-items-center justify-content-between">
+                            <h2>Upload Product Multiple Image (jpg,jpeg,png only)</h2>
+                            <button class="file-upload" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
+                                upload Multiple image
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="col-md-12">
                     <div class="product-item-card update-card">
                         <div class="pmu-item-content bg-white">
@@ -286,6 +299,27 @@
     </div>
 </div>
 
+
+<div class="modal ro-modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLabel">Upload Product Multiple Image (jpg,jpeg,png only)</h5>
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{{ route('imageUpload') }}" enctype="multipart/form-data" class="dropzone" id="dropzone">
+                    @csrf
+                </form> 
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 <!-- Include jQuery Validation Plugin -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
@@ -293,11 +327,11 @@
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/min/dropzone.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script src="{{ asset('assets/superadmin-js/create-product.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.0/dropzone.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>
 
@@ -311,6 +345,61 @@
         color: white;
     }
 </style>
+
+<script type="text/javascript">
+    let arrOfImg = [];
+
+    Dropzone.options.dropzone = {
+        maxFilesize: 1,
+        renameFile: function(file) {
+            var dt = new Date();
+            var time = dt.getTime();
+        return time+file.name;
+        },
+        acceptedFiles: ".jpeg,.jpg,.png",
+        timeout: 5000,
+        addRemoveLinks: true,
+        removedfile: function(file) 
+        {
+            var name = file.upload.filename;
+            $.ajax({
+                headers: {
+                            'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                        },
+                type: 'POST',
+                url: '{{ route("imageDelete") }}',
+                data: {filename: name},
+                success: function (data){
+                    if(data.key == 2){
+                        const inde = arrOfImg.indexOf(data.file_name);
+                        if (inde > -1){
+                            arrOfImg.splice(inde, 1);
+                            $("#arrayOfImage").val(JSON.stringify(arrOfImg));
+                        }
+                    }
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            });
+            var fileRef;
+            return (fileRef = file.previewElement) != null ? 
+            fileRef.parentNode.removeChild(file.previewElement) : void 0;
+        },
+        success: function(file, response) 
+        {
+            if(response.key == 1){
+                arrOfImg.push(response.file_name);
+                $("#arrayOfImage").val(JSON.stringify(arrOfImg));
+            }
+        },
+        error: function(file, response)
+        {
+            return false;
+        }
+    };
+    console.log(arrOfImg);
+</script>
 
 <!-- Include jQuery Validation -->
 <script>
@@ -402,7 +491,7 @@
                     required: true,
                     remote: {
                         type: 'get',
-                        url: "{{ route('checkSkuCode') }}",
+                        url: arkansasUrl + '/check_sku_code',
                         data: {
                             'sku_code': function () { return $("#code").val(); }
                         },

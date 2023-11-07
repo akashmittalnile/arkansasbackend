@@ -93,4 +93,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('notifications', [ApiController::class, 'getNotification']);
     Route::get('clear-notifications', [ApiController::class, 'clearNotification']);
 
+    Route::post('/address', [ApiController::class, 'storeAddress']);
+    Route::get('/address', [ApiController::class, 'getAddress']);
+    Route::get('/address-details/{id}', [ApiController::class, 'getAddressDetails']);
+    Route::delete('/address/{id}', [ApiController::class, 'deleteAddress']);
+    Route::post('/update-address', [ApiController::class, 'updateAddress']);
+
 });

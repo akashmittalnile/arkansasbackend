@@ -19,8 +19,11 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
      * Home Routes
      */
     
-
     Route::get('/check_sku_code', 'SuperAdminController@checkSkuCode')->name('checkSkuCode');
+    Route::post('/image-upload', 'SuperAdminController@imageUpload')->name('imageUpload');
+    Route::post('/image-delete', 'SuperAdminController@destroy')->name('imageDelete');
+    Route::get('/check_password', 'SuperAdminController@checkPassword')->name('checkPassword');
+    
     Route::group(['middleware' => ['guest']], function() {
         /**
          * Register Routes
@@ -115,6 +118,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/my-account', 'SuperAdminController@myAccount')->name('SA.My.Account');
         Route::post('/super-admin/my-data', 'SuperAdminController@storeMyData')->name('SA.Store.Mydata');
         Route::post('/super-admin/setting', 'SuperAdminController@storeSetting')->name('SA.Store.Setting');
+        Route::post('/super-admin/change-password', 'SuperAdminController@changePassword')->name('SA.Change.Password');
 
         Route::get('/super-admin/addcourse', 'SuperAdminController@add_course')->name('SA.AddCourse');
         Route::get('/super-admin/addproduct', 'SuperAdminController@add_product')->name('SA.AddProduct');
