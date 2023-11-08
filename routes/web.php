@@ -161,6 +161,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/super-admin/update-product', 'SuperAdminController@updateProduct')->name('SA.Update.Products');
         Route::get('/super-admin/delete-product/{id}', 'SuperAdminController@deleteProduct')->name('SA.Delete.Products');
         Route::get('/super-admin/delete-product-image/{id}', 'SuperAdminController@deleteProductImage')->name('SA.Delete.Products.Image');
+        Route::get('/super-admin/view-product/{id}', 'SuperAdminController@productViewDetails')->name('SA.Product.View.Details');
+
         Route::get('/super-admin/listed-course/{id}', 'SuperAdminController@listed_course')->name('SA.ListedCourse');
         Route::get('/super-admin/inactive/{id}', 'SuperAdminController@InactiveStatus')->name('SA.InactiveStatus');
         Route::post('/super-admin/SaveStatusCourse', 'SuperAdminController@SaveStatusCourse')->name('SaveStatusCourse');
@@ -208,6 +210,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/clear-notification', 'SuperAdminController@clearNotification')->name('SA.clear.notification');
 
         Route::get('/super-admin/progress-report/{courseId}/{id}', 'SuperAdminController@progressReport')->name('SA.progress.report');
+
+        Route::get('/super-admin/product-orders', 'SuperAdminController@product_orders')->name('SA.Product.Orders');
+        Route::get('/super-admin/product-orders-details/{id}', 'SuperAdminController@product_order_details')->name('SA.Product.order.details');
 
     });
     

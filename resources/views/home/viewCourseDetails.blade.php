@@ -182,6 +182,8 @@
                                     <h1>Rating & Review</h1>
                                     @if(count($review) != 0)
                                     <div class="pmu-comment-rating"><img src="{!! url('assets/superadmin-images/star.svg')!!}"> {{ number_format($reviewAvg, 1) }}</div>
+                                    @else
+                                    <div class="pmu-comment-rating"><img src="{{ asset('assets/superadmin-images/star.svg') }}"> 0.0</div>
                                     @endif
                                 </div>
                                 <div class="pmu-comment-head-action">
@@ -192,7 +194,11 @@
                             @forelse($review as $value)
                             <div class="pmu-comment-item">
                                 <div class="pmu-comment-profile">
-                                    <img src="{!! url('assets/superadmin-images/user.png')!!}">
+                                @if($value->profile_image == '' || $value->profile_image == null)
+                                <img src="{{ asset('assets/superadmin-images/user.png') }}">
+                                @else
+                                <img src="{{ asset('upload/products/'.$value->profile_image) }}">
+                                @endif
                                 </div>
                                 <div class="pmu-comment-content">
                                     <div class="pmu-comment-head">
@@ -204,8 +210,13 @@
                                 </div>
                             </div>
                             @empty
-                            <div class="text-center">
-                                No rating & review found
+                            <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+                                <div>
+                                    <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                </div>
+                                <div class="font-weight-bold">
+                                    <p class="font-weight-bold" style="font-size: 1.2rem;">No rating & review found</p> 
+                                </div>
                             </div>
                             @endforelse
 

@@ -45,11 +45,15 @@
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/students.css') !!}">
     @endif
 
-    @if ($currentURL == 'SA.Earnings' || $currentURL == 'SA.Payment.Request')
+    @if ($currentURL == 'SA.Earnings' || $currentURL == 'SA.Payment.Request' || $currentURL == 'SA.Product.Orders')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/earnings.css') !!}">
     @endif
 
-    @if ($currentURL == 'SA.Products'||$currentURL == 'SA.Coupons')
+    @if ($currentURL == 'SA.Product.order.details')
+        <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/product-details.css') !!}">
+    @endif
+
+    @if ($currentURL == 'SA.Products'||$currentURL == 'SA.Coupons' || $currentURL == 'SA.Product.View.Details')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/products.css') !!}">
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/create-product.css') !!}">
     @endif

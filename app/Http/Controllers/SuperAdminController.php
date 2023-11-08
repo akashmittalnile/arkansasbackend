@@ -1396,6 +1396,36 @@ class SuperAdminController extends Controller
         }
     }
 
+    public function productViewDetails($id) 
+    {
+        $id = encrypt_decrypt('decrypt', $id);
+        $pro = Product::where('id', $id)->first();
+        $cover = ProductAttibutes::where('product_id', $id)->where('attribute_code', 'cover_image')->first();
+
+        $pro->tags = unserialize($pro->tags);
+        $tags = Tag::all();
+        $combined = array();
+
+        foreach ($tags as $arr) {
+            $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
+            foreach ($pro->tags as $arr2) {
+                if ($arr2 == $arr['id']) {
+                    $comb['selected'] = true;
+                    break;
+                }
+            }
+            $combined[] = $comb;
+        }
+
+        $reviewAvg = DB::table('user_review as ur')->where('object_id', $id)->where('object_type',2)->avg('rating');
+        $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date', 'u.profile_image')->where('object_id', $id)->where('object_type', 2)->get();
+
+        $revenue = OrderDetail::where('product_id', $id)->where('product_type', 2)->sum('admin_amount');
+        $nooforder = OrderDetail::where('product_id', $id)->where('product_type', 2)->distinct('order_id')->count();
+
+        return view('super-admin.product-details')->with(compact('cover', 'pro', 'combined', 'review', 'reviewAvg', 'revenue', 'nooforder'));
+    }
+
     public function add_product() 
     {
         return view('super-admin.add-product');
@@ -2001,7 +2031,7 @@ class SuperAdminController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status')->first();
 
-            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'Image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
+            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'cover_image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
 
             $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
             
@@ -2189,6 +2219,40 @@ class SuperAdminController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             Coupon::where('id', $id)->delete();
             return redirect()->back()->with('message', 'Coupon Deleted successfully.');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function product_orders(Request $request){
+        try{
+            $fee = Order::join('order_product_detail as opd', 'opd.order_id', '=', 'orders.id')->where('opd.product_type', 2)->where('orders.status', 1)->select([DB::raw("SUM(orders.admin_amount) as sum")])->distinct('orders.order_number')->first();
+
+            $orders = Order::join('users as u', 'u.id', '=', 'orders.user_id')->join('order_product_detail as opd', 'opd.order_id', '=', 'orders.id');
+            if($request->filled('name')){
+                $orders->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
+            }
+            if($request->filled('number')){
+                $orders->where('orders.order_number', 'like', '%'.$request->number.'%');
+            }
+            if($request->filled('order_date')){
+                $orders->whereDate('orders.created_date', date('Y-m-d', strtotime($request->order_date)));
+            }
+            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->where('opd.product_type', 2)->where('orders.status', 1)->distinct('orders.order_number')->orderByDesc('orders.id')->paginate(10);
+            return view('super-admin.product-orders')->with(compact('orders', 'fee'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function product_order_details(Request $request, $id){
+        try{
+            $id = encrypt_decrypt('decrypt', $id);
+            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes')->first();
+
+            $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
+
+            return view('super-admin.product-order-details')->with(compact('order', 'transaction'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

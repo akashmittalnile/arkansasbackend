@@ -58,10 +58,16 @@
                         <span class="menu-title">Manage Tags</span>
                     </a>
                 </li>
-                <li class="nav-item @if ($currentURL == 'SA.Products' || $currentURL =='SA.AddProduct' || $currentURL == 'SA.Edit.Products' || $currentURL == 'SA.Coupons') active @endif">
+                <li class="nav-item @if ($currentURL == 'SA.Products' || $currentURL =='SA.AddProduct' || $currentURL == 'SA.Edit.Products' || $currentURL == 'SA.Coupons' || $currentURL == 'SA.Product.View.Details') active @endif">
                     <a class="nav-link" href="{{ route('SA.Products') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/products.svg') !!}"></span>
                         <span class="menu-title">Manage Products</span>
+                    </a>
+                </li>
+                <li class="nav-item @if ($currentURL == 'SA.Product.Orders' || $currentURL == 'SA.Product.order.details') active @endif">
+                    <a class="nav-link" href="{{ route('SA.Product.Orders') }}">
+                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/products.svg') !!}"></span>
+                        <span class="menu-title">Product Orders</span>
                     </a>
                 </li>
 

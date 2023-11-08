@@ -1,10 +1,10 @@
-@extends('layouts.app-master')
-@section('title', 'Makeup University - Order Details')
+@extends('super-admin-layouts.app-master')
+@section('title', 'Makeup University - Product Order Details')
 @section('content')
 <div class="body-main-content">
     <div class="pmu-filter-section">
         <div class="pmu-filter-heading">
-            <a href="{{ route('Home.earnings') }}" class="newcourse-btn">Back</a>
+            <a href="{{ route('SA.Product.Orders') }}" class="newcourse-btn">Back</a>
         </div>
         <div class="pmu-search-filter wd20">
             <div class="row g-2">
@@ -20,7 +20,7 @@
                 <div class="col-md-12">
                     <div class="form-group">
                         @if($order->status == 1)
-                        <a class="newcourse-btn" href="{{ route('Home.download.invoice', encrypt_decrypt('encrypt',$order->id)) }}" target="_blank" id="invoicePrint">Download Invoice</a>
+                        <a class="newcourse-btn" href="{{ route('SA.download.invoice', encrypt_decrypt('encrypt',$order->id)) }}" target="_blank" id="invoicePrint">Download Invoice</a>
                         @endif
                     </div>
                 </div>
@@ -42,7 +42,7 @@
                                 <h2>{{ $order->order_number }}</h2>
                                 <ul class="added-summary-list d-flex flex-column mt-2" style="gap: 0px">
                                     <li>Order Date: <span>{{ date('d M, Y H:iA', strtotime($order->created_date)) }}</span></li>
-                                    <li>Status: 
+                                    <li>Status:
                                         <span>
                                             @if($order->status == 1) Payment Done
                                             @else Payment Pending
@@ -83,7 +83,7 @@
 
                         <div class="side-profile-overview-info">
                             <div class="row g-1">
-                                <!-- <div class="col-md-12">
+                                <div class="col-md-12">
                                     <div class="side-profile-total-order">
                                         <div class="side-profile-total-icon">
                                             <img src="{{ asset('assets/website-images/email1.svg') }}">
@@ -105,7 +105,7 @@
                                             <p>{{ $order->phone ?? "NA" }}</p>
                                         </div>
                                     </div>
-                                </div> -->
+                                </div>
 
                                 <div class="col-md-12">
                                     <div class="side-profile-total-order">
@@ -133,28 +133,25 @@
                             <div class="row">
 
                                 <div class="col-md-8">
-                                    @php $amount = 0; $admin = 0;  @endphp
-                                    @forelse($order->orderCourse as $key => $val)
+                                    @php $amount = 0; $admin = 0; @endphp
+                                    @forelse($order->orderProduct as $key => $val)
                                     <div class="pmu-course-details-item">
                                         <div class="pmu-course-details-media">
-                                            <video width="170" height="130">
-                                                <source src="{{ url( 'upload/disclaimers-introduction/' . $val->introduction_image) }}" type="video/mp4">
-                                                Your browser does not support the video tag.
-                                            </video>
+                                            <img src="{{ url('upload/products/'.$val->image) }}">
                                         </div>
                                         <div class="pmu-course-details-content">
                                             <div class="coursestatus"><img src="{{ asset('assets/website-images/tick.svg') }}">
-                                            @if ($val->status == 0)
+                                                @if ($val->status == 0)
                                                 Unpublished
-                                            @else
-                                                Published 
-                                            @endif
+                                                @else
+                                                Published
+                                                @endif
                                             </div>
                                             <h2 class="text-capitalize">{{ $val->title ?? "NA" }}</h2>
                                             <div class="pmu-course-details-price">${{ number_format((float)$val->amount, 2) }}</div>
                                         </div>
                                     </div>
-                                    @php $amount += $val->amount; $admin += $val->admin_amount;  @endphp
+                                    @php $amount += $val->amount; $admin += $val->admin_amount; @endphp
                                     @empty
                                     @endforelse
 
@@ -198,7 +195,7 @@
                                             <div class="added-bank-info-text mx-2">
                                                 <h2>XXXX XXXX XXXX {{ $transaction->card_no ?? "7878" }}</h2>
                                                 <ul class="added-summary-list d-flex flex-column mt-2" style="gap: 0px">
-                                                    <li class="text-capitalize">{{ $transaction->method_type ?? "Card" }} Type : 
+                                                    <li class="text-capitalize">{{ $transaction->method_type ?? "Card" }} Type :
                                                         <span>
                                                             {{ $transaction->card_type ?? "Mastercard" }}
                                                         </span>
@@ -226,7 +223,4 @@
         </div>
     </div>
 </div>
-<script>
-
-</script>
 @endsection
