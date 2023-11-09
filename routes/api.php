@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\AuthController;
 use App\Http\Controllers\API\ApiController;
+use App\Http\Controllers\API\CartController;
 use App\Http\Controllers\API\StripeController;
 use Spatie\FlareClient\Api;
 
@@ -66,8 +67,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('search-object-type-all', [ApiController::class,"search_object_type_all"]);
     Route::post('search-object-type-treending', [ApiController::class,"search_object_type_trending"]);
     Route::post('search-object-type-suggest', [ApiController::class,"search_object_type_suggest"]);
-    Route::post('add-to-cart', [ApiController::class, "add_to_cart"]);
-    Route::post('cart-list', [ApiController::class, "cart_list"]);
     Route::get('cart-details-payment', [ApiController::class, "cart_details_payment_page"]);
 
     Route::post('coupon-list', [ApiController::class, "coupon_list"]);
@@ -86,8 +85,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post("mark-as-complete", [ApiController::class, "mark_complete"]);
 
     Route::post('special-courses', [ApiController::class, "special_courses"]);
-    Route::post('update-product-quantity', [ApiController::class, "update_product_quantity"]);
-    Route::post('remove-cart', [ApiController::class, "remove_cart"]);
     Route::post('make-payment', [StripeController::class, "makePayment"]);
 
     Route::get('notifications', [ApiController::class, 'getNotification']);
@@ -98,5 +95,12 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/address-details/{id}', [ApiController::class, 'getAddressDetails']);
     Route::delete('/address/{id}', [ApiController::class, 'deleteAddress']);
     Route::post('/update-address', [ApiController::class, 'updateAddress']);
+
+    Route::post('add-to-cart', [CartController::class, "add_to_cart"]);
+    Route::get('cart-list', [CartController::class, "cart_list"]);
+    Route::post('update-product-quantity', [CartController::class, "update_product_quantity"]);
+    Route::post('shipping-address', [CartController::class, "shipping_address"]);
+    Route::post('remove-cart', [CartController::class, "remove_cart"]);
+    Route::post('choose-shipping', [CartController::class, "choose_shipping"]);
 
 });
