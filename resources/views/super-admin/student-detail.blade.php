@@ -164,7 +164,7 @@
                                                     <div class="course-price">${{ number_format((float)$val->buy_price, 2) }}</div>
                                                     <div class="chapter-test-info">
                                                         <div class="chapter-text">Chapter {{ $val->chapter_count ?? 0 }}</div>
-                                                        <div class="chapter-action"><a href="{{ route('SA.progress.report', ['courseId' => encrypt_decrypt('encrypt', $val->id), 'id' => $id]) }}">Progress Report</a></div>
+                                                        <div class="chapter-action"><a href="{{ route('SA.progress.report', ['courseId' => encrypt_decrypt('encrypt', $val->id), 'id' => $id]) }}">Completion Status</a></div>
                                                     </div>
 
                                                 </div>

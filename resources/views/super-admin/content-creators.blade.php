@@ -21,7 +21,7 @@
                                 <select class="form-control" name="status">
                                     <option @if(request()->status=="") selected @endif value="">Select Account Status</option>
                                     <option @if(request()->status=="1") selected @endif value="1">Active</option>
-                                    <option @if(request()->status=="0") selected @endif value="0">In-Active</option>
+                                    <option @if(request()->status=="0") selected @endif value="2">In-Active</option>
                                 </select>
                             </div>
                         </div>
@@ -92,7 +92,7 @@
                             <div class="creator-table-col-2">
                                 <div class="creator-table-box">
                                     <div class="creator-table-text">Account Status</div>
-                                    <div class="creator-table-value">@if ($data->status) Active @else Pending @endif</div>
+                                    <div class="creator-table-value">@if ($data->status==1) Active @elseif($data->status == 2) In-Active @endif</div>
                                 </div>
                             </div>
 
@@ -105,6 +105,9 @@
                             </div>
                         </div>
                     @endforeach
+                    <div class="pmu-table-pagination">
+                        {{$users->appends(Request::except('page'))->links('pagination::bootstrap-4')}}
+                    </div>
                 @endif
             </div>
         </div>

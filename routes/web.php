@@ -110,7 +110,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
         Route::get('/admin/students', 'HomeController@students')->name('Home.students');
         Route::get('/admin/student-details/{id}', 'HomeController@studentDetails')->name('Home.student.details');
-        Route::get('/admin/progress-report/{courseId}/{id}', 'HomeController@progressReport')->name('Home.progress.report');
+        Route::get('/admin/completion-status/{courseId}/{id}', 'HomeController@progressReport')->name('Home.progress.report');
         Route::get('/admin/students-result/{id}', 'HomeController@studentResult')->name('Home.student.result');
     });
 
@@ -209,7 +209,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
         Route::get('/super-admin/clear-notification', 'SuperAdminController@clearNotification')->name('SA.clear.notification');
 
-        Route::get('/super-admin/progress-report/{courseId}/{id}', 'SuperAdminController@progressReport')->name('SA.progress.report');
+        Route::get('/super-admin/completion-status/{courseId}/{id}', 'SuperAdminController@progressReport')->name('SA.progress.report');
 
         Route::get('/super-admin/product-orders', 'SuperAdminController@product_orders')->name('SA.Product.Orders');
         Route::get('/super-admin/product-orders-details/{id}', 'SuperAdminController@product_order_details')->name('SA.Product.order.details');

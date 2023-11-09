@@ -185,9 +185,15 @@
                   @endforelse
 
                   <tr>
-                    <td colspan="5" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Total
+                    <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Tax
                     </td>
-                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;"> ${{ $amount ?? 0 }}
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;"> ${{ $order->taxes ?? 0 }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Total
+                    </td>
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;"> ${{ $amount + $order->taxes ?? 0 }}
                     </td>
                   </tr>
 

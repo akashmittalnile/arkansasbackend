@@ -206,10 +206,12 @@
                                     <h1>Rating & Review</h1>
                                     @if(count($review) != 0)
                                     <div class="pmu-comment-rating"><img src="{!! url('assets/superadmin-images/star.svg')!!}"> {{ number_format($reviewAvg, 1) }}</div>
+                                    @else
+                                    <div class="pmu-comment-rating"><img src="{{ asset('assets/superadmin-images/star.svg') }}"> 0.0</div>
                                     @endif
                                 </div>
                                 <div class="pmu-comment-head-action">
-                                    <a class="addcomment-btn"><i class="las la-plus"></i> See More Reviews</a>
+                                    <!-- <a class="addcomment-btn"><i class="las la-plus"></i> See More Reviews</a> -->
                                 </div>
                             </div>
 

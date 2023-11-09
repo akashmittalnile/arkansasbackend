@@ -76,9 +76,10 @@ class SuperAdminController extends Controller
             $movies =Tag::select("id", "tag_name")
             		->where('tag_name', 'LIKE', "%$search%")
                     ->where('type', '1')
+                    ->where('status', 1)
             		->get();
         }else{
-            $movies =Tag::select("id", "tag_name")->where('type', '1')->get();
+            $movies =Tag::select("id", "tag_name")->where('status', 1)->where('type', '1')->get();
         }
         return response()->json($movies);
     }
@@ -429,10 +430,11 @@ class SuperAdminController extends Controller
     public function content_creators(Request $request) 
     {
         try {
-            $users = User::where('status',1)->where('role',2);
+            $users = User::where('role',2);
             if($request->filled('name')) $users->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
             if($request->filled('status')) $users->where('status', $request->status);
-            $users = $users->orderBy('id','DESC')->get();
+            else $users->whereIn('status', [1,2]);
+            $users = $users->orderBy('id','DESC')->paginate(10);
         return view('super-admin.content-creators',compact('users'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -511,7 +513,7 @@ class SuperAdminController extends Controller
         $id = encrypt_decrypt('decrypt', $id);
         $course = Course::where('id', $id)->first();
         $course->tags = unserialize($course->tags);
-        $tags = Tag::where('type', 1)->get();
+        $tags = Tag::where('status', 1)->where('type', 1)->get();
         $combined = array();
         foreach ($tags as $arr) {
             $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
@@ -588,7 +590,7 @@ class SuperAdminController extends Controller
         $id = encrypt_decrypt('decrypt', $id);
         $course = Course::where('id', $id)->first();
         $course->tags = unserialize($course->tags);
-        $tags = Tag::all();
+        $tags = Tag::where('status', 1)->where('type', 1)->get();
         $combined = array();
         foreach ($tags as $arr) {
             $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
@@ -1024,7 +1026,7 @@ class SuperAdminController extends Controller
             if($request->filled('status')) $course->where('uc.status', $request->status);
             if($request->filled('title')) $course->where('c.title', 'like', '%' . $request->title . '%');
             if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
-            $course = $course->where('uc.user_id', $user_id)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = c.id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND product_id = c.id) as order_id"))->orderByDesc('uc.id')->paginate(3);
+            $course = $course->where('uc.user_id', $user_id)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = c.id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND product_id = c.id AND product_type = 1) as order_id"))->orderByDesc('uc.id')->paginate(3);
 
         return view('super-admin.student-detail',compact('data', 'course', 'id'));
         } catch (\Exception $e) {
@@ -1056,7 +1058,6 @@ class SuperAdminController extends Controller
     public function downloadEarnings(Request $request) 
     {
         try {
-            $walletBalance = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
             $orders = Order::join('users as u', 'u.id', '=', 'orders.user_id');
             if($request->filled('name')){
                 $orders->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
@@ -1067,8 +1068,7 @@ class SuperAdminController extends Controller
             if($request->filled('order_date')){
                 $orders->whereDate('orders.created_date', date('Y-m-d', strtotime($request->order_date)));
             }
-            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->paginate(10);
-
+            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->orderByDesc('orders.id')->get();
             return $this->downloadEarningExcelFile($orders);
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1093,9 +1093,9 @@ class SuperAdminController extends Controller
                     $row->order_number,
                     date('d M, Y H:iA', strtotime($row->created_date)),
                     'STRIPE',
-                    number_format((float)$row->admin_amount, 2),
-                    number_format((float)$row->total_amount_paid, 2),
-                    ($row->status == 1) ? "Active" : "Pending"
+                    '$'.number_format((float)$row->admin_amount, 2),
+                    '$'.number_format((float)$row->total_amount_paid, 2),
+                    ($row->status == 1) ? "Paid" : "Payment Pending"
                 ];
 
                 fputcsv($output, $final);
@@ -1220,7 +1220,6 @@ class SuperAdminController extends Controller
             if($request->filled('name')) $courses->where('title', 'like', '%'.$request->name.'%');
             if($request->filled('date')) $courses->whereDate('title', $request->date);
             $courses = $courses->orderBy('id','DESC')->get();
-            $user = User::where('id', $id)->first();
 
             $payment = WalletHistory::join('wallet_balance as wb', 'wb.id', '=', 'wallet_history.wallet_id')->where('owner_id', $user->id)->where('owner_type', $user->role)->select('wb.id')->first();
             $amount = 0;
@@ -1403,7 +1402,7 @@ class SuperAdminController extends Controller
         $cover = ProductAttibutes::where('product_id', $id)->where('attribute_code', 'cover_image')->first();
 
         $pro->tags = unserialize($pro->tags);
-        $tags = Tag::all();
+        $tags = Tag::where('status', 1)->where('type', 2)->get();
         $combined = array();
 
         foreach ($tags as $arr) {
@@ -1474,7 +1473,7 @@ class SuperAdminController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             $product = Product::where('id', $id)->first();
             $product->tags = unserialize($product->tags);
-            $tags = Tag::where('type', 2)->get();
+            $tags = Tag::where('status', 1)->where('type', 2)->get();
             $combined = array();
             foreach($tags as $arr) {
                 $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
@@ -2029,7 +2028,7 @@ class SuperAdminController extends Controller
     public function downloadInvoice(Request $request, $id) {
         try{    
             $id = encrypt_decrypt('decrypt', $id);
-            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status')->first();
+            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes')->first();
 
             $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'cover_image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
 
@@ -2062,7 +2061,7 @@ class SuperAdminController extends Controller
 
             $course = Course::where('id', $courseId)->first();
             $course->tags = unserialize($course->tags);
-            $tags = Tag::all();
+            $tags = Tag::where('status', 1)->where('type', 2)->get();
             $combined = array();
             foreach ($tags as $arr) {
                 $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);

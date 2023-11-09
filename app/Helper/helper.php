@@ -147,7 +147,7 @@ use Mockery\Undefined;
     if (!function_exists('getTags')) {
         function getTags($type, $id = null, $status = null)
         {
-            $query = Tag::where('type', $type);
+            $query = Tag::where('type', $type)->where('status', 1);
             if(isset($id)){
                 $query->where('id', $id);
             }
