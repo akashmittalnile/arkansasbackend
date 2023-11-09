@@ -25,7 +25,7 @@
         <div class="container">
             <div class="auth-form-card">
                 <div class="auth-form">
-                    <h2>Login as Creator</h2>
+                    <h2>Login as Arkansas</h2>
                     <p>Please Login with your registered Email & Created Password!</p>
                     @include('layouts.partials.messages')
                     <div class="row">

@@ -40,7 +40,7 @@
                                                                 </div>
                                                                 <div class="pt-1">
                                                                     <p class="chat-name fw-bold mb-0" style="color: #E0B220;">{{ $user->first_name ?? "NA" }} {{ $user->last_name }}</p>
-                                                                    <p class="small text-muted">Hello, Admin</p>
+                                                                    <p class="small text-muted">Hello, Arkansas</p>
                                                                 </div>
                                                             </div>
                                                             <div class="pt-1">

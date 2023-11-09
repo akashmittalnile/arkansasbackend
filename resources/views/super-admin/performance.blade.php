@@ -166,6 +166,9 @@
                                 <td>${{ number_format((float)$val->amount, 2) }}</td>
                             </tr>
                             @empty
+                            <tr class="text-center">
+                                <td colspan="8">No record found</td>
+                            </tr>
                             @endforelse
 
                         </tbody>

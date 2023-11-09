@@ -102,5 +102,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('shipping-address', [CartController::class, "shipping_address"]);
     Route::post('remove-cart', [CartController::class, "remove_cart"]);
     Route::post('choose-shipping', [CartController::class, "choose_shipping"]);
+    Route::post('coupon-applied', [CartController::class, "coupon_applied"]);
 
 });

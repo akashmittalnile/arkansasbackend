@@ -13,7 +13,6 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\File;
-
 use DB;
 
 class CartController extends Controller
@@ -75,10 +74,10 @@ class CartController extends Controller
         $data['shippingId'] = 0;
         $data['shippingPrice'] = 0;
         $data['shippingTitle'] = 'Shipping';
-        $data['isCouponApplied'] = false;
-        $data['appliedCouponCode'] = NULL;
-        $data['appliedCouponPrice'] = 0;
-        $data['couponId'] = 0;
+        $data['isCouponApplied'] = null;
+        $data['appliedCouponCode'] = null;
+        $data['appliedCouponPrice'] = null;
+        $data['couponId'] = null;
         $data['paymentMethod'] = "STRIPE";
         $data['addedDate'] = date('Y-m-d H:i:s');
 
@@ -124,10 +123,10 @@ class CartController extends Controller
         $data['shippingId'] = 0;
         $data['shippingPrice'] = 0;
         $data['shippingTitle'] = 'Shipping';
-        $data['isCouponApplied'] = false;
-        $data['appliedCouponCode'] = NULL;
-        $data['appliedCouponPrice'] = 0;
-        $data['couponId'] = 0;
+        $data['isCouponApplied'] = null;
+        $data['appliedCouponCode'] = null;
+        $data['appliedCouponPrice'] = null;
+        $data['couponId'] = null;
         $data['paymentMethod'] = "STRIPE";
         $data['addedDate'] = date('Y-m-d H:i:s');
 

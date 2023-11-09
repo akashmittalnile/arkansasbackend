@@ -7,7 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 
 class TempData extends Model
 {
+    
     use HasFactory;
     protected $table = 'temp_data';
     protected $primaryKey = 'id ';
+
 }

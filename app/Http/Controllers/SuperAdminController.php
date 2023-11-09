@@ -103,7 +103,7 @@ class SuperAdminController extends Controller
             for ($i = 0; $i < 12; $i++) {
                 if(in_array( $i+1, $xw )){
                     $indx = array_search($i+1, $xw);
-                    $walletArr[$i]['y'] = $yw[$indx];
+                    $walletArr[$i]['y'] = number_format($yw[$indx], 2, '.', '');
                 }else
                     $walletArr[$i]['y'] = 0;
                 $walletArr[$i]['x'] = $month[($i+1) - 1];
@@ -132,14 +132,14 @@ class SuperAdminController extends Controller
                 )->whereMonth('opd.created_date', date('m'))->whereYear('opd.created_date', date('Y'))->groupBy('x')->orderByDesc('x')->get()->toArray(); 
             $over_graph = [];
             $days = get_days_in_month(date('m'), date('Y'));
-            $x = collect($over_graph_data)->pluck('x')->toArray();
-            $y = collect($over_graph_data)->pluck('y')->toArray();
+            $xo = collect($over_graph_data)->pluck('x')->toArray();
+            $yo = collect($over_graph_data)->pluck('y')->toArray();
             for($i=1; $i<=$days; $i++){
-                if(in_array( $i, $x )){
-                    $indx = array_search($i, $x);
-                    // dd($x[$indx]);
+                if(in_array( $i, $xo )){
+                    $indx = array_search($i, $xo);
+                    // dd($xo[$indx]);
                     $over_graph[$i-1]['x'] = (string) $i;
-                    $over_graph[$i-1]['y'] = $y[$indx];
+                    $over_graph[$i-1]['y'] = number_format($yo[$indx], 2, '.', '');
                 }else{
                     $over_graph[$i-1]['x'] = (string) $i;
                     $over_graph[$i-1]['y'] = 0;
@@ -159,7 +159,7 @@ class SuperAdminController extends Controller
                     $indx = array_search($i, $creator_x);
                     // dd($x[$indx]);
                     $creator_over_graph[$i-1]['x'] = (string) $i;
-                    $creator_over_graph[$i-1]['y'] = $creator_y[$indx];
+                    $creator_over_graph[$i-1]['y'] = number_format($creator_y[$indx], 2, '.', '');
                 }else{
                     $creator_over_graph[$i-1]['x'] = (string) $i;
                     $creator_over_graph[$i-1]['y'] = 0;
@@ -342,7 +342,7 @@ class SuperAdminController extends Controller
                     $indx = array_search($i, $x);
                     // dd($x[$indx]);
                     $over_graph[$i-1]['x'] = (string) $i;
-                    $over_graph[$i-1]['y'] = $y[$indx];
+                    $over_graph[$i-1]['y'] = number_format($y[$indx], 2, '.', '');
                 }else{
                     $over_graph[$i-1]['x'] = (string) $i;
                     $over_graph[$i-1]['y'] = 0;
@@ -368,7 +368,7 @@ class SuperAdminController extends Controller
                     $indx = array_search($i, $creator_x);
                     // dd($x[$indx]);
                     $creator_over_graph[$i-1]['x'] = (string) $i;
-                    $creator_over_graph[$i-1]['y'] = $creator_y[$indx];
+                    $creator_over_graph[$i-1]['y'] = number_format($creator_y[$indx], 2, '.', '');
                 }else{
                     $creator_over_graph[$i-1]['x'] = (string) $i;
                     $creator_over_graph[$i-1]['y'] = 0;
@@ -414,7 +414,7 @@ class SuperAdminController extends Controller
                     $indx = array_search($i, $product_x);
                     // dd($x[$indx]);
                     $product_graph[$i-1]['x'] = (string) $i;
-                    $product_graph[$i-1]['y'] = $product_y[$indx];
+                    $product_graph[$i-1]['y'] = number_format($product_y[$indx], 2, '.', '');
                 }else{
                     $product_graph[$i-1]['x'] = (string) $i;
                     $product_graph[$i-1]['y'] = 0;

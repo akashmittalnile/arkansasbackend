@@ -300,22 +300,14 @@
                 <div class="modal-body">
                     <div class="becomeacreator-form-info">
                         <h2>Mark as Active</h2>
-                        <p>Are you sure mark as Active Again for "{{ ucfirst($user->first_name)}} {{ ucfirst($user->last_name)}}" Once mark as active creator will have access to
-                            his account until and unless revert action has been taken again!</p>
+                        <p>Are you sure to mark "{{ ucfirst($user->first_name)}} {{ ucfirst($user->last_name)}}" as an @if($user->status == 1) active @elseif($user->status == 2) inactive @endif content creator his all courses will not be displayed to the users.</p>
                         <div class="becomeacreator-btn-action">
                             @if ($user->status == 1)
                                 <a href="{{ url('super-admin/inactive/'.encrypt_decrypt('encrypt',$user->id))}}" class="save-btn">Yes! Inactive</a>
-                            @else
+                            @elseif ($user->status == 2)
                                 <a href="{{ url('super-admin/inactive/'.encrypt_decrypt('encrypt',$user->id))}}" class="save-btn">Yes! Active</a>
                             @endif
-
-                            @if ($user->status == 1)
-                                <a href="#" class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">No! Keep it Active</a>
-                            @else
-                                <a href="#" class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">No! Keep it Inactive</a>
-                            @endif
-
-                            
+                            <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                             
                         </div>
                     </div>
@@ -453,7 +445,7 @@
                                         
                                         <input type="hidden" name="admin_id" value="{{ $user->id }}" />
                                         <input type="number" min="1" step="0.1" max="100" class="form-control" name="course_fee" placeholder="Custom %" value="{{$user->admin_cut}}" required>
-                                        <div class="note">On every Course Purchases Creator will get the % revenue Cut</div>
+                                        <div class="note">On every Course Purchases Arkansas will get the % revenue Cut</div>
                                     </div>
                                 </div>
                                 <div class="col-md-12">
