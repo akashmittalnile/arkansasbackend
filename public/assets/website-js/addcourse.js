@@ -361,6 +361,7 @@ $(document).ready(function () {
         type_arr.push(div_type);
         $('#type_mode').val(div_type);
         if(div_type == "" || div_type == null){
+            toastr.error('Please select any questionnaire type!');
             return;
         }
         $('.survey-btn').removeClass('d-none');

@@ -129,7 +129,7 @@
                                                     <label for="disclaimers_introduction">
                                                         <div class="signature-text">
                                                             <span id="disclaimers_introduction_nam">
-                                                                <video width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume src="{!! url('upload/disclaimers-introduction/'.$course->introduction_image) !!}" id="vid-prev-tag"></video><small id="video-small-line">Click here to Change video</small>
+                                                                <video width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume src="{!! url('upload/disclaimers-introduction/'.$course->introduction_image) !!}" id="vid-prev-tag"></video><small id="video-small-line" style="position: absolute; top: 83%; right: 56%">Click here to Change video</small>
                                                             </span>
                                                         </div>
                                                     </label>

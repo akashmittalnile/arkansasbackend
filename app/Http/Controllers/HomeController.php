@@ -191,7 +191,7 @@ class HomeController extends Controller
                 $indx = array_search($i, $x);
                 // dd($x[$indx]);
                 $over_graph[$i-1]['x'] = (string) $i;
-                $over_graph[$i-1]['y'] = $y[$indx];
+                $over_graph[$i-1]['y'] = number_format($y[$indx], 2, '.', '');
             }else{
                 $over_graph[$i-1]['x'] = (string) $i;
                 $over_graph[$i-1]['y'] = 0;
@@ -223,14 +223,14 @@ class HomeController extends Controller
             
         $course_graph = [];
         $daysC = get_days_in_month(date('m',strtotime($course_month)), date('Y',strtotime($course_month)));
-        $x = collect($course_graph_data)->pluck('x')->toArray();
-        $y = collect($course_graph_data)->pluck('y')->toArray();
+        $xc = collect($course_graph_data)->pluck('x')->toArray();
+        $yc = collect($course_graph_data)->pluck('y')->toArray();
         for($i=1; $i<=$daysC; $i++){
-            if(in_array( $i, $x )){
-                $indx = array_search($i, $x);
-                // dd($x[$indx]);
+            if(in_array( $i, $xc )){
+                $indx = array_search($i, $xc);
+                // dd($xc[$indx]);
                 $course_graph[$i-1]['x'] = (string) $i;
-                $course_graph[$i-1]['y'] = $y[$indx];
+                $course_graph[$i-1]['y'] = number_format($yc[$indx], 2, '.', '');
             }else{
                 $course_graph[$i-1]['x'] = (string) $i;
                 $course_graph[$i-1]['y'] = 0;
