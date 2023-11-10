@@ -162,6 +162,7 @@
                 $("#certificates_name").text(geekss);
             });
             $(".select2-container .selection .select2-selection .select2-search__field").addClass('form-control');
+            $(".select2-search__field.form-control").css('border', 'none');
         });
         $('.livesearch').select2({
             placeholder: 'Select tags',

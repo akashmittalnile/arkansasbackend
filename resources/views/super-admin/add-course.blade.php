@@ -177,6 +177,7 @@
     <!-- Include jQuery Validation -->
     <script>
         $(document).ready(function() {
+            $(".select2-search__field.form-control").css('border', 'none');
 
             $.validator.addMethod('filesize', function (value, element, param) {
                 return this.optional(element) || (element.files[0].size <= param * 1000000)
