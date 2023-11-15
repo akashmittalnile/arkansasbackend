@@ -101,7 +101,7 @@ class AdminLoginController extends Controller
                 $data['view'] = 'super-admin.otp';
                 $data['otp'] = $code;
                 $data['customer_name'] = $user->first_name ?? 'NA' + ' ' + $user->last_name ?? '';
-                $data['to_email'] = 'dishant.gupta.58@gmail.com';
+                $data['to_email'] = $user->email ?? 'NA';
                 sendEmail($data);
 
                 User::where('email', $request->email)->where('status', 1)->where('role', 3)->update([
