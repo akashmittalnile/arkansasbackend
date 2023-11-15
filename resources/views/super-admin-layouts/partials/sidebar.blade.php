@@ -52,18 +52,21 @@
                         <span class="menu-title">Manage Category</span>
                     </a>
                 </li>
+
                 <li class="nav-item @if ($currentURL == 'SA.TagListing') active @endif">
                     <a class="nav-link" href="{{ route('SA.TagListing') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/book.svg') !!}"></span>
                         <span class="menu-title">Manage Tags</span>
                     </a>
                 </li>
+
                 <li class="nav-item @if ($currentURL == 'SA.Products' || $currentURL =='SA.AddProduct' || $currentURL == 'SA.Edit.Products' || $currentURL == 'SA.Coupons' || $currentURL == 'SA.Product.View.Details') active @endif">
                     <a class="nav-link" href="{{ route('SA.Products') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/products.svg') !!}"></span>
                         <span class="menu-title">Manage Products</span>
                     </a>
                 </li>
+
                 <li class="nav-item @if ($currentURL == 'SA.Product.Orders' || $currentURL == 'SA.Product.order.details') active @endif">
                     <a class="nav-link" href="{{ route('SA.Product.Orders') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/products.svg') !!}"></span>
@@ -71,19 +74,27 @@
                     </a>
                 </li>
 
-
                 <li class="nav-item @if ($currentURL == 'SA.Notifications' || $currentURL == 'SA.Create.Notifications') active @endif">
                     <a class="nav-link" href="{{ route('SA.Notifications') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/notification1.svg') !!}"></span>
                         <span class="menu-title">Manage Notifications</span>
                     </a>
                 </li>
+
                 <li class="nav-item @if ($currentURL == 'SA.Performance') active @endif">
                     <a class="nav-link" href="{{ route('SA.Performance') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/chart.svg') !!}"></span>
                         <span class="menu-title">Performance</span>
                     </a>
                 </li>
+
+                <li class="nav-item @if ($currentURL == 'SA.Posts' || $currentURL == 'SA.Edit.Post' || $currentURL == 'SA.Create.Post') active @endif">
+                    <a class="nav-link" href="{{ route('SA.Posts') }}">
+                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/chart.svg') !!}"></span>
+                        <span class="menu-title">Pages</span>
+                    </a>
+                </li>
+
                 <li class="nav-item @if ($currentURL == 'SA.HelpSupport') active @endif">
                     <a class="nav-link" href="{{ route('SA.HelpSupport') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/help.svg') !!}"></span>

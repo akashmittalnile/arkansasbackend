@@ -229,6 +229,13 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/product-orders', 'SuperAdminController@product_orders')->name('SA.Product.Orders');
         Route::get('/super-admin/product-orders-details/{id}', 'SuperAdminController@product_order_details')->name('SA.Product.order.details');
 
+        Route::get('/super-admin/posts', 'SuperAdminController@posts')->name('SA.Posts');
+        Route::get('/super-admin/create-post', 'SuperAdminController@create_post')->name('SA.Create.Post');
+        Route::post('/super-admin/store-post', 'SuperAdminController@store_post')->name('SA.Submit.Post');
+        Route::get('/super-admin/delete-post/{id}', 'SuperAdminController@delete_post')->name('SA.Delete.Post');
+        Route::get('/super-admin/edit-post/{id}', 'SuperAdminController@edit_post')->name('SA.Edit.Post');
+        Route::post('/super-admin/update-post', 'SuperAdminController@update_post')->name('SA.Update.Post');
+
     });
     
 });

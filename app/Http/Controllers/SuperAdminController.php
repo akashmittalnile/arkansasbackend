@@ -19,6 +19,7 @@ use App\Models\NotificationCreator;
 use App\Models\Notify;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\Page;
 use App\Models\ProductAttibutes;
 use App\Models\Setting;
 use App\Models\UserChapterStatus;
@@ -2252,6 +2253,91 @@ class SuperAdminController extends Controller
             $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
 
             return view('super-admin.product-order-details')->with(compact('order', 'transaction'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function posts(Request $request){
+        try{
+            $pages = DB::table('pages');
+            if($request->filled('title')) $pages->where('title', 'like', '%'.$request->title.'%');
+            if($request->filled('status')) $pages->where('status', $request->status); 
+            $pages = $pages->paginate(10);
+            return view('super-admin.posts')->with(compact('pages'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function create_post(Request $request){
+        try{
+            return view('super-admin.create-post');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function store_post(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'title' => 'required',
+                'description' => 'required',
+                'status' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator->errors()->first())->withInput();
+            } else {
+                $page = new Page;
+                $page->title = $request->title ?? null;
+                $page->description = $request->description ?? null;
+                $page->status = $request->status ?? 0;
+                $page->save();
+                return redirect()->route('SA.Posts')->with('message', 'New post added successfully');
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function delete_post($id){
+        try{
+            $id = encrypt_decrypt('decrypt', $id);
+            Page::where('id', $id)->delete();
+            return redirect()->back()->with('message', 'Post deleted successfully.');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function edit_post($id){
+        try{
+            $id = encrypt_decrypt('decrypt', $id);
+            $data = Page::where('id', $id)->first();
+            return view('super-admin.edit-post')->with(compact('data'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function update_post(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'title' => 'required',
+                'description' => 'required',
+                'status' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator->errors()->first())->withInput();
+            } else {
+                $id = encrypt_decrypt('decrypt', $request->id);
+                Page::where('id', $id)->update([
+                    'title' => $request->title ?? null,
+                    'description' => $request->description ?? null,
+                    'status' => $request->status ?? 0,
+                ]);
+                return redirect()->route('SA.Posts')->with('message', 'Post updated successfully');
+            }
         } catch (\Exception $e) {
             return $e->getMessage();
         }
