@@ -92,7 +92,7 @@
                 </li>
                 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('logout.perform') }}">
+                    <a class="nav-link" href="{{ route('SA.logout.perform') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/logout.svg') !!}"></span>
                         <span class="menu-title">Logout</span>
                     </a>

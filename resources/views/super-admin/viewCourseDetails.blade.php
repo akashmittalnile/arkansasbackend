@@ -32,7 +32,7 @@
             <div class="row">
                 <div class="col-md-12">
                     <div class="pmu-course-details-item">
-                        <div class="pmu-course-details-media">
+                        <div class="pmu-course-details-media w-25">
                             <a data-fancybox data-type="iframe" data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0" href="javascript:;">
                                 <video width="300" height="210" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
                                     <source src="{{ url( 'upload/disclaimers-introduction/' . $course->introduction_image) }}" type="video/mp4">
@@ -41,7 +41,7 @@
                                 <!-- <div class="pmu-video-icon"><img src="{!! url('assets/superadmin-images/video.svg')!!}"></div> -->
                             </a>
                         </div>
-                        <div class="pmu-course-details-content">
+                        <div class="pmu-course-details-content w-75">
                             <div class="coursestatus"><img src="{!! url('assets/superadmin-images/tick.svg')!!}">
                                 @if ($course->status == 0)
                                     Unpublished

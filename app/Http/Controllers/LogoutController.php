@@ -13,16 +13,14 @@ class LogoutController extends Controller
      *
      * @return \Illuminate\Routing\Redirector
      */
-    public function perform()
+    public function superAdminLogout()
     {
-        Session::flush();
-        if (Auth::user()->role == 3) {
-            $url = 'super-admin/login';
-        } else {
-            $url = 'login';
-        }
-        
         Auth::logout();
-        return redirect($url);
+        return redirect()->route('SA.LoginShow');
+    }
+    public function contentCreatorLogout()
+    {
+        Auth::logout();
+        return redirect()->route('login');
     }
 }

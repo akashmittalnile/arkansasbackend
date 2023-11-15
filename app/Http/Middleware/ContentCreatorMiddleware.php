@@ -6,7 +6,7 @@ use Closure;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class SuperAdminMiddleware
+class ContentCreatorMiddleware
 {
     /**
      * Handle an incoming request.
@@ -19,14 +19,14 @@ class SuperAdminMiddleware
     {
         if(Auth::check())
         {
-            if(Auth::user()->role == 3){
+            if(Auth::user()->role == 2){
                 return $next($request);
             }else{
                 Auth::logout();
-                return redirect()->route('SA.LoginShow')->with('success','Access Denied! as you are not a Arkansas Admin');
+                return redirect()->route('login')->with('success', 'Access Denied! as you are not a Content Creator');
             }
         }else{
-            return redirect()->route('SA.LoginShow')->with('success','Please Login First');
+            return redirect()->route('login')->with('success','Please Login First');
         }
     }
 }

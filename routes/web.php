@@ -25,41 +25,55 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
     Route::post('/image-delete', 'SuperAdminController@destroy')->name('imageDelete');
     Route::get('/check_password', 'SuperAdminController@checkPassword')->name('checkPassword');
     
-    Route::group(['middleware' => ['guest']], function() {
-        /**
-         * Register Routes
-         */
-        Route::get('/register', 'RegisterController@show')->name('register.show');
-        Route::post('/register', 'RegisterController@register')->name('register.perform');
-        Route::get('/check_status', 'HomeController@check_status')->name('admin.check_status');
+    /**
+     * Register Routes
+     */
+    Route::get('/register', 'RegisterController@show')->name('register.show');
+    Route::post('/register', 'RegisterController@register')->name('register.perform');
+    Route::get('/check_status', 'HomeController@check_status')->name('admin.check_status');
+    Route::get('/check_email', 'HomeController@check_email')->name('admin.check_email');
 
 
-        /**
-         * Login Routes
-         */
-        Route::get('/super-admin/login', 'AdminLoginController@show')->name('SA.LoginShow');
-        Route::post('/super-admin/login', 'AdminLoginController@login')->name('SA.login.perform');
+    Route::get('/forgot_password', 'RegisterController@forgot_password')->name('admin.forgot.password');
+    Route::post('/forgot_password', 'RegisterController@forgot_password_email')->name('admin.forgot_password.email');
+    Route::get('/reset_password/{email}', 'RegisterController@reset_password')->name('admin.reset_password');
+    Route::post('/reset_password', 'RegisterController@reset_password_otp')->name('admin.reset_password.otp');
+    Route::get('/change_password/{email}', 'RegisterController@change_password')->name('admin.change_password');
+    Route::post('/change_password', 'RegisterController@change_password_update')->name('admin.change_password_update');
 
-        Route::get('/login', 'LoginController@show')->name('login');
-        Route::post('/login', 'LoginController@login')->name('login.perform');
+    Route::get('/super-admin/forgot_password', 'AdminLoginController@forgot_password')->name('SA.forgot.password');
+    Route::post('/super-admin/forgot_password', 'AdminLoginController@forgot_password_email')->name('SA.forgot_password.email');
+    Route::get('/super-admin/reset_password/{email}', 'AdminLoginController@reset_password')->name('SA.reset_password');
+    Route::post('/super-admin/reset_password', 'AdminLoginController@reset_password_otp')->name('SA.reset_password.otp');
+    Route::get('/super-admin/change_password/{email}', 'AdminLoginController@change_password')->name('SA.change_password');
+    Route::post('/super-admin/change_password', 'AdminLoginController@change_password_update')->name('SA.change_password_update');
 
-        Route::get('/clear', function () {
-            $exitCode = Artisan::call('cache:clear');
-            $exitCode = Artisan::call('config:clear');
-            $exitCode = Artisan::call('config:cache');
-            $exitCode = Artisan::call('view:clear');
-            $exitCode = Artisan::call('optimize:clear');
-            $exitCode = Artisan::call('route:clear');
-            return '<center>Cache clear</center>';
-        });
 
+    /**
+     * Login Routes
+     */
+    Route::get('/super-admin/login', 'AdminLoginController@show')->name('SA.LoginShow');
+    Route::post('/super-admin/login', 'AdminLoginController@login')->name('SA.login.perform');
+
+    Route::get('/login', 'LoginController@show')->name('login');
+    Route::post('/login', 'LoginController@login')->name('login.perform');
+
+    Route::get('/clear', function () {
+        $exitCode = Artisan::call('cache:clear');
+        $exitCode = Artisan::call('config:clear');
+        $exitCode = Artisan::call('config:cache');
+        $exitCode = Artisan::call('view:clear');
+        $exitCode = Artisan::call('optimize:clear');
+        $exitCode = Artisan::call('route:clear');
+        return '<center>Cache clear</center>';
     });
 
-    Route::group(['middleware' => ['auth']], function() {
+
+    Route::group(['middleware' => ['isContentCreator']], function() {
         /**
          * Logout Routes
          */
-        Route::get('/logout', 'LogoutController@perform')->name('logout.perform');
+        Route::get('/admin/logout', 'LogoutController@contentCreatorLogout')->name('logout.perform');
         Route::get('/', 'HomeController@index')->name('home.index');
         Route::get('/my-account', 'HomeController@myAccount')->name('Home.my.account');
         Route::post('/my-data', 'HomeController@storeMyData')->name('Home.store.mydata');
@@ -114,7 +128,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/admin/students-result/{id}', 'HomeController@studentResult')->name('Home.student.result');
     });
 
-    Route::group(['middleware' => ['auth.superadmin']], function() {
+    Route::group(['middleware' => ['isSuperAdmin']], function() {
+        Route::get('/super-admin/logout', 'LogoutController@superAdminLogout')->name('SA.logout.perform');
         Route::get('/super-admin/dashboard', 'SuperAdminController@dashboard')->name('SA.Dashboard');
         Route::get('/super-admin/my-account', 'SuperAdminController@myAccount')->name('SA.My.Account');
         Route::post('/super-admin/my-data', 'SuperAdminController@storeMyData')->name('SA.Store.Mydata');

@@ -4,12 +4,14 @@ $('.edit-question-first').on('click', function () {
     var question_param = $(this).attr("data-param");
     let selector = '.' + question_param + question_id;
     var question = $(selector).val();
+    var marks = $(selector+'_marks').val();
     $.ajax({
         url: arkansasUrl + '/admin/update_question_list',
         method: 'GET',
         data: {
             question_id: question_id,
-            question: question
+            question: question,
+            marks: marks
         },
         dataType: 'json',
         headers: {

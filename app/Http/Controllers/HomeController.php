@@ -47,6 +47,20 @@ class HomeController extends Controller
         return $status;
     }
 
+    public function check_email(Request $request){
+        try{
+            $email = User::where('email', $request->email)->first();
+            if(isset($email->id))
+            {
+                echo json_encode('This Email Address is already exist.');
+            }else{
+                echo json_encode(true);
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     public function myAccount() 
     {
         try {
@@ -767,7 +781,8 @@ class HomeController extends Controller
         try {
             ChapterQuiz::where('id',$request['question_id'])->update([
                 'title' => $request['question'],
-                    ]);
+                'marks' => $request['marks'] ?? 0,
+            ]);
             return 1;
         } catch (\Exception $e) {
             return $e->getMessage();

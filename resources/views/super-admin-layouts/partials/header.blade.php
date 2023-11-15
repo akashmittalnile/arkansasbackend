@@ -68,7 +68,7 @@
                         <a href="{{ route('SA.My.Account') }}" class="dropdown-item">
                             <i class="las la-user"></i> Profile
                         </a>
-                        <a href="{{ route('logout.perform') }}" class="dropdown-item">
+                        <a href="{{ route('SA.logout.perform') }}" class="dropdown-item">
                            <i class="las la-sign-out-alt"></i> Logout
                         </a>
                     </div>

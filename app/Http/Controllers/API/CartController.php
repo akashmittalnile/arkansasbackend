@@ -145,6 +145,7 @@ class CartController extends Controller
     public function cart_list()
     {
         try {
+            return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
             $tax = Setting::where('attribute_code', 'tax')->first();
             $qty = 0;
@@ -185,6 +186,7 @@ class CartController extends Controller
     public function update_product_quantity(Request $request)
     {
         try {
+            return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required',
                 'quantity' => 'required'
@@ -229,6 +231,7 @@ class CartController extends Controller
     public function shipping_address(Request $request)
     {
         try {
+            return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $validator = Validator::make($request->all(), [
                 'address_id' => 'required'
             ]);
@@ -262,6 +265,7 @@ class CartController extends Controller
     public function remove_cart(Request $request)
     {
         try {
+            return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required',
             ]);
@@ -304,6 +308,7 @@ class CartController extends Controller
     public function choose_shipping(Request $request)
     {
         try {
+            return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
             $tax = Setting::where('attribute_code', 'tax')->first();
             $qty = 0;

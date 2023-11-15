@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 
 class LoginController extends Controller
@@ -15,7 +16,16 @@ class LoginController extends Controller
      */
     public function show()
     {
-        return view('auth.login');
+        if(Auth::check())
+        {
+            if(Auth::user()->role == 2){
+                return redirect()->route('home.index');
+            }else{
+                Auth::logout();
+            }
+        } else {
+            return view('auth.login');
+        }
     }
 
     /**
@@ -27,16 +37,24 @@ class LoginController extends Controller
      */
     public function login(LoginRequest $request)
     {
-        $credentials = $request->getCredentials();
-        if(!Auth::validate($credentials)):
-            return redirect()->to('login')
-                ->withErrors(trans('auth.failed'));
-        endif;
-
-        $user = Auth::getProvider()->retrieveByCredentials($credentials);
-        Auth::login($user);
-
-        return $this->authenticated($request, $user);
+        try{
+            $this->validate($request, [
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+            $user = User::where('email', $request->email)->where('status', 1)->first();
+            // dd($request->all());
+            if (isset($user->id) && $user->role == 2) {
+                if (auth()->attempt(['email' => $request->email, 'password' => $request->password])) {
+                    $user = auth()->user()->role;
+                    if ($user == 2) {
+                        return redirect()->route('home.index');
+                    } else return redirect()->back()->withInput()->with('success', 'These credentials do not match our records.');
+                }else return redirect()->back()->withInput()->with('success', 'These credentials do not match our records.');
+            } else return redirect()->back()->withInput()->with('success', 'These credentials do not match our records.');
+        } catch (\Exception $e) {
+            return errorMsg('Exception => ' . $e->getMessage());
+        }
     }
 
     /**
