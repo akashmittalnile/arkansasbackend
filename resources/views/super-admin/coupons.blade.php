@@ -110,7 +110,7 @@
                     <h2>Add Coupon</h2>
                     <form action="{{ route('SA.Store.Coupon') }}" method="POST" id="addCoupon">@csrf
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Coupon Code <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" placeholder="Coupon Code" id="code" name="code">
@@ -125,6 +125,13 @@
                                         <option value="1">Flat</option>
                                         <option value="2">Percentage</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="">Minumum Order Amount <span class="text-danger">*</span></label>
+                                    <input type="number" min="0.1" step="0.1" class="form-control" placeholder="Minumum Order Amount" name="min_amount">
                                 </div>
                             </div>
 
@@ -183,7 +190,7 @@
                     <h2>Edit Coupon</h2>
                     <form action="{{ route('SA.Update.Coupon') }}" method="POST" id="editCouponForm">@csrf
                         <div class="row">
-                            <div class="col-md-12">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Coupon Code <span class="text-danger">*</span></label>
                                     <input type="text" class="form-control" placeholder="Coupon Code" id="codeEdit" name="code">
@@ -199,6 +206,13 @@
                                         <option value="1">Flat</option>
                                         <option value="2">Percentage</option>
                                     </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="">Minumum Order Amount <span class="text-danger">*</span></label>
+                                    <input type="number" min="0.1" step="0.1" id="minAmountEdit" class="form-control" placeholder="Minumum Order Amount" name="min_amount">
                                 </div>
                             </div>
 
@@ -267,6 +281,7 @@
                         $("input[name='id']").val(id);
                         $("#codeEdit").val(data.data.coupon_code);
                         $("#typeEdit").val(data.data.coupon_discount_type);
+                        $("#minAmountEdit").val(data.data.min_order_amount);
                         $("#amountEdit").val(data.data.coupon_discount_amount);
                         $("#dateEdit").val(data.data.coupon_expiry_date);
                         $("#descEdit").val(data.data.description);
@@ -305,6 +320,9 @@
                 amount: {
                     required: true,
                 },
+                min_amount: {
+                    required: true,
+                },
                 date: {
                     required: true,
                 },
@@ -321,6 +339,9 @@
                 },
                 amount: {
                     required: 'Please enter coupon discount value',
+                },
+                min_amount: {
+                    required: 'Please enter minimum order amount',
                 },
                 date: {
                     required: 'Please enter coupon valid upto date',
@@ -368,6 +389,9 @@
                 amount: {
                     required: true,
                 },
+                min_amount: {
+                    required: true,
+                },
                 date: {
                     required: true,
                 },
@@ -384,6 +408,9 @@
                 },
                 amount: {
                     required: 'Please enter coupon discount value',
+                },
+                min_amount: {
+                    required: 'Please enter minimum order amount',
                 },
                 date: {
                     required: 'Please enter coupon valid upto date',

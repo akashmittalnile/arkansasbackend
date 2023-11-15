@@ -2152,6 +2152,7 @@ class SuperAdminController extends Controller
                 'code' => 'required',
                 'type' => 'required',
                 'amount' => 'required',
+                'min_amount' => 'required',
                 'date' => 'required',
             ]);
             if ($validator->fails()) {
@@ -2162,6 +2163,7 @@ class SuperAdminController extends Controller
                 $coupon->object_type = $request->object_type ?? 2;
                 $coupon->coupon_expiry_date = $request->date;
                 $coupon->coupon_discount_type = $request->type;
+                $coupon->min_order_amount = $request->min_amount;
                 $coupon->coupon_discount_amount = $request->amount;
                 $coupon->description = $request->description ?? null;
                 $coupon->status = 1;
@@ -2192,6 +2194,7 @@ class SuperAdminController extends Controller
                 'code' => 'required',
                 'type' => 'required',
                 'amount' => 'required',
+                'min_amount' => 'required',
                 'date' => 'required',
             ]);
             if ($validator->fails()) {
@@ -2203,6 +2206,7 @@ class SuperAdminController extends Controller
                     'object_type' => $request->object_type ?? 2,
                     'coupon_expiry_date' => $request->date,
                     'coupon_discount_type' => $request->type,
+                    'min_order_amount' => $request->min_amount,
                     'coupon_discount_amount' => $request->amount,
                     'description' => $request->description ?? null,
                     'status' => 1

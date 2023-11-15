@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use Carbon\Carbon;
 use App\Models\Address;
+use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\ProductAttibutes;
 use App\Models\Setting;
@@ -20,7 +22,7 @@ class CartController extends Controller
     public function add_to_cart(Request $request)
     {
         try {
-            return response()->json(['status' => false, 'Message' => 'Api under progress']);
+            // return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $user_id = Auth::user()->id;
             if ($user_id) {
                 $validator = Validator::make($request->all(), [
@@ -62,7 +64,7 @@ class CartController extends Controller
     {
         $tax = Setting::where('attribute_code', 'tax')->first();
         $data['products'][0] = [
-            'qty' => 1, 'total_amount' => $product->price, 'regular_price' => $product->price, 'product_id' => $product->id, 'name' => $product->name, 'short_description' => $product->product_desc, 'sale_price' => $product->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $product->package_weight, 'package_weight_unit' => $product->package_weight_unit, 'package_length' => $product->package_length, 'package_length_unit' => $product->package_length_unit, 'package_width' => $product->package_width, 'package_width_unit' => $product->package_width_unit, 'package_height' => $product->package_height, 'package_height_unit' => $product->package_height_unit, 'content_creator_id' => $product->added_by, 'shippingId' => null, 'shippingPrice' => null, 'service_code' => null
+            'qty' => 1, 'total_amount' => $product->price, 'regular_price' => $product->price, 'product_id' => $product->id, 'name' => $product->name, 'short_description' => $product->product_desc, 'sale_price' => $product->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $product->package_weight, 'package_weight_unit' => $product->package_weight_unit, 'package_length' => $product->package_length, 'package_length_unit' => $product->package_length_unit, 'package_width' => $product->package_width, 'package_width_unit' => $product->package_width_unit, 'package_height' => $product->package_height, 'package_height_unit' => $product->package_height_unit, 'content_creator_id' => $product->added_by, 'shippingId' => null, 'shippingPrice' => 0, 'service_code' => null
         ];
         $data['totalQty'] = 1;
         $data['subTotal'] = $product->price;
@@ -71,12 +73,12 @@ class CartController extends Controller
         else $data['tax'] = 0;
         $data['totalPrice'] = $product->price + $data['tax'];
         $data['totalItem'] = 1;
-        $data['shippingId'] = 0;
+        $data['shippingId'] = null;
         $data['shippingPrice'] = 0;
         $data['shippingTitle'] = 'Shipping';
-        $data['isCouponApplied'] = null;
+        $data['isCouponApplied'] = 0;
         $data['appliedCouponCode'] = null;
-        $data['appliedCouponPrice'] = null;
+        $data['appliedCouponPrice'] = 0;
         $data['couponId'] = null;
         $data['paymentMethod'] = "STRIPE";
         $data['addedDate'] = date('Y-m-d H:i:s');
@@ -105,7 +107,7 @@ class CartController extends Controller
                     $price += $data['products'][$i]['total_amount'];
                 } else if (!$existingpro) {
                     $data['products'][$i] = [
-                        'qty' => 1, 'total_amount' => $product->price, 'regular_price' => $product->price, 'product_id' => $product->id, 'name' => $product->name, 'short_description' => $product->product_desc, 'sale_price' => $product->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $product->package_weight, 'package_weight_unit' => $product->package_weight_unit, 'package_length' => $product->package_length, 'package_length_unit' => $product->package_length_unit, 'package_width' => $product->package_width, 'package_width_unit' => $product->package_width_unit, 'package_height' => $product->package_height, 'package_height_unit' => $product->package_height_unit, 'content_creator_id' => $product->added_by, 'shippingId' => null, 'shippingPrice' => null, 'service_code' => null
+                        'qty' => 1, 'total_amount' => $product->price, 'regular_price' => $product->price, 'product_id' => $product->id, 'name' => $product->name, 'short_description' => $product->product_desc, 'sale_price' => $product->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $product->package_weight, 'package_weight_unit' => $product->package_weight_unit, 'package_length' => $product->package_length, 'package_length_unit' => $product->package_length_unit, 'package_width' => $product->package_width, 'package_width_unit' => $product->package_width_unit, 'package_height' => $product->package_height, 'package_height_unit' => $product->package_height_unit, 'content_creator_id' => $product->added_by, 'shippingId' => null, 'shippingPrice' => 0, 'service_code' => null
                     ];
                     $qty += $data['products'][$i]['qty'];
                     $price += $data['products'][$i]['total_amount'];
@@ -113,20 +115,28 @@ class CartController extends Controller
             }
         }
 
+        if($oldcart['isCouponApplied']){
+            $data['isCouponApplied'] = 1;
+            $data['appliedCouponPrice'] = $oldcart['appliedCouponPrice'];
+            $data['appliedCouponCode'] = $oldcart['appliedCouponCode'];
+            $data['couponId'] = $oldcart['couponId'];
+        }else{
+            $data['isCouponApplied'] = 0;
+            $data['appliedCouponPrice'] = 0;
+            $data['appliedCouponCode'] = null;
+            $data['couponId'] = null;
+        }
+
         $data['totalQty'] = $qty;
         $data['subTotal'] = $price;
         if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
             $data['tax'] = ($data['subTotal'] * $tax->attribute_value) / 100;
         else $data['tax'] = 0;
-        $data['totalPrice'] = $price + $data['tax'];
+        $data['totalPrice'] = $price + $data['tax'] - $data['appliedCouponPrice'];
         $data['totalItem'] = count($data['products']);
-        $data['shippingId'] = 0;
+        $data['shippingId'] = null;
         $data['shippingPrice'] = 0;
         $data['shippingTitle'] = 'Shipping';
-        $data['isCouponApplied'] = null;
-        $data['appliedCouponCode'] = null;
-        $data['appliedCouponPrice'] = null;
-        $data['couponId'] = null;
         $data['paymentMethod'] = "STRIPE";
         $data['addedDate'] = date('Y-m-d H:i:s');
 
@@ -145,7 +155,7 @@ class CartController extends Controller
     public function cart_list()
     {
         try {
-            return response()->json(['status' => false, 'Message' => 'Api under progress']);
+            // return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
             $tax = Setting::where('attribute_code', 'tax')->first();
             $qty = 0;
@@ -170,14 +180,17 @@ class CartController extends Controller
                 $res['subTotal'] = $old['subTotal'] = $price;
                 $res['totalQty'] = $old['totalQty'] = $qty;
                 $res['tax'] = $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
-                $res['totalPrice'] = $old['totalPrice'] = $old['subTotal'] + $old['tax'];
+                $res['totalPrice'] = $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'];
                 $res['totalItem'] = $old['totalItem'];
+                $res['isCouponApplied'] = $old['isCouponApplied'];
+                $res['couponCode'] = $old['appliedCouponCode'];
+                $res['couponPrice'] = $old['appliedCouponPrice'];
                 TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                     'data' => serialize($old)
                 ]);
                 $address = Address::where('user_id', auth()->user()->id)->get();
                 return response()->json(['status' => true, 'message' => 'Cart list', 'data' => $res, 'address' => $address]);
-            } else return response()->json(['status' => false, 'message' => 'No items found']);
+            } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -186,7 +199,7 @@ class CartController extends Controller
     public function update_product_quantity(Request $request)
     {
         try {
-            return response()->json(['status' => false, 'Message' => 'Api under progress']);
+            // return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required',
                 'quantity' => 'required'
@@ -214,14 +227,14 @@ class CartController extends Controller
                         if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
                             $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
                         else $old['tax'] = 0;
-                        $old['totalPrice'] = $old['subTotal'] + $old['tax'];
+                        $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'];
                         $old['totalItem'] = count($old['products']);
                     }
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($old)
                     ]);
                     return response()->json(['status' => true, 'message' => 'Quantity updated']);
-                } else return response()->json(['status' => false, 'message' => 'No items found']);
+                } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -231,7 +244,7 @@ class CartController extends Controller
     public function shipping_address(Request $request)
     {
         try {
-            return response()->json(['status' => false, 'Message' => 'Api under progress']);
+            // return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $validator = Validator::make($request->all(), [
                 'address_id' => 'required'
             ]);
@@ -254,7 +267,7 @@ class CartController extends Controller
                             'data' => serialize($data)
                         ]);
                         return response()->json(['status' => true, 'message' => 'Shipping address save successfully']);
-                    } else return response()->json(['status' => false, 'message' => 'No items found']);
+                    } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
                 } else return response()->json(['status' => false, 'message' => 'No address found']);
             }
         } catch (\Exception $e) {
@@ -265,7 +278,7 @@ class CartController extends Controller
     public function remove_cart(Request $request)
     {
         try {
-            return response()->json(['status' => false, 'Message' => 'Api under progress']);
+            // return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required',
             ]);
@@ -291,15 +304,103 @@ class CartController extends Controller
                         if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
                             $data['tax'] = ($data['subTotal'] * $tax->attribute_value) / 100;
                         else $data['tax'] = 0;
-                        $data['totalPrice'] = $data['subTotal'] + $data['tax'];
+                        $data['totalPrice'] = $data['subTotal'] + $data['tax'] - $data['appliedCouponPrice'];
                         $data['totalItem'] = count($data['products']);
                     }
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($data)
                     ]);
-                }
+                } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
                 return response()->json(['status' => true, 'message' => 'Item removed from cart.']);
             }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function get_coupons(Request $request){
+        try{
+            $now = Carbon::now();
+            $coupon = Coupon::where('status', 1)->where('coupon_expiry_date', '>', $now)->get();
+            $response = [];
+            foreach($coupon as $val){
+                $temp['id'] = $val->id;
+                $temp['code'] = $val->coupon_code;
+                $temp['expiry_date'] = date('d M Y', strtotime($val->coupon_expiry_date));
+                $temp['discount_type'] = $val->	coupon_discount_type;
+                $temp['discount_type_name'] = ($val->coupon_discount_type==1) ? 'Flat' : 'Percentage';
+                $temp['min_order'] = $val->min_order_amount;
+                $temp['discount_amount'] = $val->coupon_discount_amount;
+                $temp['description'] = $val->description;
+                $temp['created_at'] = date('d M Y, h:iA', strtotime($val->created_at));
+                $response[] = $temp;
+            }
+            if(count($coupon) == 0){
+                return response()->json(['status' => true, 'message' => 'No coupon found']);
+            }
+            return response()->json(['status' => true, 'message' => 'Coupons', 'data' => $response]);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function coupon_applied(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'code' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else {
+                $exist = Coupon::where('coupon_code', strtoupper($request->code))->first();
+                if(isset($exist->id)){
+                    $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
+                    if (isset($cart->id)) {
+                        $old = unserialize($cart->data);
+                        $couponPrice = 0;
+                        $totalPrice = $old['subTotal'];
+                        if($totalPrice < $exist->min_order_amount) 
+                            return response()->json(['status' => false, 'message' => 'Minimum $'.$exist->min_order_amount.' order amount is needed for apply this coupon!']);
+                        if($exist->coupon_discount_type == 1){
+                            $couponPrice = $exist->coupon_discount_amount ?? 0;
+                        }else{
+                            $couponPrice = ($totalPrice * $exist->coupon_discount_amount)/100;
+                        }
+                        $old['isCouponApplied'] = 1;
+                        $old['appliedCouponCode'] = strtoupper($request->code);
+                        $old['appliedCouponPrice'] = $couponPrice;
+                        $old['couponId'] = $exist->id ?? null;
+                        $old['totalPrice'] = $old['totalPrice'] - $old['appliedCouponPrice'];
+                        TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
+                            'data' => serialize($old)
+                        ]);
+                        return response()->json(['status' => true, 'message' => 'Coupon applied.']);
+                    } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
+                } else return response()->json(['status' => false, 'message' => 'Invalid coupon code!']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function remove_coupon_applied(Request $request)
+    {
+        try {
+            $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
+            if (isset($cart->id)) {
+                $old = unserialize($cart->data);
+                if($old['isCouponApplied']){
+                    $old['totalPrice'] = $old['totalPrice'] + $old['appliedCouponPrice'];
+                    $old['isCouponApplied'] = 0;
+                    $old['appliedCouponCode'] = null;
+                    $old['appliedCouponPrice'] = 0;
+                    $old['couponId'] = null;
+                    TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
+                        'data' => serialize($old)
+                    ]);
+                    return response()->json(['status' => true, 'message' => 'Coupon removed.']);
+                } else return response()->json(['status' => false, 'message' => 'No coupon applied on cart!']);
+            } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -308,7 +409,7 @@ class CartController extends Controller
     public function choose_shipping(Request $request)
     {
         try {
-            return response()->json(['status' => false, 'Message' => 'Api under progress']);
+            // return response()->json(['status' => false, 'Message' => 'Api under progress']);
             $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
             $tax = Setting::where('attribute_code', 'tax')->first();
             $qty = 0;
