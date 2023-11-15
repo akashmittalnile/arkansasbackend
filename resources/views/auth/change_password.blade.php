@@ -35,7 +35,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <input type="password" class="form-control" name="password" value=""
-                                        placeholder="Password" required>
+                                        placeholder="New Password" required>
                                     @if ($errors->has('password'))
                                         <span class="text-danger text-left">{{ $errors->first('password') }}</span>
                                     @endif
@@ -97,11 +97,11 @@
                 },
                 messages: {
                     password: {
-                        required: 'Please enter password',
+                        required: 'Please enter new password',
                     },
                     cnf_password: {
                         required: 'Please enter confirm password',
-                        equalTo: "Password and Confirm password must be same."
+                        equalTo: "Password and confirm password must be same."
                     },
                 },
                 submitHandler: function(form) {

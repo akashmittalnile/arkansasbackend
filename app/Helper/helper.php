@@ -2,12 +2,11 @@
 
 use App\Models\Category;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Http;
-use App\Models\ChapterQuiz;
 use App\Models\Notify;
 use App\Models\Tag;
 use Illuminate\Support\Carbon;
-use Mockery\Undefined;
+use App\Mail\DefaultMail;
+use Illuminate\Support\Facades\Mail;
 
     if (!function_exists('sendNotification')) {
         function sendNotification($token, $data)
@@ -210,5 +209,12 @@ use Mockery\Undefined;
         function dataSet($val) {
             if($val == '' || $val == null) return 'NA';
             else return $val;
+        } 
+    }
+
+    if(! function_exists('sendEmail')){
+        function sendEmail($data) {
+            $data['from_email'] = env('MAIL_FROM_ADDRESS');
+            Mail::to($data['to_email'])->send(new DefaultMail($data));
         } 
     }

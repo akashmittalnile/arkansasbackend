@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Mail\DefaultMail;
 use App\Models\User;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class AdminLoginController extends Controller
 {
@@ -92,6 +94,16 @@ class AdminLoginController extends Controller
             $user = User::where('email', $request->email)->where('status', 1)->where('role', 3)->first();
             if (isset($user->id)) {
                 $code = rand(1000, 9999);
+
+                $data['subject']    = 'Forgot Password OTP';
+                $data['from_email'] = env('MAIL_FROM_ADDRESS');
+                $data['site_title'] = 'Forgot Password OTP';
+                $data['view'] = 'super-admin.otp';
+                $data['otp'] = $code;
+                $data['customer_name'] = $user->first_name ?? 'NA' + ' ' + $user->last_name ?? '';
+                $data['to_email'] = 'dishant.gupta.58@gmail.com';
+                sendEmail($data);
+
                 User::where('email', $request->email)->where('status', 1)->where('role', 3)->update([
                     'verification_code' => $code
                 ]);
