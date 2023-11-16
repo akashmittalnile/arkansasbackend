@@ -333,6 +333,12 @@ class CartController extends Controller
                     else $data['tax'] = 0;
                     $data['totalPrice'] = $data['subTotal'] + $data['tax'] - $data['appliedCouponPrice'];
                     $data['totalItem'] = count($data['products']);
+
+                    if(count($data['products']) == 0){
+                        TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->delete();
+                        return response()->json(['status' => true, 'message' => 'Item removed from cart.']);
+                    }
+
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($data)
                     ]);
