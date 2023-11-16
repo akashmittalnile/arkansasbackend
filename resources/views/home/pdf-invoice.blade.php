@@ -256,9 +256,8 @@
               </table>
             </td>
 
-
             <td valign="top">
-              <table align="center" cellpadding="0" cellspacing="0" width="100%" style="">
+              <table align="center" cellpadding="0" cellspacing="0" width="100%">
                 <tr>
                   <td valign="top">
                     <p style="font-size: 14px; font-weight: 400; line-height: 1.5; color: #858796; padding: 5px 10px; margin:0">

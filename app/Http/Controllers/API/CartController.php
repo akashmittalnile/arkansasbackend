@@ -79,7 +79,9 @@ class CartController extends Controller
         $data['isCouponApplied'] = 0;
         $data['appliedCouponCode'] = null;
         $data['appliedCouponPrice'] = 0;
+        $data['discountValue'] = 0;
         $data['couponId'] = null;
+        $data['couponType'] = null;
         $data['paymentMethod'] = "STRIPE";
         $data['addedDate'] = date('Y-m-d H:i:s');
 
@@ -119,12 +121,16 @@ class CartController extends Controller
             $data['isCouponApplied'] = 1;
             $data['appliedCouponPrice'] = $oldcart['appliedCouponPrice'];
             $data['appliedCouponCode'] = $oldcart['appliedCouponCode'];
+            $data['discountValue'] = $oldcart['discountValue'];
             $data['couponId'] = $oldcart['couponId'];
+            $data['couponType'] = $oldcart['couponType'];
         }else{
             $data['isCouponApplied'] = 0;
             $data['appliedCouponPrice'] = 0;
             $data['appliedCouponCode'] = null;
+            $data['discountValue'] = 0;
             $data['couponId'] = null;
+            $data['couponType'] = null;
         }
 
         $data['totalQty'] = $qty;
@@ -177,6 +183,13 @@ class CartController extends Controller
                     $qty += $old['products'][$i]['qty'];
                     $price += $old['products'][$i]['total_amount'];
                 }
+
+                if($old['couponType'] == 1){
+                    $old['appliedCouponPrice'] = $old['appliedCouponPrice'];
+                }else if($old['couponType'] == 2){
+                    $old['appliedCouponPrice'] = ($old['subTotal'] * $old['discountValue'])/100;
+                }
+
                 $res['subTotal'] = $old['subTotal'] = $price;
                 $res['totalQty'] = $old['totalQty'] = $qty;
                 $res['tax'] = $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
@@ -221,15 +234,21 @@ class CartController extends Controller
 
                         $qty += $old['products'][$i]['qty'];
                         $price += $old['products'][$i]['total_amount'];
-
-                        $old['totalQty'] = $qty;
-                        $old['subTotal'] = $price;
-                        if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
-                            $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
-                        else $old['tax'] = 0;
-                        $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'];
-                        $old['totalItem'] = count($old['products']);
                     }
+
+                    if($old['couponType'] == 1){
+                        $old['appliedCouponPrice'] = $old['appliedCouponPrice'];
+                    }else if($old['couponType'] == 2){
+                        $old['appliedCouponPrice'] = ($old['subTotal'] * $old['discountValue'])/100;
+                    }
+
+                    $old['totalQty'] = $qty;
+                    $old['subTotal'] = $price;
+                    if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
+                        $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
+                    else $old['tax'] = 0;
+                    $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'];
+                    $old['totalItem'] = count($old['products']);
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($old)
                     ]);
@@ -299,14 +318,21 @@ class CartController extends Controller
                             $qty += $old['products'][$i]['qty'];
                             $price += $old['products'][$i]['total_amount'];
                         }
-                        $data['totalQty'] = $qty;
-                        $data['subTotal'] = $price;
-                        if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
-                            $data['tax'] = ($data['subTotal'] * $tax->attribute_value) / 100;
-                        else $data['tax'] = 0;
-                        $data['totalPrice'] = $data['subTotal'] + $data['tax'] - $data['appliedCouponPrice'];
-                        $data['totalItem'] = count($data['products']);
                     }
+
+                    if($data['couponType'] == 1){
+                        $data['appliedCouponPrice'] = $data['appliedCouponPrice'];
+                    }else if($data['couponType'] == 2){
+                        $data['appliedCouponPrice'] = ($data['subTotal'] * $data['discountValue'])/100;
+                    }
+
+                    $data['totalQty'] = $qty;
+                    $data['subTotal'] = $price;
+                    if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
+                        $data['tax'] = ($data['subTotal'] * $tax->attribute_value) / 100;
+                    else $data['tax'] = 0;
+                    $data['totalPrice'] = $data['subTotal'] + $data['tax'] - $data['appliedCouponPrice'];
+                    $data['totalItem'] = count($data['products']);
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($data)
                     ]);
@@ -370,6 +396,8 @@ class CartController extends Controller
                         $old['appliedCouponCode'] = strtoupper($request->code);
                         $old['appliedCouponPrice'] = $couponPrice;
                         $old['couponId'] = $exist->id ?? null;
+                        $old['couponType'] = $exist->coupon_discount_type;
+                        $old['discountValue'] = $exist->coupon_discount_amount;
                         $old['totalPrice'] = $old['totalPrice'] - $old['appliedCouponPrice'];
                         TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                             'data' => serialize($old)
@@ -395,6 +423,8 @@ class CartController extends Controller
                     $old['appliedCouponCode'] = null;
                     $old['appliedCouponPrice'] = 0;
                     $old['couponId'] = null;
+                    $old['couponType'] = null;
+                    $old['discountValue'] = 0;
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($old)
                     ]);

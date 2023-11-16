@@ -97,8 +97,6 @@
         h2 {
             color: white;
         }
-
-        ,
     </style>
 
     <!-- Include jQuery Validation -->

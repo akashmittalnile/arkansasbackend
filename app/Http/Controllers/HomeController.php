@@ -302,7 +302,7 @@ class HomeController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'course_fee' => $request->course_fee,
-                'valid_upto' => $request->valid_upto,
+                'valid_upto' => $request->valid_upto ?? null,
                 'tags' => serialize($request->tags),
                 'certificates' => null,
                 'category_id' => $request->course_category,

@@ -88,7 +88,7 @@ class SuperAdminController extends Controller
     public function dashboard() 
     {
         try {
-            $cc = User::where('role', 2)->count();
+            $cc = User::where('role', 2)->whereIn('status', [1,2])->count();
             $stu = User::where('role', 1)->count();
             $pro = Product::count();
             $course = Course::count();
@@ -532,16 +532,7 @@ class SuperAdminController extends Controller
     public function updateCourseDetails(Request $request){
         try {
             $course = Course::where('id', encrypt_decrypt('decrypt',$request->hide))->first();
-            // $imageName = $course->certificates;
-            // if ($request->certificates) {
-            //     $imageName = time().'.'.$request->certificates->extension();  
-            //     $request->certificates->move(public_path('upload/course-certificates'), $imageName);
-
-            //     $image_path = app_path("upload/course-certificates/{$course->certificates}");
-            //     if(File::exists($image_path)) {
-            //         unlink($image_path);
-            //     }
-            // }
+            
             $disclaimers_introduction = $course->introduction_image;
             if ($request->disclaimers_introduction) {
                 $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
@@ -557,7 +548,7 @@ class SuperAdminController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'course_fee' => $request->course_fee,
-                'valid_upto' => $request->valid_upto,
+                'valid_upto' => $request->valid_upto ?? null,
                 'tags' => serialize($request->tags),
                 'certificates' => null,
                 'category_id' => $request->course_category,
