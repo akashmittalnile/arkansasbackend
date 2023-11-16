@@ -1,5 +1,5 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Makeup University - Courses')
+@section('title', 'Permanent Makeup University - Courses')
 @section('content')
     <input type="hidden" name="courseID" value="{{ $courseID }}" />
     <div class="body-main-content">

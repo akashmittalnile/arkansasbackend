@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Makeup University - Change Password</title>
+    <title>Permanent Makeup University - Change Password</title>
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/header-footer.css') !!}">
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/iconsax/iconsax.css') !!}">
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/auth.css') !!}">

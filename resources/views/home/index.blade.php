@@ -1,5 +1,5 @@
 @extends('layouts.app-master')
-@section('title', 'Makeup University - Courses')
+@section('title', 'Permanent Makeup University - Courses')
 @section('content')
     <div class="body-main-content">
         <div class="pmu-filter-section">

@@ -1,5 +1,5 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Makeup University - Edit Product Details')
+@section('title', 'Permanent Makeup University - Edit Product Details')
 @section('content')
 <meta name="_token" content="{{csrf_token()}}" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">

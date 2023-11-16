@@ -1,5 +1,5 @@
 @extends('layouts.app-master')
-@section('title', 'Makeup University - Students Details')
+@section('title', 'Permanent Makeup University - Students Details')
 @section('content')
 
 <div class="body-main-content">

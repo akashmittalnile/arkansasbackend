@@ -1,5 +1,5 @@
 @extends('layouts.app-master')
-@section('title', 'Makeup University - Help Support')
+@section('title', 'Permanent Makeup University - Help Support')
 @section('content')
 <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/help.css') !!}">
 <div class="body-main-content">

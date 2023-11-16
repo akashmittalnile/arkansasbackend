@@ -1,5 +1,5 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Makeup University - Dashboard')
+@section('title', 'Permanent Makeup University - Dashboard')
 @section('content')
 <div class="body-main-content">
     <div class="pmu-overview">

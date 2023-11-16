@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Makeup University - Content Creator Login</title>
+    <title>Permanent Makeup University - Content Creator Login</title>
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/header-footer.css') !!}">
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/iconsax/iconsax.css') !!}">
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/auth.css') !!}">
@@ -107,6 +107,8 @@
     <script>
         $(document).ready(function(){
 
+            let arkansasUrl = "{{ env('APP_URL') }}";
+
             $.validator.addMethod("emailValidate", function(value) {
                 return /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(value);
             }, 'Please enter valid email address.');
@@ -155,7 +157,7 @@
             $('#LoginCheck').click(function(event){
                 var admin_email = $('input[name="email"]').val();
                 $.ajax({
-                    url: "{{ route('admin.check_status') }}",
+                    url: arkansasUrl + "/check_status",
                     method: 'GET',
                     data: {
                         admin_email: admin_email,

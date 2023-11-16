@@ -1,5 +1,5 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Makeup University - Add Product')
+@section('title', 'Permanent Makeup University - Add Product')
 @section('content')
 <meta name="_token" content="{{csrf_token()}}" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/dropzone@5.9.2/dist/min/dropzone.min.css">
