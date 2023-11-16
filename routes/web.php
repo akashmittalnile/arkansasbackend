@@ -236,6 +236,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/edit-post/{id}', 'SuperAdminController@edit_post')->name('SA.Edit.Post');
         Route::post('/super-admin/update-post', 'SuperAdminController@update_post')->name('SA.Update.Post');
 
+        Route::get('/super-admin/content-creator-course', 'SuperAdminController@content_creator_course')->name('SA.Content-Creator.Course');
+
     });
     
 });

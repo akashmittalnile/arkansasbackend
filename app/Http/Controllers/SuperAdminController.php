@@ -2337,4 +2337,16 @@ class SuperAdminController extends Controller
             return $e->getMessage();
         }
     }
+
+    public function content_creator_course(Request $request){
+        try{
+            $course = Course::join('users as u', 'u.id', '=', 'course.admin_id');
+            if($request->filled('name')) $course->where('title', 'like', '%'.$request->name.'%');
+            if($request->filled('status')) $course->where('course.status', $request->status);
+            $course = $course->where('admin_id', '!=', '1')->select('u.first_name', 'u.last_name', 'course.*')->paginate(10);
+            return view('super-admin.content-creator-course')->with(compact('course'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

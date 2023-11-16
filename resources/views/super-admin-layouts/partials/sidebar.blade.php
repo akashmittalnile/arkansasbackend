@@ -16,12 +16,19 @@
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/dashboard.svg') !!}"></span>
                         <span class="menu-title">Dashboard</span>
                     </a>
-
                 </li>
+
                 <li class="nav-item @if ($currentURL == 'SA.ContentCreators' || $currentURL == 'SA.ListedCourse' || $currentURL == 'SA.AccountApprovalRequest' || $currentURL == 'SA.Addcourse2' || $currentURL == 'SA.CourseList' || $currentURL == 'SA.Payment.Request') active @endif">
                     <a class="nav-link" href="{{ route('SA.ContentCreators') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/creators.svg') !!}"></span>
                         <span class="menu-title">Content Creators</span>
+                    </a>
+                </li>
+
+                <li class="nav-item @if ($currentURL == 'SA.Content-Creator.Course') active @endif">
+                    <a class="nav-link" href="{{ route('SA.Content-Creator.Course') }}">
+                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/book.svg') !!}"></span>
+                        <span class="menu-title">Creators Course</span>
                     </a>
                 </li>
 

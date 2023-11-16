@@ -33,7 +33,7 @@
         <script src="{!! url('assets/superadmin-js/performance.js" type="text/javascript') !!}"></script>
     @endif
 
-    @if ($currentURL == 'SA.ContentCreators'|| $currentURL == 'SA.TagListing' ||$currentURL ==  'SA.Category')
+    @if ($currentURL == 'SA.ContentCreators'|| $currentURL == 'SA.TagListing' ||$currentURL ==  'SA.Category' || $currentURL == 'SA.Content-Creator.Course')
         <link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/creators.css')!!}">
     @endif
 
