@@ -5,11 +5,17 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use App\Models\Address;
+use App\Models\AddToCart;
 use App\Models\Coupon;
+use App\Models\Course;
+use App\Models\Order;
+use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Models\ProductAttibutes;
 use App\Models\Setting;
 use App\Models\TempData;
+use App\Models\User;
+use App\Models\UserCourse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -32,24 +38,65 @@ class CartController extends Controller
                 if ($validator->fails()) {
                     return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
                 } else {
-
                     $isAlready = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
-                    $product = Product::where('id', $request->object_id)->first();
-                    $proImg = ProductAttibutes::where('product_id', $request->object_id)->where('attribute_code', 'cover_image')->first();
-                    if (isset($isAlready->id)) {
-                        $data = $this->updateCart($product, $proImg, $isAlready);
-                        TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
-                            'data' => serialize($data)
-                        ]);
-                        return response()->json(['status' => true, 'message' => 'Cart updated', 'cart_count' => $data['totalItem'] ?? 0]);
-                    } else {
-                        $data = $this->newCart($product, $proImg);
-                        $cart = new TempData;
-                        $cart->user_id = auth()->user()->id;
-                        $cart->data = serialize($data);
-                        $cart->type = 'cart';
+                    $isCart = AddToCart::where('userid', $user_id)->count();
+                    if($request->object_type==2){
+                        if($isCart > 0){
+                            return response()->json(['status' => false, 'message' => "You can't add to cart a product now. Only one type of items allow either Course or Product."]);
+                        }
+                        $product = Product::where('id', $request->object_id)->first();
+                        $proImg = ProductAttibutes::where('product_id', $request->object_id)->where('attribute_code', 'cover_image')->first();
+                        if (isset($isAlready->id)) {
+                            $data = $this->updateCart($product, $proImg, $isAlready);
+                            TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
+                                'data' => serialize($data)
+                            ]);
+                            return response()->json(['status' => true, 'message' => 'Cart updated', 'cart_count' => $data['totalItem'] ?? 0]);
+                        } else {
+                            $data = $this->newCart($product, $proImg);
+                            $cart = new TempData;
+                            $cart->user_id = auth()->user()->id;
+                            $cart->data = serialize($data);
+                            $cart->type = 'cart';
+                            $cart->save();
+                            return response()->json(['status' => true, 'message' => 'Added to cart', 'cart_count' => $data['totalItem'] ?? 0]);
+                        } 
+                    }else if($request->object_type==1){
+                        // return response()->json(['status' => false, 'message' => "You can't add to cart a courses now. Work in progress"]);
+                        if (isset($isAlready->id)) {
+                            return response()->json(['status' => false, 'message' => "You can't add to cart a courses now. Only one type of items allow either Course or Product."]);
+                        }
+                        $isAlreadyCart = AddToCart::where('userid', $user_id)->where('object_id', $request->object_id)->first();
+                        if(isset($isAlreadyCart->id)){
+                            return response()->json(['status' => false, 'message' => 'Already in cart. Please try another courses.']);
+                        }
+                        $isPurchase = UserCourse::where('course_id', $request->object_id)->where('user_id', $user_id)->first();
+                        if(isset($isPurchase->id)){
+                            return response()->json(['status' => false, 'message' => 'Already purchased this course!. Please try another courses.']);
+                        }  
+                        $course = Course::where('id', $request->object_type)->first();
+                        $cart = new AddToCart;
+                        $cart->userid = $user_id;
+                        $cart->object_id = $request->object_id;
+                        $cart->object_type = $request->object_type;
+                        $cart_value = $course->course_fee;
+                        $admin_value = $course->course_fee;
+                        if($request->object_type == 1){
+                            $user = User::where('id', $course->admin_id)->first();
+                            if(isset($user->id) && $user->role == 3){
+                                $admin_value = $request->cart_value;
+                            } else if(isset($user->id) && $user->role == 2){
+                                $admin_value = number_format((float)(($request->cart_value * $user->admin_cut)/100), 2);
+                            }
+                        }
+                        $cart->cart_value = $cart_value;
+                        $cart->admin_cut_value = $admin_value;
+                        $cart->quantity = 1;
                         $cart->save();
-                        return response()->json(['status' => true, 'message' => 'Added to cart', 'cart_count' => $data['totalItem'] ?? 0]);
+                        $cart_count = AddToCart::where('userid', $user_id)->count();
+                        return response()->json(['status' => true, 'message' => 'Added to cart', 'cart_count' => $cart_count ?? 0]);
+                    } else {
+                        return response()->json(['status' => false, 'message' => 'Something went wrong!']);
                     }
                 }
             } else {
@@ -161,49 +208,92 @@ class CartController extends Controller
     public function cart_list()
     {
         try {
-            // return response()->json(['status' => false, 'Message' => 'Api under progress']);
-            $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
-            $tax = Setting::where('attribute_code', 'tax')->first();
-            $qty = 0;
-            $price = 0;
-            if (isset($cart->id)) {
-                $old = unserialize($cart->data);
-                for ($i = 0; $i < count($old['products']); $i++) {
-                    $pro = Product::where('id', $old['products'][$i]['product_id'])->first();
-                    $old['products'][$i] = $this->updateCartProducts($pro, $old['products'][$i]);
-                    $res['items'][$i]['image'] = url('upload/products/' . $old['products'][$i]['image']);
-                    $res['items'][$i]['quantity'] = $old['products'][$i]['qty'];
-                    $res['items'][$i]['total_amount'] = $old['products'][$i]['total_amount'];
-                    $res['items'][$i]['regular_price'] = $old['products'][$i]['regular_price'];
-                    $res['items'][$i]['sale_price'] = $old['products'][$i]['sale_price'];
-                    $res['items'][$i]['product_id'] = $old['products'][$i]['product_id'];
-                    $res['items'][$i]['name'] = $old['products'][$i]['name'];
-                    $res['items'][$i]['short_description'] = $old['products'][$i]['short_description'];
-
-                    $qty += $old['products'][$i]['qty'];
-                    $price += $old['products'][$i]['total_amount'];
+            $shopping_cart = AddToCart::where('userid', auth()->user()->id)->where('object_type', 1)->get();
+            if(count($shopping_cart)>0){
+                $tax = Setting::where('attribute_code', 'tax')->first();
+                $response = array();
+                $qty = 0;
+                $price = 0;
+                foreach ($shopping_cart as $keys => $item) {
+                    $temp['product_id'] = $item->object_id;
+                    $temp['quantity'] = $item->quantity;
+                    if ($item->object_type == 1) { /* 1 stand for course ,2 for product */
+                        $value = Course::leftJoin('users as u', function($join) {
+                            $join->on('course.admin_id', '=', 'u.id');
+                        })->leftJoin('category as c', 'c.id', '=', 'course.category_id')
+                        ->where('course.id', $item->object_id)->select('course.title', 'course.course_fee', 'u.profile_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.admin_id', 'course.id', 'course.introduction_image', 'c.id as catid', 'c.name as catname', 'course.description')->first();
+                        $temp['name'] = $value->title;
+                        $temp['regular_price'] = $value->course_fee;
+                        $temp['total_amount'] = $value->course_fee;
+                        $temp['short_description'] = $value->description;
+                        $temp['sale_price'] = $value->course_fee;
+                        if ($value->profile_image) {
+                            $profile_image = url('upload/profile-image/'.$value->profile_image);
+                        } else {
+                            $profile_image = '';
+                        }
+                        $temp['category_id'] = $value->catid ?? null;
+                        $temp['category_name'] = $value->catname ?? null;
+                        $temp['content_creator_image'] = $profile_image;
+                        $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
+                        if(isset($value->introduction_image)){
+                            $temp['image'] = url('upload/disclaimers-introduction/'.$value->introduction_image);  
+                        } else $temp['image'] = null;
+                    }
+                    $qty += $item->quantity;
+                    $price += $value->course_fee;
+                    $response['items'][] = $temp;
                 }
-
-                if($old['couponType'] == 1){
-                    $old['appliedCouponPrice'] = $old['appliedCouponPrice'];
-                }else if($old['couponType'] == 2){
-                    $old['appliedCouponPrice'] = ($old['subTotal'] * $old['discountValue'])/100;
-                }
-
-                $res['subTotal'] = $old['subTotal'] = $price;
-                $res['totalQty'] = $old['totalQty'] = $qty;
-                $res['tax'] = $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
-                $res['totalPrice'] = $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'];
-                $res['totalItem'] = $old['totalItem'];
-                $res['isCouponApplied'] = $old['isCouponApplied'];
-                $res['couponCode'] = $old['appliedCouponCode'];
-                $res['couponPrice'] = $old['appliedCouponPrice'];
-                TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
-                    'data' => serialize($old)
-                ]);
-                $address = Address::where('user_id', auth()->user()->id)->get();
-                return response()->json(['status' => true, 'message' => 'Cart list', 'data' => $res, 'address' => $address]);
-            } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
+                $response['subTotal'] = $price;
+                $response['totalQty'] = $qty;
+                $response['tax'] = ($price * $tax->attribute_value) / 100;
+                $response['totalPrice'] = $price + $response['tax'];
+                $response['totalItem'] = $qty;
+                return response()->json(['status' => true, 'message' => 'Cart list', 'data' => $response, 'type' => 1]);
+            }else{
+                $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
+                $tax = Setting::where('attribute_code', 'tax')->first();
+                $qty = 0;
+                $price = 0;
+                if (isset($cart->id)) {
+                    $old = unserialize($cart->data);
+                    for ($i = 0; $i < count($old['products']); $i++) {
+                        $pro = Product::where('id', $old['products'][$i]['product_id'])->first();
+                        $old['products'][$i] = $this->updateCartProducts($pro, $old['products'][$i]);
+                        $res['items'][$i]['image'] = url('upload/products/' . $old['products'][$i]['image']);
+                        $res['items'][$i]['quantity'] = $old['products'][$i]['qty'];
+                        $res['items'][$i]['total_amount'] = $old['products'][$i]['total_amount'];
+                        $res['items'][$i]['regular_price'] = $old['products'][$i]['regular_price'];
+                        $res['items'][$i]['sale_price'] = $old['products'][$i]['sale_price'];
+                        $res['items'][$i]['product_id'] = $old['products'][$i]['product_id'];
+                        $res['items'][$i]['name'] = $old['products'][$i]['name'];
+                        $res['items'][$i]['short_description'] = $old['products'][$i]['short_description'];
+    
+                        $qty += $old['products'][$i]['qty'];
+                        $price += $old['products'][$i]['total_amount'];
+                    }
+    
+                    if($old['couponType'] == 1){
+                        $old['appliedCouponPrice'] = $old['appliedCouponPrice'];
+                    }else if($old['couponType'] == 2){
+                        $old['appliedCouponPrice'] = ($old['subTotal'] * $old['discountValue'])/100;
+                    }
+    
+                    $res['subTotal'] = $old['subTotal'] = $price;
+                    $res['totalQty'] = $old['totalQty'] = $qty;
+                    $res['tax'] = $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
+                    $res['totalPrice'] = $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'];
+                    $res['totalItem'] = $old['totalItem'];
+                    $res['isCouponApplied'] = $old['isCouponApplied'];
+                    $res['couponCode'] = $old['appliedCouponCode'];
+                    $res['couponPrice'] = $old['appliedCouponPrice'];
+                    TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
+                        'data' => serialize($old)
+                    ]);
+                    $address = Address::where('user_id', auth()->user()->id)->get();
+                    return response()->json(['status' => true, 'message' => 'Cart list', 'data' => $res, 'address' => $address, 'type' => 2]);
+                } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
+            }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -350,10 +440,109 @@ class CartController extends Controller
         }
     }
 
+    public function remove_cart_course(Request $request){
+        try{    
+            $validator = Validator::make($request->all(), [
+                'course_id' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }else{
+                $cart = AddToCart::where('object_id', $request->course_id)->where('object_type', 1)->where('userid', auth()->user()->id)->delete();
+                if ($cart) {
+                    return response()->json(['status'=> true, 'message' => 'Item removed from cart.']);
+                } else {
+                    return response()->json(['status' => false, 'message' => 'Something went wrong!']);
+                }
+            }
+
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function save_order(Request $request)
+    {
+        try {
+            $data = array();
+            $user_id = auth()->user()->id;
+            if ($user_id) {
+                $carts = Addtocart::where('userid', $user_id)->get();
+                $order_no = "AKS".rand(1000000000, 9999999999);
+                
+                
+                if (count($carts) > 0) {
+                    /*Create Order */
+                    $admin_cut_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('admin_cut_value * quantity'));
+                    $order_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
+                    $total_price = $order_price;
+
+                    $tax = Setting::where('attribute_code','tax')->first();
+                    if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
+                        $tax_amount = ($total_price*$tax->attribute_value)/100;
+                    else $tax_amount = 0;
+
+                    $insertedId = Order::insertGetId([
+                        'user_id' => $user_id,
+                        'order_number' => $order_no,
+                        'amount' => $order_price - $admin_cut_price,
+                        'admin_amount' => $admin_cut_price,
+                        'taxes' => number_format((float)$tax_amount, 2, '.', ''),
+                        'total_amount_paid' => number_format((float)($total_price+$tax_amount), 2, '.', ''),/*Total amount of order*/
+                        'payment_id' => null,
+                        'payment_type' => null,
+                        'created_date' => date('Y-m-d H:i:s'),
+                        'status' => 0,
+                    ]);
+
+                    foreach ($carts as $cart) {
+                        $OrderDetail = new OrderDetail;
+                        $OrderDetail->order_id = $insertedId;
+                        $OrderDetail->product_id = $cart->object_id;
+                        $OrderDetail->product_type = $cart->object_type;
+                        $OrderDetail->quantity = $cart->quantity;
+                        $OrderDetail->amount = $cart->cart_value;
+                        $OrderDetail->admin_amount = $cart->admin_cut_value;
+                        $OrderDetail->created_date = date('Y-m-d H:i:s');
+                        $OrderDetail->save();
+                        if($cart->object_type == 1){
+                            $userCourse = new UserCourse;
+                            $userCourse->course_id = $cart->object_id;
+                            $userCourse->user_id = $user_id;
+                            $userCourse->buy_price = $cart->cart_value;
+                            $userCourse->payment_id = null;
+                            $userCourse->buy_date = date('Y-m-d H:i:s');
+                            $userCourse->status = 0;
+                            $userCourse->created_date = date('Y-m-d H:i:s');
+                            $userCourse->coupon_id = null;
+                            $userCourse->save();
+                        }
+                    }
+
+                    Addtocart::where('userid', $user_id)->delete();
+
+                    $data['status'] = 1;
+                    $data['message'] = 'Order placed successfully';
+                    $data['order_id'] = $insertedId;
+                    $data['total_amount'] = number_format((float)($total_price+$tax_amount), 2, '.', '');
+                    return response()->json($data);
+                } else {
+                    $data['status'] = 0;
+                    $data['message'] = 'Opps!Order Cart is Empty';
+                    return response()->json($data);
+                }
+            } else {
+                return response()->json(['status' => false, 'Message' => 'Please login']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
     public function get_coupons(Request $request){
         try{
             $now = Carbon::now();
-            $coupon = Coupon::where('status', 1)->where('coupon_expiry_date', '>', $now)->get();
+            $coupon = Coupon::where('status', 1)->where('coupon_expiry_date', '>', $now)->orderByDesc('id')->get();
             $response = [];
             foreach($coupon as $val){
                 $temp['id'] = $val->id;

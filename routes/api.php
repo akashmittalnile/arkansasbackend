@@ -74,7 +74,6 @@ Route::middleware('auth:sanctum')->group(function () {
     // Route::post('remove-coupon', [ApiController::class, "remove_coupon"]);
     // Route::post('remove-cart-list', [ApiController::class, "remove-cart-list"]);
 
-    Route::post('save-order', [ApiController::class, "save_order"]);
     Route::post('my-order', [ApiController::class, "my_order"]);
 
     Route::post('order-detail', [ApiController::class, "order_detail"]);
@@ -101,9 +100,11 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('update-product-quantity', [CartController::class, "update_product_quantity"]);
     Route::post('shipping-address', [CartController::class, "shipping_address"]);
     Route::post('remove-cart', [CartController::class, "remove_cart"]);
+    Route::post('remove-cart-course', [CartController::class, "remove_cart_course"]);
     Route::post('choose-shipping', [CartController::class, "choose_shipping"]);
     Route::get('coupons', [CartController::class, "get_coupons"]);
     Route::post('coupon-applied', [CartController::class, "coupon_applied"]);
     Route::post('remove-applied-coupon', [CartController::class, "remove_coupon_applied"]);
+    Route::post('save-order', [CartController::class, "save_order"]);
 
 });
