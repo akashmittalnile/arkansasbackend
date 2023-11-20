@@ -74,7 +74,7 @@
                                             </div>
                                             <div class="side-profile-total-content">
                                                 <h2>Account Status</h2>
-                                                <p>@if ($data->status) Active @else In-active @endif</p>
+                                                <p>@if ($data->status==1) Active @elseif ($data->status==2) In-active @endif</p>
                                             </div>
                                         </div>
                                     </div>
@@ -104,20 +104,20 @@
                             <div class="pmu-search-filter wd80">
                                 <form action="">
                                     <div class="row g-2">
-                                        <div class="col-md-3">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <select class="form-control" name="status">
                                                     <option @if(request()->status == "") selected @endif value="">Select Completion Status</option>
-                                                    <option @if(request()->status == '1') selected @endif value="1">Complete</option>
+                                                    <option @if(request()->status == '1') selected @endif value="1">Completed</option>
                                                     <option @if(request()->status == '0') selected @endif value="0">Ongoing</option>
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="col-md-4">
-                                            <div class="form-group search-form-group">
+                                        <div class="col-md-3">
+                                            <div class="form-group form-group">
                                                 <input type="text" class="form-control" name="title"
                                                     placeholder="Search by Course Name" value="{{ request()->title ?? '' }}">
-                                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                                <!-- <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span> -->
                                             </div>
                                         </div>
                                         <div class="col-md-2">
@@ -219,21 +219,17 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="student-info-form-info">
-                        <h2>Mark as Active</h2>
-                        <p>Are you sure mark as Active Again for " {{ ucfirst($data->first_name)}} {{ ucfirst($data->last_name)}}" Once mark as active creator will have access to
-                            his account until and unless revert action has been taken again!</p>
+                        <h2>Mark as @if ($data->status == 1) Inactive  @elseif ($data->status == 2) Active @endif</h2>
+
+                        <p>Are you sure mark as @if ($data->status == 1) Inactive  @elseif ($data->status == 2) Active @endif Again for " {{ ucfirst($data->first_name)}} {{ ucfirst($data->last_name)}}" Once mark as @if ($data->status == 1) inactive  @elseif ($data->status == 2) active @endif creator will @if ($data->status == 1) don't @endif have access to his account until and unless revert action has been taken again!</p>
+
                         <div class="student-info-btn-action">
                             @if ($data->status == 1)
                                 <a href="{{ url('super-admin/inactive/'.encrypt_decrypt('encrypt',$data->id))}}" class="save-btn">Yes! Inactive</a>
-                            @else
+                            @elseif ($data->status == 2)
                                 <a href="{{ url('super-admin/inactive/'.encrypt_decrypt('encrypt',$data->id))}}" class="save-btn">Yes! Active</a>
                             @endif
-
-                            @if ($data->status == 1)
-                                <a href="#" class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">No! Keep it Active</a>
-                            @else
-                                <a href="#" class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">No! Keep it Inactive</a>
-                            @endif
+                            <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                             
                             
                         </div>

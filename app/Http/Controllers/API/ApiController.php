@@ -2705,13 +2705,19 @@ class ApiController extends Controller
         $course = Course::join('users as u', 'u.id', '=', 'course.admin_id')->where('course.id', $id)->select('course.title', 'u.first_name', 'u.last_name', 'u.company_name', 'u.professional_title', 'u.signature', 'u.business_logo')->first();
         // dd($course);
         $date = UserCourse::where('user_id', $uid)->where('course_id', $id)->first();
-        $pdf = PDF::loadView('home.certificates', compact('course', 'date', 'user', 'admin'), [], [ 
-            'mode' => 'utf-8',
-            'title' => 'Certificate',
-            'format' => 'Legal',
-            'orientation' => 'L'
-          ]);
-        return $pdf->stream($course->title.' certificate.pdf');
+
+        $html = view('home.certificates', compact('course', 'date', 'user', 'admin'))->render();
+
+        $mpdf = new \Mpdf\Mpdf([
+            'format'=> 'A4',
+            'orientation' => 'L',
+            'mode' => 'utf-8'
+        ]);
+        // $mpdf->showImageErrors = true;
+        $mpdf->SetDisplayMode('fullpage');
+        $mpdf->list_indent_first_level = 0; 
+        $mpdf->WriteHTML($html);
+        $mpdf->Output();
     }
 
     public function certificates(Request $request){

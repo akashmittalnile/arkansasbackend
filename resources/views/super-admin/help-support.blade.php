@@ -19,7 +19,7 @@
                                         <div class="p-3">
 
                                             <div class="input-group rounded mb-3">
-                                                <input type="search" class="form-control rounded border me-2" placeholder="Search" aria-label="Search" aria-describedby="search-addon" />
+                                                <input type="text" class="form-control rounded border me-2" placeholder="Search" aria-label="Search" aria-describedby="search-addon" id="myinput"/>
                                                 <span class="input-group-text border-0" id="search-addon" style="background: #E0B220;">
                                                     <i class="las la-search"></i>
                                                 </span>
@@ -40,8 +40,8 @@
                                                                     <span class="badge bg-success badge-dot"></span>
                                                                 </div>
                                                                 <div class="pt-1">
-                                                                    <p class="chat-name fw-bold mb-0" style="color: #E0B220;">{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</p>
-                                                                    <p class="small text-muted">Hello, Arkansas</p>
+                                                                    <p class="chat-name fw-bold mb-0" style="color: #E0B220; font-size: 0.8rem;">{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</p>
+                                                                    <p class="small text-muted"></p>
                                                                 </div>
                                                             </div>
                                                             <div class="pt-1">
@@ -52,6 +52,16 @@
                                                     </li>
                                                     @empty
                                                     @endforelse
+
+                                                    <div class="d-flex flex-column align-items-center justify-content-center mt-5 d-none" id="no_record_found">
+                                                        <div>
+                                                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                                        </div>
+                                                        <div class="font-weight-bold">
+                                                            <p class="font-weight-bold" style="font-size: 1.2rem;">No users found </p> 
+                                                        </div>
+                                                    </div>
+
                                                 </ul>
                                             </div>
 
@@ -93,6 +103,24 @@
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
+    $(document).ready(function(){
+        const userCount = "{{ count($user) }}";
+        $("#search-addon").on("click", function() {
+            var value = $('#myinput').val().toLowerCase();
+            $(".list-unstyled .user-info").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+
+            var count = $('.list-unstyled .user-info:hidden').length;
+            if(count == userCount){
+                $("#no_record_found").removeClass('d-none');
+            }
+            else{
+                $("#no_record_found").addClass('d-none');
+            }
+        });
+    });
+
     $(document).on('click', '.user-info', function(){
         $("#ajax-chat-url").val($(this).attr('data-id'));
         $("#ajax-chat-url-first").val($(this).attr('data-fname'));

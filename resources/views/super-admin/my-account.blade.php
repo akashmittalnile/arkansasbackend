@@ -50,7 +50,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <h4>Phone</h4>
-                                    <input type="number" min="1000000" class="form-control" name="phone" placeholder="Phone" value="{{ $user->phone }}">
+                                    <input type="number" class="form-control" name="phone" placeholder="Phone" value="{{ $user->phone }}">
                                 </div>
                             </div>
 
