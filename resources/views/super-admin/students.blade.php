@@ -21,7 +21,7 @@
                                 <select class="form-control" name="status">
                                     <option @if(request()->status=="") selected @endif value="">Select Account Status</option>
                                     <option @if(request()->status=="1") selected @endif value="1">Active</option>
-                                    <option @if(request()->status=="0") selected @endif value="0">In-Active</option>
+                                    <option @if(request()->status=="2") selected @endif value="2">In-Active</option>
                                 </select>
                             </div>
                         </div>

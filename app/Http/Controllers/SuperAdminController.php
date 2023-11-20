@@ -940,18 +940,16 @@ class SuperAdminController extends Controller
         }
     }
 
-    public function changeOrdering($chapterid, $id, $val) 
+    public function changeOrdering(Request $request,$chapterid) 
     {
         try {
-            $chapter = CourseChapterStep::where('course_chapter_id', $chapterid)->where('id', $id)->first();
-            $orderingNum = $chapter->sort_order;
-            // return $orderingNum;
-            CourseChapterStep::where('id',$id)->where('course_chapter_id', $chapterid)->update([
-                'sort_order' => $val,
-                    ]);
-            CourseChapterStep::where('sort_order', $val)->where('course_chapter_id', $chapterid)->where('id', '!=', $id)->update([
-                        'sort_order' => $orderingNum,
-                            ]);
+            // dd($request->all());
+            $num = $request->order_no;
+            foreach($num as $key => $val){
+                CourseChapterStep::where('id', $val)->where('course_chapter_id', $chapterid)->update([
+                    'sort_order' => $key+1,
+                ]);
+            }
             return 1;
         } catch (\Exception $e) {
             return $e->getMessage();

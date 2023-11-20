@@ -81,7 +81,7 @@
                             </div>
                             @endif
                             
-                            <div class="pmu-courses-form">
+                            <div class="pmu-courses-form column">
                                 @if ($datas->isEmpty())
                                 <tr>
                                     <td colspan="10">
@@ -102,10 +102,13 @@
                                 @php
                                 $randomNum = rand(0000, 9999);
                                 @endphp
-                                <div class="edit-pmu-form-item">
+                                <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text">
-                                            <div class="edit-pmu-text-title">
+                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                            <div>
+                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="">
+                                            </div>
+                                            <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Video<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
                                             </div>
                                         </div>
@@ -125,7 +128,7 @@
                                         <div class="edit-pmu-text">
                                             <div class="pmu-edit-questionnaire-ans1">
                                                 <div class="pmu-edit-questionnaire-input">
-                                                    <select name="changeAnswerOption" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" id="" class="form-control ordering-select-function">
+                                                    <select name="order[]" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" id="" class="form-control ordering-select-function-{{$data->id}}" disabled>
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
@@ -209,10 +212,13 @@
                                 @php
                                 $randomNum = rand(0000, 9999);
                                 @endphp
-                                <div class="edit-pmu-form-item">
+                                <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text">
-                                            <div class="edit-pmu-text-title">
+                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                            <div>
+                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="">
+                                            </div>
+                                            <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample{{ $data->id }}">
                                                     Quiz<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
                                             </div>
@@ -233,7 +239,7 @@
                                         <div class="edit-pmu-text">
                                             <div class="pmu-edit-questionnaire-ans1">
                                                 <div class="pmu-edit-questionnaire-input">
-                                                    <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
+                                                    <select name="order[]" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function-{{$data->id}}" disabled>
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{$valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
@@ -359,10 +365,13 @@
                                 @php
                                 $randomNum = rand(0000, 9999);
                                 @endphp
-                                <div class="edit-pmu-form-item">
+                                <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text">
-                                            <div class="edit-pmu-text-title">
+                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                            <div>
+                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="">
+                                            </div>
+                                            <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">PDF<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
                                             </div>
                                         </div>
@@ -382,7 +391,7 @@
                                         <div class="edit-pmu-text">
                                             <div class="pmu-edit-questionnaire-ans1">
                                                 <div class="pmu-edit-questionnaire-input">
-                                                    <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
+                                                    <select name="order[]" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function-{{$data->id}}" disabled>
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
@@ -462,10 +471,13 @@
                                 @php
                                 $randomNum = rand(0000, 9999);
                                 @endphp
-                                <div class="edit-pmu-form-item">
+                                <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text">
-                                            <div class="edit-pmu-text-title">
+                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                            <div>
+                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="">
+                                            </div>
+                                            <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'ASDIV' . $randomNum }}">Assignment<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
                                             </div>
                                         </div>
@@ -485,7 +497,7 @@
                                         <div class="edit-pmu-text">
                                             <div class="pmu-edit-questionnaire-ans1">
                                                 <div class="pmu-edit-questionnaire-input">
-                                                    <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
+                                                    <select name="order[]" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function-{{$data->id}}" disabled>
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
@@ -531,10 +543,13 @@
                                 @php
                                 $randomNum = rand(0000, 9999);
                                 @endphp
-                                <div class="edit-pmu-form-item">
+                                <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text">
-                                            <div class="edit-pmu-text-title">
+                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                            <div>
+                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="">
+                                            </div>
+                                            <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Survey<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
                                             </div>
                                         </div>
@@ -554,7 +569,7 @@
                                         <div class="edit-pmu-text">
                                             <div class="pmu-edit-questionnaire-ans1">
                                                 <div class="pmu-edit-questionnaire-input">
-                                                    <select name="" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function">
+                                                    <select name="order[]" id="" data-id="{{ $data->id }}" data-chapter-id="{{ $chapterID }}" class="form-control ordering-select-function-{{$data->id}}" disabled>
                                                         @foreach ($datas as $keydata => $valuedata)
                                                         <option @if($valuedata->sort_order == $data->sort_order) selected @endif value="{{ $valuedata->sort_order }}">{{ $valuedata->sort_order }}</option>
                                                         @endforeach
@@ -818,11 +833,52 @@
     <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
 
+    <script src= "https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
+
     <script type="text/javascript" src="{{ asset('assets/superadmin-js/addcourse.js') }}"></script>
 
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
     <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">
     <script src="{!! url('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>
+
+    
+    <script type="text/javascript">
+        $('.column').sortable({
+            connectWith: '.column',
+            ghostClass: "blue-background-class",
+        });
+        $('.drag').mouseup(function (event) {
+            event.preventDefault();
+            var id = $(this).attr('data-id');
+            var chapterid = $(".ordering-select-function-"+id).attr("data-chapter-id");
+            var val = $(".ordering-select-function-"+id).val();
+            var order_no = new Array();
+            setTimeout(function() {
+                $('.column .drag').each(function() {
+                    order_no.push($(this).data("id"));
+                });
+                console.log(order_no);
+                $.ajax({
+                    url: arkansasUrl + '/super-admin/change-ordering/' + chapterid,
+                    method: 'GET',
+                    data:{
+                        order_no
+                    },
+                    dataType: 'json',
+                    headers: {
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    success: function (data) {
+                        if (data == 1) {
+                            toastr.success("Sort order changed successfully");
+                            setInterval(function () {location.reload();}, 2000);
+                        }
+                    }
+                });
+            },500);
+        });
+    </script>
 
     <!-- Style of Remove button -->
     <style>

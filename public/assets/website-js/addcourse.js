@@ -229,7 +229,7 @@ $(document).on('click', '.SaveOption', function () {
     });
 });
 
-$(document).on('change', '.ordering-select-function', function () {
+$(document).on('change', '.ordering-select-functionsd', function () {
     var id = $(this).attr("data-id");
     var chapterid = $(this).attr("data-chapter-id");
     var val = $(this).val();

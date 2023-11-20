@@ -104,7 +104,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/admin/delete-quiz/{id}', 'HomeController@deleteQuiz')->name('admin.DeleteQuiz');
         Route::post('/admin/save-answer', 'HomeController@SaveAnswer')->name('SaveAnswer');
         Route::get('/admin/add-option', 'HomeController@addOption')->name('admin.add-option');
-        Route::get('/admin/change-ordering/{chapterid}/{id}/{val}', 'HomeController@changeOrdering')->name('admin.change-answer');
+        Route::get('/admin/change-ordering/{chapterid}', 'HomeController@changeOrdering')->name('admin.change-answer');
         Route::get('/admin/change-answer-option/{id}', 'HomeController@changeAnswerOption')->name('admin.change-answer.option');
         Route::post('/admin/add-new-question', 'HomeController@addNewQuestion')->name('admin.add.new.Question');
         Route::post('/admin/add-new-question-survey', 'HomeController@addNewSurveyQuestion')->name('admin.add.new.survey.Question');
@@ -155,7 +155,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/delete-option/{id}', 'SuperAdminController@deleteOption')->name('SA.DeleteOption');
         Route::post('/super-admin/save-answer', 'SuperAdminController@SaveAnswer')->name('SA.SaveAnswer');
         Route::get('/super-admin/add-option', 'SuperAdminController@addOption')->name('SA.add-option');
-        Route::get('/super-admin/change-ordering/{chapterid}/{id}/{val}', 'SuperAdminController@changeOrdering')->name('SA.change-answer');
+        Route::get('/super-admin/change-ordering/{chapterid}', 'SuperAdminController@changeOrdering')->name('SA.change-answer');
         Route::get('/super-admin/change-answer-option/{id}', 'SuperAdminController@changeAnswerOption')->name('SA.change-answer.option');
         Route::get('/super-admin/delete-video/{id}', 'SuperAdminController@deleteVideo')->name('SA.DeleteVideo');
         Route::get('/super-admin/delete-pdf/{id}', 'SuperAdminController@deletePdf')->name('SA.DeletePDF');
