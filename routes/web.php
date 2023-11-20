@@ -219,6 +219,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/notifications', 'SuperAdminController@notifications')->name('SA.Notifications');
         Route::get('/super-admin/create-notifications', 'SuperAdminController@createNotifications')->name('SA.Create.Notifications');
         Route::post('/super-admin/store-notifications', 'SuperAdminController@storeNotifications')->name('SA.Store.Notifications');
+        Route::get('/super-admin/delete-notifications/{id}', 'SuperAdminController@deleteNotifications')->name('SA.Delete.Notifications');
        
         Route::get('/super-admin/download-invoice/{id}', 'SuperAdminController@downloadInvoice')->name('SA.download.invoice');
 

@@ -1201,6 +1201,18 @@ class SuperAdminController extends Controller
         }
     }
 
+    public function deleteNotifications($id) 
+    {
+        try {
+            $id = encrypt_decrypt('decrypt', $id);
+            NotificationCreator::where('notification_id', $id)->delete();
+            $user = Notification::where('id', $id)->delete();
+            return redirect()->back()->with('message', 'Notification deleted successfully.');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     public function listed_course($id, Request $request) 
     {
         try {

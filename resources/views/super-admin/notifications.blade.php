@@ -85,6 +85,14 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <div class="creator-table mx-2">
+                                <div class="mon-table-box">
+                                    <a href="{{ route('SA.Delete.Notifications', encrypt_decrypt('encrypt', $val->id)) }}" onclick="return confirm('Are you sure you want to delete this notification?');" class="btn-go">
+                                        <i class="las la-trash-alt"></i>
+                                    </a>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     @empty

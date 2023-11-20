@@ -196,7 +196,7 @@
                     required: 'Please enter description',
                 },
                 img: {
-                    required: 'Please upload a image',
+                    required: 'Please upload an image',
                 },
             },
 

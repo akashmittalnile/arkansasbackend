@@ -131,14 +131,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Minumum Order Amount <span class="text-danger">*</span></label>
-                                    <input type="number" min="0.1" step="0.1" class="form-control" placeholder="Minumum Order Amount" name="min_amount">
+                                    <input type="number" min="0.1" step="0.01" class="form-control" placeholder="Minumum Order Amount" name="min_amount">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Coupon Discount Value <span class="text-danger">*</span></label>
-                                    <input type="number" min="0.1" step="0.1" class="form-control" placeholder="Coupon Discount Amount" name="amount">
+                                    <input type="number" min="0.1" step="0.01" class="form-control" placeholder="Coupon Discount Amount" name="amount">
                                 </div>
                             </div>
 
@@ -212,14 +212,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Minumum Order Amount <span class="text-danger">*</span></label>
-                                    <input type="number" min="0.1" step="0.1" id="minAmountEdit" class="form-control" placeholder="Minumum Order Amount" name="min_amount">
+                                    <input type="number" min="0.1" step="0.01" id="minAmountEdit" class="form-control" placeholder="Minumum Order Amount" name="min_amount">
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Coupon Discount Value <span class="text-danger">*</span></label>
-                                    <input type="number" min="0.1" step="0.1" id="amountEdit" class="form-control" placeholder="Coupon Discount Amount" name="amount">
+                                    <input type="number" min="0.1" step="0.01" id="amountEdit" class="form-control" placeholder="Coupon Discount Amount" name="amount">
                                 </div>
                             </div>
 
@@ -266,6 +266,9 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 
 <script>
+    $('#CreateCoupon, #editCoupon').on('hidden.bs.modal', function(e) {
+        $(this).find('form').trigger('reset');
+    })
     $(document).ready(function() {
 
         $(document).on('click', '.edit-btn', function(){

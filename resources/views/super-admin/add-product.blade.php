@@ -290,7 +290,7 @@
                 <div class="col-md-12">
                     <div class="product-item-card update-card">
                         <div class="pmu-item-content bg-white">
-                            <button class="btn update-btn btn-sm" type="submit">Update</button>
+                            <button class="btn update-btn btn-sm" type="submit">Submit</button>
                         </div>
                     </div>
                 </div>
