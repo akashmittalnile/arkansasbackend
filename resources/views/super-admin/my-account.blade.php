@@ -346,6 +346,15 @@
         $("#prev-small-line" + num).html("Click here to change image");
     };
 </script>
+<style>
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        margin: 0;
+    }
+</style>
 @endsection
 
 @push('css')

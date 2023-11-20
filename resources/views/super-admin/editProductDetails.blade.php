@@ -72,7 +72,7 @@
                             <div class="pmu-item-content">
                                 <div class="row">
                                     <div class="col-md-6 form-group">
-                                        <input class="form-control" type="number" min="1" step="0.1" max="100" value="{{  $product->product_weight ?? ''  }}" placeholder="Product Weight or Volume" aria-label="default input example" name="product_weight">
+                                        <input class="form-control" type="number" min="1" step="0.01" max="100" value="{{  $product->product_weight ?? ''  }}" placeholder="Product Weight or Volume" aria-label="default input example" name="product_weight">
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <select class="form-select" aria-label="Default select example" name="product_weight_unit">
@@ -93,7 +93,7 @@
                                         <p class="label-p">Length</p>
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <input class="form-control" name="product_length" min="1" step="0.1" max="100" type="number" value="{{ $product->product_length ?? '' }}" placeholder="Product Length" aria-label="default input example">
+                                        <input class="form-control" name="product_length" min="1" step="0.01" max="100" type="number" value="{{ $product->product_length ?? '' }}" placeholder="Product Length" aria-label="default input example">
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <select class="form-select" aria-label="Default select example" name="product_length_unit">
@@ -105,7 +105,7 @@
                                         <p class="label-p">Width</p>
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <input class="form-control" name="product_width" type="number" min="1" step="0.1" max="100" value="{{ $product->product_width ?? '' }}" placeholder="Product Width" aria-label="default input example">
+                                        <input class="form-control" name="product_width" type="number" min="1" step="0.01" max="100" value="{{ $product->product_width ?? '' }}" placeholder="Product Width" aria-label="default input example">
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <select class="form-select" aria-label="Default select example" name="product_width_unit">
@@ -117,7 +117,7 @@
                                         <p class="label-p">Height</p>
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <input class="form-control" name="product_height" type="number" min="1" step="0.1" max="100" value="{{ $product->product_height ?? '' }}" placeholder="Product Height" aria-label="default input example">
+                                        <input class="form-control" name="product_height" type="number" min="1" step="0.01" max="100" value="{{ $product->product_height ?? '' }}" placeholder="Product Height" aria-label="default input example">
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <select class="form-select" aria-label="Default select example" name="product_height_unit">
@@ -135,7 +135,7 @@
                             <div class="pmu-item-content">
                                 <div class="row">
                                     <div class="col-md-6 form-group">
-                                        <input class="form-control" min="1" step="0.1" max="100" name="package_weight" type="number" value="{{$product->package_weight ?? ''}}" placeholder="Package Weight or Volume" aria-label="default input example">
+                                        <input class="form-control" min="1" step="0.01" max="100" name="package_weight" type="number" value="{{$product->package_weight ?? ''}}" placeholder="Package Weight or Volume" aria-label="default input example">
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <select class="form-select" aria-label="Default select example" name="package_weight_unit">
@@ -156,7 +156,7 @@
                                         <p class="label-p">Length</p>
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <input class="form-control" min="1" step="0.1" max="100" type="number" value="{{$product->package_length ?? ''}}" placeholder="Package Length" aria-label="default input example" name="package_length">
+                                        <input class="form-control" min="1" step="0.01" max="100" type="number" value="{{$product->package_length ?? ''}}" placeholder="Package Length" aria-label="default input example" name="package_length">
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <select class="form-select" aria-label="Default select example" name="package_length_unit">
@@ -168,7 +168,7 @@
                                         <p class="label-p">Width</p>
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <input class="form-control" min="1" step="0.1" max="100" type="number" value="{{$product->package_width ?? ''}}" placeholder="Package Width" aria-label="default input example" name="package_width">
+                                        <input class="form-control" min="1" step="0.01" max="100" type="number" value="{{$product->package_width ?? ''}}" placeholder="Package Width" aria-label="default input example" name="package_width">
                                     </div>
                                     <input type="hidden" value="{{ encrypt_decrypt('encrypt', $product->id) }}" name="id">
                                     <div class="col-md-6 form-group">
@@ -181,7 +181,7 @@
                                         <p class="label-p">Height</p>
                                     </div>
                                     <div class="col-md-6 form-group">
-                                        <input class="form-control" min="1" step="0.1" max="100" type="number" value="{{$product->package_height ?? ''}}" placeholder="Package Height" aria-label="default input example" name="package_height">
+                                        <input class="form-control" min="1" step="0.01" max="100" type="number" value="{{$product->package_height ?? ''}}" placeholder="Package Height" aria-label="default input example" name="package_height">
                                     </div>
                                     <div class="col-md-6 form-group">
                                         <select class="form-select" aria-label="Default select example" name="package_height_unit">

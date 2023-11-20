@@ -299,8 +299,14 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="becomeacreator-form-info">
-                        <h2>Mark as Active</h2>
-                        <p>Are you sure to mark "{{ ucfirst($user->first_name)}} {{ ucfirst($user->last_name)}}" as an @if($user->status == 1) active @elseif($user->status == 2) inactive @endif content creator his all courses will not be displayed to the users.</p>
+                        <h2>Mark as @if ($user->status == 1) Inactive  @elseif ($user->status == 2) Active @endif</h2>
+                        
+                        @if ($user->status == 1)
+                        <p>Are you sure to mark "{{ ucfirst($user->first_name)}} {{ ucfirst($user->last_name)}}" as an inactive content creator his all courses will not be displayed to the users.</p>
+                        @elseif ($user->status == 2)
+                        <p>Are you sure to mark "{{ ucfirst($user->first_name)}} {{ ucfirst($user->last_name)}}" as an active content creator his all courses will be displayed to the users.</p>
+                        @endif
+
                         <div class="becomeacreator-btn-action">
                             @if ($user->status == 1)
                                 <a href="{{ url('super-admin/inactive/'.encrypt_decrypt('encrypt',$user->id))}}" class="save-btn">Yes! Inactive</a>
@@ -450,7 +456,7 @@
                                 </div>
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                        <button class="cancel-btn"type="button" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                         <button class="save-btn" type="submit">Save</button>
                                     </div>
                                 </div>
@@ -461,4 +467,10 @@
             </div>
         </div>
     </div>
+
+    <script>
+        $('#Editcourses').on('hidden.bs.modal', function(e) {
+            $(this).find('form').trigger('reset');
+        })
+    </script>
 @endsection

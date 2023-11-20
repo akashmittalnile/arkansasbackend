@@ -133,7 +133,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                    <button class="cancel-btn" type="button" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                     <button class="save-btn" type="submit">Save</button>
                                 </div>
                             </div>
@@ -181,7 +181,7 @@
                             </div>
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
+                                    <button class="cancel-btn" type="button" data-bs-dismiss="modal" aria-label="Close">Cancel</button>
                                     <button class="save-btn" type="submit">Save</button>
                                 </div>
                             </div>
@@ -205,6 +205,11 @@
         $('#Editcourses').modal('show');
 
     }
+
+    $('#Addcourses, #Editcourses').on('hidden.bs.modal', function(e) {
+        $(this).find('form').trigger('reset');
+    })
+
 </script>
 <script>
     $(document).ready(function() {
