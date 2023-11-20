@@ -2713,6 +2713,8 @@ class ApiController extends Controller
             'orientation' => 'L',
             'mode' => 'utf-8'
         ]);
+        $mpdf->img_dpi = 6;
+        $mpdf->imageVars['myvariable'] = file_get_contents('assets/website-images/logo-2.png');
         // $mpdf->showImageErrors = true;
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->list_indent_first_level = 0; 
