@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Carbon\Carbon;
 use App\Models\Address;
 use App\Models\AddToCart;
+use App\Models\Category;
 use App\Models\Coupon;
 use App\Models\Course;
 use App\Models\Order;
@@ -239,6 +240,8 @@ class CartController extends Controller
                         if(isset($value->introduction_image)){
                             $temp['image'] = url('upload/disclaimers-introduction/'.$value->introduction_image);  
                         } else $temp['image'] = null;
+                        $avgRating = DB::table('user_review as ur')->where('object_id', $item->object_id)->where('object_type', $item->object_type)->avg('rating');
+                        $temp['avg_rating'] = number_format($avgRating, 1);
                     }
                     $qty += $item->quantity;
                     $price += $value->course_fee;
@@ -268,6 +271,21 @@ class CartController extends Controller
                         $res['items'][$i]['product_id'] = $old['products'][$i]['product_id'];
                         $res['items'][$i]['name'] = $old['products'][$i]['name'];
                         $res['items'][$i]['short_description'] = $old['products'][$i]['short_description'];
+
+                        $category = Category::where('id', $pro->category_id)->first();
+                        $added = User::where('id', $pro->added_by)->first();
+                        $avgRating = DB::table('user_review as ur')->where('object_id', $pro->id)->where('object_type', 2)->avg('rating');
+                        
+                        if ($added->profile_image == '' || $added->profile_image == null) {
+                            $profile_image = null;
+                        } else {
+                            $profile_image = url('upload/profile-image/' . $added->profile_image);
+                        }
+                        $res['items'][$i]['category_id'] = $category->id ?? null;
+                        $res['items'][$i]['category_name'] = $category->name ?? null;
+                        $res['items'][$i]['content_creator_image'] = $profile_image;
+                        $res['items'][$i]['content_creator_name'] = $added->first_name.' '.$added->last_name;
+                        $res['items'][$i]['avg_rating'] = number_format($avgRating, 1);
     
                         $qty += $old['products'][$i]['qty'];
                         $price += $old['products'][$i]['total_amount'];
