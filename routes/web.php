@@ -185,6 +185,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/account-approval-request', 'SuperAdminController@account_approval_request')->name('SA.AccountApprovalRequest');
         Route::get('/super-admin/update-approval-request/{id}/{status}', 'SuperAdminController@update_approval_request')->name('SA.UpdateApprovalRequest');
         Route::get('/super-admin/addcourse2/{userID}/{courseID}/{chapterID?}', 'SuperAdminController@addcourse2')->name('SA.Addcourse2');
+        Route::post('/super-admin/listed-course/submit-chapter', 'SuperAdminController@newListedCourseChapter')->name('SA.Listed-Course.SubmitChapter');
+        Route::post('/super-admin/listed-course/edit-submit-chapter', 'SuperAdminController@editListedCourseChapter')->name('SA.Listed-Course.EditSubmitChapter');
+        Route::get('/super-admin/listed-course/delete-chapter/{id}/{userID}', 'SuperAdminController@deleteListedCourseChapter')->name('SA.Listed-Course.DeleteChapter');
         // Route::get('/super-admin/addcourse2/{userID}/{courseID}/{chapterID}', 'SuperAdminController@course_list')->name('SA.CourseList');
 
         Route::get('/super-admin/payment-requests/{userID}', 'SuperAdminController@payment_request')->name('SA.Payment.Request');
@@ -238,7 +241,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/super-admin/update-post', 'SuperAdminController@update_post')->name('SA.Update.Post');
 
         Route::get('/super-admin/content-creator-course', 'SuperAdminController@content_creator_course')->name('SA.Content-Creator.Course');
-
+        Route::get('/super-admin/content-creator-course/chapters/{courseID}/{chapterID?}', 'SuperAdminController@content_creator_course_chapters')->name('SA.Content-Creator.Course.Chapter');
+        Route::post('/super-admin/content-creator-course/submit-chapter', 'SuperAdminController@newContentCourseChapter')->name('SA.Content-Creator.SubmitChapter');
+        Route::post('/super-admin/content-creator-course/edit-submit-chapter', 'SuperAdminController@editContentCourseChapter')->name('SA.Content-Creator.EditSubmitChapter');
+        Route::get('/super-admin/content-creator-course/delete-chapter/{id}', 'SuperAdminController@deleteContentCourseChapter')->name('SA.Content-Creator.DeleteChapter');
     });
     
 });

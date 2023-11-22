@@ -2164,7 +2164,7 @@ class ApiController extends Controller
             $user_id = Auth::user()->id;
             if ($user_id) {
                 $cart_value = AddToCart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
-                $cart_count = AddToCart::where('userid', $user_id)->count();
+                $cart_count = cartCount();
                 $discount = 0;
                 $total_amount = ($cart_value) - $discount;
 
@@ -2385,7 +2385,7 @@ class ApiController extends Controller
 
     public function cart_count(Request $request){
         try{
-            $cart = AddToCart::where('userid', auth()->user()->id)->count();
+            $cart = cartCount();
             $notification = Notify::where('user_id', auth()->user()->id)->count();
             return response()->json([
                 'status' => true,

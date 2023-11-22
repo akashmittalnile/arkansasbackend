@@ -145,11 +145,12 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Coupon Available for ? <span class="text-danger">*</span></label>
-                                    <select class="form-control" name="object_type" disabled style="padding: 13px 10px;">
+                                    <input type="text" value="Product" disabled class="form-control" name="object_type">
+                                    <!-- <select class="form-control" name="object_type" disabled style="padding: 13px 10px;">
                                         <option value="">Coupon Available for ?</option>
                                         <option value="1">Courses</option>
                                         <option value="2" selected>Products</option>
-                                    </select>
+                                    </select> -->
                                 </div>
                             </div>
 
@@ -170,7 +171,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close" type="button">Cancel</button>
-                                    <button class="save-btn" type="submit">Add</button>
+                                    <button class="save-btn" type="submit">Submit</button>
                                 </div>
                             </div>
                         </div>
@@ -225,12 +226,13 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <label for="">Coupon Available for ? <span class="text-danger">*</span></label>
-                                    <select class="form-control" name="object_type" disabled style="padding: 13px 10px;">
+                                    <label for="">Coupon Available for <span class="text-danger">*</span></label>
+                                    <input type="text" value="Product" disabled class="form-control" name="object_type">
+                                    <!-- <select class="form-control" name="object_type" disabled style="padding: 13px 10px;">
                                         <option value="">Coupon Available for ?</option>
                                         <option value="1">Courses</option>
                                         <option value="2" selected>Products</option>
-                                    </select>
+                                    </select> -->
                                 </div>
                             </div>
 
@@ -251,7 +253,7 @@
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <button class="cancel-btn" data-bs-dismiss="modal" aria-label="Close" type="button">Cancel</button>
-                                    <button class="save-btn" type="submit">Add</button>
+                                    <button class="save-btn" type="submit">Update</button>
                                 </div>
                             </div>
                         </div>

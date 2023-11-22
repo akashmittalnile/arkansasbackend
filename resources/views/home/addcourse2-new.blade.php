@@ -96,9 +96,9 @@
                                 @endphp
                                 <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                        <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/website-images/drag.png') }}" alt="">
+                                                <img width="24" src="{{ asset('assets/website-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Video<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
@@ -211,9 +211,9 @@
                                 @endphp
                                 <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                        <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/website-images/drag.png') }}" alt="">
+                                                <img width="24" src="{{ asset('assets/website-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample{{ $data->id }}">
@@ -364,9 +364,9 @@
                                 @endphp
                                 <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                        <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/website-images/drag.png') }}" alt="">
+                                                <img width="24" src="{{ asset('assets/website-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">PDF<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
@@ -478,9 +478,9 @@
                                 @endphp
                                 <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                        <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/website-images/drag.png') }}" alt="">
+                                                <img width="24" src="{{ asset('assets/website-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'ASDIV' . $randomNum }}">Assignment<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
@@ -550,9 +550,9 @@
                                 @endphp
                                 <div class="edit-pmu-form-item" data-id="{{ $data->id }}">
                                     <div class="edit-pmu-heading">
-                                        <div class="edit-pmu-text drag d-flex flex-row align-items-center" draggable="true" data-id="{{ $data->id }}">
+                                        <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="">
+                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Survey<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>

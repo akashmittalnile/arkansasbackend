@@ -6,6 +6,7 @@ use App\Models\Notify;
 use App\Models\Tag;
 use Illuminate\Support\Carbon;
 use App\Mail\DefaultMail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 
     if (!function_exists('sendNotification')) {
@@ -216,5 +217,33 @@ use Illuminate\Support\Facades\Mail;
         function sendEmail($data) {
             $data['from_email'] = env('MAIL_FROM_ADDRESS');
             Mail::to($data['to_email'])->send(new DefaultMail($data));
+        } 
+    }
+
+    if(! function_exists('getUser')){
+        function getUser($role = null, $status = null) {
+            $data = DB::table('users');
+            if($role != null) $data->where('role', $role);
+            if($status != null) $data->where('status', $status);
+            else $data->whereIn('status', [1,2]);
+            $data = $data->get()->toArray();
+            return $data;
+        } 
+    }
+
+    if(! function_exists('cartCount')){
+        function cartCount() {
+            $count = DB::table('shopping_cart')->where('userid', auth()->user()->id)->count();
+            if($count > 0){
+                return $count;
+            }else{
+                $cart = DB::table('temp_data')->where('user_id', auth()->user()->id)->where('type', 'cart')->first();
+                if (isset($cart->id)) {
+                    $old = unserialize($cart->data);
+                    return $old['totalItem'] ?? 0;
+                }else{
+                    return 0;
+                }
+            }
         } 
     }

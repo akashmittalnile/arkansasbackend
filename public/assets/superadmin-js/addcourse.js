@@ -609,7 +609,6 @@ $(document).ready(function () {
                                         </div>
 
                                         <button type="button" class="add-option add-option1" id="addOption-${countForm}-${questionCounter}">Add Option</button>
-                                        <button type="button" class="remove-question remove-question1" data-id="lok">Remove Question</button>
                                     </div>
                                 </div>
                                 <div class="pmu-add-answer-info">

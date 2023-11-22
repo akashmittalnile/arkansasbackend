@@ -9,18 +9,28 @@
         <div class="pmu-search-filter wd70">
             <form action="">
                 <div class="row g-2">
-                    <div class="col-md-5">
+                    <div class="col-md-3">
                         <div class="form-group search-form-group">
                             <input type="text" class="form-control" name="name" placeholder="Search by Course Name" value="{{request()->name}}">
                             <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg')!!}"></span>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group">
                             <select class="form-control" name="status">
                                 <option @if(request()->status=="") selected @endif value="">Select Course Type</option>
                                 <option @if(request()->status=="1") selected @endif value="1">Published</option>
                                 <option @if(request()->status=="0") selected @endif value="0">Unpublished</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group">
+                            <select class="form-control" name="creator">
+                                <option @if(request()->creator=="") selected @endif value="">Select Content Creator</option>
+                                @foreach(getUser(2) as $val)
+                                <option @if(request()->creator==encrypt_decrypt('encrypt',$val->id)) selected @endif value="{{encrypt_decrypt('encrypt',$val->id)}}">{{$val->first_name ?? "NA"}} {{$val->last_name ?? ""}}</option>
+                                @endforeach
                             </select>
                         </div>
                     </div>
@@ -53,7 +63,7 @@
             @elseif(!$course->isEmpty())
             @foreach($course as $data)
             <div class="creator-table-item">
-                <div class="creator-table-col-4">
+                <div class="creator-table-col-3">
                     <div class="creator-table-content">
                         <div class="creator-profile-info">
                             <div class="creator-profile-image">
@@ -64,10 +74,17 @@
                                 @endif
                             </div>
                             <div class="creator-profile-text">
-                                <h2>Course Name</h2>
-                                <p>{{ ucfirst($data->title) }}</p>
+                                <h2>Creator Name</h2>
+                                <p>{{ $data->first_name ?? "NA" }} {{ $data->last_name ?? "" }}</p>
                             </div>
                         </div>
+                    </div>
+                </div>
+
+                <div class="creator-table-col-3">
+                    <div class="creator-table-box">
+                        <div class="creator-table-text">Course Name</div>
+                        <div class="creator-table-value">{{ ucfirst($data->title) }}</div>
                     </div>
                 </div>
 
@@ -78,23 +95,23 @@
                     </div>
                 </div>
 
-                <div class="creator-table-col-3">
-                    <div class="creator-table-box">
-                        <div class="creator-table-text">Creator Name</div>
-                        <div class="creator-table-value">{{ $data->first_name ?? "NA" }} {{ $data->last_name ?? "" }}</div>
-                    </div>
-                </div>
-
-                <div class="creator-table-col-2">
+                <div class="creator-table-col-1">
                     <div class="creator-table-box">
                         <div class="creator-table-text">Course Status</div>
                         <div class="creator-table-value">@if ($data->status==1) Published @elseif($data->status == 0) Unpublished @endif</div>
                     </div>
                 </div>
 
+                <div class="creator-table-col-2">
+                    <div class="creator-table-box">
+                        <div class="creator-table-text">Course Created Date</div>
+                        <div class="creator-table-value">{{ date('d M Y', strtotime($data->created_date)) }}</div>
+                    </div>
+                </div>
+
                 <div class="creator-table-col-1">
                     <div class="mon-table-box">
-                        <a href="{{ route('SA.Course.Chapter',encrypt_decrypt('encrypt', $data->id)) }}" class="btn-go">
+                        <a href="{{ route('SA.Content-Creator.Course.Chapter',encrypt_decrypt('encrypt', $data->id)) }}" class="btn-go">
                             <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}">
                         </a>
                     </div>

@@ -106,5 +106,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('coupon-applied', [CartController::class, "coupon_applied"]);
     Route::post('remove-applied-coupon', [CartController::class, "remove_coupon_applied"]);
     Route::post('save-order', [CartController::class, "save_order"]);
+    Route::post('empty-cart', [CartController::class, "empty_cart"]);
 
 });

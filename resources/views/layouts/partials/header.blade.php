@@ -13,7 +13,9 @@
                     <a class="nav-link  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="noti-icon">
                             <img src="{!! url('assets/website-images/notification.svg') !!}" alt="user">
+                            @if(count(getNotification()) > 0)
                             <span class="noti-badge"></span>
+                            @endif
                         </div>
                     </a>
 

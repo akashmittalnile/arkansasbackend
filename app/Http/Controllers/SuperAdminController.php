@@ -780,6 +780,36 @@ class SuperAdminController extends Controller
         }
     }
 
+    public function newContentCourseChapter(Request $request) 
+    {
+        try {
+            $course = new CourseChapter;
+            $course->course_id = $request->courseID;
+            $course->chapter = $request->name;
+            $course->save();
+            $encrypt = encrypt_decrypt('encrypt',$request->courseID);
+            $encryptChapter = encrypt_decrypt('encrypt',$course['id ']);
+            return redirect()->route('SA.Content-Creator.Course.Chapter', ['courseID'=> $encrypt, 'chapterID'=> $encryptChapter])->with('message', 'Chapter created successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function newListedCourseChapter(Request $request) 
+    {
+        try {
+            $course = new CourseChapter;
+            $course->course_id = $request->courseID;
+            $course->chapter = $request->name;
+            $course->save();
+            $encrypt = encrypt_decrypt('encrypt',$request->courseID);
+            $encryptChapter = encrypt_decrypt('encrypt',$course['id ']);
+            return redirect()->route('SA.Addcourse2', ['userID'=> $request->userID, 'courseID'=> $encrypt, 'chapterID'=> $encryptChapter])->with('message', 'Chapter created successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     public function editCourseChapter(Request $request) 
     {
         try {
@@ -789,6 +819,34 @@ class SuperAdminController extends Controller
             $encrypt = encrypt_decrypt('encrypt',$request->courseID);
             $encryptChapter = encrypt_decrypt('encrypt',$request->chapterID);
             return redirect()->route('SA.Course.Chapter', ['courseID'=> $encrypt, 'chapterID'=> $encryptChapter])->with('message', 'Chapter updated successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function editContentCourseChapter(Request $request) 
+    {
+        try {
+            $course = CourseChapter::where('id', $request->chapterID)->update([
+                'chapter' => $request->chaptername ?? null
+            ]);
+            $encrypt = encrypt_decrypt('encrypt',$request->courseID);
+            $encryptChapter = encrypt_decrypt('encrypt',$request->chapterID);
+            return redirect()->route('SA.Content-Creator.Course.Chapter', ['courseID'=> $encrypt, 'chapterID'=> $encryptChapter])->with('message', 'Chapter updated successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function editListedCourseChapter(Request $request) 
+    {
+        try {
+            $course = CourseChapter::where('id', $request->chapterID)->update([
+                'chapter' => $request->chaptername ?? null
+            ]);
+            $encrypt = encrypt_decrypt('encrypt',$request->courseID);
+            $encryptChapter = encrypt_decrypt('encrypt',$request->chapterID);
+            return redirect()->route('SA.Addcourse2', ['userID' => $request->userID, 'courseID'=> $encrypt, 'chapterID'=> $encryptChapter])->with('message', 'Chapter updated successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -804,6 +862,36 @@ class SuperAdminController extends Controller
             if(isset($chapter->id)) $chapterID = encrypt_decrypt('encrypt',$chapter->id);
             else $chapterID = "";
             return redirect('super-admin/course/'.$encrypt.'/'.$chapterID)->with('message','Chapter deleted successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function deleteContentCourseChapter($id) 
+    {
+        try {
+            $course_id = CourseChapter::where('id',$id)->first();
+            $encrypt = encrypt_decrypt('encrypt',$course_id->course_id);
+            CourseChapter::where('id',$id)->delete();
+            $chapter = CourseChapter::where('course_id',$course_id->course_id)->orderByDesc('id')->first();
+            if(isset($chapter->id)) $chapterID = encrypt_decrypt('encrypt',$chapter->id);
+            else $chapterID = "";
+            return redirect('super-admin/content-creator-course/chapters/'.$encrypt.'/'.$chapterID)->with('message','Chapter deleted successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function deleteListedCourseChapter($id, $userID) 
+    {
+        try {
+            $course_id = CourseChapter::where('id',$id)->first();
+            $encrypt = encrypt_decrypt('encrypt',$course_id->course_id);
+            CourseChapter::where('id',$id)->delete();
+            $chapter = CourseChapter::where('course_id',$course_id->course_id)->orderByDesc('id')->first();
+            if(isset($chapter->id)) $chapterID = encrypt_decrypt('encrypt',$chapter->id);
+            else $chapterID = "";
+            return redirect('super-admin/addcourse2/'.$userID.'/'.$encrypt.'/'.$chapterID)->with('message','Chapter deleted successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1739,7 +1827,7 @@ class SuperAdminController extends Controller
         $datas = CourseChapterStep::where('course_chapter_id', $chapterID)->orderBy('sort_order')->get();
         $ccreator = true;
         
-        return view('super-admin.course-chapter-list',compact('datas','chapters','courseID','chapterID','userID', "ccreator"));
+        return view('super-admin.listed-course-chapters',compact('datas','chapters','courseID','chapterID','userID', "ccreator"));
     }
 
     public function course_list($userID,$courseID,$chapterID) 
@@ -2353,8 +2441,28 @@ class SuperAdminController extends Controller
             $course = Course::join('users as u', 'u.id', '=', 'course.admin_id');
             if($request->filled('name')) $course->where('title', 'like', '%'.$request->name.'%');
             if($request->filled('status')) $course->where('course.status', $request->status);
-            $course = $course->where('admin_id', '!=', '1')->select('u.first_name', 'u.last_name', 'course.*')->paginate(10);
+            if($request->filled('creator')) $course->where('u.id', encrypt_decrypt('decrypt', $request->creator));
+            $course = $course->where('admin_id', '!=', '1')->select('u.first_name', 'u.last_name', 'u.profile_image', 'course.*')->orderByDesc('course.id')->paginate(10);
             return view('super-admin.content-creator-course')->with(compact('course'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function content_creator_course_chapters(Request $request, $courseID, $chapterID=null){
+        try {
+            $courseID = encrypt_decrypt('decrypt',$courseID);
+            $chapters = CourseChapter::where('course_id',$courseID)->get();
+            if($chapterID != null && isset($chapterID)) {
+                $chapterID = encrypt_decrypt('decrypt',$chapterID);
+            } else {
+                if(count($chapters)>0){
+                   $firstChapter = CourseChapter::where('course_id',$courseID)->first();
+                    $chapterID = $firstChapter->id;  
+                } else $chapterID = null;
+            } 
+            $datas = CourseChapterStep::where('course_chapter_id', $chapterID)->orderBy('sort_order')->get();
+            return view('super-admin.content-creator-course-chapter',compact('datas','chapters','courseID','chapterID'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

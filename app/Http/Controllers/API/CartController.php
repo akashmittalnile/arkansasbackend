@@ -402,6 +402,26 @@ class CartController extends Controller
         }
     }
 
+    public function empty_cart(){
+        try{
+            $count = DB::table('shopping_cart')->where('userid', auth()->user()->id)->count();
+            if($count > 0){
+                DB::table('shopping_cart')->where('userid', auth()->user()->id)->delete();
+                return response()->json(['status' => true, 'message' => 'Cart empty successfully']);
+            }else{
+                $cart = DB::table('temp_data')->where('user_id', auth()->user()->id)->where('type', 'cart')->first();
+                if (isset($cart->id)) {
+                    DB::table('temp_data')->where('user_id', auth()->user()->id)->where('type', 'cart')->delete();
+                    return response()->json(['status' => true, 'message' => 'Cart empty successfully']);
+                }else{
+                    return response()->json(['status' => false, 'message' => 'Cart empty already!']);
+                }
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
     public function remove_cart(Request $request)
     {
         try {

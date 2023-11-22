@@ -11,7 +11,7 @@
         <div class="pmu-filter">
             <div class="row">
                 <div class="col-md-12">
-                    <a href="{{ route('SA.Course') }}" class="add-more">Back</a>
+                    <a href="{{ route('SA.ListedCourse', $userID) }}" class="add-more">Back</a>
                     {{-- <a class="add-more" data-bs-toggle="modal" data-bs-target="#SaveContinue">Save &
                             Continue</a> --}}
                     {{-- <a class="add-more" id="form">Save & Continue</a> --}}
@@ -41,8 +41,8 @@
                                 @else
                                 <div class="chapter-item">
                                     @endif
-                                    <a href="{{ route('SA.Course.Chapter', ['courseID'=>encrypt_decrypt('encrypt',$chapter->course_id), 'chapterID'=> encrypt_decrypt('encrypt',$chapter->id)] ) }}"><span>{{ $chapter->chapter ?? "NA" }}</span></a>
-                                    <a href="{{ url('super-admin/delete-chapter/' . $chapter->id) }}" onclick="return confirm('Are you sure you want to delete this chapter?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}">
+                                    <a href="{{ route('SA.Addcourse2', ['userID' => $userID, 'courseID'=>encrypt_decrypt('encrypt',$chapter->course_id), 'chapterID'=> encrypt_decrypt('encrypt',$chapter->id)] ) }}"><span>{{ $chapter->chapter ?? "NA" }}</span></a>
+                                    <a href="{{ url('super-admin/listed-course/delete-chapter/' . $chapter->id . '/' . $userID) }}" onclick="return confirm('Are you sure you want to delete this chapter?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}">
                                     </a>
                                 </div>
                             </div>
@@ -773,11 +773,12 @@
                     <div class="becomeacreator-form-info">
                         <h2>Add Chapter</h2>
                         <div class="row">
-                            <form method="POST" action="{{ route('SA.SubmitChapter') }}" id="add-chapter-form" autocomplete="off"> @csrf
+                            <form method="POST" action="{{ route('SA.Listed-Course.SubmitChapter') }}" id="add-chapter-form" autocomplete="off"> @csrf
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <input type="text" required name="name" class="form-control" placeholder="Enter chapter name here..." >
                                         <input type="hidden" name="courseID" value="{{ $courseID }}" >
+                                        <input type="hidden" name="userID" value="{{ $userID }}" >
                                     </div>
                                 </div>
                                 <div class="col-md-12">
@@ -800,12 +801,13 @@
                     <div class="becomeacreator-form-info">
                         <h2>Edit Chapter</h2>
                         <div class="row">
-                            <form method="POST" action="{{ route('SA.EditSubmitChapter') }}" id="add-chapter-form" autocomplete="off"> @csrf
+                            <form method="POST" action="{{ route('SA.Listed-Course.EditSubmitChapter') }}" id="add-chapter-form" autocomplete="off"> @csrf
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <input type="text" required name="chaptername" class="form-control" placeholder="Enter chapter name here..." >
                                         <input type="hidden" name="courseID" value="{{ $courseID }}" >
                                         <input type="hidden" name="chapterID" value="" >
+                                        <input type="hidden" name="userID" value="{{ $userID }}" >
                                     </div>
                                 </div>
                                 <div class="col-md-12">
