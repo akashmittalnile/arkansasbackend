@@ -119,7 +119,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button class="cancelbtn">Cancel</button>
+                                    <button class="cancelbtn" type="button">Cancel</button>
                                     <button class="Createbtn" type="submit">Save</button>
                                 </div>
                             </div>
@@ -309,6 +309,8 @@
                 },
                 phone: {
                     required: 'Please enter phone',
+                    minlength: 'Please enter valid phone number',
+                    maxlength: 'Please enter valid phone number'
                 },
                 bus_name: {
                     required: 'Please enter business title',

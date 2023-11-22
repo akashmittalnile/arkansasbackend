@@ -2471,4 +2471,14 @@ class SuperAdminController extends Controller
             return $e->getMessage();
         }
     }
+
+    public function help_support_save_img(Request $request){
+        try {
+            $name = time().'.'.$request->image->extension();  
+            $request->image->move(public_path('upload/chat'), $name); 
+            return response()->json(['status' => true, 'url' => $name, 'message' => 'image upload successfully.']);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

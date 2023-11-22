@@ -83,7 +83,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/view-course-details/{id}', 'HomeController@viewCourse')->name('Home.view.course');
         Route::get('/delete-course/{id}', 'HomeController@deleteCourse')->name('Home.delete.course');
         Route::get('/performance', 'HomeController@performance')->name('Home.Performance');
+
         Route::get('/help-support', 'HomeController@helpSupport')->name('Home.HelpSupport');
+        Route::post('/help-support-save-img', 'HomeController@help_support_save_img')->name('Home.HelpSupport.Save.Img');
+
         Route::get('/addcourse', 'HomeController@addcourse')->name('Home.Addcourse');
         Route::get('/admin/addcourse2/{courseID}', 'HomeController@add_course2')->name('Home.Addcourse2');
         Route::get('/admin/addcourse2/{courseID}/{chapterID}', 'HomeController@course_list')->name('Home.CourseList');
@@ -140,7 +143,10 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/addproduct', 'SuperAdminController@add_product')->name('SA.AddProduct');
         Route::post('/super-admin/submitcourse', 'SuperAdminController@submitcourse')->name('SA.SubmitCourse');
         Route::post('/super-admin/submitproduct', 'SuperAdminController@submitproduct')->name('SA.SubmitProduct');
+
         Route::get('/super-admin/help-support', 'SuperAdminController@help_support')->name('SA.HelpSupport');
+        Route::post('/super-admin/help-support-save-img', 'SuperAdminController@help_support_save_img')->name('SA.HelpSupport.Save.Img');
+
         Route::get('/super-admin/performance', 'SuperAdminController@performance')->name('SA.Performance');
         Route::get('/super-admin/content-creators', 'SuperAdminController@content_creators')->name('SA.ContentCreators');
         Route::get('/super-admin/course', 'SuperAdminController@course')->name('SA.Course');

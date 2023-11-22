@@ -43,7 +43,7 @@ class CartController extends Controller
                     $isCart = AddToCart::where('userid', $user_id)->count();
                     if($request->object_type==2){
                         if($isCart > 0){
-                            return response()->json(['status' => false, 'message' => "You can't add to cart a product now. Only one type of items allow either Course or Product."]);
+                            return response()->json(['status' => false, 'message' => "You can't add to cart a product now. Only one type of items allow either Course or Product.", 'error' => 2]);
                         }
                         $product = Product::where('id', $request->object_id)->first();
                         $proImg = ProductAttibutes::where('product_id', $request->object_id)->where('attribute_code', 'cover_image')->first();
@@ -65,7 +65,7 @@ class CartController extends Controller
                     }else if($request->object_type==1){
                         // return response()->json(['status' => false, 'message' => "You can't add to cart a courses now. Work in progress"]);
                         if (isset($isAlready->id)) {
-                            return response()->json(['status' => false, 'message' => "You can't add to cart a courses now. Only one type of items allow either Course or Product."]);
+                            return response()->json(['status' => false, 'message' => "You can't add to cart a courses now. Only one type of items allow either Course or Product.", 'error' => 1]);
                         }
                         $isAlreadyCart = AddToCart::where('userid', $user_id)->where('object_id', $request->object_id)->first();
                         if(isset($isAlreadyCart->id)){

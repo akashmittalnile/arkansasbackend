@@ -1,6 +1,7 @@
 @extends('super-admin-layouts.app-master')
 @section('title', 'Permanent Makeup University - Help Support')
 @section('content')
+<meta name="_token" content="{{csrf_token()}}" />
 <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/help.css') !!}">
 <div class="body-main-content">
     <div class="message-section">
@@ -33,9 +34,9 @@
                                                             <div class="d-flex flex-row">
                                                                 <div>
                                                                     @if($val->profile_image!="" && $val->profile_image!=null)
-                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('upload/profile-image/'.$val->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60">
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('upload/profile-image/'.$val->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @else
-                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60">
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @endif
                                                                     <span class="badge bg-success badge-dot"></span>
                                                                 </div>
@@ -78,10 +79,11 @@
                                         </div>
 
                                         <div class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2">
-                                            <img style="border-radius: 50%;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" id="userAvatar">
+                                            <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60" id="userAvatar">
                                             <input type="text" class="form-control form-control-lg border ms-3" id="message-input" placeholder="Type message">
-                                            <a class="fs-24 ms-3 text-muted" href="#!"><i class="las la-paperclip"></i></a>
-                                            <a class="fs-24 ms-3 text-muted" href="#!"><i class="las la-smile"></i></a>
+                                            <a class="fs-24 ms-3 text-muted" id="image-attach" href="#!"><i class="las la-paperclip"></i></a>
+                                            <input type="file" hidden accept="image/png, image/jpg, image/jpeg" id="upload-file" name="image-attachment">
+                                            <!-- <a class="fs-24 ms-3 text-muted" href="#!"><i class="las la-smile"></i></a> -->
                                             <a class="fs-24 ms-3" href="#!"><i class="las la-paper-plane btnSend"></i></a>
                                         </div>
 
@@ -103,6 +105,15 @@
 </div>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
 <script>
+
+    $(document).on('click', "#image-attach", function(){
+        $("input[name='image-attachment']").trigger('click');
+    })
+
+    $(document).on('change', "input[name='image-attachment']", function(){
+        $('.la-paperclip').css('color', '#0d6efd');
+    })
+
     $(document).ready(function(){
         const userCount = "{{ count($user) }}";
         $("#search-addon").on("click", function() {
@@ -173,11 +184,12 @@
     }
     let random = result;
 
-    window.sendNewMessage = async function(group_id_new2, message, receiver_id, userName) {
-        //alert(6);
+    window.sendNewMessage = async function(group_id_new2, message, receiver_id, userName, image = '') {
+        // alert(6);
         const chatCol = collection(defaultFirestore, 'arkansas_support/' + group_id_new2 + '/messages');
         let data = {
             text: message ?? "HHH",
+            image: image,
             sendBy: '1',
             sendto: receiver_id,
             adminName: 'Arkansas',
@@ -217,10 +229,14 @@
 </script>
 
 <script>
+    const baseUrl = "{{ env('APP_URL') }}" + '/upload/chat/';
     $(document).ready(function() {
 
         const receiver_id = $("#ajax-chat-url").val();
         
+        
+
+              
 
         $(document).on('click', '.btnSend', function() {
             const user_firstName = $("#ajax-chat-url-first").val();
@@ -230,17 +246,46 @@
             const group_id = "1-" + receiver_id;
             let message = $('#message-input');
             let time = moment().format('MMM DD, YYYY HH:mm A');
-            if (message.val() != '') {
-                sendNewMessage(group_id, message.val(), receiver_id, userName);
-                showMessage(message.val(), time, userName);
-                message.val('').focus();
-            }
-
+            let image = '';
+            if($('#upload-file')[0].files[0]) image = URL.createObjectURL($('#upload-file')[0].files[0]);
+            else image = '';
+            if (message.val().trim() != '' || image!='') {
+                showMessage(message.val(), time, userName, image);
+                let formData = new FormData();
+                formData.append('image',$('#upload-file')[0].files[0]);
+                formData.append('_token',"{{csrf_token()}}");
+                if(image !== undefined && image !== ''){
+                    $.ajax({
+                        type: 'post',
+                        url : "{{url('/')}}" + '/super-admin/help-support-save-img',
+                        data: formData,
+                        contentType: false,
+                        cache: false,
+                        processData:false,
+                        success : function(res){
+                            console.log(res);
+                            if(res.status==false){
+                                alert(res.msg);
+                                return false;
+                            }
+                            if(res.status){
+                                sendNewMessage(group_id, message.val(), receiver_id, userName, res.url);
+                                message.val('').focus();
+                                $('#upload-file').val('');
+                                $('.la-paperclip').css('color', '#6c757d');
+                            }
+                        }
+                    })
+                }else{
+                    sendNewMessage(group_id, message.val(), receiver_id, userName);
+                    message.val('').focus();
+                }
+            } else return;
         })
     });
 
     function showAllMessages(list, ajax_call = false) {
-        $('.messages-card').html('');
+        $('.messages-card').html('<div style="margin-top: 25%; font-size: 1rem;" class="d-flex align-items-center justify-content-center">No messages found</div>');
         if (list.length == 0) return false;
         let html = `${list.map(row => admin(row,ajax_call)).join('')}`;
         $('.messages-card').html(html);
@@ -251,13 +296,15 @@
         }
     }
 
-    function showMessage(message, time, userName) {
+    function showMessage(message, time, userName, image) {
+        // alert(1);
         let msg = `<div class="d-flex flex-row justify-content-end">
                 <div>
-                    <p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${message}</p>
+                    ${(image !== undefined && image !== '') ? `<img style="border: 1px solid #eee; border-radius: 8px; box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;" src="${image}" alt="avatar" class="d-flex align-self-center m-3" width="100"/>` : ''}
+                    ${(message !== '' && message !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${message}</p>` : ''}
                     <p class="small me-3 mb-3 rounded-3 text-muted">${time}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 100%; border-radius: 50%">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`;
         $('.messages-card').append(msg);
 
@@ -274,19 +321,21 @@
         if (row.sendto == 1) {
 
             html = `<div class="d-flex flex-row justify-content-start">
-                    <img style="border-radius: 50%;" src="${userProImg}" alt="avatar" class="d-flex align-self-center me-3" width="60">
+                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="${userProImg}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                     <div>
-                        <p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">${row.text}</p>
+                        ${(row.image !== undefined && row.image !== '') ? `<img style="border: 1px solid #eee; border-radius: 8px; box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;" src="${baseUrl+row.image}" alt="avatar" class="d-flex align-self-center m-3" width="100"/>` : ''}
+                        ${(row.text !== '' && row.text !== undefined) ? `<p class="small p-2 ms-3 mb-1 rounded-3" style="background-color: #f5f6f7;">${row.text}</p>` : '' }
                         <p class="small ms-3 mb-3 rounded-3 text-muted float-end">${formattedDate}</p>
                     </div>
                 </div>`;
         } else {
             html = `<div class="d-flex flex-row justify-content-end">
                 <div>
-                    <p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${row.text}</p>
+                    ${(row.image !== undefined && row.image !== '') ? `<img style="border: 1px solid #eee; border-radius: 8px; box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;" src="${baseUrl+row.image}" alt="avatar" class="d-flex align-self-center m-3" width="100"/>` : ''}
+                    ${(row.text !== '' && row.text !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${row.text}</p>` : '' }
                     <p class="small me-3 mb-3 rounded-3 text-muted">${formattedDate}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 100%; border-radius: 50%">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`;
         }
         return html;
