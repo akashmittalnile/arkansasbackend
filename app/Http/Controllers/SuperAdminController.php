@@ -300,7 +300,7 @@ class SuperAdminController extends Controller
                         $setting->save();
                     }
                     
-                    return redirect()->back()->with(['message'=> 'Setting save successfully.', 'tab'=> 2]);
+                    return redirect()->back()->with(['message'=> 'Settings changed successfully.', 'tab'=> 2]);
                 } return redirect()->back()->with(['message'=> 'Invalid Request.', 'tab'=> 2]);
             }
         return view('super-admin.help-support',compact('courses', 'user'));
@@ -2311,7 +2311,7 @@ class SuperAdminController extends Controller
         try{
             $id = encrypt_decrypt('decrypt', $id);
             Coupon::where('id', $id)->delete();
-            return redirect()->back()->with('message', 'Coupon Deleted successfully.');
+            return redirect()->back()->with('message', 'Coupon deleted successfully.');
         } catch (\Exception $e) {
             return $e->getMessage();
         }

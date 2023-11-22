@@ -26,7 +26,7 @@
             <div class="auth-form-card">
                 <div class="auth-form">
                     <h2>Reset Password</h2>
-                    <p>Please enter your otp :- {{ $otp }}</p>
+                    <p>Please enter your otp</p>
                     @include('layouts.partials.messages')
                     <div class="row">
                         <form method="post" action="{{ route('admin.reset_password.otp') }}" id="Form_Login">@csrf
@@ -58,6 +58,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group text-center">
+                                        <a class="becomeacreator-btn" href="{{ route('login') }}">Cancel</a>
                                         <button type="submit" class="becomeacreator-btn">Submit</button>
                                     </div>
                                 </div>

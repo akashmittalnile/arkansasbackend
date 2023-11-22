@@ -193,6 +193,10 @@
             return !/^[A-Za-z0-9 ]+$/.test(value);
         }, 'At least 1 special character is required.');
 
+        $.validator.addMethod("AtLeastOneLowerChar", function(value) {
+            return /^(?=.*[a-z])/.test(value);
+        }, 'At least 1 lower character is required.');
+
         $('#register_form').validate({
             rules: {
                 first_name: {
@@ -230,6 +234,7 @@
                     maxlength: 30,
                     AtLeastOnenumber: true,
                     AtLeastOneUpperChar: true,
+                    AtLeastOneLowerChar: true,
                     AtLeastOneSpecialChar: true
                 },
                 password_confirmation: {

@@ -53,6 +53,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group text-center">
+                                    <a class="becomeacreator-btn" href="{{ route('SA.LoginShow') }}">Cancel</a>
                                     <button class="becomeacreator-btn" type="submit" id="LoginCheck">Submit</button>
                                 </div>
                             </div>
@@ -80,6 +81,10 @@
                 return !/^[A-Za-z0-9 ]+$/.test(value);
             }, 'At least 1 special character is required.');
 
+            $.validator.addMethod("AtLeastOneLowerChar", function(value) {
+                return /^(?=.*[a-z])/.test(value);
+            }, 'At least 1 lower character is required.');
+
             $('#Form_Login').validate({
                 rules: {
                     password: {
@@ -88,6 +93,7 @@
                         maxlength: 30,
                         AtLeastOnenumber: true,
                         AtLeastOneUpperChar: true,
+                        AtLeastOneLowerChar: true,
                         AtLeastOneSpecialChar: true
                     },
                     cnf_password: {

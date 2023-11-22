@@ -43,6 +43,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group text-center">
+                                    <a class="becomeacreator-btn" href="{{ route('login') }}">Cancel</a>
                                     <button class="becomeacreator-btn" type="submit" id="LoginCheck">Submit</button>
                                 </div>
                             </div>
@@ -74,6 +75,8 @@
                 messages: {
                     email: {
                         required: 'Please enter email address',
+                        minlength: 'Please enter valid email address.',
+                        maxlength: 'Please enter valid email address.',
                     },
                 },
                 submitHandler: function(form) {

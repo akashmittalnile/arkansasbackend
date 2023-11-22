@@ -110,7 +110,7 @@ class AdminLoginController extends Controller
                 $user_email = encrypt_decrypt('encrypt',$request->email);
                 return redirect()->route('SA.reset_password', $user_email)->with('message', 'Your OTP was '.$code);
             } else {
-                return redirect()->back()->with('success', 'Invalid email address entered. Try again.....');
+                return redirect()->back()->with('success', 'The email is not registered with Arkansas');
             }
         }
     }
