@@ -54,10 +54,9 @@ class ApiController extends Controller
             $b1 = array();
             $TrendingCourses = array();
             foreach ($trending_courses as $k => $data) {
-                if($data->cc_status != 1){
-                    $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $data->id)->first();
-                    if(!isset($purchasedCourse->id)) continue;
-                }
+                if($data->cc_status != 1) continue;
+                $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $data->id)->first();
+                if(isset($purchasedCourse->id)) continue;
                 $b1['id'] = isset($data->id) ? $data->id : '';
                 $b1['title'] = isset($data->title) ? $data->title : '';
                 $b1['content_creator_name'] = $data->first_name.' '.$data->last_name;
@@ -188,10 +187,9 @@ class ApiController extends Controller
             $b3 = array();
             $SuggestedCourses = array();
             foreach ($suggested_courses as $k => $data) {
-                if($data->cc_status != 1){
-                    $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $data->id)->first();
-                    if(!isset($purchasedCourse->id)) continue;
-                }
+                if($data->cc_status != 1) continue;
+                $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $data->id)->first();
+                if(isset($purchasedCourse->id)) continue;
                 $b3['id'] = isset($data->id) ? $data->id : '';
                 $b3['title'] = isset($data->title) ? $data->title : '';
                 
@@ -422,6 +420,8 @@ class ApiController extends Controller
             $courses = $courses->select('course.*', 'users.first_name', 'users.last_name','users.profile_image','users.category_name')->get();
             $special_course = [];
             foreach($courses as $value){
+                $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $value->id)->first();
+                if(isset($purchasedCourse->id)) continue;
                 $temp['course_fee'] = $value->course_fee;
                 $temp['valid_upto'] = $value->valid_upto;
                 if (!empty($value->certificates)) {

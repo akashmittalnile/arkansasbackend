@@ -4,24 +4,32 @@
 <div class="body-main-content">
     <div class="pmu-filter-section">
         <div class="pmu-filter-heading">
-            <h2>Product Orders</h2>
+            <h2>Orders</h2>
         </div>
         <div class="pmu-search-filter wd80">
             <form action="">
                 <div class="row">
                     <div class="col-md-3">
                         <div class="form-group search-form-group">
-                            <input type="text" class="form-control" name="name" placeholder="Search by Name" value="{{ request()->name }}">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
-                        </div>
-                    </div>
-                    <div class="col-md-3">
-                        <div class="form-group search-form-group">
                             <input type="text" class="form-control" name="number" placeholder="Search by Order Number" value="{{ request()->number }}">
                             <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
                         </div>
                     </div>
-                    <div class="col-md-3">
+                    <div class="col-md-2">
+                        <div class="form-group search-form-group">
+                            <input type="text" class="form-control" name="name" placeholder="Search by Name" value="{{ request()->name }}">
+                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group form-group">
+                            <select name="type" class="form-control">
+                                <option @if(request()->type == "1") selected @endif value="1">Course</option>
+                                <option @if(request()->type == "2") selected @endif value="2">Product</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
                         <div class="form-group">
                             <input type="date" name="order_date" class="form-control" value="{{ request()->order_date }}">
                         </div>
@@ -48,7 +56,7 @@
                     <div class="row">
                         <div class="col-md-9">
                             <div class="pmu-table-info-card">
-                                <h2>Total Admin Earning</h2>
+                                <h2>Total Admin Earning by @if(request()->type == '1') Course @elseif(request()->type == '2') Product @else Course @endif</h2>
                                 <div class="pmu-table-value">${{ number_format((float)$fee->sum ?? 0, 2) }}</div>
                             </div>
                         </div>

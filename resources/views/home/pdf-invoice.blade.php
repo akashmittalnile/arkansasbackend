@@ -154,11 +154,11 @@
               <table align="center" cellpadding="0" cellspacing="0" width="100%" style="border:1px solid #f0f0f0">
                 <thead>
                   <tr>
-                    <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">Sl.No </th>
+                    <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">S.No.</th>
                     <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">Title</th>
                     <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">Type</th>
-                    <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Discount</th>
                     <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Net Amount</th>
+                    <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Quantity</th>
                     <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Admin Fee</th>
                     <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Total Fee Paid</th>
                   </tr>
@@ -175,15 +175,21 @@
                         @else Product
                         @endif
                     </td>
-                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">$0</td>
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->amount-$val->admin_amount }}</td>
-                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->admin_amount }}</td>
-                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->amount }}</td>
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">{{ $val->quantity ?? 1 }}</td>
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->admin_amount * $val->quantity }}</td>
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->amount * $val->quantity }}</td>
                   </tr>
                   @php $amount += $val->amount; $admin += $val->admin_amount;  @endphp
                   @empty
                   @endforelse
 
+                  <tr>
+                    <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Sub Total
+                    </td>
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;"> ${{ $order->total_amount_paid - $order->taxes }}
+                    </td>
+                  </tr>
                   <tr>
                     <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Tax
                     </td>
@@ -193,7 +199,7 @@
                   <tr>
                     <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Total
                     </td>
-                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;"> ${{ $amount + $order->taxes ?? 0 }}
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;"> ${{ $order->total_amount_paid ?? 0 }}
                     </td>
                   </tr>
 
@@ -249,7 +255,7 @@
                   <td valign="top">
 
                     <p style="font-size: 14px; font-weight: 400; line-height: 1.5; color: #858796; padding: 5px 10px; margin:0">
-                      Invoice Value: <b>${{$amount ?? 0}}</b>
+                      Invoice Value: <b>${{$order->total_amount_paid ?? 0}}</b>
                     </p>
                   </td>
                 </tr>

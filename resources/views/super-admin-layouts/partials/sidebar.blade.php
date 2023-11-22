@@ -53,6 +53,13 @@
                     </a>
                 </li>
 
+                <li class="nav-item @if ($currentURL == 'SA.Product.Orders' || $currentURL == 'SA.Product.order.details') active @endif">
+                    <a class="nav-link" href="{{ route('SA.Product.Orders') }}">
+                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/products.svg') !!}"></span>
+                        <span class="menu-title">Orders</span>
+                    </a>
+                </li>
+
                 <li class="nav-item @if ($currentURL == 'SA.Category'||$currentURL == 'SA.AddCategory'||$currentURL == 'SA.EditCategory') active @endif">
                     <a class="nav-link" href="{{ route('SA.Category') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/chart.svg') !!}"></span>
@@ -71,13 +78,6 @@
                     <a class="nav-link" href="{{ route('SA.Products') }}">
                         <span class="menu-icon"><img src="{!! url('assets/superadmin-images/products.svg') !!}"></span>
                         <span class="menu-title">Manage Products</span>
-                    </a>
-                </li>
-
-                <li class="nav-item @if ($currentURL == 'SA.Product.Orders' || $currentURL == 'SA.Product.order.details') active @endif">
-                    <a class="nav-link" href="{{ route('SA.Product.Orders') }}">
-                        <span class="menu-icon"><img src="{!! url('assets/superadmin-images/products.svg') !!}"></span>
-                        <span class="menu-title">Product Orders</span>
                     </a>
                 </li>
 

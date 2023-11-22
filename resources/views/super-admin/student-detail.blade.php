@@ -25,7 +25,7 @@
         <div class="pmu-content-list">
             <div class="pmu-content">
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="user-side-profile">
                             <div class="side-profile-item">
                                 <div class="side-profile-media">
@@ -96,7 +96,7 @@
                             </div>
                         </div> -->
                     </div>
-                    <div class="col-md-8">
+                    <div class="col-md-9">
                         <div class="pmu-filter-section">
                             <div class="pmu-filter-heading">
                                 <h2>Courses</h2>
