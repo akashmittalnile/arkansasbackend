@@ -1022,7 +1022,8 @@ class SuperAdminController extends Controller
         try {
             ChapterQuiz::where('id',$request['question_id'])->update([
                 'title' => $request['question'],
-                    ]);
+                'marks' => $request['marks'] ?? 0,
+            ]);
             return 1;
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1378,6 +1379,16 @@ class SuperAdminController extends Controller
             $id = encrypt_decrypt('decrypt',$id);
             $status = encrypt_decrypt('decrypt',$status);
             $user = User::where('id',$id)->first();
+
+            $data['subject']    = 'Arkansas Account Approval Information';
+            $data['from_email'] = env('MAIL_FROM_ADDRESS');
+            $data['site_title'] = 'Arkansas Account Approval Information';
+            $data['view'] = 'email.approval-info';
+            $data['status'] = ($user->status == 1) ? 2 : 1;
+            $data['customer_name'] = $user->first_name ?? 'NA' + ' ' + $user->last_name ?? '';
+            $data['to_email'] = $user->email ?? 'NA';
+            sendEmail($data);
+            
             $user->status = $status;
             $user->save();
             $courses = Course::where('admin_id',$id)->orderBy('id','DESC')->get();

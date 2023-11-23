@@ -95,10 +95,10 @@ class AdminLoginController extends Controller
             if (isset($user->id)) {
                 $code = rand(1000, 9999);
 
-                $data['subject']    = 'Forgot Password OTP';
+                $data['subject']    = 'Arkansas Admin Forgot Password OTP';
                 $data['from_email'] = env('MAIL_FROM_ADDRESS');
-                $data['site_title'] = 'Forgot Password OTP';
-                $data['view'] = 'super-admin.otp';
+                $data['site_title'] = 'Arkansas Admin Forgot Password OTP';
+                $data['view'] = 'email.admin-otp';
                 $data['otp'] = $code;
                 $data['customer_name'] = $user->first_name ?? 'NA' + ' ' + $user->last_name ?? '';
                 $data['to_email'] = $user->email ?? 'NA';

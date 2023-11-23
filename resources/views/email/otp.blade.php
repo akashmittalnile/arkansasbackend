@@ -21,7 +21,7 @@
                 </tr>
                 <tr>
                     <td style=" padding: 10px;" bgcolor="#ffffff">
-                        <h1 style="font-size: 16px;font-weight: 600;line-height: 24px;text-align:justify;color: #767171; margin: 0; padding:0">HELLO, {{ $customer_name ?? "NA" }}!</h1>
+                        <h1 style="font-size: 16px;font-weight: 600;line-height: 24px;text-align:justify;color: #767171; margin: 0; padding:0">HELLO, {{ $customer_name ?? "Creator" }}!</h1>
                     </td>
                 </tr>
                 <tr>

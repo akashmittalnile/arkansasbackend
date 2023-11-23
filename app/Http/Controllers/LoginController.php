@@ -42,14 +42,15 @@ class LoginController extends Controller
                 'email' => 'required|email',
                 'password' => 'required',
             ]);
-            $user = User::where('email', $request->email)->where('status', 1)->first();
+            $user = User::where('email', $request->email)->where('role', 2)->first();
             // dd($request->all());
-            if (isset($user->id) && $user->role == 2) {
+            if (isset($user->id)) {
                 if (auth()->attempt(['email' => $request->email, 'password' => $request->password])) {
-                    $user = auth()->user()->role;
-                    if ($user == 2) {
-                        return redirect()->route('home.index');
-                    } else return redirect()->back()->withInput()->with('success', 'These credentials do not match our records.');
+                    if($user->status == 2){
+                        Auth::logout();
+                        return redirect()->back()->withInput()->with('success', 'You creator account is rejected by arkansas administrator. Please feel free to contact us arkansas@gmail.com');
+                    }
+                    return redirect()->route('home.index');
                 }else return redirect()->back()->withInput()->with('success', 'These credentials do not match our records.');
             } else return redirect()->back()->withInput()->with('success', 'These credentials do not match our records.');
         } catch (\Exception $e) {

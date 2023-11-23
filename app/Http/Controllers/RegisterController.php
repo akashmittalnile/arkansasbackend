@@ -53,10 +53,10 @@ class RegisterController extends Controller
             $user = User::where('email', $request->email)->where('role', 2)->where('status', 1)->first();
             if (isset($user->id)) {
                 $code = rand(1000, 9999);
-                $data['subject']    = 'Forgot Password OTP';
+                $data['subject']    = 'Arkansas Forgot Password OTP';
                 $data['from_email'] = env('MAIL_FROM_ADDRESS');
-                $data['site_title'] = 'Forgot Password OTP';
-                $data['view'] = 'home.otp';
+                $data['site_title'] = 'Arkansas Forgot Password OTP';
+                $data['view'] = 'email.otp';
                 $data['otp'] = $code;
                 $data['customer_name'] = $user->first_name ?? 'NA' + ' ' + $user->last_name ?? '';
                 $data['to_email'] = $user->email ?? 'NA';

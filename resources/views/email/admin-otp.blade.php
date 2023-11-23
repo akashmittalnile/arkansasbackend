@@ -3,7 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        <title>Permanent Makeup University - Forgot Password OTP</title>
+        <title>Permanent Makeup University - Admin Forgot Password OTP</title>
         <style>
             
         </style>

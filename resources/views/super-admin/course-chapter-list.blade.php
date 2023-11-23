@@ -296,7 +296,7 @@
                                                 <input type="text" class="form-control {{ $v . $quiz->id }}" placeholder="Enter Question Title" name="quiz_question" value="{{ $quiz->title }}">
                                             </div>
                                             <div class="pmu-edit-questionnaire-marks" style="margin-right: 5px; width: 10%">
-                                                <input type="number" class="form-control " placeholder="Enter marks" name="questions[2][0][marks]" required="" value="{{ $quiz->marks ?? '' }}">
+                                                <input type="number" class="form-control {{ $v . $quiz->id }}_marks" placeholder="Enter marks" name="questions[2][0][marks]" required="" value="{{ $quiz->marks ?? '' }}">
                                             </div>
                                             <div class="edit-pmu-action">
                                                 <a class="edit-question-first" data-id="{{ $quiz->id }}" data-param="{{ $v }}">Update

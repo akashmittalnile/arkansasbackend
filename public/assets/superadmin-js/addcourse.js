@@ -3,13 +3,23 @@ $('.edit-question-first').on('click', function () {
     var question_id = $(this).attr("data-id");
     var question_param = $(this).attr("data-param");
     let selector = '.' + question_param + question_id;
-    var question = $(selector).val();
+    var question = $(selector).val().trim();
+    var marks = $(selector+'_marks').val().trim();
+    if(!question){
+        toastr.error('Please enter question title!');
+        return;
+    }
+    if(!marks){
+        toastr.error('Please enter marks!');
+        return;
+    }
     $.ajax({
         url: arkansasUrl + '/super-admin/update-question-list',
         method: 'GET',
         data: {
             question_id: question_id,
-            question: question
+            question: question,
+            marks: marks
         },
         dataType: 'json',
         headers: {
