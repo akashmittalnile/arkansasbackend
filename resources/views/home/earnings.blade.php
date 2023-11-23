@@ -49,7 +49,7 @@
                             <div class="col-md-2">
                                 <div class="pmu-table-info-card">
                                     <h2>Total Earning</h2>
-                                    <div class="pmu-table-value total_earning">${{ number_format((float)0, 2) }}</div>
+                                    <div class="pmu-table-value total_earning">${{ number_format((float)$payment - $requestedAmount, 2) }}</div>
                                 </div>
                             </div>
                             <div class="col-md-4">
@@ -127,9 +127,6 @@
             </div>
         </div>
     </div>
-    <script>
-        $(".total_earning").html("${{number_format((float)$count,2)}}");
-    </script>
     <style>
         a:hover{
             color: #fff;

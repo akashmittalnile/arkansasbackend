@@ -29,7 +29,7 @@
                         @if ($chapters->isEmpty())
                         <tr>
                             <td colspan="10">
-                                <h5 style="text-align: left">No Chapter</h5>
+                                <h5 style="text-align: left">No chapters created yet</h5>
                             </td>
                         </tr>
                         @else

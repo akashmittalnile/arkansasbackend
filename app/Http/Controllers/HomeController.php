@@ -890,11 +890,14 @@ class HomeController extends Controller
             $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity', 'o.id as order_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->orderByDesc('opd.id')->paginate(10);
 
             $myWallet = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
+
+            $payment = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->sum(\DB::raw('opd.amount - opd.admin_amount'));
             if(isset($myWallet->id)){
                 $mymoney = $myWallet->balance ?? 0;
+                $requestedAmount = WalletHistory::join('wallet_balance as wb', 'wb.id', '=', 'wallet_history.wallet_id')->where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->whereIn('wallet_history.status', [1,0])->sum('wallet_history.balance');
             }else $mymoney = 0;
 
-            return view('home.earnings',compact('orders', 'mymoney'));
+            return view('home.earnings',compact('orders', 'mymoney', 'payment', 'requestedAmount'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

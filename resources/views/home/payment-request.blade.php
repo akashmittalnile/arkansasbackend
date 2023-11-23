@@ -59,7 +59,7 @@
                         <div class="col-md-2">
                             <div class="pmu-table-info-card">
                                 <h2>Total Earning</h2>
-                                <div class="pmu-table-value">${{ number_format((float)$amount, 2) }}</div>
+                                <div class="pmu-table-value">${{ number_format((float)$amount-$requestedAmount, 2) }}</div>
                             </div>
                         </div>
                         <div class="col-md-7">
@@ -158,7 +158,7 @@
     $(document).ready(function() {
         $.validator.addMethod("greaterThan", function (value) {
                 return parseFloat(value, 2) <= parseFloat("{{$amount-$requestedAmount ?? 0}}", 2);
-        }, "Amount must be equal or smaller than the {{$amount-$requestedAmount ?? 0}}");
+        }, "You cant create payment request more than your earnings");
         $('#amount-form').validate({
             rules: {
                 amount: {
