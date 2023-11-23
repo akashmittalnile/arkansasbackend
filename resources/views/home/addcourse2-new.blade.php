@@ -58,12 +58,19 @@
 
                     <input type="hidden" name="type_mode" id="type_mode" value="" />
                     <div class="col-md-9">
+
                         @if (session()->has('message'))
                         <div class="alert alert-success alert-dismissible fade show" role="alert">
                             <strong>{{ session()->get('message') }}</strong>
                             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
+                        @elseif (session()->has('error'))
+                        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                            <strong>{{ session()->get('error') }}</strong>
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
                         @endif
+
                         <div class="pmu-courses-form-section pmu-addcourse-form">
                             
                             @if (!$chapters->isEmpty() && isset($chapterID))

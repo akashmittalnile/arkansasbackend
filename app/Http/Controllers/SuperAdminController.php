@@ -922,6 +922,10 @@ class SuperAdminController extends Controller
     public function deleteChapterQuestion($id) 
     {
         $value = ChapterQuiz::where('id',$id)->first();
+        $quiz = ChapterQuiz::where('step_id',$value->step_id)->count();
+        if($quiz = 1){
+            return redirect()->back()->with('error', 'Atleast one question should be required in quiz selection');
+        }
         $courseID = encrypt_decrypt('encrypt',$value->course_id);
         $chapterID = encrypt_decrypt('encrypt',$value->chapter_id);
         $question_id = $id; /*question_id*/
