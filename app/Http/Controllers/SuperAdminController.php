@@ -857,7 +857,18 @@ class SuperAdminController extends Controller
         try {
             $course_id = CourseChapter::where('id',$id)->first();
             $encrypt = encrypt_decrypt('encrypt',$course_id->course_id);
+
+            $step = CourseChapterStep::where('course_chapter_id', $id)->get();
+            foreach($step as $val){
+                $quiz = ChapterQuiz::where('step_id', $val->id)->get();
+                foreach($quiz as $item){
+                    ChapterQuizOption::where('quiz_id', $item->id)->delete();
+                }
+                ChapterQuiz::where('step_id', $val->id)->delete();
+            }
+            CourseChapterStep::where('course_chapter_id', $id)->delete();
             CourseChapter::where('id',$id)->delete();
+
             $chapter = CourseChapter::where('course_id',$course_id->course_id)->orderByDesc('id')->first();
             if(isset($chapter->id)) $chapterID = encrypt_decrypt('encrypt',$chapter->id);
             else $chapterID = "";

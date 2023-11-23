@@ -96,7 +96,11 @@
                                         <div class="col-md-12">
                                             <div class="form-group">
                                                 <h4>Tags With Comma</h4>
-                                                <select class="form-control livesearch p-3" name="tags[]" multiple="multiple" required></select>
+                                                <select class="form-control livesearch p-3" name="tags[]" multiple="multiple" required>
+                                                    @foreach(getTags(1) as $val)
+                                                        <option value="{{ $val->id }}">{{ $val->tag_name }}</option>
+                                                    @endforeach
+                                                </select>
                                             </div>
                                         </div>
 
@@ -166,22 +170,7 @@
         });
         $('.livesearch').select2({
             placeholder: 'Select tags',
-            ajax: {
-                url: "{{ route('load-sectors') }}",
-                dataType: 'json',
-                delay: 250,
-                processResults: function (data) {
-                    return {
-                        results: $.map(data, function (item) {
-                            return {
-                                text: item.tag_name,
-                                id: item.id
-                            }
-                        })
-                    };
-                },
-                cache: true
-            }
+            tags: true,
         });
     </script>
 

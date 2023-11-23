@@ -163,22 +163,6 @@
         $('.livesearch').select2({
             placeholder: 'Select tags',
             tags: true,
-            // ajax: {
-            //     url: "{{ route('load-sectors') }}",
-            //     dataType: 'json',
-            //     delay: 250,
-            //     processResults: function (data) {
-            //         return {
-            //             results: $.map(data, function (item) {
-            //                 return {
-            //                     text: item.tag_name,
-            //                     id: item.id
-            //                 }
-            //             })
-            //         };
-            //     },
-            //     cache: true
-            // }
         });
         
     </script>
