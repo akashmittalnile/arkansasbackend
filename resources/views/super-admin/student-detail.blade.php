@@ -295,7 +295,7 @@
 
                             <div class="col-md-6">
                                 <div class="modal-bank-info-text">
-                                    <p>Routine Number</p>
+                                    <p>Routing Number</p>
                                     <h4>98374598734949</h4>
                                 </div>
                             </div>

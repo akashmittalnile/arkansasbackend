@@ -151,7 +151,7 @@
                                     <img src="{!! url('assets/superadmin-images/card.svg') !!}">
                                 </div>
                                 <div class="added-bank-info-text">
-                                    <h2>Routine Number</h2>
+                                    <h2>Routing Number</h2>
                                     <p>{{ $account->routine_number ?? "NA" }}</p>
                                     <!-- <div class="added-plan-type">Weekly</div> -->
                                 </div>
@@ -377,7 +377,7 @@
 
                             <div class="col-md-6">
                                 <div class="modal-bank-info-text">
-                                    <p>Routine Number</p>
+                                    <p>Routing Number</p>
                                     <h4>98374598734949</h4>
                                 </div>
                             </div>

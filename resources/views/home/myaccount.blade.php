@@ -50,7 +50,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <h4>Phone</h4>
-                                    <input type="number" min="1000000" class="form-control" name="phone" placeholder="Phone" value="{{ $user->phone }}">
+                                    <input type="text" maxlength="12" class="form-control" name="phone" placeholder="Phone" value="{{ $user->phone }}">
                                 </div>
                             </div>
 
@@ -119,7 +119,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button class="cancelbtn">Cancel</button>
+                                    <a class="cancelbtn" href="{{ route('home.index') }}" style="color: #fff;">Cancel</a>
                                     <button class="Createbtn" type="submit">Save</button>
                                 </div>
                             </div>
@@ -131,33 +131,35 @@
         <div class="tab-pane" id="Password">
             <div class="myaccount-card">
                 <div class="myaccount-card-form">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <h4>Old Password</h4>
-                                <input type="password" class="form-control" name="" placeholder="Old Password">
+                    <form action="{{ route('Home.Change.Password') }}" method="POST" id="password-form">@csrf
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>Old Password</h4>
+                                    <input type="password" class="form-control" name="old_pswd" id="old_pswd" placeholder="Old Password">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <h4>New Password </h4>
-                                <input type="password" class="form-control" name="" placeholder="Enter New Password ">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>New Password </h4>
+                                    <input type="password" class="form-control" name="new_pswd" id="new_pswd" placeholder="Enter New Password ">
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="form-group">
-                                <h4>Confirm New Password </h4>
-                                <input type="password" class="form-control" name="" placeholder="Confirm New Password ">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>Confirm New Password </h4>
+                                    <input type="password" class="form-control" name="c_new_pswd" id="c_new_pswd" placeholder="Confirm New Password ">
+                                </div>
                             </div>
-                        </div>
 
-                        <div class="col-md-12">
-                            <div class="form-group">
-                                <button class="cancelbtn">Cancel</button>
-                                <button class="Createbtn">Save</button>
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <a class="cancelbtn" href="{{ route('home.index') }}" style="color: #fff;">Cancel</a>
+                                    <button class="Createbtn" type="submit">Save</button>
+                                </div>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
             </div>
         </div>
@@ -181,8 +183,8 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="form-group">
-                                    <h4>Routine Number</h4>
-                                    <input type="text" class="form-control" name="routine" placeholder="Routine Number" value="{{ $bank->routine_number ?? '' }}">
+                                    <h4>Routing Number</h4>
+                                    <input type="text" class="form-control" name="routine" placeholder="Routing Number" value="{{ $bank->routine_number ?? '' }}">
                                 </div>
                             </div>
                             <div class="col-md-6">
@@ -218,9 +220,93 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-validate/1.19.5/jquery.validate.min.js" integrity="sha512-rstIgDs0xPgmG6RX1Aba4KV5cWJbAMcvRCVmglpam9SoHZiUCyQVDdH2LPlxoHtrv17XWblE/V/PP+Tr04hbtA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script>
     $(document).ready(function() {
+
+        $.validator.addMethod("notEqual", function(value, element, param) {
+            return this.optional(element) || value != $(param).val();
+        }, 'Old password and New password should not same.');
+
+        $.validator.addMethod("AtLeastOnenumber", function(value) {
+            return /(?=.*[0-9])/.test(value);
+        }, 'At least 1 number is required.');
+
+        $.validator.addMethod("AtLeastOneUpperChar", function(value) {
+            return /^(?=.*[A-Z])/.test(value);
+        }, 'At least 1 uppercase character is required.');
+
+        $.validator.addMethod("AtLeastOneSpecialChar", function(value) {
+            return !/^[A-Za-z0-9 ]+$/.test(value);
+        }, 'At least 1 special character is required.');
+
+        $.validator.addMethod("AtLeastOneLowerChar", function(value) {
+            return /^(?=.*[a-z])/.test(value);
+        }, 'At least 1 lower character is required.');
+
+        $('#password-form').validate({
+            rules: {
+                old_pswd: {
+                    required: true,
+                    minlength: 6,
+                    remote: {
+                        type: 'get',
+                        url: arkansasUrl + '/check_password',
+                        data: {
+                            'password': function () { return $("#old_pswd").val(); }
+                        },
+                        dataType: 'json'
+                    }
+                },
+                new_pswd: {
+                    required: true,
+                    maxlength: 15,
+                    minlength: 6,
+                    notEqual: "input[name='old_pswd']",
+                    AtLeastOnenumber: true,
+                    AtLeastOneUpperChar: true,
+                    AtLeastOneLowerChar: true,
+                    AtLeastOneSpecialChar: true
+                },
+                c_new_pswd: {
+                    required: true,
+                    equalTo: "input[name='new_pswd']"
+                },
+            },
+            messages: {
+                old_pswd: {
+                    required: 'Please enter old password'
+                },
+                new_pswd: {
+                    required: 'Please enter new password'
+                },
+                c_new_pswd: {
+                    required: 'Please enter confirm new password',
+                    equalTo: "New password and Confirm new password must be same."
+                },
+            },
+            submitHandler: function(form) {
+                // This function will be called when the form is valid and ready to be submitted
+                form.submit();
+            },
+            errorElement: "span",
+            errorPlacement: function(error, element) {
+                error.addClass("invalid-feedback");
+                element.closest(".form-group").append(error);
+
+            },
+            highlight: function(element, errorClass, validClass) {
+                $(element).addClass("is-invalid");
+            },
+            unhighlight: function(element, errorClass, validClass) {
+                $(element).removeClass("is-invalid");
+            },
+        });
+
         $.validator.addMethod('filesize', function(value, element, param) {
             return this.optional(element) || (element.files[0].size <= param * 1000000)
         }, 'File size must be less than {0} MB');
+
+        $.validator.addMethod("phoneValidate", function(value) {
+            return /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im.test(value);
+        }, 'Please enter valid phone number.');
 
         $('#my-account-form').validate({
             rules: {
@@ -229,8 +315,8 @@
                 },
                 phone: {
                     required: true,
+                    phoneValidate: true,
                     minlength: 8,
-                    maxlength: 12
                 },
                 bus_name: {
                     required: true,
@@ -253,7 +339,8 @@
                     required: 'Please enter first name',
                 },
                 phone: {
-                    required: 'Please enter phone',
+                    required: 'Please enter phone number',
+                    minlength: 'Please enter valid phone number',
                 },
                 bus_name: {
                     required: 'Please enter business title',
@@ -307,7 +394,7 @@
                     equalTo: 'Account number does not match',
                 },
                 routine: {
-                    required: 'Please enter routine number',
+                    required: 'Please enter routing number',
                 },
             },
             submitHandler: function(form) {

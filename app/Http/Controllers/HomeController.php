@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\Validator;
 use PDO;
 use PDF;
 use DB;
+use Illuminate\Support\Facades\Hash;
 use Maatwebsite\Excel\Facades\Excel;
 
 class HomeController extends Controller
@@ -1289,6 +1290,26 @@ class HomeController extends Controller
             $name = time().'.'.$request->image->extension();  
             $request->image->move(public_path('upload/chat'), $name); 
             return response()->json(['status' => true, 'url' => $name, 'message' => 'image upload successfully.']);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function changePassword(Request $request) {
+        try{
+            $validator = Validator::make($request->all(), [
+                'old_pswd' => 'required',
+                'new_pswd' => 'required',
+            ]);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            } else {
+                User::where('id', auth()->user()->id)->update([
+                    'password' => Hash::make($request->new_pswd)
+                ]);
+                return redirect()->back()->with('message', 'Password changed successfully');
+            }
         } catch (\Exception $e) {
             return $e->getMessage();
         }

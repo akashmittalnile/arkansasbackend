@@ -50,7 +50,7 @@
                             <div class="col-md-4">
                                 <div class="form-group">
                                     <h4>Phone</h4>
-                                    <input type="number" class="form-control" name="phone" placeholder="Phone" value="{{ $user->phone }}">
+                                    <input type="text" maxlength="12" class="form-control" name="phone" placeholder="Phone" value="{{ $user->phone }}">
                                 </div>
                             </div>
 
@@ -119,7 +119,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button class="cancelbtn" type="button">Cancel</button>
+                                    <a class="cancelbtn" href="{{ route('SA.Dashboard') }}" style="color: #fff;">Cancel</a>
                                     <button class="Createbtn" type="submit">Save</button>
                                 </div>
                             </div>
@@ -154,7 +154,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button class="cancelbtn" type="button">Cancel</button>
+                                    <a class="cancelbtn" href="{{ route('SA.Dashboard') }}" style="color: #fff;">Cancel</a>
                                     <button class="Createbtn" type="submit">Save</button>
                                 </div>
                             </div>
@@ -227,6 +227,22 @@
             return this.optional(element) || value != $(param).val();
         }, 'Old password and New password should not same.');
 
+        $.validator.addMethod("AtLeastOnenumber", function(value) {
+            return /(?=.*[0-9])/.test(value);
+        }, 'At least 1 number is required.');
+
+        $.validator.addMethod("AtLeastOneUpperChar", function(value) {
+            return /^(?=.*[A-Z])/.test(value);
+        }, 'At least 1 uppercase character is required.');
+
+        $.validator.addMethod("AtLeastOneSpecialChar", function(value) {
+            return !/^[A-Za-z0-9 ]+$/.test(value);
+        }, 'At least 1 special character is required.');
+
+        $.validator.addMethod("AtLeastOneLowerChar", function(value) {
+            return /^(?=.*[a-z])/.test(value);
+        }, 'At least 1 lower character is required.');
+
         $('#password-form').validate({
             rules: {
                 old_pswd: {
@@ -245,7 +261,11 @@
                     required: true,
                     maxlength: 15,
                     minlength: 6,
-                    notEqual: "input[name='old_pswd']"
+                    notEqual: "input[name='old_pswd']",
+                    AtLeastOnenumber: true,
+                    AtLeastOneUpperChar: true,
+                    AtLeastOneLowerChar: true,
+                    AtLeastOneSpecialChar: true
                 },
                 c_new_pswd: {
                     required: true,
@@ -286,6 +306,10 @@
             return this.optional(element) || (element.files[0].size <= param * 1000000)
         }, 'File size must be less than {0} MB');
 
+        $.validator.addMethod("phoneValidate", function(value) {
+            return /^[\+]?[(]?[0-9]{3}[)]?[-\s\.]?[0-9]{3}[-\s\.]?[0-9]{4,6}$/im.test(value);
+        }, 'Please enter valid phone number.');
+
         $('#my-account-form').validate({
             rules: {
                 first_name: {
@@ -293,8 +317,8 @@
                 },
                 phone: {
                     required: true,
+                    phoneValidate: true,
                     minlength: 8,
-                    maxlength: 12
                 },
                 bus_name: {
                     required: true,
@@ -319,7 +343,6 @@
                 phone: {
                     required: 'Please enter phone',
                     minlength: 'Please enter valid phone number',
-                    maxlength: 'Please enter valid phone number'
                 },
                 bus_name: {
                     required: 'Please enter business title',
