@@ -9,6 +9,6 @@ class UserCourse extends Model
 {
     use HasFactory;
     protected $table = 'user_courses';
-    protected $primaryKey = 'id ';
+    protected $primaryKey = 'id';
     public $timestamps = false;
 }

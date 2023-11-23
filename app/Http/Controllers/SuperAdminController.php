@@ -392,7 +392,7 @@ class SuperAdminController extends Controller
             $user = DB::table('course as c')->leftJoin('user_courses as uc', 'uc.course_id', '=', 'c.id');
             if($user_type==0) $user->where('c.admin_id', auth()->user()->id);
             else $user->where('c.admin_id', '!=', auth()->user()->id);
-            $user = $user->whereMonth('uc.created_date', date('m', strtotime($user_month)))->whereYear('uc.created_date', date('Y',strtotime($user_month)))->distinct('uc.user_id')->count();
+            $user = $user->whereMonth('uc.created_date', date('m', strtotime($user_month)))->whereYear('uc.created_date', date('Y',strtotime($user_month)))->where('is_expire', 0)->distinct('uc.user_id')->count();
 
 
 
@@ -1120,7 +1120,7 @@ class SuperAdminController extends Controller
             if($request->filled('status')) $course->where('uc.status', $request->status);
             if($request->filled('title')) $course->where('c.title', 'like', '%' . $request->title . '%');
             if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
-            $course = $course->where('uc.user_id', $user_id)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = c.id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND product_id = c.id AND product_type = 1) as order_id"))->orderByDesc('uc.id')->distinct('c.id')->paginate(3);
+            $course = $course->where('uc.user_id', $user_id)->where('is_expire', 0)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = uc.course_id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND order_product_detail.product_id = c.id AND order_product_detail.product_type = 1) as order_id"))->orderBy('uc.id')->distinct('uc.id')->paginate(3);
 
         return view('super-admin.student-detail',compact('data', 'course', 'id'));
         } catch (\Exception $e) {
@@ -2192,7 +2192,7 @@ class SuperAdminController extends Controller
             $reviewAvg = DB::table('user_review as ur')->where('object_id', $courseId)->where('object_type', 1)->avg('rating');
             $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date')->where('object_id', $courseId)->where('object_type', 1)->get();
 
-            $userCourse = UserCourse::where('user_id', $id)->where('course_id', $courseId)->where('status', 1)->first();
+            $userCourse = UserCourse::where('user_id', $id)->where('course_id', $courseId)->where('status', 1)->orderByDesc('id')->first();
             if(isset($userCourse->id)){
                 $complete = true;
                 $chapters = UserChapterStatus::leftJoin('course_chapter as cc', 'cc.id', '=', 'user_chapter_status.chapter_id')->where('user_chapter_status.userid', $id)->where('user_chapter_status.course_id', $courseId)->select('cc.chapter', 'cc.id')->distinct('cc.id')->get();

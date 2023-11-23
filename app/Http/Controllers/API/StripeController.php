@@ -21,7 +21,6 @@ class StripeController extends Controller
     public function makePayment(Request $request)
     {
         try{
-            return response()->json(["status" => false, "message" => "Send stripe token to dishant." ]);
             $validator = Validator::make($request->all(), [
                 'order_id' => 'required',
                 'total_amount' => 'required',

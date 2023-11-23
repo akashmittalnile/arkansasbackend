@@ -71,11 +71,22 @@ class CartController extends Controller
                         if(isset($isAlreadyCart->id)){
                             return response()->json(['status' => false, 'message' => 'Already in cart. Please try another courses.']);
                         }
-                        $isPurchase = UserCourse::where('course_id', $request->object_id)->where('user_id', $user_id)->first();
+                        $isPurchase = UserCourse::where('course_id', $request->object_id)->where('user_id', $user_id)->where('is_expire', 0)->orderByDesc('id')->first();
                         if(isset($isPurchase->id)){
-                            return response()->json(['status' => false, 'message' => 'Already purchased this course!. Please try another courses.']);
+                            if($isPurchase->status == 1){
+                                return response()->json(['status' => false, 'message' => 'This course is completed already. You cannot purchase again.']);
+                            }
+                            $course_purchase = Setting::where('attribute_code','course_purchase_validity')->first();
+                            if(isset($course_purchase->id) && $course_purchase->attribute_value != '' && $course_purchase->attribute_value != 0){
+                                $valid = date('d M, Y', strtotime($isPurchase->created_date . '+' . $course_purchase->attribute_value . 'days'));
+                                if(!courseExpire(date('d M, Y', strtotime($isPurchase->created_date)), $valid)){
+                                    return response()->json(['status' => false, 'message' => 'Already purchased this course!. Please try another courses.']);
+                                }
+                            }else{
+                                return response()->json(['status' => false, 'message' => 'Already purchased this course!. Please try another courses.']);
+                            }
                         }  
-                        $course = Course::where('id', $request->object_type)->first();
+                        $course = Course::where('id', $request->object_id)->first();
                         $cart = new AddToCart;
                         $cart->userid = $user_id;
                         $cart->object_id = $request->object_id;
@@ -544,6 +555,11 @@ class CartController extends Controller
                         $OrderDetail->created_date = date('Y-m-d H:i:s');
                         $OrderDetail->save();
                         if($cart->object_type == 1){
+                            $isPurchase = UserCourse::where('course_id', $cart->object_id)->where('user_id', $user_id)->where('is_expire', 0)->orderByDesc('id')->first();
+                            if(isset($isPurchase->id)){
+                                $isPurchase->is_expire = 1;
+                                $isPurchase->save();
+                            }
                             $userCourse = new UserCourse;
                             $userCourse->course_id = $cart->object_id;
                             $userCourse->user_id = $user_id;
@@ -551,6 +567,7 @@ class CartController extends Controller
                             $userCourse->payment_id = null;
                             $userCourse->buy_date = date('Y-m-d H:i:s');
                             $userCourse->status = 0;
+                            $userCourse->is_expire = 0;
                             $userCourse->created_date = date('Y-m-d H:i:s');
                             $userCourse->coupon_id = null;
                             $userCourse->save();

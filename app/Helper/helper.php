@@ -199,7 +199,7 @@ use Illuminate\Support\Facades\Mail;
     if(! function_exists('courseExpire')){
         function courseExpire($start, $end) {
             $now = Carbon::now();
-            if ($now->between($start, $end)) 
+            if ($now->between(date('d M, Y', strtotime($start.'-1days')), $end)) 
                 return false;
             else 
                 return true;

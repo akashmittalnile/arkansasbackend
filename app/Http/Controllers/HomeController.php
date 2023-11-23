@@ -218,7 +218,7 @@ class HomeController extends Controller
             ->leftJoin('orders as o', 'o.id', '=', 'opd.order_id')
             ->leftJoin('users as u', 'u.id', '=', 'o.user_id')->select('opd.admin_amount', 'opd.amount', 'u.first_name','u.last_name', 'o.created_date', 'c.title')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->whereMonth('opd.created_date', date('m', strtotime($user_month)))->whereYear('opd.created_date', date('Y',strtotime($user_month)))->orderByDesc('opd.id')->paginate(5);
 
-        $user = DB::table('course as c')->leftJoin('user_courses as uc', 'uc.course_id', '=', 'c.id')->where('c.admin_id', auth()->user()->id)->whereMonth('uc.created_date', date('m', strtotime($user_month)))->whereYear('uc.created_date', date('Y',strtotime($user_month)))->distinct('uc.user_id')->count();
+        $user = DB::table('course as c')->leftJoin('user_courses as uc', 'uc.course_id', '=', 'c.id')->where('c.admin_id', auth()->user()->id)->whereMonth('uc.created_date', date('m', strtotime($user_month)))->whereYear('uc.created_date', date('Y',strtotime($user_month)))->where('is_expire', 0)->distinct('uc.user_id')->count();
 
 
         $course_month = $request->coursemonth ?? date('Y-m');
@@ -1223,7 +1223,7 @@ class HomeController extends Controller
             if($request->filled('status')) $course->where('uc.status', $request->status);
             if($request->filled('title')) $course->where('c.title', 'like', '%' . $request->title . '%');
             if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
-            $course = $course->where('uc.user_id', $id)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = c.id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $id AND product_id = c.id) as order_id"))->distinct('uc.id')->orderByDesc('uc.id')->paginate(3);
+            $course = $course->where('uc.user_id', $id)->where('uc.is_expire', 0)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = c.id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $id AND product_id = c.id) as order_id"))->distinct('uc.id')->orderByDesc('uc.id')->paginate(3);
 
             $course;
 
@@ -1255,7 +1255,7 @@ class HomeController extends Controller
             $reviewAvg = DB::table('user_review as ur')->where('object_id', $courseId)->where('object_type', 1)->avg('rating');
             $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date')->where('object_id', $courseId)->where('object_type', 1)->get();
 
-            $userCourse = UserCourse::where('user_id', $id)->where('course_id', $courseId)->where('status', 1)->first();
+            $userCourse = UserCourse::where('user_id', $id)->where('course_id', $courseId)->where('status', 1)->orderByDesc('id')->first();
             if(isset($userCourse->id)){
                 $complete = true;
                 $chapters = UserChapterStatus::leftJoin('course_chapter as cc', 'cc.id', '=', 'user_chapter_status.chapter_id')->where('user_chapter_status.userid', $id)->where('user_chapter_status.course_id', $courseId)->select('cc.chapter', 'cc.id')->distinct('cc.id')->get();

@@ -55,7 +55,7 @@ class ApiController extends Controller
             $TrendingCourses = array();
             foreach ($trending_courses as $k => $data) {
                 if($data->cc_status != 1) continue;
-                $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $data->id)->first();
+                $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $data->id)->where('is_expire', 0)->orderByDesc('id')->first();
                 if(isset($purchasedCourse->id)) continue;
                 $b1['id'] = isset($data->id) ? $data->id : '';
                 $b1['title'] = isset($data->title) ? $data->title : '';
@@ -188,7 +188,7 @@ class ApiController extends Controller
             $SuggestedCourses = array();
             foreach ($suggested_courses as $k => $data) {
                 if($data->cc_status != 1) continue;
-                $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $data->id)->first();
+                $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $data->id)->where('is_expire', 0)->orderByDesc('id')->first();
                 if(isset($purchasedCourse->id)) continue;
                 $b3['id'] = isset($data->id) ? $data->id : '';
                 $b3['title'] = isset($data->title) ? $data->title : '';
@@ -420,7 +420,7 @@ class ApiController extends Controller
             $courses = $courses->select('course.*', 'users.first_name', 'users.last_name','users.profile_image','users.category_name')->get();
             $special_course = [];
             foreach($courses as $value){
-                $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $value->id)->first();
+                $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $value->id)->where('is_expire', 0)->orderByDesc('id')->first();
                 if(isset($purchasedCourse->id)) continue;
                 $temp['course_fee'] = $value->course_fee;
                 $temp['valid_upto'] = $value->valid_upto;
@@ -692,7 +692,7 @@ class ApiController extends Controller
             if (isset($course)) {
                 foreach ($course as $keys => $item) {
                     if($item->cc_status != 1){
-                        $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $item->id)->first();
+                        $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $item->id)->where('is_expire', 0)->orderByDesc('id')->first();
                         if(!isset($purchasedCourse->id)) continue;
                     } 
                     $temp['id'] = $item->id;
@@ -1286,7 +1286,7 @@ class ApiController extends Controller
                     if($request->filled('tag'))
                         if(!in_array($request->tag, unserialize($value->tags))) continue;
                     if($type == 1 && $value->cc_status != 1){
-                        $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $value->id)->first();
+                        $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $value->id)->where('is_expire', 0)->orderByDesc('id')->first();
                         if(!isset($purchasedCourse->id)) continue;
                     } 
                     if ($type == 1) { /* 1 stand for course ,2 for product */
@@ -1466,7 +1466,7 @@ class ApiController extends Controller
                         $chapter_count = 0;
                         $chapter_quiz_count = 0;
 
-                        $isPurchase = UserCourse::where('course_id', $id)->where('user_id', $user_id)->first();
+                        $isPurchase = UserCourse::where('course_id', $id)->where('user_id', $user_id)->orderByDesc('id')->first();
                         $isPurchased = (isset($isPurchase->id)) ? true : false;
                         $temp['isPurchased'] = $isPurchased;
                         if(isset($isPurchase->id)){
@@ -2264,7 +2264,7 @@ class ApiController extends Controller
                             $temp['course_valid_date'] = date('d M, Y', strtotime($value->valid_upto));
                             $temp['introduction_video'] = url('/upload/disclaimers-introduction/'.$value->introduction_image);
                             $temp['course_id'] = $value->id ?? 0;
-                            $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('status', 1)->first();
+                            $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
                             if(isset($isCourseComplete->id)){
                                 $temp['course_completed'] = 1;
                                 $temp['certificate'] = url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$isCourseComplete->course_id)."/".encrypt_decrypt('encrypt',$user_id);
@@ -2415,7 +2415,7 @@ class ApiController extends Controller
                 if(isset($step->course_chapter_id)){
                     $courseChapter = CourseChapter::where('id', $step->course_chapter_id)->first();
                     if(isset($courseChapter->course_id)){
-                        $check = UserCourse::where('course_id', $courseChapter->course_id)->where('user_id', auth()->user()->id)->first();
+                        $check = UserCourse::where('course_id', $courseChapter->course_id)->where('user_id', auth()->user()->id)->where('is_expire', 0)->orderByDesc('id')->first();
                         if(!isset($check->id)) return response()->json(['status' => false, 'message' => 'Please purchase this course first']);
                         $userChapterStatus = new UserChapterStatus;
                         $userChapterStatus->userid = auth()->user()->id;
@@ -2450,7 +2450,7 @@ class ApiController extends Controller
                 if(isset($courseStep->course_chapter_id)){
                     $courseChapter = CourseChapter::where('id', $courseStep->course_chapter_id)->first();
                     if(isset($courseChapter->course_id)){
-                        $check = UserCourse::where('course_id', $courseChapter->course_id)->where('user_id', auth()->user()->id)->first();
+                        $check = UserCourse::where('course_id', $courseChapter->course_id)->where('user_id', auth()->user()->id)->where('is_expire', 0)->orderByDesc('id')->first();
                         if(!isset($check->id)) return response()->json(['status' => false, 'message' => 'Please purchase this course first']);
                         $userChapterStatus = new UserChapterStatus;
                         $userChapterStatus->userid = auth()->user()->id;
@@ -2704,7 +2704,7 @@ class ApiController extends Controller
         $admin = User::where('role', 3)->first();
         $course = Course::join('users as u', 'u.id', '=', 'course.admin_id')->where('course.id', $id)->select('course.title', 'u.first_name', 'u.last_name', 'u.company_name', 'u.professional_title', 'u.signature', 'u.business_logo')->first();
         // dd($course);
-        $date = UserCourse::where('user_id', $uid)->where('course_id', $id)->first();
+        $date = UserCourse::where('user_id', $uid)->where('course_id', $id)->where('is_expire', 0)->orderByDesc('id')->first();
 
         $html = view('home.certificates', compact('course', 'date', 'user', 'admin'))->render();
 
@@ -2724,7 +2724,7 @@ class ApiController extends Controller
 
     public function certificates(Request $request){
         try{
-            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->leftJoin('users as u', 'c.admin_id', '=', 'u.id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status', 'u.first_name', 'u.last_name', 'u.profile_image', 'c.introduction_image')->get();
+            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->leftJoin('users as u', 'c.admin_id', '=', 'u.id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->where('user_courses.is_expire', 0)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status', 'u.first_name', 'u.last_name', 'u.profile_image', 'c.introduction_image')->orderByDesc('user_courses.id')->get();
             $res = [];
             foreach($data as $val){
                 $temp['course_id'] = $val->course_id;
@@ -2835,7 +2835,7 @@ class ApiController extends Controller
 
     public function course_complete($uid, $courseid){
         try{
-            $check = UserCourse::where('course_id', $courseid)->where('user_id', $uid)->where('status', 1)->first();
+            $check = UserCourse::where('course_id', $courseid)->where('user_id', $uid)->where('status', 1)->where('is_expire', 0)->orderByDesc('id')->first();
             if(isset($check->id)) return;
             $isComplete = true;
             $chapters = CourseChapter::where('course_id', $courseid)->pluck('id');
@@ -2849,7 +2849,7 @@ class ApiController extends Controller
                     }
                 }
             }
-            UserCourse::where('course_id', $courseid)->where('user_id', $uid)->update([
+            UserCourse::where('course_id', $courseid)->where('user_id', $uid)->where('is_expire', 0)->orderByDesc('id')->update([
                 'status' => $isComplete ? 1 : 0,
                 'updated_date' => date('Y-m-d H:i:s'),
             ]);
