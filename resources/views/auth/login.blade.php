@@ -5,19 +5,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Permanent Makeup University - Content Creator Login</title>
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/header-footer.css') !!}">
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/iconsax/iconsax.css') !!}">
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/auth.css') !!}">
-    <script src="{!! url('assets/website-js/jquery-3.7.0.min.js') !!}" type="text/javascript"></script>
-    <script src="{!! url('assets/website-plugins/bootstrap/js/bootstrap.bundle.min.js') !!}" type="text/javascript"></script>
-    <script src="{!! url('assets/website-js/function.js') !!}" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/header-footer.css') !!}">
+    <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-plugins/iconsax/iconsax.css') !!}">
+    <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/auth.css') !!}">
+    <script src="{!! assets('assets/website-js/jquery-3.7.0.min.js') !!}" type="text/javascript"></script>
+    <script src="{!! assets('assets/website-plugins/bootstrap/js/bootstrap.bundle.min.js') !!}" type="text/javascript"></script>
+    <script src="{!! assets('assets/website-js/function.js') !!}" type="text/javascript"></script>
 </head>
 
 <body>
     <div class="header">
         <div class="container">
             <div class="logo">
-                <a href="#"><img src="{!! url('assets/website-images/logo-2.png') !!}" /></a>
+                <a href="#"><img src="{!! assets('assets/website-images/logo-2.png') !!}" /></a>
             </div>
         </div>
     </div>
@@ -89,7 +89,7 @@
             <div class="modal-content">
                 <div class="modal-body">
                     <div class="becomeacreator-form-info">
-                        <img src="{!! url('assets/website-images/tick-circle.svg') !!}">
+                        <img src="{!! assets('assets/website-images/tick-circle.svg') !!}">
                         <h2>We have received your Creator Enrollment request</h2>
                         <p>Your account is under review please wait for admin to approve the request we will notify you once it is approved via email.</p>
                         <div class="becomeacreator-btn-action">

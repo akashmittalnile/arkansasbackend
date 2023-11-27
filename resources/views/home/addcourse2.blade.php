@@ -43,7 +43,7 @@
                                             <a href="{{ url('admin/addcourse2/' . encrypt_decrypt('encrypt',$chapter->course_id).'/'.encrypt_decrypt('encrypt',$chapter->id)) }}" ><span>Chapter {{ $v }}</span></a>
                                             <a href="{{ url('admin/delete-chapter/' . $chapter->id) }}"
                                                 onclick="return confirm('Are you sure you want to delete this chapter?');"><img
-                                                src="{!! url('assets/website-images/close-circle.svg') !!}">
+                                                src="{!! assets('assets/website-images/close-circle.svg') !!}">
                                             </a>
                                         </div>
                                     </div>

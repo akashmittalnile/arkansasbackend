@@ -66,7 +66,7 @@
                                                     <label for="PDFJPEGOrPNG">
                                                         <div class="signature-text">
                                                             <span id="category_image"><img @if(!empty($data->icon)) width="160", height="80" @endif style="object-fit: cover; object-position: center; border-radius: 8px" id="prev-img"
-                                                                    src="{!! url('upload/category-image/'.$data->icon) !!}">@if(empty($data->icon))<small id="prev-small-line">Click here to
+                                                                    src="{!! assets('upload/category-image/'.$data->icon) !!}">@if(empty($data->icon))<small id="prev-small-line">Click here to
                                                                 Upload</small>@endif</span>
                                                         </div>
                                                     </label>

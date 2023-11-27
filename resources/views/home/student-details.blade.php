@@ -23,9 +23,9 @@
                         <div class="side-profile-item">
                             <div class="side-profile-media">
                                 @if ($data->profile_image!=null && $data->profile_image!="")
-                                <img src="{!! url('upload/profile-image/'.$data->profile_image) !!}">
+                                <img src="{!! assets('upload/profile-image/'.$data->profile_image) !!}">
                                 @else
-                                <img src="{!! url('assets/superadmin-images/no-image.png') !!}">
+                                <img src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                                 @endif
                             </div>
                             <div class="side-profile-text">
@@ -39,7 +39,7 @@
                                 <div class="col-md-12">
                                     <div class="side-profile-total-order">
                                         <div class="side-profile-total-icon">
-                                            <img src="{!! url('assets/superadmin-images/email1.svg') !!}">
+                                            <img src="{!! assets('assets/superadmin-images/email1.svg') !!}">
                                         </div>
                                         <div class="side-profile-total-content">
                                             <h2>Email Address</h2>
@@ -51,7 +51,7 @@
                                 <div class="col-md-12">
                                     <div class="side-profile-total-order">
                                         <div class="side-profile-total-icon">
-                                            <img src="{!! url('assets/superadmin-images/buliding-1.svg') !!}">
+                                            <img src="{!! assets('assets/superadmin-images/buliding-1.svg') !!}">
                                         </div>
                                         <div class="side-profile-total-content">
                                             <h2>Phone No.</h2>
@@ -63,7 +63,7 @@
                                 <div class="col-md-12">
                                     <div class="side-profile-total-order">
                                         <div class="side-profile-total-icon">
-                                            <img src="{!! url('assets/superadmin-images/accountstatus.svg') !!}">
+                                            <img src="{!! assets('assets/superadmin-images/accountstatus.svg') !!}">
                                         </div>
                                         <div class="side-profile-total-content">
                                             <h2>Account Status</h2>
@@ -96,7 +96,7 @@
                                     <div class="col-md-4">
                                         <div class="form-group search-form-group">
                                             <input type="text" class="form-control" name="title" placeholder="Search by course name" value="{{ request()->title ?? '' }}">
-                                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                            <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                                         </div>
                                     </div>
                                     <div class="col-md-2">
@@ -129,12 +129,12 @@
                                         <div class="course-item-inner">
                                             <div class="course-item-image">
                                                 <a data-fancybox="" data-type="iframe" data-src="https://www.facebook.com/plugins/video.php?height=314&amp;href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&amp;show_text=false&amp;width=560&amp;t=0" href="javascript:;">
-                                                    <video width="350" height="200" src="{{ asset('upload/disclaimers-introduction/'.$val->introduction_image) }}"></video>
-                                                    <!-- <div class="course-video-icon"><img src="{!! url('assets/superadmin-images/video.svg') !!}"></div> -->
+                                                    <video width="350" height="200" src="{{ assets('upload/disclaimers-introduction/'.$val->introduction_image) }}"></video>
+                                                    <!-- <div class="course-video-icon"><img src="{!! assets('assets/superadmin-images/video.svg') !!}"></div> -->
                                                 </a>
                                             </div>
                                             <div class="course-item-content">
-                                                <div class="{{ ($val->status==1) ? 'coursestatus' : 'coursestatus-unpublish' }}"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
+                                                <div class="{{ ($val->status==1) ? 'coursestatus' : 'coursestatus-unpublish' }}"><img src="{!! assets('assets/superadmin-images/tick.svg') !!}">
                                                     @if($val->status==1) Completed Course Successfully @else Ongoing Course @endif
                                                 </div>
                                                 <h2>{{ $val->title ?? "NA" }}</h2>
@@ -169,7 +169,7 @@
                                 @empty
                                 <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                                     <div>
-                                        <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                        <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                                     </div>
                                     <div class="font-weight-bold">
                                         <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p>
@@ -200,9 +200,9 @@
                         his account until and unless revert action has been taken again!</p>
                     <div class="student-info-btn-action">
                         @if ($data->status == 1)
-                        <a href="{{ url('super-admin/inactive/'.encrypt_decrypt('encrypt',$data->id))}}" class="save-btn">Yes! Inactive</a>
+                        <a href="{{ route('Home.InactiveStatus',encrypt_decrypt('encrypt',$data->id)) }}" class="save-btn">Yes! Inactive</a>
                         @else
-                        <a href="{{ url('super-admin/inactive/'.encrypt_decrypt('encrypt',$data->id))}}" class="save-btn">Yes! Active</a>
+                        <a href="{{ route('Home.InactiveStatus',encrypt_decrypt('encrypt',$data->id)) }}" class="save-btn">Yes! Active</a>
                         @endif
 
                         @if ($data->status == 1)

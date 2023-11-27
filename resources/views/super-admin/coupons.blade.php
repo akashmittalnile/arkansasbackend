@@ -12,7 +12,7 @@
                     <div class="col-md-4">
                         <div class="form-group search-form-group">
                             <input type="text" class="form-control" value="{{ request()->coupon_code }}" name="coupon_code" placeholder="Search by Coupon Code">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                            <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                         </div>
                     </div>
                     <div class="col-md-1">
@@ -77,15 +77,15 @@
                         </div>
 
                         <div class="manage-point-card-action">
-                            <a class="edit-btn" data-id="{{encrypt_decrypt('encrypt', $val->id)}}" href="javascript:void(0)"><img src="{!! url('assets/superadmin-images/edit-2.svg') !!}"></a>
-                            <a class="delete-btn" onclick="return confirm('Are you sure you want to delete this coupon?');" href="{{ route('SA.Coupon.Delete', encrypt_decrypt('encrypt', $val->id)) }}"><img src="{!! url('assets/superadmin-images/trash.svg') !!}"></a>
+                            <a class="edit-btn" data-id="{{encrypt_decrypt('encrypt', $val->id)}}" href="javascript:void(0)"><img src="{!! assets('assets/superadmin-images/edit-2.svg') !!}"></a>
+                            <a class="delete-btn" onclick="return confirm('Are you sure you want to delete this coupon?');" href="{{ route('SA.Coupon.Delete', encrypt_decrypt('encrypt', $val->id)) }}"><img src="{!! assets('assets/superadmin-images/trash.svg') !!}"></a>
                         </div>
                     </div>
                 </div>
                 @empty
                 <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                     <div>
-                        <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                        <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                     </div>
                     <div class="font-weight-bold">
                         <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p>

@@ -5,19 +5,19 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Permanent Makeup University - Reset Password</title>
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/header-footer.css') !!}">
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/iconsax/iconsax.css') !!}">
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/auth.css') !!}">
-    <script src="{!! url('assets/website-js/jquery-3.7.0.min.js') !!}" type="text/javascript"></script>
-    <script src="{!! url('assets/website-plugins/bootstrap/js/bootstrap.bundle.min.js') !!}" type="text/javascript"></script>
-    <script src="{!! url('assets/website-js/function.js') !!}" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/header-footer.css') !!}">
+    <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-plugins/iconsax/iconsax.css') !!}">
+    <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/auth.css') !!}">
+    <script src="{!! assets('assets/website-js/jquery-3.7.0.min.js') !!}" type="text/javascript"></script>
+    <script src="{!! assets('assets/website-plugins/bootstrap/js/bootstrap.bundle.min.js') !!}" type="text/javascript"></script>
+    <script src="{!! assets('assets/website-js/function.js') !!}" type="text/javascript"></script>
 </head>
 
 <body>
     <div class="header">
         <div class="container">
             <div class="logo">
-                <a href="#"><img src="{!! url('assets/website-images/logo-2.png') !!}" /></a>
+                <a href="#"><img src="{!! assets('assets/website-images/logo-2.png') !!}" /></a>
             </div>
         </div>
     </div>
@@ -31,7 +31,7 @@
                     <div class="row">
                         <form method="post" action="{{ route('admin.reset_password.otp') }}" id="Form_Login">@csrf
                             <input name="email" type="hidden" value="{{ $email }}">
-                            <div class="row text-center">
+                            <div class="row text-center mx-auto" style="width: 40%;">
                                 <div class="col-md-3">
                                     <div class="form-group auth-form-group ">
                                         <input style="padding: 10px; width: 45px; font-size: 1.2rem;" class="form-controls inputstab" name="otp1" type="text" id="n0" maxlength="1" autocomplete="off" autofocus data-next="1" required>
@@ -65,7 +65,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group auth-forgot-text">
-                                        <!-- <p>Didn't get OTP? <a style="color: blue;" href=""> Click here</a></p> -->
+                                        <p>Didn't get OTP? <a style="color: blue;" href="{{ route('admin.resend_email', $email) }}"> Resend OTP</a></p>
                                     </div>
                                 </div>
                             </div>

@@ -15,7 +15,7 @@
                 <tr>
                     <td style="font-family:tahoma, geneva, sans-serif;color:#29054a;font-size:12px; padding:10px;background: #ffffff;text-align: center;">  
                         <a href="{{ route('SA.LoginShow') }}">
-                            <img  alt="not found" src="{!! asset('assets/superadmin-images/logo-2.png') !!}" height="60">
+                            <img  alt="not found" src="{!! assets('assets/superadmin-images/logo-2.png') !!}" height="60">
                         </a>
                     </td>
                 </tr>
@@ -26,7 +26,7 @@
                 </tr>
                 <tr>
                     <td valign="top" style="padding:0 10px;">
-                        <p style="font-size: 14px;font-weight: normal;line-height: 24px;text-align:justify;color: #767171; margin: 0; padding:0">Your account is @if($status == 1) approved @elseif($status == 2) rejected @endif by arkansas administrator. Please feel free to contact us arkansas@gmail.com</p>
+                        <p style="font-size: 14px;font-weight: normal;line-height: 24px;text-align:justify;color: #767171; margin: 0; padding:0">Your request for registering an account as contact creator has been @if($status == 1) approved @elseif($status == 3) rejected @endif. Please feel free to contact us <a href="mailto:arkansas@gmail.com">arkansas@gmail.com</a></p>
                     </td>
                 </tr>
 
@@ -64,14 +64,14 @@
                                                                                      <a href="javascript:void(0)" style="text-decoration: none;" rel="external" target="_blank">
                                                                                      <img
                                                                                         alt="Download the Arkansas app from the App Store for iOS devices"
-                                                                                        src="{!! url('assets/superadmin-images/apple-store.png') !!}"
+                                                                                        src="{!! assets('assets/superadmin-images/apple-store.png') !!}"
                                                                                         style="height: 45px;width: 150px;"/>
                                                                                      </a>
                                                                                   </td>
                                                                                   <td width="150" height="45" valign="top" width="8" style="padding: 0px 8px 0 0; vertical-align: top; font-size: 1px;"></td>
                                                                                   <td valign="top" style="vertical-align: top;">
                                                                                      <a href="javascript:void(0)" style="text-decoration: none;" rel="external" target="_blank">
-                                                                                     <img alt="Get the Arkansas app for Android"  src="{!! url('assets/superadmin-images/google-play.png') !!}" style="height: 45px;width: 150px;" />
+                                                                                     <img alt="Get the Arkansas app for Android"  src="{!! assets('assets/superadmin-images/google-play.png') !!}" style="height: 45px;width: 150px;" />
                                                                                      </a>
                                                                                   </td>
                                                                                </tr>
@@ -143,7 +143,7 @@
                                                                                 <tr>
                                                                                     <td valign="top" width="81" style="vertical-align: top;">
                                                                                         <a href="#" style="text-decoration: none;" rel="external" target="_blank">
-                                                                                            <img alt="" width="81" src="{!! url('assets/superadmin-images/logo-2.png') !!}" />
+                                                                                            <img alt="" width="81" src="{!! assets('assets/superadmin-images/logo-2.png') !!}" />
                                                                                         </a>
                                                                                     </td>
                                                                                 </tr>
@@ -166,19 +166,19 @@
                                                                                             <tbody>
                                                                                                 <tr>
                                                                                                     <td valign="top" width="32" style="vertical-align: top;">
-                                                                                                        <img width="32" alt="Facebook" src="{!! url('assets/superadmin-images/facebook.png') !!}" />
+                                                                                                        <img width="32" alt="Facebook" src="{!! assets('assets/superadmin-images/facebook.png') !!}" />
                                                                                                     </td>
                                                                                                     <td valign="top" width="8" style="padding: 0px 8px 0 0; vertical-align: top; font-size: 1px;"></td>
                                                                                                     <td valign="top" width="32" style="vertical-align: top;">
                                                                                                         <a href="javascript:void(0)" style="text-decoration: none;" rel="external" target="_blank">
-                                                                                                            <img width="32" alt="Twitter" src="{!! url('assets/superadmin-images/twitter.png') !!}" />
+                                                                                                            <img width="32" alt="Twitter" src="{!! assets('assets/superadmin-images/twitter.png') !!}" />
                                                                                                         </a>
                                                                                                     </td>
                                                                                                     <td valign="top" width="8" style="padding: 0px 8px 0 0; vertical-align: top; font-size: 1px;"></td>
 
                                                                                                     <td valign="top" width="32" style="vertical-align: top;">
                                                                                                         <a href="javascript:void(0)" style="text-decoration: none;" rel="external" target="_blank">
-                                                                                                            <img width="32" alt="Instagram" src="{!! url('assets/superadmin-images/instagram.png') !!}" />
+                                                                                                            <img width="32" alt="Instagram" src="{!! assets('assets/superadmin-images/instagram.png') !!}" />
                                                                                                         </a>
                                                                                                     </td>
                                                                                                 </tr>

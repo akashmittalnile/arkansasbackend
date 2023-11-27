@@ -35,3 +35,11 @@
 .cancelbtn{border-radius: 5px; background: var(--brown, #261313); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); padding: 15px 20px; color: var(--white, #FFF); text-align: center; font-size: 14px; font-style: normal; font-weight: 500; line-height: normal; text-transform: uppercase;  border: none;display: inline-block; position: relative; outline: none; }
 .Createbtn{border-radius: 5px; background: var(--brown, #261313); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); padding: 15px 20px; color: var(--white, #FFF); text-align: center; font-size: 14px; font-style: normal; font-weight: 500; line-height: normal; text-transform: uppercase;border: none; display: inline-block; position: relative; outline: none; }
 
+.arkradio label {position: relative; display: inline-block; padding: 0 0 0 2em; margin-bottom: 0; cursor: pointer; font-size: 14px; }
+.arkradio label::before, 
+.arkradio label::after {position: absolute; top: 0; left: 0; display: block; width: 24px; height: 24px; } 
+.arkradio label::before {content: " "; border: 2px solid #e5eaed; -webkit-border-radius: 100%; -moz-border-radius: 100%;-ms-border-radius: 100%; -o-border-radius: 100%; border-radius: 100%; } 
+.arkradio input[type="radio"] {position: absolute; opacity: 0; z-index: -1; margin: 0; } 
+.arkradio input[type="radio"] + label::after {content: ""; top: 4px; left: 4px; width: 16px; display: none; height: 16px;position: absolute; border-radius: 100%; background-color: #e0b220; } 
+.arkradio input[type="radio"]:checked + label::before {border-color: #261313; } 
+.arkradio input[type="radio"]:checked + label::after {display: block; }

@@ -2,7 +2,7 @@
 @section('title', 'Permanent Makeup University - Help Support')
 @section('content')
 <meta name="_token" content="{{csrf_token()}}" />
-<link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/help.css') !!}">
+<link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/help.css') !!}">
 <div class="body-main-content">
     <div class="message-section">
         <section style="background-color: #e6e6e6; border-radius: 30px;">
@@ -29,14 +29,14 @@
                                             <div data-mdb-perfect-scrollbar="true" style="position: relative; height: 400px; overflow-y: scroll;">
                                                 <ul class="list-unstyled mb-0">
                                                     @forelse($user as $val)
-                                                    <li class="p-2 border-bottom user-info" data-id="{{$val->id}}" data-fname="{{$val->first_name ?? 'NA'}}" data-lname="{{$val->last_name ?? 'NA'}}" data-img="{{( ($val->profile_image=='' || $val->profile_image==null) ? null : asset('upload/profile-image/'.$val->profile_image) )}}">
+                                                    <li class="p-2 border-bottom user-info" data-id="{{$val->id}}" data-fname="{{$val->first_name ?? 'NA'}}" data-lname="{{$val->last_name ?? 'NA'}}" data-img="{{( ($val->profile_image=='' || $val->profile_image==null) ? null : assets('upload/profile-image/'.$val->profile_image) )}}">
                                                         <a href="javascript:void(0)" class="d-flex justify-content-between">
                                                             <div class="d-flex flex-row">
                                                                 <div>
                                                                     @if($val->profile_image!="" && $val->profile_image!=null)
-                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('upload/profile-image/'.$val->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('upload/profile-image/'.$val->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @else
-                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @endif
                                                                     <span class="badge bg-success badge-dot"></span>
                                                                 </div>
@@ -56,7 +56,7 @@
 
                                                     <div class="d-flex flex-column align-items-center justify-content-center mt-5 d-none" id="no_record_found">
                                                         <div>
-                                                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                                            <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                                                         </div>
                                                         <div class="font-weight-bold">
                                                             <p class="font-weight-bold" style="font-size: 1.2rem;">No users found </p> 
@@ -79,7 +79,7 @@
                                         </div>
 
                                         <div class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2">
-                                            <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60" id="userAvatar">
+                                            <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60" id="userAvatar">
                                             <input type="text" class="form-control form-control-lg border ms-3" id="message-input" placeholder="Type message">
                                             <a class="fs-24 ms-3 text-muted" id="image-attach" href="#!"><i class="las la-paperclip"></i></a>
                                             <input type="file" hidden accept="image/png, image/jpg, image/jpeg" id="upload-file" name="image-attachment">
@@ -138,7 +138,7 @@
         $("#ajax-chat-url-last").val($(this).attr('data-lname'));
         $("#ajax-chat-url-img").val($(this).attr('data-img'));
         $(".body-chat-message-user").removeClass('d-none');
-        let userAvaImg = ($("#ajax-chat-url-img").val()=="") ? "{{ asset('assets/website-images/user.jpg') }}" : $("#ajax-chat-url-img").val();
+        let userAvaImg = ($("#ajax-chat-url-img").val()=="") ? "{{ assets('assets/website-images/user.jpg') }}" : $("#ajax-chat-url-img").val();
         // console.log(userAvaImg);
         $("#userAvatar").attr('src', userAvaImg);
     })
@@ -304,7 +304,7 @@
                     ${(message !== '' && message !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${message}</p>` : ''}
                     <p class="small me-3 mb-3 rounded-3 text-muted">${time}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : assets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`;
         $('.messages-card').append(msg);
 
@@ -315,7 +315,7 @@
 
     
     function admin(row) {
-        let userProImg = ($("#ajax-chat-url-img").val()=="") ? "{{ asset('assets/website-images/user.jpg') }}" : $("#ajax-chat-url-img").val();
+        let userProImg = ($("#ajax-chat-url-img").val()=="") ? "{{ assets('assets/website-images/user.jpg') }}" : $("#ajax-chat-url-img").val();
         let html = '';
         var formattedDate = moment.unix(row.createdAt.seconds).format('MMM DD, YYYY HH:mm A');
         if (row.sendto == 1) {
@@ -335,7 +335,7 @@
                     ${(row.text !== '' && row.text !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${row.text}</p>` : '' }
                     <p class="small me-3 mb-3 rounded-3 text-muted">${formattedDate}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : assets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`;
         }
         return html;

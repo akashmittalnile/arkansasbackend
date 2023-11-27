@@ -12,7 +12,7 @@
                         <div class="col-md-4">
                             <div class="form-group search-form-group">
                                 <input type="text" placeholder="Search by Category Name" name="name" class="form-control" value="{{ request()->name ?? '' }}">
-                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -49,7 +49,7 @@
                 @if($datas->isEmpty())
                 <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                     <div>
-                        <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                        <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                     </div>
                     <div class="font-weight-bold">
                         <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
@@ -76,7 +76,7 @@
                             <div class="creator-table-col-3">
                                 <div class="creator-table-box">
                                     <div class="creator-table-text">Category Image</div>
-                                    <div class="creator-table-value center-div"><img style="object-fit: cover; object-position: center; border: 2px solid #261313; border-radius: 50%; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" width="70" height=70" src="{{ url('upload/category-image/'.$data->icon)}}" ></img></div>
+                                    <div class="creator-table-value center-div"><img style="object-fit: cover; object-position: center; border: 2px solid #261313; border-radius: 50%; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" width="70" height=70" src="{{ assets('upload/category-image/'.$data->icon)}}" ></img></div>
                                 </div>
                             </div>
 

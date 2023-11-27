@@ -46,7 +46,7 @@
                                 <div class="creator-table-content">
                                     <div class="creator-profile-info">
                                         <div class="creator-profile-image">
-                                            <img src="{!! url('assets/superadmin-images/no-image.png') !!}">
+                                            <img src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                                         </div>
                                         <div class="creator-profile-text">
                                             <h2>{{ ucfirst($data->first_name) }} {{ ucfirst($data->last_name) }}</h2>
@@ -78,7 +78,7 @@
                             <div class="creator-table-col-1">
                                 <div class="mon-table-box">
                                     <a href="{{ url('super-admin/listed-course/'.encrypt_decrypt('encrypt', $data->id)) }}" class="btn-go">
-                                        <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}">
+                                        <img src="{!! assets('assets/superadmin-images/arrow-right.svg') !!}">
                                     </a>
                                 </div>
                             </div>

@@ -1277,6 +1277,7 @@ class SuperAdminController extends Controller
                     $notify->module_name = 'course';
                     $notify->title = $request->title;
                     $notify->message = $request->description;
+                    $notify->image = assets('upload/notification/'.$img);
                     $notify->is_seen = '0';
                     $notify->created_at = date('Y-m-d H:i:s');
                     $notify->updated_at = date('Y-m-d H:i:s');
@@ -1291,6 +1292,7 @@ class SuperAdminController extends Controller
                         $notify->module_name = 'course';
                         $notify->title = $request->title;
                         $notify->message = $request->description;
+                        $notify->image = assets('upload/notification/'.$img);
                         $notify->is_seen = '0';
                         $notify->created_at = date('Y-m-d H:i:s');
                         $notify->updated_at = date('Y-m-d H:i:s');
@@ -1413,9 +1415,13 @@ class SuperAdminController extends Controller
                 if(count($user) > 0){
                     foreach($user as $val){
                         $notify = new Notify;
-                        $notify->added_by = auth()->user()->id;
+                        $notify->added_by = $ccUser->id;
                         $notify->user_id = $val->id;
                         $notify->module_name = 'course';
+                        if($ccUser->profile_image == "" || $ccUser->profile_image == null){
+                            $profile_image = null;
+                        } else $profile_image = assets('upload/profile-image/'.$ccUser->profile_image);
+                        $notify->image = $profile_image;
                         $notify->title = 'New Course';
                         $notify->message = 'New Course ('.$cc->title . ') added by ' . $ccUser->first_name . ' ' . $ccUser->last_name;
                         $notify->is_seen = '0';

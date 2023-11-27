@@ -46,9 +46,13 @@ class LoginController extends Controller
             // dd($request->all());
             if (isset($user->id)) {
                 if (auth()->attempt(['email' => $request->email, 'password' => $request->password])) {
+                    if($user->status == 3){
+                        Auth::logout();
+                        return redirect()->back()->withInput()->with('success', 'Your request for registering an account as contact creator has been rejected. Please feel free to contact us arkansas@gmail.com');
+                    }
                     if($user->status == 2){
                         Auth::logout();
-                        return redirect()->back()->withInput()->with('success', 'You creator account is rejected by arkansas administrator. Please feel free to contact us arkansas@gmail.com');
+                        return redirect()->back()->withInput()->with('success', 'Your account has been deactivated temporarily. Please feel free to contact us arkansas@gmail.com');
                     }
                     return redirect()->route('home.index');
                 }else return redirect()->back()->withInput()->with('success', 'These credentials do not match our records.');

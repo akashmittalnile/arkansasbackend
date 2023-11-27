@@ -12,7 +12,7 @@
                     <div class="col-md-3">
                         <div class="form-group search-form-group">
                             <input type="text" class="form-control" name="name" placeholder="Search by Course Name" value="{{request()->name}}">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg')!!}"></span>
+                            <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg')!!}"></span>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -54,7 +54,7 @@
             @if($course->isEmpty())
             <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                 <div>
-                    <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                    <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                 </div>
                 <div class="font-weight-bold">
                     <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p>
@@ -68,9 +68,9 @@
                         <div class="creator-profile-info">
                             <div class="creator-profile-image">
                                 @if(empty($data->profile_image))
-                                <img src="{!! asset('assets/superadmin-images/no-image.png') !!}">
+                                <img src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                                 @else
-                                <img src="{!! url('upload/profile-image/'.$data->profile_image) !!}">
+                                <img src="{!! assets('upload/profile-image/'.$data->profile_image) !!}">
                                 @endif
                             </div>
                             <div class="creator-profile-text">
@@ -112,7 +112,7 @@
                 <div class="creator-table-col-1">
                     <div class="mon-table-box">
                         <a href="{{ route('SA.Content-Creator.Course.Chapter',encrypt_decrypt('encrypt', $data->id)) }}" class="btn-go">
-                            <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}">
+                            <img src="{!! assets('assets/superadmin-images/arrow-right.svg') !!}">
                         </a>
                     </div>
                 </div>
@@ -127,5 +127,5 @@
 </div>
 @endsection
 @push('css')
-<link rel="stylesheet" href="{{ asset('assets/superadmin-css/course.css') }}">
+<link rel="stylesheet" href="{{ assets('assets/superadmin-css/course.css') }}">
 @endpush

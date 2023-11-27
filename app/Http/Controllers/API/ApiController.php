@@ -686,7 +686,7 @@ class ApiController extends Controller
             if ($limit == 0) {
                 $course->limit(2);
             }
-            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status')->get();
+            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status')->paginate(4);
 
             $response = array();
             if (isset($course)) {
@@ -780,7 +780,7 @@ class ApiController extends Controller
                     $TopCategory[] = $b2;
                 }
             }
-            return response()->json(['status' => true, 'message' => 'Trending Couse Listing', 'data' => $response, 'category' => $TopCategory]);
+            return response()->json(['status' => true, 'message' => 'Trending Couse Listing', 'data' => $response, 'category' => $TopCategory, 'last_page_no' => $course->lastPage()]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -1972,6 +1972,10 @@ class ApiController extends Controller
                         $notify->module_name = 'password';
                         $notify->title = 'Password Changed Successfully';
                         $notify->message = 'Hello, ' . auth()->user()->first_name . "\nYour password has been changed successfully.";
+                        if(auth()->user()->profile_image == "" || auth()->user()->profile_image == null){
+                            $profile_image = null;
+                        } else $profile_image = assets('upload/profile-image/'.auth()->user()->profile_image);
+                        $notify->image = $profile_image;
                         $notify->is_seen = '0';
                         $notify->created_at = date('Y-m-d H:i:s');
                         $notify->updated_at = date('Y-m-d H:i:s');

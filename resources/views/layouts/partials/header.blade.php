@@ -4,7 +4,7 @@
             <ul class="navbar-nav">
                 <li class="nav-item">
                     <a class="nav-link toggle-sidebar mon-icon-bg">
-                        <img src="{!! url('assets/website-images/sidebartoggle.svg') !!}">
+                        <img src="{!! assets('assets/website-images/sidebartoggle.svg') !!}">
                     </a>
                 </li>
             </ul>
@@ -12,7 +12,7 @@
                 <li class="nav-item noti-dropdown dropdown">
                     <a class="nav-link  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
                         <div class="noti-icon">
-                            <img src="{!! url('assets/website-images/notification.svg') !!}" alt="user">
+                            <img src="{!! assets('assets/website-images/notification.svg') !!}" alt="user">
                             @if(count(getNotification()) > 0)
                             <span class="noti-badge"></span>
                             @endif
@@ -27,16 +27,25 @@
                             
                             @forelse(getNotification() as $val)
                             <div class="notification-item">
-                                <div class="notification-item-icon"><i class="la la-bell"></i></div>
+
+                                @if($val->image == "" || $val->image == null)
+                                    <div class="notification-item-icon">
+                                        <i class="la la-bell"></i>
+                                    </div>
+                                @else
+                                    <img src="{{ $val->image }}" alt="" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; line-height: 32px; text-align: center;" >
+                                @endif
+                               
                                 <div class="notification-item-text">
-                                    <h2>{{ $val->message }}</h2>
+                                    <h2>{{ $val->title ?? "NA" }}</h2>
+                                    <p style="color: #e0b220;">{{ $val->message ?? "NA" }}</p>
                                     <p><span><i class="fas fa-clock"></i>{{ date('d M, Y H:i') }}</span></p>
                                 </div>
                             </div>
                             @empty
                             <div class="d-flex flex-column align-items-center justify-content-center">
                                 <div>
-                                    <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                    <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                                 </div>
                                 <div class="font-weight-bold">
                                     <p class="font-weight-bold" style="font-size: 1.2rem;">No notifications found </p> 
@@ -59,9 +68,9 @@
                         <div class="profile-pic">
                             @php $profile_img = auth()->user()->profile_image;  @endphp
                             @if($profile_img != "" && $profile_img != null)
-                            <img src="{!! url('upload/profile-image/'.$profile_img) !!}" alt="user">
+                            <img src="{!! assets('upload/profile-image/'.$profile_img) !!}" alt="user">
                             @else
-                            <img src="{!! url('assets/website-images/user.jpg') !!}" alt="user">
+                            <img src="{!! assets('assets/website-images/user.jpg') !!}" alt="user">
                             @endif
                         </div>
                     </a>

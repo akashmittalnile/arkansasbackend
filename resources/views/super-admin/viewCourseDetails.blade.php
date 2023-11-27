@@ -35,14 +35,14 @@
                         <div class="pmu-course-details-media w-25">
                             <a data-fancybox data-type="iframe" data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0" href="javascript:;">
                                 <video width="300" height="210" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
-                                    <source src="{{ url( 'upload/disclaimers-introduction/' . $course->introduction_image) }}" type="video/mp4">
+                                    <source src="{{ assets( 'upload/disclaimers-introduction/' . $course->introduction_image) }}" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
-                                <!-- <div class="pmu-video-icon"><img src="{!! url('assets/superadmin-images/video.svg')!!}"></div> -->
+                                <!-- <div class="pmu-video-icon"><img src="{!! assets('assets/superadmin-images/video.svg')!!}"></div> -->
                             </a>
                         </div>
                         <div class="pmu-course-details-content w-75">
-                            <div class="coursestatus"><img src="{!! url('assets/superadmin-images/tick.svg')!!}">
+                            <div class="coursestatus"><img src="{!! assets('assets/superadmin-images/tick.svg')!!}">
                                 @if ($course->status == 0)
                                     Unpublished
                                 @else
@@ -205,9 +205,9 @@
                                 <div class="pmu-comment-1">
                                     <h1>Rating & Review</h1>
                                     @if(count($review) != 0)
-                                    <div class="pmu-comment-rating"><img src="{!! url('assets/superadmin-images/star.svg')!!}"> {{ number_format($reviewAvg, 1) }}</div>
+                                    <div class="pmu-comment-rating"><img src="{!! assets('assets/superadmin-images/star.svg')!!}"> {{ number_format($reviewAvg, 1) }}</div>
                                     @else
-                                    <div class="pmu-comment-rating"><img src="{{ asset('assets/superadmin-images/star.svg') }}"> 0.0</div>
+                                    <div class="pmu-comment-rating"><img src="{{ assets('assets/superadmin-images/star.svg') }}"> 0.0</div>
                                     @endif
                                 </div>
                                 <div class="pmu-comment-head-action">
@@ -218,14 +218,14 @@
                             @forelse($review as $value)
                             <div class="pmu-comment-item">
                                 <div class="pmu-comment-profile">
-                                    <img src="{!! url('assets/superadmin-images/user.png')!!}">
+                                    <img src="{!! assets('assets/superadmin-images/user.png')!!}">
                                 </div>
                                 <div class="pmu-comment-content">
                                     <div class="pmu-comment-head">
                                         <h2>{{ $value->first_name ?? "NA" }} {{ $value->last_name ?? "" }}</h2>
                                         <div class="pmu-date"><i class="las la-calendar"></i>{{ date('d M, Y, g:iA', strtotime($value->created_date ?? "")) }}</div>
                                     </div>
-                                    <div class="pmu-comment-rating"><img src="{!! url('assets/superadmin-images/star.svg')!!}"> {{ number_format($value->rating,1) ?? "0.0" }}</div>
+                                    <div class="pmu-comment-rating"><img src="{!! assets('assets/superadmin-images/star.svg')!!}"> {{ number_format($value->rating,1) ?? "0.0" }}</div>
                                     <div class="pmu-comment-descr">{{ $value->review ?? "NA" }}</div>
                                 </div>
                             </div>

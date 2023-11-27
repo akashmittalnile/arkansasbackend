@@ -106,6 +106,10 @@ class StripeController extends Controller
                     $notify->module_name = 'order';
                     $notify->title = 'Order Placed';
                     $notify->message = 'Hello, ' . auth()->user()->first_name . "\nOrder number " . $orderAdminAmount->order_number . ' has been successfully placed.';
+                    if(auth()->user()->profile_image == "" || auth()->user()->profile_image == null){
+                        $profile_image = null;
+                    } else $profile_image = assets('upload/profile-image/'.auth()->user()->profile_image);
+                    $notify->image = $profile_image;
                     $notify->is_seen = '0';
                     $notify->created_at = date('Y-m-d H:i:s');
                     $notify->updated_at = date('Y-m-d H:i:s');

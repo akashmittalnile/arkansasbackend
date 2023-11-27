@@ -45,7 +45,7 @@
                             <div class="col-md-3">
                                 <div class="Overview-info-card">
                                     <h2>Total courses rating</h2>
-                                    <div class="Overview-rating"><img src="{!! url('assets/website-images/star.svg') !!}"> {{ number_format((float)$rating ?? 0, 1) }}</div>
+                                    <div class="Overview-rating"><img src="{!! assets('assets/website-images/star.svg') !!}"> {{ number_format((float)$rating ?? 0, 1) }}</div>
                                     <div class="overview-date">{{ date('M, Y', strtotime($over_month)) }}</div>
                                 </div>
                             </div>
@@ -86,7 +86,7 @@
                             <div class="col-md-3">
                                 <div class="Overview-info-card">
                                     <h2>Total courses rating</h2>
-                                    <div class="Overview-rating"><img src="{!! url('assets/website-images/star.svg') !!}"> {{ number_format((float)$creator_rating ?? 0, 1) }}</div>
+                                    <div class="Overview-rating"><img src="{!! assets('assets/website-images/star.svg') !!}"> {{ number_format((float)$creator_rating ?? 0, 1) }}</div>
                                     <div class="overview-date">{{ date('M, Y', strtotime($creator_month)) }}</div>
                                 </div>
                             </div>

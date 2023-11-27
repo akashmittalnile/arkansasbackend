@@ -12,7 +12,7 @@
                     <div class="col-md-4">
                         <div class="form-group search-form-group">
                             <input type="text" class="form-control" name="title" placeholder="Search by Title" value="{{ request()->title }}">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                            <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                         </div>
                     </div>
                     <div class="col-md-3">

@@ -12,7 +12,7 @@
                         <div class="col-md-3">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" value="{{ request()->name }}" name="name" placeholder="Search by Product Name">
-                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                             </div>
                         </div>
                         <div class="col-md-2">
@@ -60,7 +60,7 @@
                     @if($datas->isEmpty())
                     <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                         <div>
-                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                            <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                         </div>
                         <div class="font-weight-bold">
                             <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
@@ -75,8 +75,8 @@
                                             <?php
                                                 $first_image = \App\Models\ProductAttibutes::where('product_id', $data->id)->first();
                                             ?>
-                                                <img src="{!! url('upload/products/'.$first_image->attribute_value) !!}"> 
-                                                {{-- <img src="{!! url('assets/superadmin-images/p2.jpg') !!}"> --}}
+                                                <img src="{!! assets('upload/products/'.$first_image->attribute_value) !!}"> 
+                                                {{-- <img src="{!! assets('assets/superadmin-images/p2.jpg') !!}"> --}}
                                             
                                         </a>
                                     </div>
@@ -94,7 +94,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
+                                        <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! assets('assets/superadmin-images/tick.svg') !!}">
                                             @if ($data->status == 0)
                                                 Unpublished
                                             @else

@@ -13,7 +13,7 @@
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="course"
                                     placeholder="Search by Course Name" value="{{request()->course}}">
-                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg')!!}"></span>
+                                <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg')!!}"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -58,7 +58,7 @@
                     @if($courses->isEmpty())
                     <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                         <div>
-                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                            <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                         </div>
                         <div class="font-weight-bold">
                             <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
@@ -73,10 +73,10 @@
                                             data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0"
                                             href="javascript:;">
                                             <video width="415" height="240" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
-                                                <source src="{{ url( 'upload/disclaimers-introduction/' . $data->introduction_image) }}" type="video/mp4">
+                                                <source src="{{ assets( 'upload/disclaimers-introduction/' . $data->introduction_image) }}" type="video/mp4">
                                                 Your browser does not support the video tag.
                                             </video>
-                                            <!-- <div class="pmu-video-icon"><img src="{!! url('assets/website-images/video.svg') !!}"></div> -->
+                                            <!-- <div class="pmu-video-icon"><img src="{!! assets('assets/website-images/video.svg') !!}"></div> -->
                                         </a>
                                     </div>
                                     <div class="pmu-course-content">
@@ -93,7 +93,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! url('assets/website-images/tick.svg') !!}">
+                                        <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! assets('assets/website-images/tick.svg') !!}">
                                             @if ($data->status == 0)
                                                 Unpublished
                                             @else

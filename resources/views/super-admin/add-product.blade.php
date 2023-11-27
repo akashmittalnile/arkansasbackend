@@ -58,7 +58,7 @@
                                     <div class="small-12 large-4 columns">
                                         <div class="containers">
                                             <div class="imageWrapper">
-                                                <img style="width: 120px !important; border-radius: 8px;" class="image" src="{{ asset('assets/superadmin-images/upload.svg') }}">
+                                                <img style="width: 120px !important; border-radius: 8px;" class="image" src="{{ assets('assets/superadmin-images/upload.svg') }}">
                                             </div>
                                         </div>
                                     </div>
@@ -330,7 +330,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta3/js/bootstrap.bundle.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
-<script src="{{ asset('assets/superadmin-js/create-product.js') }}"></script>
+<script src="{{ assets('assets/superadmin-js/create-product.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.0/dropzone.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.10/jquery.mask.js"></script>

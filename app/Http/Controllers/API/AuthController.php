@@ -163,6 +163,10 @@ class AuthController extends Controller
                     $notify->module_name = 'password';
                     $notify->title = 'Password Reset Successfully';
                     $notify->message = 'Hello, ' . auth()->user()->first_name . "\nYour password has been reset successfully.";
+                    if(auth()->user()->profile_image == "" || auth()->user()->profile_image == null){
+                        $profile_image = null;
+                    } else $profile_image = assets('upload/profile-image/'.auth()->user()->profile_image);
+                    $notify->image = $profile_image;
                     $notify->is_seen = '0';
                     $notify->created_at = date('Y-m-d H:i:s');
                     $notify->updated_at = date('Y-m-d H:i:s');

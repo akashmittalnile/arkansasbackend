@@ -36,7 +36,7 @@
                     <div class="cart-summary-info">
                         <div class="added-bank-info-card">
                             <div class="added-bank-info-ico">
-                                <img width="50" height="40" src="{{ asset('assets/website-images/order.svg') }}">
+                                <img width="50" height="40" src="{{ assets('assets/website-images/order.svg') }}">
                             </div>
                             <div class="added-bank-info-text mx-2">
                                 <h2>{{ $order->order_number }}</h2>
@@ -65,9 +65,9 @@
                         <div class="side-profile-item">
                             <div class="side-profile-media">
                                 @if(isset($order->profile_image) && $order->profile_image != "")
-                                <img src="{{ url('upload/profile-image/'.$order->profile_image) }}">
+                                <img src="{{ assets('upload/profile-image/'.$order->profile_image) }}">
                                 @else
-                                <img src="{{ asset('assets/website-images/user.jpg') }}">
+                                <img src="{{ assets('assets/website-images/user.jpg') }}">
                                 @endif
                             </div>
                             <div class="side-profile-text">
@@ -86,7 +86,7 @@
                                 <div class="col-md-12">
                                     <div class="side-profile-total-order">
                                         <div class="side-profile-total-icon">
-                                            <img src="{{ asset('assets/website-images/email1.svg') }}">
+                                            <img src="{{ assets('assets/website-images/email1.svg') }}">
                                         </div>
                                         <div class="side-profile-total-content">
                                             <h2>Email Address</h2>
@@ -98,7 +98,7 @@
                                 <div class="col-md-12">
                                     <div class="side-profile-total-order">
                                         <div class="side-profile-total-icon">
-                                            <img src="{{ asset('assets/website-images/buliding-1.svg') }}">
+                                            <img src="{{ assets('assets/website-images/buliding-1.svg') }}">
                                         </div>
                                         <div class="side-profile-total-content">
                                             <h2>Phone No.</h2>
@@ -110,7 +110,7 @@
                                 <div class="col-md-12">
                                     <div class="side-profile-total-order">
                                         <div class="side-profile-total-icon">
-                                            <img src="{{ asset('assets/website-images/accountstatus.svg') }}">
+                                            <img src="{{ assets('assets/website-images/accountstatus.svg') }}">
                                         </div>
                                         <div class="side-profile-total-content">
                                             <h2>Account Status</h2>
@@ -137,10 +137,10 @@
                                     @forelse($order->orderProduct as $key => $val)
                                     <div class="pmu-course-details-item">
                                         <div class="pmu-course-details-media">
-                                            <img src="{{ url('upload/products/'.$val->image) }}">
+                                            <img src="{{ assets('upload/products/'.$val->image) }}">
                                         </div>
                                         <div class="pmu-course-details-content">
-                                            <div class="coursestatus"><img src="{{ asset('assets/website-images/tick.svg') }}">
+                                            <div class="coursestatus"><img src="{{ assets('assets/website-images/tick.svg') }}">
                                                 @if ($val->status == 0)
                                                 Unpublished
                                                 @else
@@ -187,9 +187,9 @@
                                         <div class="added-bank-info-card">
                                             <div class="added-bank-info-ico">
                                                 @if(strtolower($transaction->card_type)=='visa')
-                                                <img width="50" src="{{ asset('assets/website-images/visa-logo.png') }}">
+                                                <img width="50" src="{{ assets('assets/website-images/visa-logo.png') }}">
                                                 @else
-                                                <img width="50" src="{{ asset('assets/website-images/mastercard.png') }}">
+                                                <img width="50" src="{{ assets('assets/website-images/mastercard.png') }}">
                                                 @endif
                                             </div>
                                             <div class="added-bank-info-text mx-2">

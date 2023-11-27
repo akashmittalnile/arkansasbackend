@@ -44,7 +44,7 @@
                                             <a href="{{ url('super-admin/addcourse2/'.$userID .'/'. encrypt_decrypt('encrypt',$chapter->course_id).'/'.encrypt_decrypt('encrypt',$chapter->id)) }}" ><span>Chapter {{ $v }}</span></a>
                                             <a href="{{ url('admin/delete-chapter/' . $chapter->id) }}"
                                                 onclick="return confirm('Are you sure you want to delete this chapter?');"><img
-                                                src="{!! url('assets/website-images/close-circle.svg') !!}">
+                                                src="{!! assets('assets/website-images/close-circle.svg') !!}">
                                             </a>
                                         </div>
                                     </div>
@@ -228,7 +228,7 @@
                                                                     @if ($data->file)
                                                                         <div class="upload-file-item">
                                                                             <div class="upload-file-icon">
-                                                                                <img src="{!! url('assets/website-images/video-icon.svg') !!}">
+                                                                                <img src="{!! assets('assets/website-images/video-icon.svg') !!}">
                                                                             </div>
                                                                             <div class="upload-file-text">
                                                                                 <h3>video</h3>
@@ -238,7 +238,7 @@
                                                                                 <a class="delete-btn"
                                                                                     href="{{ url('admin/delete-video/' . $data->id) }}"
                                                                                     onclick="return confirm('Are you sure you want to delete this video?');"><img
-                                                                                        src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
+                                                                                        src="{!! assets('assets/website-images/close-circle.svg') !!}"></a>
                                                                             </div>
                                                                         </div>
                                                                     @else
@@ -250,7 +250,7 @@
                                                                         </tr>
                                                                     @endif
 
-                                                                    {{-- <video src="{!! url('assets/upload/course/' . $data->file) !!}" controls>
+                                                                    {{-- <video src="{!! assets('assets/upload/course/' . $data->file) !!}" controls>
                                                                     </video> --}}
                                                                 </div>
                                                             </div>
@@ -289,7 +289,7 @@
                                                                 @if ($data->file)
                                                                     <div class="upload-file-item">
                                                                         <div class="upload-file-icon">
-                                                                            <img src="{!! url('assets/website-images/document-text.svg') !!}">
+                                                                            <img src="{!! assets('assets/website-images/document-text.svg') !!}">
                                                                         </div>
                                                                         <div class="upload-file-text">
                                                                             <h3>Document</h3>
@@ -299,7 +299,7 @@
                                                                             <a class="delete-btn"
                                                                                 href="{{ url('admin/delete-pdf/' . $data->id) }}"
                                                                                 onclick="return confirm('Are you sure you want to delete this pdf?');"><img
-                                                                                    src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
+                                                                                    src="{!! assets('assets/website-images/close-circle.svg') !!}"></a>
                                                                         </div>
                                                                     </div>
                                                                 @else
@@ -354,7 +354,7 @@
                                                                     <input type="text" class="form-control"
                                                                         placeholder="Paste Google Drive Link To Receive Assignment From Student "
                                                                         name="">
-                                                                    <span class="pmu-drive-logo"><img src="{!! url('assets/website-images/drive.svg') !!}"></span>
+                                                                    <span class="pmu-drive-logo"><img src="{!! assets('assets/website-images/drive.svg') !!}"></span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -365,7 +365,7 @@
                                                                     <input type="text" class="form-control"
                                                                         placeholder="Paste Dropbox Link To Receive Assignment From Student "
                                                                         name="">
-                                                                    <span class="pmu-drive-logo"><img src="{!! url('assets/website-images/dropbox.svg') !!}"></span>
+                                                                    <span class="pmu-drive-logo"><img src="{!! assets('assets/website-images/dropbox.svg') !!}"></span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -378,7 +378,7 @@
                                                                     <input type="text" class="form-control"
                                                                         placeholder="Paste OneDrive Link To Receive Assignment From Student "
                                                                         name="">
-                                                                    <span class="pmu-drive-logo"><img src="{!! url('assets/website-images/onedrive.svg') !!}"></span>
+                                                                    <span class="pmu-drive-logo"><img src="{!! assets('assets/website-images/onedrive.svg') !!}"></span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -390,7 +390,7 @@
                                                                     <input type="text" class="form-control"
                                                                         placeholder="Paste Drive Link To Receive Assignment From Student "
                                                                         name="">
-                                                                    <span class="pmu-drive-logo"><img src="{!! url('assets/website-images/link-icon.svg') !!}"></span>
+                                                                    <span class="pmu-drive-logo"><img src="{!! assets('assets/website-images/link-icon.svg') !!}"></span>
                                                                 </div>
                                                             </div>
                                                         </div>
@@ -510,7 +510,7 @@
                                                             <label for="video">
                                                                 <div class="signature-text">
                                                                     <span id="video_file_name"><img
-                                                                            src="{!! url('assets/website-images/upload.svg') !!}"> Click here
+                                                                            src="{!! assets('assets/website-images/upload.svg') !!}"> Click here
                                                                         to Upload</span>
                                                                 </div>
                                                             </label>
@@ -555,7 +555,7 @@
                                                             <label for="pdf_file">
                                                                 <div class="signature-text">
                                                                     <span id="pdf_file_name"><img
-                                                                            src="{!! url('assets/website-images/upload.svg') !!}"> Click here
+                                                                            src="{!! assets('assets/website-images/upload.svg') !!}"> Click here
                                                                         to Upload</span>
                                                                 </div>
                                                             </label>
@@ -664,7 +664,7 @@
                                                         <input type="text" class="form-control"
                                                             placeholder="Paste Google Drive Link To Receive Assignment From Student "
                                                             name="">
-                                                        <span class="pmu-drive-logo"><img src="{!! url('assets/website-images/drive.svg') !!}"></span>
+                                                        <span class="pmu-drive-logo"><img src="{!! assets('assets/website-images/drive.svg') !!}"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -675,7 +675,7 @@
                                                         <input type="text" class="form-control"
                                                             placeholder="Paste Dropbox Link To Receive Assignment From Student "
                                                             name="">
-                                                        <span class="pmu-drive-logo"><img src="{!! url('assets/website-images/dropbox.svg') !!}"></span>
+                                                        <span class="pmu-drive-logo"><img src="{!! assets('assets/website-images/dropbox.svg') !!}"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -688,7 +688,7 @@
                                                         <input type="text" class="form-control"
                                                             placeholder="Paste OneDrive Link To Receive Assignment From Student "
                                                             name="">
-                                                        <span class="pmu-drive-logo"><img src="{!! url('assets/website-images/onedrive.svg') !!}"></span>
+                                                        <span class="pmu-drive-logo"><img src="{!! assets('assets/website-images/onedrive.svg') !!}"></span>
                                                     </div>
                                                 </div>
                                             </div>
@@ -700,7 +700,7 @@
                                                         <input type="text" class="form-control"
                                                             placeholder="Paste Drive Link To Receive Assignment From Student "
                                                             name="">
-                                                        <span class="pmu-drive-logo"><img src="{!! url('assets/website-images/link-icon.svg') !!}"></span>
+                                                        <span class="pmu-drive-logo"><img src="{!! assets('assets/website-images/link-icon.svg') !!}"></span>
                                                     </div>
                                                 </div>
                                             </div>

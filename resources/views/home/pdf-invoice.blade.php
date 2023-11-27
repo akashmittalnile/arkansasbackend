@@ -19,7 +19,7 @@
           <tbody>
             <tr>
               <td valign="top" style="padding: 10px">
-                <img src="{{ asset('assets/website-images/logo.jpg') }}" width="100">
+                <img src="{{ assets('assets/website-images/logo.jpg') }}" width="100">
               </td>
 
               <td valign="top" style="padding: 10px">

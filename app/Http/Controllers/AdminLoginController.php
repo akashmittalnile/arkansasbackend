@@ -115,6 +115,30 @@ class AdminLoginController extends Controller
         }
     }
 
+    public function resend_email(Request $request, $email) 
+    {
+        $email = encrypt_decrypt('decrypt', $email);
+        $user = User::where('email', $email)->where('role', 3)->first();
+        if (isset($user->id)) {
+            $code = rand(1000, 9999);
+            $data['subject']    = 'Arkansas Admin Forgot Password OTP';
+            $data['from_email'] = env('MAIL_FROM_ADDRESS');
+            $data['site_title'] = 'Arkansas Admin Forgot Password OTP';
+            $data['view'] = 'email.admin-otp';
+            $data['otp'] = $code;
+            $data['customer_name'] = $user->first_name ?? 'NA' + ' ' + $user->last_name ?? '';
+            $data['to_email'] = $user->email ?? 'NA';
+            sendEmail($data);
+            User::where('email', $email)->where('role', 3)->where('status', 1)->update([
+                'verification_code' => $code
+            ]);
+            $user_email = encrypt_decrypt('encrypt',$email);
+            return redirect()->route('SA.reset_password', $user_email);
+        } else {
+            return redirect()->back()->with('success', 'The email is not registered with Arkansas');
+        }
+    }
+
     public function reset_password($email) 
     {   
         $decrypt_email = encrypt_decrypt('decrypt', $email);

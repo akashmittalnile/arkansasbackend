@@ -11,7 +11,7 @@
                         <p>Total Content Creator</p>
                     </div>
                     <div class="pmu-overview-media">
-                        <img src="{!! url('assets/superadmin-images/Content-Creator.svg') !!}">
+                        <img src="{!! assets('assets/superadmin-images/Content-Creator.svg') !!}">
                     </div>
                 </a>
             </div>
@@ -23,7 +23,7 @@
                         <p>Total Students</p>
                     </div>
                     <div class="pmu-overview-media">
-                        <img src="{!! url('assets/superadmin-images/students-icon.svg') !!}">
+                        <img src="{!! assets('assets/superadmin-images/students-icon.svg') !!}">
                     </div>
                 </a>
             </div>
@@ -36,7 +36,7 @@
                         <p>Total Listed Products</p>
                     </div>
                     <div class="pmu-overview-media">
-                        <img src="{!! url('assets/superadmin-images/products-icon.svg') !!}">
+                        <img src="{!! assets('assets/superadmin-images/products-icon.svg') !!}">
                     </div>
                 </a>
             </div>
@@ -48,7 +48,7 @@
                         <p>Total Listed Courses</p>
                     </div>
                     <div class="pmu-overview-media">
-                        <img src="{!! url('assets/website-images/book2.svg') !!}" width="48">
+                        <img src="{!! assets('assets/website-images/book2.svg') !!}" width="48">
                     </div>
                 </a>
             </div>
@@ -108,9 +108,9 @@
                         <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
                         <td>
                             @if ($val->profile_image!=null && $val->profile_image!="")
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('/upload/profile-image/'.$val->profile_image) !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('/upload/profile-image/'.$val->profile_image) !!}">
                             @else
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('assets/superadmin-images/no-image.png') !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                             @endif
                         </td>
                         <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
@@ -119,7 +119,7 @@
                         <td>
                             <div class="mon-table-box">
                                 <a href="{{ route('SA.StudentDetail', encrypt_decrypt('encrypt',$val->id)) }}" class="btn-go">
-                                    <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}">
+                                    <img src="{!! assets('assets/superadmin-images/arrow-right.svg') !!}">
                                 </a>
                             </div>
                         </td>
@@ -153,9 +153,9 @@
                         <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
                         <td>
                             @if ($val->profile_image!=null && $val->profile_image!="")
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('/upload/profile-image/'.$val->profile_image) !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('/upload/profile-image/'.$val->profile_image) !!}">
                             @else
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('assets/superadmin-images/no-image.png') !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                             @endif
                         </td>
                         <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
@@ -164,7 +164,7 @@
                         <td>
                             <div class="mon-table-box">
                                 <a href="{{ route('SA.ListedCourse', encrypt_decrypt('encrypt',$val->id)) }}" class="btn-go">
-                                    <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}">
+                                    <img src="{!! assets('assets/superadmin-images/arrow-right.svg') !!}">
                                 </a>
                             </div>
                         </td>
@@ -198,9 +198,9 @@
                         <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
                         <td>
                             @if ($val->profile_image!=null && $val->profile_image!="")
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('/upload/profile-image/'.$val->profile_image) !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('/upload/profile-image/'.$val->profile_image) !!}">
                             @else
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! url('assets/superadmin-images/no-image.png') !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                             @endif
                         </td>
                         <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
@@ -209,7 +209,7 @@
                         <td>
                             <div class="mon-table-box">
                                 <a href="{{ route('SA.Addcourse2', [ 'userID'=> encrypt_decrypt('encrypt', $val->id), 'courseID'=> encrypt_decrypt('encrypt',$val->courseid) ] ) }}" class="btn-go">
-                                    <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}">
+                                    <img src="{!! assets('assets/superadmin-images/arrow-right.svg') !!}">
                                 </a>
                             </div>
                         </td>
@@ -241,7 +241,7 @@
                 <div class="col-md-3">
                     <div class="Overview-info-card">
                         <h2>Total courses rating</h2>
-                        <div class="Overview-rating"><img src="{!! url('assets/superadmin-images/star.svg') !!}"> 4.7</div>
+                        <div class="Overview-rating"><img src="{!! assets('assets/superadmin-images/star.svg') !!}"> 4.7</div>
                         <div class="overview-date">May,2023</div>
                     </div>
                 </div>

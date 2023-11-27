@@ -127,7 +127,7 @@
                                             <input type="file" name="img" id="PDFJPEGOrPNG" class="uploadsignature addsignature" accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">
                                             <label for="PDFJPEGOrPNG">
                                                 <div class="signature-text">
-                                                <span id="certificates_nam"><img id="prev-img" src="{!! url('assets/superadmin-images/upload.svg') !!}"> <small id="prev-small-line">Click here to Upload</small></span>
+                                                <span id="certificates_nam"><img id="prev-img" src="{!! assets('assets/superadmin-images/upload.svg') !!}"> <small id="prev-small-line">Click here to Upload</small></span>
                                                 </div>
                                             </label>
                                         </div>

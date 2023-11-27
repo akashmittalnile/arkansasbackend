@@ -66,7 +66,7 @@
                                                     <label for="PDFJPEGOrPNG">
                                                         <div class="signature-text">
                                                             <span id="category_image"><img id="prev-img"
-                                                                    src="{!! url('assets/website-images/upload.svg') !!}"><small id="prev-small-line">Click here to
+                                                                    src="{!! assets('assets/website-images/upload.svg') !!}"><small id="prev-small-line">Click here to
                                                                 Upload</small></span>
                                                         </div>
                                                     </label>

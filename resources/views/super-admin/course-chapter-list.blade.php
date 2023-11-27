@@ -1,7 +1,7 @@
 @extends('super-admin-layouts.app-master')
 @section('title', 'Permanent Makeup University - Courses')
 @section('content')
-<link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
+<link rel="stylesheet" type="text/css" href="{!! assets('assets/superadmin-css/course.css') !!}">
 <input type="hidden" name="courseID" value="{{ $courseID }}" />
 <div class="body-main-content">
     <div class="pmu-filter-section">
@@ -42,7 +42,7 @@
                                 <div class="chapter-item">
                                     @endif
                                     <a href="{{ route('SA.Course.Chapter', ['courseID'=>encrypt_decrypt('encrypt',$chapter->course_id), 'chapterID'=> encrypt_decrypt('encrypt',$chapter->id)] ) }}"><span>{{ $chapter->chapter ?? "NA" }}</span></a>
-                                    <a href="{{ url('super-admin/delete-chapter/' . $chapter->id) }}" onclick="return confirm('Are you sure you want to delete this chapter?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}">
+                                    <a href="{{ url('super-admin/delete-chapter/' . $chapter->id) }}" onclick="return confirm('Are you sure you want to delete this chapter?');"><img src="{!! assets('assets/website-images/close-circle.svg') !!}">
                                     </a>
                                 </div>
                             </div>
@@ -76,7 +76,7 @@
                             @if (!$chapters->isEmpty() && isset($chapterID))
                             <div class="d-flex">
                                 <h2 id="chapterName" class="text-capitalize">Chapter </h2>
-                                <a href="" data-bs-toggle="modal" data-bs-target="#EditChapter" id="edit-chapter-modal-open" data-chapter-id="{{ $chapterID }}"><img width="17" height="17" style="cursor: pointer; margin-top: 20px" src="{{ asset('assets/superadmin-images/edit.png') }}" alt=""></a>
+                                <a href="" data-bs-toggle="modal" data-bs-target="#EditChapter" id="edit-chapter-modal-open" data-chapter-id="{{ $chapterID }}"><img width="17" height="17" style="cursor: pointer; margin-top: 20px" src="{{ assets('assets/superadmin-images/edit.png') }}" alt=""></a>
                             </div>
                             @endif
                             
@@ -105,7 +105,7 @@
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
+                                                <img width="24" src="{{ assets('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Video<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
@@ -136,7 +136,7 @@
                                                 <div class="pmu-add-questionnaire-tooltip">
                                                     <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
 
-                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                        <img src="{!! assets('assets/website-images/info-icon.svg') !!}">
                                                     </div> 
                                                     <script>
                                                     $(function() {
@@ -160,17 +160,17 @@
                                                         @if ($data->details!="" && $data->details!=null)
                                                         <div class="upload-file-item">
                                                             <div class="upload-file-icon">
-                                                                <img src="{!! url('assets/website-images/video-icon.svg') !!}">
+                                                                <img src="{!! assets('assets/website-images/video-icon.svg') !!}">
                                                             </div>
                                                             <div class="upload-file-text">
                                                                 <h3>video</h3>
                                                                 <video width="165" height="90" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
-                                                                    <source src="{{ url( 'upload/course/' . $data->details) }}" type="video/mp4">
+                                                                    <source src="{{ assets( 'upload/course/' . $data->details) }}" type="video/mp4">
                                                                     Your browser does not support the video tag.
                                                                 </video>
                                                             </div>
                                                             <div class="upload-file-action">
-                                                                <a class="delete-btn" href="{{ url('super-admin/delete-video/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this video?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
+                                                                <a class="delete-btn" href="{{ url('super-admin/delete-video/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this video?');"><img src="{!! assets('assets/website-images/close-circle.svg') !!}"></a>
                                                             </div>
                                                         </div>
                                                         @else
@@ -182,7 +182,7 @@
                                                         </tr>
                                                         @endif
 
-                                                        {{-- <video src="{!! url('assets/upload/course/' . $data->details) !!}" controls>
+                                                        {{-- <video src="{!! assets('assets/upload/course/' . $data->details) !!}" controls>
                                                                     </video> --}}
                                                     </div>
                                                 </div>
@@ -215,7 +215,7 @@
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
+                                                <img width="24" src="{{ assets('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#collapseExample{{ $data->id }}">
@@ -246,7 +246,7 @@
                                                 </div>
                                                 <div class="pmu-add-questionnaire-tooltip">
                                                     <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
-                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                        <img src="{!! assets('assets/website-images/info-icon.svg') !!}">
                                                     </div> 
                                                     <script>
                                                     $(function() {
@@ -299,7 +299,7 @@
                                                 <input type="number" class="form-control {{ $v . $quiz->id }}_marks" placeholder="Enter marks" name="questions[2][0][marks]" required="" value="{{ $quiz->marks ?? '' }}">
                                             </div>
                                             <div class="edit-pmu-action">
-                                                <a class="edit-question-first" data-id="{{ $quiz->id }}" data-param="{{ $v }}">Update
+                                                <a class="edit-question-first" data-type="quiz" data-id="{{ $quiz->id }}" data-param="{{ $v }}">Update
                                                     Question</a>
                                                 <a href="{{ url('super-admin/delete-question/' . $quiz->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">Delete
                                                     Question</a>
@@ -329,7 +329,7 @@
                                                             </div>
                                                             <div class="pmu-add-questionnaire-tooltip">
                                                                 <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
-                                                                    <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                                    <img src="{!! assets('assets/website-images/info-icon.svg') !!}">
                                                                 </div> 
                                                                 <script>
                                                                 $(function() {
@@ -368,7 +368,7 @@
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
+                                                <img width="24" src="{{ assets('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">PDF<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
@@ -399,7 +399,7 @@
                                                 <div class="pmu-add-questionnaire-tooltip">
                                                     <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
 
-                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                        <img src="{!! assets('assets/website-images/info-icon.svg') !!}">
                                                     </div> 
                                                     <script>
                                                     $(function() {
@@ -422,18 +422,18 @@
                                                     @if ($data->details!="" && $data->details!=null)
                                                     <div class="upload-file-item">
                                                         <div class="upload-file-icon">
-                                                            <img src="{!! url('assets/website-images/document-text.svg') !!}">
+                                                            <img src="{!! assets('assets/website-images/document-text.svg') !!}">
                                                         </div>
                                                         <div class="upload-file-text">
                                                             <h3>Document</h3>
                                                             <h5>
-                                                                <a target="_black" href="{{ asset('upload/course/'.$data->details) }}">
-                                                                    <img src="{{ asset('assets/website-images/pdf.svg') }}" class="mx-3" alt="No pdf found">
+                                                                <a target="_black" href="{{ assets('upload/course/'.$data->details) }}">
+                                                                    <img src="{{ assets('assets/website-images/pdf.svg') }}" class="mx-3" alt="No pdf found">
                                                                 </a>
                                                             </h5>
                                                         </div>
                                                         <div class="upload-file-action">
-                                                            <a class="delete-btn" href="{{ url('super-admin/delete-pdf/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this pdf?');"><img src="{!! url('assets/website-images/close-circle.svg') !!}"></a>
+                                                            <a class="delete-btn" href="{{ url('super-admin/delete-pdf/' . $data->id) }}" onclick="return confirm('Are you sure you want to delete this pdf?');"><img src="{!! assets('assets/website-images/close-circle.svg') !!}"></a>
                                                         </div>
                                                     </div>
                                                     @else
@@ -474,7 +474,7 @@
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
+                                                <img width="24" src="{{ assets('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'ASDIV' . $randomNum }}">Assignment<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
@@ -505,7 +505,7 @@
                                                 <div class="pmu-add-questionnaire-tooltip">
                                                     <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
 
-                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                        <img src="{!! assets('assets/website-images/info-icon.svg') !!}">
                                                     </div> 
                                                     <script>
                                                     $(function() {
@@ -546,7 +546,7 @@
                                     <div class="edit-pmu-heading">
                                         <div class="edit-pmu-text d-flex flex-row align-items-center">
                                             <div>
-                                                <img width="24" src="{{ asset('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
+                                                <img width="24" src="{{ assets('assets/superadmin-images/drag.png') }}" alt="" class="drag" draggable="true" data-id="{{ $data->id }}">
                                             </div>
                                             <div class="edit-pmu-text-title mx-2">
                                                 <h3 data-bs-toggle="collapse" data-bs-target="#{{ 'CPDIV' . $randomNum }}">Survey<i class="las la-angle-down" style="margin-left: 15px;"></i></h3>
@@ -577,7 +577,7 @@
                                                 <div class="pmu-add-questionnaire-tooltip">
                                                     <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
 
-                                                        <img src="{!! url('assets/website-images/info-icon.svg') !!}">
+                                                        <img src="{!! assets('assets/website-images/info-icon.svg') !!}">
                                                     </div> 
                                                     <script>
                                                     $(function() {
@@ -619,7 +619,7 @@
                                                 <input type="text" class="form-control {{ $sur . $survey->id }}" placeholder="Enter Question Title" name="survey_question" value="{{ $survey->title }}">
                                             </div>
                                             <div class="edit-pmu-action">
-                                                <a class="edit-question-first" data-id="{{ $survey->id }}" data-param="{{ $sur }}">Update
+                                                <a class="edit-question-first" data-type="survey" data-id="{{ $survey->id }}" data-param="{{ $sur }}">Update
                                                     Question</a>
                                                 <a href="{{ url('super-admin/delete-question/' . $survey->id) }}" onclick="return confirm('Are you sure you want to delete this question?');">Delete
                                                     Question</a>
@@ -835,11 +835,11 @@
     <script src= "https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.14.0/Sortable.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
 
-    <script type="text/javascript" src="{{ asset('assets/superadmin-js/addcourse.js') }}"></script>
+    <script type="text/javascript" src="{{ assets('assets/superadmin-js/addcourse.js') }}"></script>
 
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
-    <link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/home.css') !!}">
-    <script src="{!! url('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>
+    <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-plugins/fancybox/jquery.fancybox.css') !!}">
+    <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/home.css') !!}">
+    <script src="{!! assets('assets/website-plugins/fancybox/jquery.fancybox.min.js') !!}" type="text/javascript"></script>
 
     
     <script type="text/javascript">

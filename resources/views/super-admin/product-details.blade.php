@@ -39,7 +39,7 @@
                                 <div class="pmu-overview-price">${{ number_format((float) $revenue, 2) }}</div>
                             </div>
                             <div class="pmu-overview-media">
-                                <img src="{{ asset('assets/superadmin-images/revenue.svg') }}">
+                                <img src="{{ assets('assets/superadmin-images/revenue.svg') }}">
                             </div>
                         </div>
                     </div>
@@ -47,13 +47,13 @@
                         <div class="pmu-overview-item">
                             <div class="pmu-overview-content">
                                 <h2>Overall Products Rating</h2>
-                                <div class="pmu-overview-rating"><img src="{{ asset('assets/superadmin-images/star.svg') }}">
+                                <div class="pmu-overview-rating"><img src="{{ assets('assets/superadmin-images/star.svg') }}">
                                     @if(count($review) != 0) {{number_format($reviewAvg, 1)}}
                                     @else 0.0 @endif
                                 </div>
                             </div>
                             <div class="pmu-overview-media">
-                                <img src="{{ asset('assets/superadmin-images/rating.svg') }}">
+                                <img src="{{ assets('assets/superadmin-images/rating.svg') }}">
                             </div>
                         </div>
                     </div>
@@ -64,7 +64,7 @@
                                 <div class="pmu-overview-value">{{ $nooforder ?? 0 }}</div>
                             </div>
                             <div class="pmu-overview-media">
-                                <img src="{{ asset('assets/superadmin-images/totalorders.svg') }}">
+                                <img src="{{ assets('assets/superadmin-images/totalorders.svg') }}">
                             </div>
                         </div>
                     </div>
@@ -113,13 +113,13 @@
             <div class="pmu-course-details-item">
                 <div class="pmu-course-details-media">
                     @if($cover->attribute_value == '' || $cover->attribute_value == null)
-                    <img src="{{ asset('assets/superadmin-images/p2.jpg') }}">
+                    <img src="{{ assets('assets/superadmin-images/p2.jpg') }}">
                     @else
-                    <img src="{{ asset('upload/products/'.$cover->attribute_value) }}" alt="">
+                    <img src="{{ assets('upload/products/'.$cover->attribute_value) }}" alt="">
                     @endif
                 </div>
                 <div class="pmu-course-details-content">
-                    <div class="@if($pro->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{{ asset('assets/superadmin-images/tick.svg') }}">
+                    <div class="@if($pro->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{{ assets('assets/superadmin-images/tick.svg') }}">
                         @if ($pro->status == 0)
                             Unpublished
                         @else
@@ -148,9 +148,9 @@
                         <div class="pmu-comment-1">
                             <h1>Rating & Review</h1>
                             @if(count($review) != 0)
-                            <div class="pmu-comment-rating"><img src="{{ asset('assets/superadmin-images/star.svg') }}"> {{ number_format($reviewAvg, 1) }}</div>
+                            <div class="pmu-comment-rating"><img src="{{ assets('assets/superadmin-images/star.svg') }}"> {{ number_format($reviewAvg, 1) }}</div>
                             @else
-                            <div class="pmu-comment-rating"><img src="{{ asset('assets/superadmin-images/star.svg') }}"> 0.0</div>
+                            <div class="pmu-comment-rating"><img src="{{ assets('assets/superadmin-images/star.svg') }}"> 0.0</div>
                             @endif
                         </div>
                         <div class="pmu-comment-head-action">
@@ -162,9 +162,9 @@
                     <div class="pmu-comment-item">
                         <div class="pmu-comment-profile">
                             @if($value->profile_image == '' || $value->profile_image == null)
-                            <img src="{{ asset('assets/superadmin-images/user.png') }}">
+                            <img src="{{ assets('assets/superadmin-images/user.png') }}">
                             @else
-                            <img src="{{ asset('upload/products/'.$value->profile_image) }}">
+                            <img src="{{ assets('upload/products/'.$value->profile_image) }}">
                             @endif
                         </div>
                         <div class="pmu-comment-content">
@@ -172,14 +172,14 @@
                                 <h2>{{ $value->first_name ?? "NA" }} {{ $value->last_name ?? "" }}</h2>
                                 <div class="pmu-date"><i class="las la-calendar"></i>{{ date('d M, Y, g:iA', strtotime($value->created_date ?? "")) }}</div>
                             </div>
-                            <div class="pmu-comment-rating"><img src="{{ asset('assets/superadmin-images/star.svg') }}"> {{ number_format($value->rating,1) ?? "0.0" }}</div>
+                            <div class="pmu-comment-rating"><img src="{{ assets('assets/superadmin-images/star.svg') }}"> {{ number_format($value->rating,1) ?? "0.0" }}</div>
                             <div class="pmu-comment-descr">{{ $value->review ?? "NA" }}</div>
                         </div>
                     </div>
                     @empty
                     <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                         <div>
-                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                            <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                         </div>
                         <div class="font-weight-bold">
                             <p class="font-weight-bold" style="font-size: 1.2rem;">No rating & review found</p> 

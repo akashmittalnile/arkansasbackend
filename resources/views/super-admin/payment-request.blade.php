@@ -91,8 +91,8 @@
                             <td>{{ date('d M, Y H:iA', strtotime($val->added_date)) }}</td>
                             <td>
                                 @if($val->status == 0)
-                                    <a title="Approve Request" class="approve-btn" href="{{ route('SA.Change.Payout.Status', ['id' => encrypt_decrypt('encrypt', $val->id), 'status' => encrypt_decrypt('encrypt', 1)]) }}"><img src="{!! url('assets/superadmin-images/approve.svg') !!}"></a>
-                                    <a title="Reject Request" onclick="return confirm('Are you sure you want to reject this payout request?');" class="reject-btn"href="{{ route('SA.Change.Payout.Status', ['id' => encrypt_decrypt('encrypt', $val->id), 'status' => encrypt_decrypt('encrypt', 2)]) }}"><img src="{!! url('assets/superadmin-images/reject.svg') !!}"></a>
+                                    <a title="Approve Request" class="approve-btn" href="{{ route('SA.Change.Payout.Status', ['id' => encrypt_decrypt('encrypt', $val->id), 'status' => encrypt_decrypt('encrypt', 1)]) }}"><img src="{!! assets('assets/superadmin-images/approve.svg') !!}"></a>
+                                    <a title="Reject Request" onclick="return confirm('Are you sure you want to reject this payout request?');" class="reject-btn"href="{{ route('SA.Change.Payout.Status', ['id' => encrypt_decrypt('encrypt', $val->id), 'status' => encrypt_decrypt('encrypt', 2)]) }}"><img src="{!! assets('assets/superadmin-images/reject.svg') !!}"></a>
                                 @elseif($val->status == 1) Approved
                                 @elseif($val->status == 2) Rejected
                                 @endif

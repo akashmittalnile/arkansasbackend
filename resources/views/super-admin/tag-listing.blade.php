@@ -12,7 +12,7 @@
                     <div class="col-md-4">
                         <div class="form-group search-form-group">
                             <input type="text" placeholder="Search by Tag Name" name="name" class="form-control" value="{{ request()->name ?? '' }}">
-                            <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                            <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                         </div>
                     </div>
                     <div class="col-md-3">
@@ -49,7 +49,7 @@
             @if($datas->isEmpty())
             <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                 <div>
-                    <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                    <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                 </div>
                 <div class="font-weight-bold">
                     <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
@@ -75,7 +75,7 @@
                     <div class="creator-table-col-1">
                         <div class="mon-table-box">
                             <a onclick='accept_order("{{ $data->tag_name }}","{{ $data->status }}","{{ $data->id }}","{{ $data->type }}")' class="btn-go">
-                                {{-- <img src="{!! url('assets/superadmin-images/arrow-right.svg') !!}"> --}}
+                                {{-- <img src="{!! assets('assets/superadmin-images/arrow-right.svg') !!}"> --}}
                                 <i class="las la-edit"></i>
                             </a>
                         </div>

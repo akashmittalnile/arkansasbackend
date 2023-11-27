@@ -25,14 +25,14 @@
                         <div class="pmu-course-details-media w-25">
                             <a data-fancybox data-type="iframe" data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0" href="javascript:;">
                                 <video width="300" height="210" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
-                                    <source src="{{ url( 'upload/disclaimers-introduction/' . $course->introduction_image) }}" type="video/mp4">
+                                    <source src="{{ assets( 'upload/disclaimers-introduction/' . $course->introduction_image) }}" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
-                                <!-- <div class="pmu-video-icon"><img src="{!! url('assets/superadmin-images/video.svg')!!}"></div> -->
+                                <!-- <div class="pmu-video-icon"><img src="{!! assets('assets/superadmin-images/video.svg')!!}"></div> -->
                             </a>
                         </div>
                         <div class="pmu-course-details-content w-75">
-                            <div class="coursestatus"><img src="{!! url('assets/superadmin-images/tick.svg')!!}">
+                            <div class="coursestatus"><img src="{!! assets('assets/superadmin-images/tick.svg')!!}">
                                 @if ($course->status == 0)
                                     Unpublished
                                 @else
@@ -67,7 +67,7 @@
                                 <div class="pmu-course-accordion-head accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#Chapter{{$key+1}}">
                                     <div class="pmu-course-accordion-title">
                                         <h2 class="text-capitalize">Chapter {{$key+1}}: {{ $value->chapter ?? "NA" }}</h2>
-                                        <a class="edit-icon-btn" style="background: #fff; border:1px gray solid;" href="#"><img src="{{ asset('assets/website-images/arrow-down.svg') }}"></a>
+                                        <a class="edit-icon-btn" style="background: #fff; border:1px gray solid;" href="#"><img src="{{ assets('assets/website-images/arrow-down.svg') }}"></a>
                                     </div>
                                 </div>
                                 <div class="pmu-course-accordion-body accordion-collapse collapse" id="Chapter{{$key+1}}">
@@ -78,26 +78,26 @@
                                                 @if($val->type =='video')
                                                 <div class="pmu-course-point-item d-flex justify-content-between align-items-center">
                                                     <div>
-                                                        <img src="{{ asset('assets/website-images/video-icon.svg') }}">  {{$val->title}}
+                                                        <img src="{{ assets('assets/website-images/video-icon.svg') }}">  {{$val->title}}
                                                     </div>
                                                     <div>
-                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1)<img src="{{ asset('assets/website-images/tick-circle.svg') }}">  @else <img width="41" height="41" src="{{ asset('assets/website-images/close-circle.svg') }}"> @endif
+                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1)<img src="{{ assets('assets/website-images/tick-circle.svg') }}">  @else <img width="41" height="41" src="{{ assets('assets/website-images/close-circle.svg') }}"> @endif
                                                     </div>
                                                 </div>
                                                 @elseif($val->type=='pdf' || $val->type=='assignment')
                                                 <div class="pmu-course-point-item d-flex justify-content-between align-items-center">
                                                     <div>
-                                                        <img src="{{ asset('assets/website-images/document-text.svg') }}"> {{$val->title}}
+                                                        <img src="{{ assets('assets/website-images/document-text.svg') }}"> {{$val->title}}
                                                     </div>
                                                     <div>
-                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1 && $val->type=='assignment')<a target="_black" href="{{ asset('upload/course/'.$val->chapterStep($id)->file) }}"><img src="{{ asset('assets/website-images/pdf.svg') }}" class="mx-3" alt="No pdf found"></a>@endif
-                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1)<img src="{{ asset('assets/website-images/tick-circle.svg') }}"> @else <img width="41" height="41" src="{{ asset('assets/website-images/close-circle.svg') }}"> @endif
+                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1 && $val->type=='assignment')<a target="_black" href="{{ assets('upload/course/'.$val->chapterStep($id)->file) }}"><img src="{{ assets('assets/website-images/pdf.svg') }}" class="mx-3" alt="No pdf found"></a>@endif
+                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1)<img src="{{ assets('assets/website-images/tick-circle.svg') }}"> @else <img width="41" height="41" src="{{ assets('assets/website-images/close-circle.svg') }}"> @endif
                                                     </div>
                                                 </div>
                                                 @else
                                                 <div class="pmu-course-point-item d-flex justify-content-between align-items-center">
                                                     <div>
-                                                        <img src="{{ asset('assets/website-images/book2.svg') }}"> {{$val->title}}
+                                                        <img src="{{ assets('assets/website-images/book2.svg') }}"> {{$val->title}}
                                                     </div>
                                                     <div>
 
@@ -107,7 +107,7 @@
                                                         </button>
                                                         @endif
 
-                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1)<img src="{{ asset('assets/website-images/tick-circle.svg') }}">  @else <img width="41" height="41" src="{{ asset('assets/website-images/close-circle.svg') }}"> @endif
+                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1)<img src="{{ assets('assets/website-images/tick-circle.svg') }}">  @else <img width="41" height="41" src="{{ assets('assets/website-images/close-circle.svg') }}"> @endif
                                                     </div>
                                                 </div>
                                                 @endif
@@ -133,7 +133,7 @@
                                 <div class="pmu-comment-1">
                                     <h1>Rating & Review</h1>
                                     @if(count($review) != 0)
-                                    <div class="pmu-comment-rating"><img src="{!! url('assets/superadmin-images/star.svg')!!}"> {{ number_format($reviewAvg, 1) }}</div>
+                                    <div class="pmu-comment-rating"><img src="{!! assets('assets/superadmin-images/star.svg')!!}"> {{ number_format($reviewAvg, 1) }}</div>
                                     @endif
                                 </div>
                                 <div class="pmu-comment-head-action">
@@ -144,14 +144,14 @@
                             @forelse($review as $value)
                             <div class="pmu-comment-item">
                                 <div class="pmu-comment-profile">
-                                    <img src="{!! url('assets/superadmin-images/user.png')!!}">
+                                    <img src="{!! assets('assets/superadmin-images/user.png')!!}">
                                 </div>
                                 <div class="pmu-comment-content">
                                     <div class="pmu-comment-head">
                                         <h2>{{ $value->first_name ?? "NA" }} {{ $value->last_name ?? "" }}</h2>
                                         <div class="pmu-date"><i class="las la-calendar"></i>{{ date('d M, Y, g:iA', strtotime($value->created_date ?? "")) }}</div>
                                     </div>
-                                    <div class="pmu-comment-rating"><img src="{!! url('assets/superadmin-images/star.svg')!!}"> {{ number_format($value->rating,1) ?? "0.0" }}</div>
+                                    <div class="pmu-comment-rating"><img src="{!! assets('assets/superadmin-images/star.svg')!!}"> {{ number_format($value->rating,1) ?? "0.0" }}</div>
                                     <div class="pmu-comment-descr">{{ $value->review ?? "NA" }}</div>
                                 </div>
                             </div>

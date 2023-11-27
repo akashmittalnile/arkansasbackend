@@ -33,24 +33,48 @@
                     <form action="{{ route('Home.store.mydata') }}" method="POST" id="my-account-form" enctype="multipart/form-data">
                         @csrf
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <h4>First Name</h4>
                                     <input type="text" class="form-control" name="first_name" placeholder="First Name" value="{{ $user->first_name }}">
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <h4>Last Name</h4>
                                     <input type="text" class="form-control" name="last_name" placeholder="Last Name" value="{{ $user->last_name }}">
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
+                            <div class="col-md-6">
                                 <div class="form-group">
                                     <h4>Phone</h4>
                                     <input type="text" maxlength="12" class="form-control" name="phone" placeholder="Phone" value="{{ $user->phone }}">
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <h4>Please Select Creator Type!</h4>
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="arkradio">
+                                                <input @if($user->CreatorType == '1') checked @endif type="radio" id="Permanent Makeup Training" name="CreatorType" value="1">
+                                                <label for="Permanent Makeup Training">
+                                                    Permanent Makeup Training
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="arkradio">
+                                                <input @if($user->CreatorType == '2') checked @endif type="radio" id="Tattooing & Piercing Institute" name="CreatorType" value="2">
+                                                <label for="Tattooing & Piercing Institute">
+                                                    Tattooing & Piercing Institute
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
 
@@ -68,7 +92,7 @@
                                         <input type="file" name="profile" accept="image/png, image/jpg, image/jpeg" id="profileimg" class="uploadsignature addsignature" onchange="loadImageFile(event, 1)">
                                         <label for="profileimg">
                                             <div class="signature-text">
-                                                <span id="certificates_nam">@if($user->profile_image!="" && $user->profile_image!=null) <img style="object-fit: cover; object-position: center; border-radius: 8px" width="160" height="80" id="prev-img1" src="{{ url( 'upload/profile-image/' . $user->profile_image) }}"> <small id="prev-small-line1">Click here to change image</small> @else <img id="prev-img1" src="{!! url('assets/website-images/upload.svg') !!}"> <small id="prev-small-line1">Click here to Upload</small> @endif</span>
+                                                <span id="certificates_nam">@if($user->profile_image!="" && $user->profile_image!=null) <img style="object-fit: cover; object-position: center; border-radius: 8px" width="160" height="80" id="prev-img1" src="{{ assets( 'upload/profile-image/' . $user->profile_image) }}"> <small id="prev-small-line1">Click here to change image</small> @else <img id="prev-img1" src="{!! assets('assets/website-images/upload.svg') !!}"> <small id="prev-small-line1">Click here to Upload</small> @endif</span>
                                             </div>
                                         </label>
                                     </div>
@@ -96,7 +120,7 @@
                                         <input type="file" name="logo" accept="image/png, image/jpg, image/jpeg" id="logoimg" class="uploadsignature addsignature" onchange="loadImageFile(event, 2)">
                                         <label for="logoimg">
                                             <div class="signature-text">
-                                                <span id="certificates_nam">@if($user->business_logo!="" && $user->business_logo!=null) <img style="object-fit: cover; object-position: center; border-radius: 8px" width="160" height="80" id="prev-img2" src="{{ url( 'upload/business-logo/' . $user->business_logo) }}"> <small id="prev-small-line2">Click here to change image</small> @else <img id="prev-img2" src="{!! url('assets/website-images/upload.svg') !!}"> <small id="prev-small-line2">Click here to Upload</small> @endif</span>
+                                                <span id="certificates_nam">@if($user->business_logo!="" && $user->business_logo!=null) <img style="object-fit: cover; object-position: center; border-radius: 8px" width="160" height="80" id="prev-img2" src="{{ assets( 'upload/business-logo/' . $user->business_logo) }}"> <small id="prev-small-line2">Click here to change image</small> @else <img id="prev-img2" src="{!! assets('assets/website-images/upload.svg') !!}"> <small id="prev-small-line2">Click here to Upload</small> @endif</span>
                                             </div>
                                         </label>
                                     </div>
@@ -110,7 +134,7 @@
                                         <input type="file" name="signature" accept="image/png, image/jpg, image/jpeg" id="signatureimg" class="uploadsignature addsignature" onchange="loadImageFile(event, 3)">
                                         <label for="signatureimg">
                                             <div class="signature-text">
-                                                <span id="certificates_nam">@if($user->signature!="" && $user->signature!=null)<img style="object-fit: cover; object-position: center; border-radius: 8px" width="160" height="80" id="prev-img3" src="{{ url( 'upload/signature/' . $user->signature) }}"> <small id="prev-small-line3">Click here to change image</small> @else <img id="prev-img3" src="{!! url('assets/website-images/upload.svg') !!}"> <small id="prev-small-line3">Click here to Upload</small> @endif</span>
+                                                <span id="certificates_nam">@if($user->signature!="" && $user->signature!=null)<img style="object-fit: cover; object-position: center; border-radius: 8px" width="160" height="80" id="prev-img3" src="{{ assets( 'upload/signature/' . $user->signature) }}"> <small id="prev-small-line3">Click here to change image</small> @else <img id="prev-img3" src="{!! assets('assets/website-images/upload.svg') !!}"> <small id="prev-small-line3">Click here to Upload</small> @endif</span>
                                             </div>
                                         </label>
                                     </div>
@@ -196,7 +220,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group">
-                                    <button class="cancelbtn">Cancel</button>
+                                    <a class="cancelbtn" href="{{ route('home.index') }}" style="color: #fff;">Cancel</a>
                                     <button class="Createbtn">Save</button>
                                 </div>
                             </div>
@@ -318,6 +342,9 @@
                     phoneValidate: true,
                     minlength: 8,
                 },
+                CreatorType: {
+                    required: true,
+                },
                 bus_name: {
                     required: true,
                 },
@@ -337,6 +364,9 @@
             messages: {
                 first_name: {
                     required: 'Please enter first name',
+                },
+                CreatorType: {
+                    required: 'Please select creator type',
                 },
                 phone: {
                     required: 'Please enter phone number',
@@ -429,6 +459,6 @@
 @endsection
 
 @push('css')
-<link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/myaccount.css') !!}">
-<link rel="stylesheet" type="text/css" href="{!! url('assets/superadmin-css/course.css') !!}">
+<link rel="stylesheet" type="text/css" href="{!! assets('assets/superadmin-css/myaccount.css') !!}">
+<link rel="stylesheet" type="text/css" href="{!! assets('assets/superadmin-css/course.css') !!}">
 @endpush

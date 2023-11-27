@@ -62,6 +62,26 @@ class HomeController extends Controller
         }
     }
 
+    public function InactiveStatus($id) 
+    {
+        try {
+            $user_id = encrypt_decrypt('decrypt',$id);
+            $user = User::where('id',$user_id)->first();
+            if($user->status == 1)
+            {
+                $user->status = 2;
+            }else{
+                $user->status = 1;
+            }
+            
+            $user->save();
+            $courses = Course::where('admin_id',$id)->orderBy('id','DESC')->get();
+            return redirect()->back()->with('message', 'Status changed successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
     public function myAccount() 
     {
         try {
@@ -81,6 +101,7 @@ class HomeController extends Controller
                 'phone' => 'required',
                 'bus_name' => 'required',
                 'bus_title' => 'required',
+                'CreatorType' => 'required'
             ]);
 
             if ($validator->fails()) {
@@ -116,6 +137,7 @@ class HomeController extends Controller
                     'first_name' => $request->first_name,
                     'last_name' => $request->last_name ?? null,
                     'phone' => $request->phone,
+                    'CreatorType' => $request->CreatorType,
                     'company_name' => $request->bus_name,
                     'professional_title' => $request->bus_title,
                     'profile_image' => $profile,
@@ -658,6 +680,10 @@ class HomeController extends Controller
                     $notify->module_name = 'course';
                     $notify->title = 'New Course';
                     $notify->message = 'New Course ('.$request->input('title') . ') added by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name;
+                    if(auth()->user()->profile_image == "" || auth()->user()->profile_image == null){
+                        $profile_image = null;
+                    } else $profile_image = assets('upload/profile-image/'.auth()->user()->profile_image);
+                    $notify->image = $profile_image;
                     $notify->is_seen = '0';
                     $notify->created_at = date('Y-m-d H:i:s');
                     $notify->updated_at = date('Y-m-d H:i:s');
@@ -891,7 +917,7 @@ class HomeController extends Controller
             $orders = $orders->select('o.order_number', 'opd.id', 'opd.admin_amount', 'opd.amount', 'o.status', 'o.created_date', 'u.first_name', 'u.last_name', 'opd.quantity', 'o.id as order_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->orderByDesc('opd.id')->paginate(10);
 
             $myWallet = WalletBalance::where('owner_id', auth()->user()->id)->where('owner_type', auth()->user()->role)->first();
-
+            $requestedAmount = 0;
             $payment = DB::table('order_product_detail as opd')->leftJoin('course as c', 'c.id', '=', 'opd.product_id')->where('opd.product_type', 1)->where('c.admin_id', auth()->user()->id)->sum(\DB::raw('opd.amount - opd.admin_amount'));
             if(isset($myWallet->id)){
                 $mymoney = $myWallet->balance ?? 0;
@@ -1048,9 +1074,9 @@ class HomeController extends Controller
     public function downloadInvoice(Request $request, $id) {
         try{    
             $id = encrypt_decrypt('decrypt', $id);
-            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status')->first();
+            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', 'orders.total_amount_paid')->first();
 
-            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'cover_image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
+            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, order_product_detail.quantity,order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_type = 'cover_image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
 
             $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
             

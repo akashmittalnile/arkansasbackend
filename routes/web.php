@@ -34,19 +34,21 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
     Route::get('/check_email', 'HomeController@check_email')->name('admin.check_email');
 
 
-    Route::get('/forgot_password', 'RegisterController@forgot_password')->name('admin.forgot.password');
-    Route::post('/forgot_password', 'RegisterController@forgot_password_email')->name('admin.forgot_password.email');
-    Route::get('/reset_password/{email}', 'RegisterController@reset_password')->name('admin.reset_password');
-    Route::post('/reset_password', 'RegisterController@reset_password_otp')->name('admin.reset_password.otp');
-    Route::get('/change_password/{email}', 'RegisterController@change_password')->name('admin.change_password');
-    Route::post('/change_password', 'RegisterController@change_password_update')->name('admin.change_password_update');
+    Route::get('/forgot-password', 'RegisterController@forgot_password')->name('admin.forgot.password');
+    Route::post('/forgot-password', 'RegisterController@forgot_password_email')->name('admin.forgot_password.email');
+    Route::get('/reset-password/{email}', 'RegisterController@reset_password')->name('admin.reset_password');
+    Route::post('/reset-password', 'RegisterController@reset_password_otp')->name('admin.reset_password.otp');
+    Route::get('/change-password/{email}', 'RegisterController@change_password')->name('admin.change_password');
+    Route::post('/change-passwords', 'RegisterController@change_password_update')->name('admin.change_password_update');
+    Route::get('/resend-email/{email}', 'RegisterController@resend_email')->name('admin.resend_email');
 
-    Route::get('/super-admin/forgot_password', 'AdminLoginController@forgot_password')->name('SA.forgot.password');
-    Route::post('/super-admin/forgot_password', 'AdminLoginController@forgot_password_email')->name('SA.forgot_password.email');
-    Route::get('/super-admin/reset_password/{email}', 'AdminLoginController@reset_password')->name('SA.reset_password');
-    Route::post('/super-admin/reset_password', 'AdminLoginController@reset_password_otp')->name('SA.reset_password.otp');
-    Route::get('/super-admin/change_password/{email}', 'AdminLoginController@change_password')->name('SA.change_password');
-    Route::post('/super-admin/change_password', 'AdminLoginController@change_password_update')->name('SA.change_password_update');
+    Route::get('/super-admin/forgot-password', 'AdminLoginController@forgot_password')->name('SA.forgot.password');
+    Route::post('/super-admin/forgot-password', 'AdminLoginController@forgot_password_email')->name('SA.forgot_password.email');
+    Route::get('/super-admin/reset-password/{email}', 'AdminLoginController@reset_password')->name('SA.reset_password');
+    Route::post('/super-admin/reset-password', 'AdminLoginController@reset_password_otp')->name('SA.reset_password.otp');
+    Route::get('/super-admin/change-password/{email}', 'AdminLoginController@change_password')->name('SA.change_password');
+    Route::post('/super-admin/change-passwords', 'AdminLoginController@change_password_update')->name('SA.change_password_update');
+    Route::get('/super-admin/resend-email/{email}', 'AdminLoginController@resend_email')->name('SA.resend_email');
 
 
     /**
@@ -57,6 +59,13 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
     Route::get('/login', 'LoginController@show')->name('login');
     Route::post('/login', 'LoginController@login')->name('login.perform');
+
+    Route::get('/privacy-policy', function(){
+        return view('auth.privacy-policy');
+    })->name('privacy.policy');
+    Route::get('/terms-and-condition', function(){
+        return view('auth.terms-condition');
+    })->name('terms.condition');
 
     Route::get('/clear', function () {
         $exitCode = Artisan::call('cache:clear');
@@ -84,6 +93,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/view-course-details/{id}', 'HomeController@viewCourse')->name('Home.view.course');
         Route::get('/delete-course/{id}', 'HomeController@deleteCourse')->name('Home.delete.course');
         Route::get('/performance', 'HomeController@performance')->name('Home.Performance');
+        Route::get('/inactive/{id}', 'HomeController@InactiveStatus')->name('Home.InactiveStatus');
 
         Route::get('/help-support', 'HomeController@helpSupport')->name('Home.HelpSupport');
         Route::post('/help-support-save-img', 'HomeController@help_support_save_img')->name('Home.HelpSupport.Save.Img');

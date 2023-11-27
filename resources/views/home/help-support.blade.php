@@ -2,7 +2,7 @@
 @section('title', 'Permanent Makeup University - Help Support')
 @section('content')
 <meta name="_token" content="{{csrf_token()}}" />
-<link rel="stylesheet" type="text/css" href="{!! url('assets/website-css/help.css') !!}">
+<link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/help.css') !!}">
 <div class="body-main-content">
     <div class="message-section">
         <section style="background-color: #e6e6e6; border-radius: 30px;">
@@ -33,15 +33,15 @@
                                                             <div class="d-flex flex-row">
                                                                 <div>
                                                                     @if($user->profile_image!="" && $user->profile_image!=null)
-                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('upload/profile-image/'.$user->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('upload/profile-image/'.$user->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @else
-                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @endif
                                                                     <span class="badge bg-success badge-dot"></span>
                                                                 </div>
                                                                 <div class="pt-1">
-                                                                    <p class="chat-name fw-bold mb-0" style="color: #E0B220;">{{ $user->first_name ?? "NA" }} {{ $user->last_name }}</p>
-                                                                    <p class="small text-muted">Hello, Arkansas</p>
+                                                                    <p class="chat-name fw-bold mb-0" style="color: #E0B220; font-size: 0.8rem;">{{ $user->first_name ?? "NA" }} {{ $user->last_name }}</p>
+                                                                    <!-- <p class="small text-muted">Hello, Arkansas</p> -->
                                                                 </div>
                                                             </div>
                                                             <div class="pt-1">
@@ -53,7 +53,7 @@
 
                                                     <div class="d-flex flex-column align-items-center justify-content-center mt-5 d-none" id="no_record_found">
                                                         <div>
-                                                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                                            <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                                                         </div>
                                                         <div class="font-weight-bold">
                                                             <p class="font-weight-bold" style="font-size: 1.2rem;">No users found </p> 
@@ -76,9 +76,9 @@
 
                                         <div class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2">
                                             @if($user->profile_image!="" && $user->profile_image!=null)
-                                            <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ asset('upload/profile-image/'.$user->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60" id="userAvatar">
+                                            <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('upload/profile-image/'.$user->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60" id="userAvatar">
                                             @else
-                                            <img style="border-radius: 50%;" src="{{ asset('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" id="userAvatar">
+                                            <img style="border-radius: 50%;" src="{{ assets('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" id="userAvatar">
                                             @endif
                                             <input type="text" class="form-control form-control-lg border ms-3" id="message-input" placeholder="Type message">
                                             <a class="fs-24 ms-3 text-muted" id="image-attach" href="#!"><i class="las la-paperclip"></i></a>
@@ -95,7 +95,7 @@
                         <input type="hidden" id="ajax-chat-url" value="{{$user->id}}">
                         <input type="hidden" id="ajax-chat-url-first" value="{{$user->first_name ?? 'NA'}}">
                         <input type="hidden" id="ajax-chat-url-last" value="{{$user->last_name ?? 'NA'}}">
-                        <input type="hidden" id="ajax-chat-url-img" value="{{($user->profile_image=='' || $user->profile_image== null) ? null : asset('upload/profile-image/'.$user->profile_image)}}">
+                        <input type="hidden" id="ajax-chat-url-img" value="{{($user->profile_image=='' || $user->profile_image== null) ? null : assets('upload/profile-image/'.$user->profile_image)}}">
                     </div>
                 </div>
 
@@ -286,7 +286,7 @@
                     ${(message !== '' && message !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${message}</p>` : ''}
                     <p class="small me-3 mb-3 rounded-3 text-muted">${time}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : assets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`;
         $('.messages-card').append(msg);
 
@@ -295,7 +295,7 @@
         }, 1000);
     }
 
-    let userProImg = ($("#ajax-chat-url-img").val()=="") ? "{{ asset('assets/website-images/user.jpg') }}" : $("#ajax-chat-url-img").val();
+    let userProImg = ($("#ajax-chat-url-img").val()=="") ? "{{ assets('assets/website-images/user.jpg') }}" : $("#ajax-chat-url-img").val();
 
     function admin(row) {
         let html = '';
@@ -307,7 +307,7 @@
                     ${(row.text !== '' && row.text !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${row.text}</p>`:''}
                     <p class="small me-3 mb-3 rounded-3 text-muted">${formattedDate}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? asset('assets/website-images/user.png') : asset('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : assets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`
             ;
         } else {

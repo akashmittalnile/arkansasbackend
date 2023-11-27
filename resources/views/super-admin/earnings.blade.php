@@ -12,13 +12,13 @@
                         <div class="col-md-3">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="name" placeholder="Search by Name" value="{{ request()->name }}">
-                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" name="number" placeholder="Search by Order Number" value="{{ request()->number }}">
-                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                             </div>
                         </div>
                         <div class="col-md-3">

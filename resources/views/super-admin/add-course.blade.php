@@ -83,7 +83,7 @@
                                                         class="uploadsignature addsignature" required onchange="loadImageFile(event)">
                                                     <label for="PDFJPEGOrPNG">
                                                         <div class="signature-text">
-                                                            <span id="certificates_nam"><img id="prev-img" src="{!! url('assets/website-images/upload.svg') !!}"> <small id="prev-small-line">Click here to Upload</small></span>
+                                                            <span id="certificates_nam"><img id="prev-img" src="{!! assets('assets/website-images/upload.svg') !!}"> <small id="prev-small-line">Click here to Upload</small></span>
                                                         </div>
                                                     </label>
                                                     @if ($errors->has('certificates'))
@@ -103,7 +103,7 @@
                                                     <label for="UploadTrainingVideo">
                                                         <div class="signature-text">
                                                             <span id="disclaimers_introduction_nam">
-                                                                <img id="prev-vid" src="{!! url('assets/website-images/upload.svg') !!}"> <small id="video-small-line">Click here to Upload</small>
+                                                                <img id="prev-vid" src="{!! assets('assets/website-images/upload.svg') !!}"> <small id="video-small-line">Click here to Upload</small>
                                                                 <video controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume src="" id="vid-prev-tag" class="d-none"></video><small id="video2-small-line" class="d-none">Click here to change video</small>
                                                             </span>
                                                         </div>

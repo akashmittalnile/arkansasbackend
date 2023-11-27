@@ -12,7 +12,7 @@
                         <div class="col-md-4">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" value="{{ request()->title }}" name="title" placeholder="Search by Title">
-                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -55,15 +55,15 @@
                     <div class="col-md-12">
                         <div class="manage-notification-item">
                             <div class="manage-notification-image">
-                                <img src="{!! url('/upload/notification/'.$val->image) !!}">
+                                <img src="{!! assets('/upload/notification/'.$val->image) !!}">
                             </div>
 
                             <div class="manage-notification-content">
                                 <div class="notification-date">Pushed on: {{ date('d M, Y - H:iA', strtotime($val->created_date)) }}</div>
                                 <div class="notification-descr">
-                                    <h2><img src="{!! url('assets/superadmin-images/notification.svg') !!}">{{ $val->title ?? "NA" }}</h2>
+                                    <h2><img src="{!! assets('assets/superadmin-images/notification.svg') !!}">{{ $val->title ?? "NA" }}</h2>
                                     <p>{{ $val->description ?? "NA" }}</p>
-                                    <!-- <h3><img src="{!! url('assets/superadmin-images/danger.svg') !!}"> Limited Stock Alert </h3> -->
+                                    <!-- <h3><img src="{!! assets('assets/superadmin-images/danger.svg') !!}"> Limited Stock Alert </h3> -->
                                 </div>
                                 <div class="notification-tag">
                                     <h3>Notification for:</h3>
@@ -98,7 +98,7 @@
                     @empty
                     <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                         <div>
-                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                            <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                         </div>
                         <div class="font-weight-bold">
                             <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 

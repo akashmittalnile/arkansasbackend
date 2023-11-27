@@ -2,16 +2,19 @@
 $('.edit-question-first').on('click', function () {
     var question_id = $(this).attr("data-id");
     var question_param = $(this).attr("data-param");
+    var type = $(this).attr("data-type");
     let selector = '.' + question_param + question_id;
     var question = $(selector).val().trim();
-    var marks = $(selector+'_marks').val().trim();
     if(!question){
         toastr.error('Please enter question title!');
         return;
     }
-    if(!marks){
-        toastr.error('Please enter marks!');
-        return;
+    if(type=='quiz'){
+        var marks = $(selector+'_marks').val().trim();
+        if(!marks){
+            toastr.error('Please enter marks!');
+            return;
+        }
     }
     $.ajax({
         url: arkansasUrl + '/admin/update_question_list',
@@ -79,7 +82,7 @@ $(document).on('click', '.add-question-create', function () {
                                     </div>
                                     <div class="pmu-add-questionnaire-tooltip">
                                         <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
-                                            <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                            <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                         </div> 
                                         <script>
                                         $(function() {
@@ -126,7 +129,7 @@ $(document).on('click', '.add-option', function () {
                                             </div>
                                             <div class="pmu-add-questionnaire-tooltip">
                                                 <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
-                                                    <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                                    <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                                 </div> 
                                                 <script>
                                                 $(function() {
@@ -399,7 +402,7 @@ $(document).ready(function () {
                                             </div>
                                             <div class="pmu-add-questionnaire-tooltip">
                                                 <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
-                                                    <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                                    <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                                 </div> 
                                                 <script>
                                                 $(function() {
@@ -424,7 +427,7 @@ $(document).ready(function () {
                                                     <label for="video-${countForm}">
                                                         <div class="signature-text">
                                                             <span id="video_file_nam-${countForm}">
-                                                                <img id="prev-vid-${countForm}" src="${arkansasUrl}/assets/website-images/upload.svg"><small id="small-tag1-${countForm}">Click here to Upload</small> 
+                                                                <img id="prev-vid-${countForm}" src="${arkansasUrl}/public/assets/website-images/upload.svg"><small id="small-tag1-${countForm}">Click here to Upload</small> 
 
                                                                 <video controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume src="" id="vid-prev-tag-${countForm}" class="d-none"></video><small id="small-tag2-${countForm}" class="d-none">Click here to change video</small>
                                                             </span>
@@ -467,7 +470,7 @@ $(document).ready(function () {
                                         </div>
                                         <div class="pmu-add-questionnaire-tooltip">
                                             <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
-                                                <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                                <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                             </div> 
                                             <script>
                                             $(function() {
@@ -493,10 +496,10 @@ $(document).ready(function () {
                                                 <label for="pdf_file-${countForm}">
                                                     <div class="signature-text">
                                                         <span id="pdf_file_name-${countForm}">
-                                                            <img src="${arkansasUrl}/assets/website-images/upload.svg"> <small class="pdf-small-${countForm}"> Click here to Upload </small> 
+                                                            <img src="${arkansasUrl}/public/assets/website-images/upload.svg"> <small class="pdf-small-${countForm}"> Click here to Upload </small> 
                                                         </span>
                                                         <a id="view-pdf-${countForm}" target="_black" href="javascript:void(0)" class="d-none">
-                                                            <img src="${arkansasUrl}/assets/website-images/pdf.svg" class="mx-3" alt="No pdf found">
+                                                            <img src="${arkansasUrl}/public/assets/website-images/pdf.svg" class="mx-3" alt="No pdf found">
                                                         </a>
                                                     </div>
                                                 </label>
@@ -538,7 +541,7 @@ $(document).ready(function () {
                                         </div>
                                         <div class="pmu-add-questionnaire-tooltip">
                                             <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
-                                                <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                                <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                             </div> 
                                             <script>
                                             $(function() {
@@ -601,7 +604,7 @@ $(document).ready(function () {
                                                                 </div>
                                                                 <div class="pmu-add-questionnaire-tooltip">
                                                                     <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
-                                                                        <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                                                        <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                                                     </div> 
                                                                     <script>
                                                                     $(function() {
@@ -649,7 +652,7 @@ $(document).ready(function () {
                                         </div>
                                         <div class="pmu-add-questionnaire-tooltip">
                                             <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
-                                                <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                                <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                             </div> 
                                             <script>
                                             $(function() {
@@ -695,7 +698,7 @@ $(document).ready(function () {
                                             </div>
                                             <div class="pmu-add-questionnaire-tooltip">
                                                 <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Assign serial order">
-                                                    <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                                    <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                                 </div> 
                                                 <script>
                                                 $(function() {
@@ -926,7 +929,7 @@ $(document).ready(function () {
                                     </div>
                                     <div class="pmu-add-questionnaire-tooltip">
                                         <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
-                                            <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                            <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                         </div> 
                                         <script>
                                         $(function() {
@@ -968,7 +971,7 @@ $(document).ready(function () {
                                                 </div>
                                                 <div class="pmu-add-questionnaire-tooltip">
                                                     <div class="" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="Select Correct Answer">
-                                                        <img src="${arkansasUrl}/assets/website-images/info-icon.svg">
+                                                        <img src="${arkansasUrl}/public/assets/website-images/info-icon.svg">
                                                     </div> 
                                                     <script>
                                                     $(function() {

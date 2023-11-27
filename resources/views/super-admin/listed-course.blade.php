@@ -8,13 +8,16 @@
             </div>
             <div class="pmu-search-filter wd40">
                 <div class="row g-2">
-                    @if ($user->status == 0)
+                    @if ($user->status == 0 || $user->status == 3)
                         <div class="col-md-6">
+                            @if($user->status == 0)
                             <div class="form-group">
-                                <a href="{{ url('super-admin/update-approval-request/' . encrypt_decrypt('encrypt', $user->id) . '/' . encrypt_decrypt('encrypt', 2)) }}"
+                                <a href="{{ url('super-admin/update-approval-request/' . encrypt_decrypt('encrypt', $user->id) . '/' . encrypt_decrypt('encrypt', 3)) }}"
                                     class="newcourse-btn"><i class="las la-times-circle"></i> Reject Request</a>
                             </div>
+                            @endif
                         </div>
+                        @if($user->status == 3)
                         <div class="col-md-6">
                             <div class="form-group">
                                 <a style="background: #E0B220;" class="newcourse-btn"
@@ -22,6 +25,7 @@
                                         class="las la-check-circle"></i> Approve request</a>
                             </div>
                         </div>
+                        @endif
                     @else
                         <div class="col-md-5">
                             <div class="form-group">
@@ -54,9 +58,9 @@
                             <div class="side-profile-item">
                                 <div class="side-profile-media">
                                     @if (!empty($user->profile_image))
-                                        <img src="{!! url('upload/profile-image/'.$user->profile_image) !!}">
+                                        <img src="{!! assets('upload/profile-image/'.$user->profile_image) !!}">
                                     @else
-                                        <img src="{!! asset('assets/superadmin-images/no-image.png') !!}">
+                                        <img src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                                     @endif
 
                                 </div>
@@ -77,7 +81,7 @@
                                     <div class="col-md-12">
                                         <div class="side-profile-total-order">
                                             <div class="side-profile-total-icon">
-                                                <img src="{!! url('assets/superadmin-images/email1.svg') !!}">
+                                                <img src="{!! assets('assets/superadmin-images/email1.svg') !!}">
                                             </div>
                                             <div class="side-profile-total-content">
                                                 <h2>Email Address</h2>
@@ -89,7 +93,7 @@
                                     <div class="col-md-12">
                                         <div class="side-profile-total-order">
                                             <div class="side-profile-total-icon">
-                                                <img src="{!! url('assets/superadmin-images/book-1.svg') !!}">
+                                                <img src="{!! assets('assets/superadmin-images/book-1.svg') !!}">
                                             </div>
                                             <div class="side-profile-total-content">
                                                 <h2>Fee Settlement</h2>
@@ -101,7 +105,7 @@
                                     {{-- <div class="col-md-12">
                                         <div class="side-profile-total-order">
                                             <div class="side-profile-total-icon">
-                                                <img src="{!! url('assets/superadmin-images/buliding-1.svg') !!}">
+                                                <img src="{!! assets('assets/superadmin-images/buliding-1.svg') !!}">
                                             </div>
                                             <div class="side-profile-total-content">
                                                 <h2>Company Name</h2>
@@ -113,7 +117,7 @@
                                     <div class="col-md-12">
                                         <div class="side-profile-total-order">
                                             <div class="side-profile-total-icon">
-                                                <img src="{!! url('assets/superadmin-images/accountstatus.svg') !!}">
+                                                <img src="{!! assets('assets/superadmin-images/accountstatus.svg') !!}">
                                             </div>
                                             <div class="side-profile-total-content">
                                                 <h2>Account Status</h2>
@@ -133,7 +137,7 @@
                             <h1>Creator Payout Detail</h1>
                             <div class="added-bank-info-card">
                                 <div class="added-bank-info-icon">
-                                    <img src="{!! url('assets/superadmin-images/card.svg') !!}">
+                                    <img src="{!! assets('assets/superadmin-images/card.svg') !!}">
                                 </div>
                                 <div class="added-bank-info-text">
                                     <h2>Account Number</h2>
@@ -148,7 +152,7 @@
 
                             <div class="added-bank-info-card">
                                 <div class="added-bank-info-icon">
-                                    <img src="{!! url('assets/superadmin-images/card.svg') !!}">
+                                    <img src="{!! assets('assets/superadmin-images/card.svg') !!}">
                                 </div>
                                 <div class="added-bank-info-text">
                                     <h2>Routing Number</h2>
@@ -180,7 +184,7 @@
                                             <div class="form-group search-form-group">
                                                 <input type="text" class="form-control" name="name"
                                                     placeholder="Search by Course Name" value="{{ request()->name ?? '' }}">
-                                                <span class="search-icon"><img src="{!! url('assets/superadmin-images/search-icon.svg') !!}"></span>
+                                                <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                                             </div>
                                         </div>
                                         <div class="col-md-4">
@@ -209,7 +213,7 @@
                                     @if ($courses->isEmpty())
                                     <div class="d-flex flex-column align-items-center justify-content-center mt-5">
                                         <div>
-                                            <img src="{{ url('/assets/website-images/nodata.svg') }}" alt="">
+                                            <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
                                         </div>
                                         <div class="font-weight-bold">
                                             <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
@@ -224,14 +228,14 @@
                                                             data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0"
                                                             href="javascript:;">
                                                             <video width="415" height="240" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
-                                                                <source src="{{ url( 'upload/disclaimers-introduction/' . $data->introduction_image) }}" type="video/mp4">
+                                                                <source src="{{ assets( 'upload/disclaimers-introduction/' . $data->introduction_image) }}" type="video/mp4">
                                                                 Your browser does not support the video tag.
                                                             </video>
-                                                            <!-- <div class="pmu-video-icon"><img src="{!! url('assets/superadmin-images/video.svg') !!}"></div> -->
+                                                            <!-- <div class="pmu-video-icon"><img src="{!! assets('assets/superadmin-images/video.svg') !!}"></div> -->
                                                         </a>
                                                     </div>
                                                     <div class="pmu-course-content">
-                                                        <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! url('assets/superadmin-images/tick.svg') !!}">
+                                                        <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! assets('assets/superadmin-images/tick.svg') !!}">
                                                             @if ($data->status == 0)
                                                                 Unpublished
                                                             @else
@@ -338,14 +342,14 @@
                             </div>
                             <div class="col-md-6">
                                 <div class="modal-settled-info-text">
-                                    <img src="{!! url('assets/superadmin-images/dollar-circle.svg') !!}">
+                                    <img src="{!! assets('assets/superadmin-images/dollar-circle.svg') !!}">
                                     <p>Total Payment earned</p>
                                     <h4>1007.55</h4>
                                 </div>
                             </div>
                             <div class="col-md-6">
                                 <div class="modal-settled-info-text">
-                                    <img src="{!! url('assets/superadmin-images/dollar-circle.svg') !!}">
+                                    <img src="{!! assets('assets/superadmin-images/dollar-circle.svg') !!}">
                                     <p>Average Settled Amount</p>
                                     <h4>1007.55</h4>
                                 </div>
@@ -395,8 +399,8 @@
                                                 </div>
                                                 <div class="modal-request-action">
                                                     <a class="approve-btn" href="#"><img
-                                                            src="{!! url('assets/superadmin-images/approve.svg') !!}"></a>
-                                                    <a class="reject-btn"href="#"><img src="{!! url('assets/superadmin-images/reject.svg') !!}"></a>
+                                                            src="{!! assets('assets/superadmin-images/approve.svg') !!}"></a>
+                                                    <a class="reject-btn"href="#"><img src="{!! assets('assets/superadmin-images/reject.svg') !!}"></a>
                                                 </div>
                                             </div>
                                             <div class="modal-request-item">
@@ -406,8 +410,8 @@
                                                 </div>
                                                 <div class="modal-request-action">
                                                     <a class="approve-btn" href="#"><img
-                                                            src="{!! url('assets/superadmin-images/approve.svg') !!}"></a>
-                                                    <a class="reject-btn"href="#"><img src="{!! url('assets/superadmin-images/reject.svg') !!}"></a>
+                                                            src="{!! assets('assets/superadmin-images/approve.svg') !!}"></a>
+                                                    <a class="reject-btn"href="#"><img src="{!! assets('assets/superadmin-images/reject.svg') !!}"></a>
                                                 </div>
                                             </div>
                                         </div>

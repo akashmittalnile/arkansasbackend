@@ -123,7 +123,7 @@
                     <div class="row">
                         <!-- <div class="col-md-12">
                             <div class="modal-settled-info-text">
-                                <img src="{!! url('assets/superadmin-images/dollar-circle.svg')!!}">
+                                <img src="{!! assets('assets/superadmin-images/dollar-circle.svg')!!}">
                                 <p>Total Course Payment Received</p>
                                 <h4>3207.55</h4>
                             </div>
@@ -157,6 +157,7 @@
 <script>
     $('#Editcourses').on('hidden.bs.modal', function(e) {
         $(this).find('form').trigger('reset');
+        $(this).find('.error.invalid-feedback').remove();
     })
     $(document).ready(function() {
         $.validator.addMethod("greaterThan", function (value) {
