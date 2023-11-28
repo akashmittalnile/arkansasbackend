@@ -63,7 +63,7 @@
             @elseif(!$course->isEmpty())
             @foreach($course as $data)
             <div class="creator-table-item">
-                <div class="creator-table-col-3">
+                <div class="creator-table-col-2">
                     <div class="creator-table-content">
                         <div class="creator-profile-info">
                             <div class="creator-profile-image">
@@ -95,7 +95,7 @@
                     </div>
                 </div>
 
-                <div class="creator-table-col-1">
+                <div class="creator-table-col-2">
                     <div class="creator-table-box">
                         <div class="creator-table-text">Course Status</div>
                         <div class="creator-table-value">@if ($data->status==1) Published @elseif($data->status == 0) Unpublished @endif</div>

@@ -164,7 +164,7 @@
                             <div class="settled-info-text">
                                 <div class="added-new-request">{{ $count ?? 0 }} new request</div>
                                 <p>Total Settled Amount</p>
-                                <h2>{{ number_format((float)$amount, 2) }}</h2>
+                                <h2>${{ number_format((float)$amount, 2) }}</h2>
                             </div>
 
                             <div class="Payment-Request-action">

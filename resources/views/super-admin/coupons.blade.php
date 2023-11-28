@@ -157,7 +157,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Valid Upto <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" placeholder="" name="date" min="{{ date('Y-m-d', strtotime('+3days')) }}">
+                                    <input type="date" class="form-control" min="{{ date('Y-m-d', strtotime('+1days')) }}" placeholder="" name="date" min="{{ date('Y-m-d', strtotime('+3days')) }}">
                                 </div>
                             </div>
 
@@ -239,7 +239,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Valid Upto <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" placeholder="" id="dateEdit" name="date" min="{{ date('Y-m-d', strtotime('+3days')) }}">
+                                    <input type="date" class="form-control" min="{{ date('Y-m-d', strtotime('+1days')) }}" placeholder="" id="dateEdit" name="date" min="{{ date('Y-m-d', strtotime('+3days')) }}">
                                 </div>
                             </div>
 
@@ -270,6 +270,7 @@
 <script>
     $('#CreateCoupon, #editCoupon').on('hidden.bs.modal', function(e) {
         $(this).find('form').trigger('reset');
+        $(this).find('.error.invalid-feedback').remove();
     })
     $(document).ready(function() {
 

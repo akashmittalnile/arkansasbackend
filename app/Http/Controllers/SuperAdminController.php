@@ -1834,10 +1834,14 @@ class SuperAdminController extends Controller
         return response()->json(['status'=>true, 'file_name'=> $filename, 'key'=> 2]);  
     }
 
-    public function account_approval_request() 
+    public function account_approval_request(Request $request) 
     {
         try {
-            $users = User::where('status',0)->where('role',2)->orderBy('id','DESC')->get();
+            $users = User::where('role',2);
+            if($request->filled('name')) $users->whereRaw("concat(first_name, ' ', last_name) like '%$request->name%' ");
+            if($request->filled('status')) $users->where('status', $request->status);
+            else $users->whereIn('status', [0,3]);
+            $users = $users->orderBy('id','DESC')->get();
             return view('super-admin.account-approval-request',compact('users'));
         } catch (\Exception $e) {
             return $e->getMessage();

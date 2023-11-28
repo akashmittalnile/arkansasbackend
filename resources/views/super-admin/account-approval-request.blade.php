@@ -7,38 +7,55 @@
                 <h2>Account Approval Request</h2>
             </div>
             <div class="pmu-search-filter wd70">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <select class="form-control">
-                                <option>Select Content Creator Type! </option>
-                                <option>Permanent Makeup Training</option>
-                                <option>Tattooing & Piercing Institute</option>
-                            </select>
+                <form action="">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="form-group search-form-group">
+                                <input type="text" class="form-control" name="name"
+                                    placeholder="Search by Content Creator Name" value="{{request()->name}}">
+                                <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg')!!}"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <select class="form-control" name="status">
+                                    <option @if(request()->status=="") selected @endif value="">Select Account Status</option>
+                                    <option @if(request()->status=="0") selected @endif value="0">New Creators</option>
+                                    <option @if(request()->status=="3") selected @endif value="3">Rejected Creators</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-1">
+                            <div class="form-group">
+                                <a class="Accountapproval-btn" style="padding: 13px 20px;" href="{{ route('SA.AccountApprovalRequest') }}"><i class="las la-sync"></i></a>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <button class="Accountapproval-btn" style="padding: 12.5px 41px;" type="">Search</button>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group">
+                                <a class="Accountapproval-btn" style="padding: 14px 41px;" href="{{ route('SA.ContentCreators') }}">Back</a>
+                            </div>
                         </div>
                     </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <input type="date" class="form-control" name="">
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <a class="Accountapproval-btn" href="{{ route('SA.ContentCreators') }}">Back</a>
-                        </div>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
 
         <div class="creator-table-section">
             <div class="creator-table-list">
                 @if($users->isEmpty())
-                    <tr>
-                        <td colspan="11" class="text-center">
-                            No record found
-                        </td>
-                    </tr>
+                <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+                    <div>
+                        <img src="{{ assets('/assets/website-images/nodata.svg') }}" alt="">
+                    </div>
+                    <div class="font-weight-bold">
+                        <p class="font-weight-bold" style="font-size: 1.2rem;">No record found </p> 
+                    </div>
+                </div>
                 @elseif(!$users->isEmpty())
                     @foreach($users as $data)
                         <div class="creator-table-item">
@@ -71,7 +88,7 @@
                             <div class="creator-table-col-2">
                                 <div class="creator-table-box">
                                     <div class="creator-table-text">Account Status</div>
-                                    <div class="creator-table-value">Pending For Approval</div>
+                                    <div class="creator-table-value">@if($data->status == '0') Pending For Approval @elseif($data->status == '3') Rejected @endif</div>
                                 </div>
                             </div>
 
