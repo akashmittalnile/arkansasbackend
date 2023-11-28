@@ -432,7 +432,7 @@
                                                         <div class="upload-file-text">
                                                             <h3>Document</h3>
                                                             <h5>
-                                                                <a target="_black" href="{{ assets('upload/course/'.$data->details) }}">
+                                                                <a target="_black" href="{{ uploadAssets('upload/course/'.$data->details) }}">
                                                                     <img src="{{ assets('assets/website-images/pdf.svg') }}" class="mx-3" alt="No pdf found">
                                                                 </a>
                                                             </h5>

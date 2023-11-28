@@ -33,7 +33,7 @@
                                                             <div class="d-flex flex-row">
                                                                 <div>
                                                                     @if($user->profile_image!="" && $user->profile_image!=null)
-                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('upload/profile-image/'.$user->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ uploadAssets('upload/profile-image/'.$user->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @else
                                                                     <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @endif
@@ -76,7 +76,7 @@
 
                                         <div class="text-muted d-flex justify-content-start align-items-center pe-3 pt-3 mt-2">
                                             @if($user->profile_image!="" && $user->profile_image!=null)
-                                            <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('upload/profile-image/'.$user->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60" id="userAvatar">
+                                            <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ uploadAssets('upload/profile-image/'.$user->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60" id="userAvatar">
                                             @else
                                             <img style="border-radius: 50%;" src="{{ assets('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" id="userAvatar">
                                             @endif
@@ -95,7 +95,7 @@
                         <input type="hidden" id="ajax-chat-url" value="{{$user->id}}">
                         <input type="hidden" id="ajax-chat-url-first" value="{{$user->first_name ?? 'NA'}}">
                         <input type="hidden" id="ajax-chat-url-last" value="{{$user->last_name ?? 'NA'}}">
-                        <input type="hidden" id="ajax-chat-url-img" value="{{($user->profile_image=='' || $user->profile_image== null) ? null : assets('upload/profile-image/'.$user->profile_image)}}">
+                        <input type="hidden" id="ajax-chat-url-img" value="{{($user->profile_image=='' || $user->profile_image== null) ? null : uploadAssets('upload/profile-image/'.$user->profile_image)}}">
                     </div>
                 </div>
 
@@ -286,7 +286,7 @@
                     ${(message !== '' && message !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${message}</p>` : ''}
                     <p class="small me-3 mb-3 rounded-3 text-muted">${time}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : assets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : uploadAssets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`;
         $('.messages-card').append(msg);
 
@@ -307,7 +307,7 @@
                     ${(row.text !== '' && row.text !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${row.text}</p>`:''}
                     <p class="small me-3 mb-3 rounded-3 text-muted">${formattedDate}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : assets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : uploadAssets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`
             ;
         } else {

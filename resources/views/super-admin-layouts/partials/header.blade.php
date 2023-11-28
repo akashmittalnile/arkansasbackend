@@ -59,7 +59,7 @@
                         <div  class="profile-pic">
                             @php $profile_img = auth()->user()->profile_image;  @endphp
                             @if($profile_img != "" && $profile_img != null)
-                            <img src="{!! assets('upload/profile-image/'.$profile_img) !!}" alt="user">
+                            <img src="{!! uploadAssets('upload/profile-image/'.$profile_img) !!}" alt="user">
                             @else
                             <img src="{!! assets('assets/website-images/user.jpg') !!}" alt="user">
                             @endif

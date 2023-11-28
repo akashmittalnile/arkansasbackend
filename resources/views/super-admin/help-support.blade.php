@@ -29,12 +29,12 @@
                                             <div data-mdb-perfect-scrollbar="true" style="position: relative; height: 400px; overflow-y: scroll;">
                                                 <ul class="list-unstyled mb-0">
                                                     @forelse($user as $val)
-                                                    <li class="p-2 border-bottom user-info" data-id="{{$val->id}}" data-fname="{{$val->first_name ?? 'NA'}}" data-lname="{{$val->last_name ?? 'NA'}}" data-img="{{( ($val->profile_image=='' || $val->profile_image==null) ? null : assets('upload/profile-image/'.$val->profile_image) )}}">
+                                                    <li class="p-2 border-bottom user-info" data-id="{{$val->id}}" data-fname="{{$val->first_name ?? 'NA'}}" data-lname="{{$val->last_name ?? 'NA'}}" data-img="{{( ($val->profile_image=='' || $val->profile_image==null) ? null : uploadAssets('upload/profile-image/'.$val->profile_image) )}}">
                                                         <a href="javascript:void(0)" class="d-flex justify-content-between">
                                                             <div class="d-flex flex-row">
                                                                 <div>
                                                                     @if($val->profile_image!="" && $val->profile_image!=null)
-                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('upload/profile-image/'.$val->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ uploadAssets('upload/profile-image/'.$val->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @else
                                                                     <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @endif
@@ -304,7 +304,7 @@
                     ${(message !== '' && message !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${message}</p>` : ''}
                     <p class="small me-3 mb-3 rounded-3 text-muted">${time}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : assets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : uploadAssets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`;
         $('.messages-card').append(msg);
 
@@ -335,7 +335,7 @@
                     ${(row.text !== '' && row.text !== undefined) ? `<p style="background: #261313;" class="small p-2 me-3 mb-1 text-white rounded-3">${row.text}</p>` : '' }
                     <p class="small me-3 mb-3 rounded-3 text-muted">${formattedDate}</p>
                 </div>
-                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : assets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
+                <img src="{{ (auth()->user()->profile_image=='' || auth()->user()->profile_image == null) ? assets('assets/website-images/user.png') : uploadAssets('upload/profile-image/'.auth()->user()->profile_image) }}" alt="avatar 1" style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; object-position: center;">
             </div>`;
         }
         return html;

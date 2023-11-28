@@ -48,7 +48,7 @@ class AuthController extends Controller
 
             $user = Auth::user();
             if($user->profile_image!="" && $user->profile_image!=null){
-                $user->profile_image = url('/upload/profile-image/'.$user->profile_image);
+                $user->profile_image = uploadAssets('upload/profile-image/'.$user->profile_image);
             }else $user->profile_image= null;
             return response()->json([
                 'user' => $user,
@@ -88,8 +88,7 @@ class AuthController extends Controller
 
         $img = null;
         if($request->profile_image){
-            $img = time().'.'.$request->profile_image->extension();  
-            $request->profile_image->move(public_path('upload/profile-image'), $img);
+            $img = fileUpload($request->profile_image, 'upload/profile-image');  
         }
 
         $user = new User;
@@ -107,7 +106,7 @@ class AuthController extends Controller
 
         if($user){
             if(isset($user->profile_image) && $user->profile_image != ""){
-                $user->profile_image = url('upload/profile-image/'.$user->profile_image);
+                $user->profile_image = uploadAssets('upload/profile-image/'.$user->profile_image);
             }
             return response()->json([
                 'status' => true,
@@ -165,7 +164,7 @@ class AuthController extends Controller
                     $notify->message = 'Hello, ' . auth()->user()->first_name . "\nYour password has been reset successfully.";
                     if(auth()->user()->profile_image == "" || auth()->user()->profile_image == null){
                         $profile_image = null;
-                    } else $profile_image = assets('upload/profile-image/'.auth()->user()->profile_image);
+                    } else $profile_image = uploadAssets('upload/profile-image/'.auth()->user()->profile_image);
                     $notify->image = $profile_image;
                     $notify->is_seen = '0';
                     $notify->created_at = date('Y-m-d H:i:s');

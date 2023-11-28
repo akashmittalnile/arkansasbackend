@@ -240,7 +240,7 @@ class CartController extends Controller
                         $temp['short_description'] = $value->description;
                         $temp['sale_price'] = $value->course_fee;
                         if ($value->profile_image) {
-                            $profile_image = url('upload/profile-image/'.$value->profile_image);
+                            $profile_image = uploadAssets('upload/profile-image/'.$value->profile_image);
                         } else {
                             $profile_image = '';
                         }
@@ -249,7 +249,7 @@ class CartController extends Controller
                         $temp['content_creator_image'] = $profile_image;
                         $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
                         if(isset($value->introduction_image)){
-                            $temp['image'] = url('upload/disclaimers-introduction/'.$value->introduction_image);  
+                            $temp['image'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);  
                         } else $temp['image'] = null;
                         $avgRating = DB::table('user_review as ur')->where('object_id', $item->object_id)->where('object_type', $item->object_type)->avg('rating');
                         $temp['avg_rating'] = number_format($avgRating, 1);
@@ -274,7 +274,7 @@ class CartController extends Controller
                     for ($i = 0; $i < count($old['products']); $i++) {
                         $pro = Product::where('id', $old['products'][$i]['product_id'])->first();
                         $old['products'][$i] = $this->updateCartProducts($pro, $old['products'][$i]);
-                        $res['items'][$i]['image'] = url('upload/products/' . $old['products'][$i]['image']);
+                        $res['items'][$i]['image'] = uploadAssets('upload/products/' . $old['products'][$i]['image']);
                         $res['items'][$i]['quantity'] = $old['products'][$i]['qty'];
                         $res['items'][$i]['total_amount'] = $old['products'][$i]['total_amount'];
                         $res['items'][$i]['regular_price'] = $old['products'][$i]['regular_price'];
@@ -290,7 +290,7 @@ class CartController extends Controller
                         if ($added->profile_image == '' || $added->profile_image == null) {
                             $profile_image = null;
                         } else {
-                            $profile_image = url('upload/profile-image/' . $added->profile_image);
+                            $profile_image = uploadAssets('upload/profile-image/' . $added->profile_image);
                         }
                         $res['items'][$i]['category_id'] = $category->id ?? null;
                         $res['items'][$i]['category_name'] = $category->name ?? null;

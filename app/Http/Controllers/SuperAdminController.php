@@ -204,28 +204,16 @@ class SuperAdminController extends Controller
             }else{
                 $data = User::where('id', auth()->user()->id)->first();
                 if ($request->profile) {
-                    $profile = time().'.'.$request->profile->extension();  
-                    $request->profile->move(public_path('upload/profile-image'), $profile);
-                    $image_path = app_path("upload/profile-image/{$data->profile_image}");
-                    if(File::exists($image_path)) {
-                        unlink($image_path);
-                    }
+                    $profile = fileUpload($request->profile, 'upload/profile-image');  
+                    removeFile("upload/profile-image/".$data->profile_image);
                 } else $profile = $data->profile_image;
                 if ($request->logo) {
-                    $logo = time().'.'.$request->logo->extension();  
-                    $request->logo->move(public_path('upload/business-logo'), $logo);
-                    $image_path = app_path("upload/business-logo/{$data->business_logo}");
-                    if(File::exists($image_path)) {
-                        unlink($image_path);
-                    }
+                    $logo = fileUpload($request->logo, 'upload/business-logo');  
+                    removeFile("upload/business-logo/".$data->business_logo);
                 } else $logo = $data->business_logo;
                 if ($request->signature) {
-                    $signature = time().'.'.$request->signature->extension();  
-                    $request->signature->move(public_path('upload/signature'), $signature);
-                    $image_path = app_path("upload/signature/{$data->signature}");
-                    if(File::exists($image_path)) {
-                        unlink($image_path);
-                    }
+                    $signature = fileUpload($request->signature, 'upload/signature'); 
+                    removeFile("upload/signature/".$data->signature);
                 } else $signature = $data->signature;
 
                 $user = User::where('id', auth()->user()->id)->update([
@@ -475,15 +463,10 @@ class SuperAdminController extends Controller
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // if ($request->certificates) {
-            //     $imageName = time().'.'.$request->certificates->extension();  
-            //     $request->certificates->move(public_path('upload/course-certificates'), $imageName);
-            // }
-
             if ($request->disclaimers_introduction) {
-                $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
-                $request->disclaimers_introduction->move(public_path('upload/disclaimers-introduction'), $disclaimers_introduction);
+                $disclaimers_introduction = fileUpload($request->disclaimers_introduction, 'upload/disclaimers-introduction');
             }
+            // dd(1);
             
             $course = new Course;
             $course->admin_id = auth()->user()->id;
@@ -535,13 +518,8 @@ class SuperAdminController extends Controller
             
             $disclaimers_introduction = $course->introduction_image;
             if ($request->disclaimers_introduction) {
-                $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
-                $request->disclaimers_introduction->move(public_path('upload/disclaimers-introduction'), $disclaimers_introduction);
-
-                $image_path = app_path("upload/disclaimers-introduction/{$course->introduction_image}");
-                if(File::exists($image_path)) {
-                    unlink($image_path);
-                }
+                $disclaimers_introduction = fileUpload($request->disclaimers_introduction, 'upload/disclaimers-introduction');
+                removeFile("upload/disclaimers-introduction/".$course->introduction_image);
             }
 
             Course::where('id', encrypt_decrypt('decrypt',$request->hide))->update([
@@ -631,8 +609,7 @@ class SuperAdminController extends Controller
                     if($type[$key] == 'video'){
                         if(count($request->video) > 0){
                             foreach($request->video as $keyVideo => $valueVideo){
-                                $videoName = time().'.'.$request->video[$keyVideo]->extension();  
-                                $request->video[$keyVideo]->move(public_path('upload/course'), $videoName); 
+                                $videoName = fileUpload($request->video[$keyVideo], 'upload/course');  
 
                                 $ChapterQuiz = new CourseChapterStep;
                                 $ChapterQuiz->type = 'video';
@@ -649,8 +626,7 @@ class SuperAdminController extends Controller
                     else if($type[$key] == 'pdf'){
                         if(count($request->pdf) > 0){
                             foreach($request->pdf as $keyPdf => $valuePdf){
-                                $pdfName = time().'.'.$request->pdf[$keyPdf]->extension();  
-                                $request->pdf[$keyPdf]->move(public_path('upload/course'), $pdfName);
+                                $pdfName = fileUpload($request->pdf[$keyPdf], 'upload/course');  
 
                                 $ChapterQuiz = new CourseChapterStep;
                                 $ChapterQuiz->type = 'pdf';
@@ -969,10 +945,7 @@ class SuperAdminController extends Controller
 
             $quiz = CourseChapterStep::where('id',$id)->first();
             $image_name = $quiz->details;
-            $image_path = public_path('upload/course/'.$image_name);
-            if(File::exists($image_path)) {
-                File::delete($image_path);
-            }
+            removeFile("upload/course/".$image_name);
             CourseChapterStep::where('id',$id)->update([
                 'details' => null,
             ]);
@@ -992,10 +965,7 @@ class SuperAdminController extends Controller
 
             $quiz = CourseChapterStep::where('id',$id)->first();
             $image_name = $quiz->details;
-            $image_path = public_path('upload/course/'.$image_name);
-            if(File::exists($image_path)) {
-                File::delete($image_path);
-            }
+            removeFile("upload/course/".$image_name);
             CourseChapterStep::where('id',$id)->update([
                 'details' => null,
             ]);
@@ -1229,8 +1199,7 @@ class SuperAdminController extends Controller
         try {
 
             if ($request->img) {
-                $img = time().'.'.$request->img->extension();  
-                $request->img->move(public_path('upload/notification'), $img);
+                $img = fileUpload($request->img, 'upload/notification', 1);  
             }
 
             $notify = new Notification;
@@ -1277,7 +1246,7 @@ class SuperAdminController extends Controller
                     $notify->module_name = 'course';
                     $notify->title = $request->title;
                     $notify->message = $request->description;
-                    $notify->image = assets('upload/notification/'.$img);
+                    $notify->image = uploadAssets('upload/notification/'.$img);
                     $notify->is_seen = '0';
                     $notify->created_at = date('Y-m-d H:i:s');
                     $notify->updated_at = date('Y-m-d H:i:s');
@@ -1292,7 +1261,7 @@ class SuperAdminController extends Controller
                         $notify->module_name = 'course';
                         $notify->title = $request->title;
                         $notify->message = $request->description;
-                        $notify->image = assets('upload/notification/'.$img);
+                        $notify->image = uploadAssets('upload/notification/'.$img);
                         $notify->is_seen = '0';
                         $notify->created_at = date('Y-m-d H:i:s');
                         $notify->updated_at = date('Y-m-d H:i:s');
@@ -1420,7 +1389,7 @@ class SuperAdminController extends Controller
                         $notify->module_name = 'course';
                         if($ccUser->profile_image == "" || $ccUser->profile_image == null){
                             $profile_image = null;
-                        } else $profile_image = assets('upload/profile-image/'.$ccUser->profile_image);
+                        } else $profile_image = uploadAssets('upload/profile-image/'.$ccUser->profile_image);
                         $notify->image = $profile_image;
                         $notify->title = 'New Course';
                         $notify->message = 'New Course ('.$cc->title . ') added by ' . $ccUser->first_name . ' ' . $ccUser->last_name;
@@ -1559,10 +1528,7 @@ class SuperAdminController extends Controller
             Product::where('id', $id)->delete();
             $attr = ProductAttibutes::where('product_id', $id)->get();
             foreach($attr as $val){
-                $image_path = app_path("upload/products/{$val->attribute_value}");
-                    if(File::exists($image_path)) {
-                        unlink($image_path);
-                }
+                removeFile("upload/products/".$val->attribute_value);
             }
             $attr = ProductAttibutes::where('product_id', $id)->delete();
             return redirect()->back()->with('message', 'Product deleted successfully');
@@ -1578,10 +1544,7 @@ class SuperAdminController extends Controller
             $attr = ProductAttibutes::where('id', $id)->first();
             $count = ProductAttibutes::where('product_id', $attr->product_id)->count();
             if($count == 1) return redirect()->back()->with('message', "Minimum one product image must be required. Can't Remove");
-            $image_path = app_path("upload/products/{$attr->attribute_value}");
-                if(File::exists($image_path)) {
-                    unlink($image_path);
-            }
+            removeFile("upload/products/".$attr->attribute_value);
             ProductAttibutes::where('id', $id)->delete();
             return redirect()->back()->with('message', 'Product image successfully');
         } catch (\Exception $e) {
@@ -1684,12 +1647,9 @@ class SuperAdminController extends Controller
             
             
             if(isset($request->product_image)){
-                $destination = public_path('upload/products/');
-                $name = time().'.'.$request->product_image->extension();
-                $request->product_image->move($destination, $name);
-                $profile_image_url = $name;
+                $name = fileUpload($request->product_image, 'upload/products/');
                 $course = ProductAttibutes::where('product_id', $id)->update([
-                    'attribute_value' => $profile_image_url,
+                    'attribute_value' => $name,
                 ]);
             }
             
@@ -1770,15 +1730,12 @@ class SuperAdminController extends Controller
                 
                 $product_id = Product::orderBy('id','DESC')->first();
                 if(isset($request->product_image)){
-                    $destination = public_path('upload/products/');
-                    $name = time().'.'.$request->product_image->extension();
-                    $request->product_image->move($destination, $name);
-                    $profile_image_url = $name;
+                    $name = fileUpload($request->product_image, 'upload/products/');
                     $course = ProductAttibutes::create([
                         'product_id' => $product_id->id,
                         'attribute_type' => 'Cover Image',
                         'attribute_code' => 'cover_image',
-                        'attribute_value' => $profile_image_url,
+                        'attribute_value' => $name,
                         'created_date' => date('Y-m-d H:i:s')
                     ]);
                 }
@@ -1801,10 +1758,8 @@ class SuperAdminController extends Controller
 
     public function imageUpload(Request $request) 
     { 
-        $image = $request->file('file');
-        $name = $image->getClientOriginalName();
+        $name = fileUpload($request->file('file'), 'upload/products/');
         
-        $image->move(public_path('upload/products/'),$name);
         $pro_id = isset($request->id) ? encrypt_decrypt('decrypt', $request->id) : null;
             
         $course = ProductAttibutes::create([
@@ -1827,10 +1782,7 @@ class SuperAdminController extends Controller
         else $pro->where('product_id', null);
         $pro = $pro->delete();
 
-        $path=public_path('upload/products/').$filename;
-        if (file_exists($path)) {
-            unlink($path);
-        }
+        removeFile("upload/products/".$filename);
         return response()->json(['status'=>true, 'file_name'=> $filename, 'key'=> 2]);  
     }
 
@@ -1916,8 +1868,7 @@ class SuperAdminController extends Controller
             //dd($request->category_name);
 
             if ($request->category_image) {
-                $imageName = time().'.'.$request->category_image->extension();  
-                $request->category_image->move(public_path('upload/category-image'), $imageName);
+                $imageName = fileUpload($request->category_image, 'upload/category-image'); 
                 if($imageName)
                 {
                     $imageName = $imageName;
@@ -1949,13 +1900,11 @@ class SuperAdminController extends Controller
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-           
+            $Category = Category::where('id', $request->id)->first();
             if ($request->category_image) {
-                $imageName = time().'.'.$request->category_image->extension();  
-                $request->category_image->move(public_path('upload/category-image'), $imageName);
-                    // $icon = public_path() . '/upload/category-image/'. $Category->icon;
-                    // unlink($icon);
-                    Category::where('id', $request->id)->update(['icon' => $imageName]);
+                $imageName = fileUpload($request->category_image, 'upload/category-image');  
+                removeFile("upload/category-image/".$Category->icon);
+                Category::where('id', $request->id)->update(['icon' => $imageName]);
             }
             Category::where('id', $request->id)->update(['name' => $request->category_name,'status'=>$request->cat_status, 'type' => $request->cat_type]);
             return redirect('/super-admin/category')->with('message','Category updated successfully');
@@ -1970,8 +1919,7 @@ class SuperAdminController extends Controller
             $cat_id = encrypt_decrypt('decrypt',$id);
             $Category = Category::where('id',$cat_id)->first();
             if(!empty($Category->category_image)){
-                $category_image = public_path() . '/upload/category-image/'. $Category->category_image;
-                unlink($category_image);
+                removeFile("upload/category-image/".$Category->category_image);
             }
             $cat_id = Category::where('id',$cat_id)->delete();
             return redirect('/super-admin/category')->with('message', 'Category deleted successfully');;
@@ -2510,8 +2458,7 @@ class SuperAdminController extends Controller
 
     public function help_support_save_img(Request $request){
         try {
-            $name = time().'.'.$request->image->extension();  
-            $request->image->move(public_path('upload/chat'), $name); 
+            $name = fileUpload($request->image, 'upload/chat');   
             return response()->json(['status' => true, 'url' => $name, 'message' => 'image upload successfully.']);
         } catch (\Exception $e) {
             return $e->getMessage();

@@ -75,7 +75,7 @@
                                             <?php
                                                 $first_image = \App\Models\ProductAttibutes::where('product_id', $data->id)->first();
                                             ?>
-                                                <img src="{!! assets('upload/products/'.$first_image->attribute_value) !!}"> 
+                                                <img src="{!! uploadAssets('upload/products/'.$first_image->attribute_value) !!}"> 
                                                 {{-- <img src="{!! assets('assets/superadmin-images/p2.jpg') !!}"> --}}
                                             
                                         </a>

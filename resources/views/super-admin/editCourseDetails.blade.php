@@ -105,7 +105,7 @@
                                                         class="uploadsignature addsignature" accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">
                                                     <label for="certificates">
                                                         <div class="signature-text">
-                                                            <span id="certificates_nam"><img id="prev-img" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" src="{!! assets('upload/course-certificates/'.$course->certificates) !!}"> <small id="prev-small-line">Click here to change image</small></span>
+                                                            <span id="certificates_nam"><img id="prev-img" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" src="{!! uploadAssets('upload/course-certificates/'.$course->certificates) !!}"> <small id="prev-small-line">Click here to change image</small></span>
                                                         </div>
                                                     </label>
                                                 </div>
@@ -122,7 +122,7 @@
                                                     <label for="disclaimers_introduction">
                                                         <div class="signature-text">
                                                             <span id="disclaimers_introduction_nam">
-                                                                <video width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume src="{!! assets('upload/disclaimers-introduction/'.$course->introduction_image) !!}" id="vid-prev-tag"></video><small id="video-small-line" style="position: absolute; top: 83%; right: 56%">Click here to Change video</small>
+                                                                <video width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume src="{!! uploadAssets('upload/disclaimers-introduction/'.$course->introduction_image) !!}" id="vid-prev-tag"></video><small id="video-small-line" style="position: absolute; top: 83%; right: 56%">Click here to Change video</small>
                                                             </span>
                                                         </div>
                                                     </label>

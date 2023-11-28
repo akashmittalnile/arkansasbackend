@@ -76,7 +76,7 @@
                             <div class="creator-table-col-3">
                                 <div class="creator-table-box">
                                     <div class="creator-table-text">Category Image</div>
-                                    <div class="creator-table-value center-div"><img style="object-fit: cover; object-position: center; border: 2px solid #261313; border-radius: 50%; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" width="70" height=70" src="{{ assets('upload/category-image/'.$data->icon)}}" ></img></div>
+                                    <div class="creator-table-value center-div"><img style="object-fit: cover; object-position: center; border: 2px solid #261313; border-radius: 50%; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" width="70" height=70" src="{{ uploadAssets('upload/category-image/'.$data->icon)}}" ></img></div>
                                 </div>
                             </div>
 

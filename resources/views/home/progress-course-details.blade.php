@@ -90,7 +90,7 @@
                                                         <img src="{{ assets('assets/website-images/document-text.svg') }}"> {{$val->title}}
                                                     </div>
                                                     <div>
-                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1 && $val->type=='assignment')<a target="_black" href="{{ assets('upload/course/'.$val->chapterStep($id)->file) }}"><img src="{{ assets('assets/website-images/pdf.svg') }}" class="mx-3" alt="No pdf found"></a>@endif
+                                                        @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1 && $val->type=='assignment')<a target="_black" href="{{ uploadAssets('upload/course/'.$val->chapterStep($id)->file) }}"><img src="{{ assets('assets/website-images/pdf.svg') }}" class="mx-3" alt="No pdf found"></a>@endif
                                                         @if(!is_null($val->chapterStep($id)) && $val->chapterStep($id)->status == 1)<img src="{{ assets('assets/website-images/tick-circle.svg') }}"> @else <img width="41" height="41" src="{{ assets('assets/website-images/close-circle.svg') }}"> @endif
                                                     </div>
                                                 </div>

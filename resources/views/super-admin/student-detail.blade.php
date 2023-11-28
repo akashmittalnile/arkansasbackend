@@ -30,7 +30,7 @@
                             <div class="side-profile-item">
                                 <div class="side-profile-media">
                                     @if ($data->profile_image!=null && $data->profile_image!="")
-                                        <img src="{!! assets('upload/profile-image/'.$data->profile_image) !!}">
+                                        <img src="{!! uploadAssets('upload/profile-image/'.$data->profile_image) !!}">
                                     @else
                                         <img src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                                     @endif
@@ -152,7 +152,7 @@
                                                     <a data-fancybox="" data-type="iframe"
                                                         data-src="https://www.facebook.com/plugins/video.php?height=314&amp;href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&amp;show_text=false&amp;width=560&amp;t=0"
                                                         href="javascript:;">
-                                                        <video width="350" height="200" src="{{ assets('upload/disclaimers-introduction/'.$val->introduction_image) }}"></video>
+                                                        <video width="350" height="200" src="{{ uploadAssets('upload/disclaimers-introduction/'.$val->introduction_image) }}"></video>
                                                         <!-- <div class="course-video-icon"><img src="{!! assets('assets/superadmin-images/video.svg') !!}"></div> -->
                                                     </a>
                                                 </div>

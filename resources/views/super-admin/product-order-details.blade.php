@@ -65,7 +65,7 @@
                         <div class="side-profile-item">
                             <div class="side-profile-media">
                                 @if(isset($order->profile_image) && $order->profile_image != "")
-                                <img src="{{ assets('upload/profile-image/'.$order->profile_image) }}">
+                                <img src="{{ uploadAssets('upload/profile-image/'.$order->profile_image) }}">
                                 @else
                                 <img src="{{ assets('assets/website-images/user.jpg') }}">
                                 @endif
@@ -137,7 +137,7 @@
                                     @forelse($order->orderProduct as $key => $val)
                                     <div class="pmu-course-details-item">
                                         <div class="pmu-course-details-media">
-                                            <img src="{{ assets('upload/products/'.$val->image) }}">
+                                            <img src="{{ uploadAssets('upload/products/'.$val->image) }}">
                                         </div>
                                         <div class="pmu-course-details-content">
                                             <div class="coursestatus"><img src="{{ assets('assets/website-images/tick.svg') }}">

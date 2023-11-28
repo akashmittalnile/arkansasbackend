@@ -8,6 +8,7 @@ use Illuminate\Support\Carbon;
 use App\Mail\DefaultMail;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\File;
 
 if (!function_exists('sendNotification')) {
     function sendNotification($token, $data)
@@ -258,5 +259,35 @@ if (!function_exists('assets')) {
     function assets($path)
     {
         return asset('public/'.$path);
+    }
+}
+
+if (!function_exists('uploadAssets')) {
+    function uploadAssets($path)
+    {
+        return asset('public/'.$path);
+        // return asset('../../'.$path);
+    }
+}
+
+if (!function_exists('fileUpload')) {
+    function fileUpload($file, $path, $url = 0)
+    {
+        $name = time().'.'.$file->extension();  
+        $file->move(public_path("$path"), $name);
+        if($url == 1){
+            return public_path("$path/$name");
+        }
+        return $name;
+    }
+}
+
+if (!function_exists('removeFile')) {
+    function removeFile($path)
+    {
+        $link = app_path("$path");
+        if(File::exists($link)) {
+            unlink($link);
+        }
     }
 }

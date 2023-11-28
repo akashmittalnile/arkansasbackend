@@ -109,28 +109,16 @@ class HomeController extends Controller
             }else{
                 $data = User::where('id', auth()->user()->id)->first();
                 if ($request->profile) {
-                    $profile = time().'.'.$request->profile->extension();  
-                    $request->profile->move(public_path('upload/profile-image'), $profile);
-                    $image_path = app_path("upload/profile-image/{$data->profile_image}");
-                    if(File::exists($image_path)) {
-                        unlink($image_path);
-                    }
+                    $profile = fileUpload($request->profile, 'upload/profile-image');  
+                    removeFile("upload/profile-image/".$data->profile_image);
                 } else $profile = $data->profile_image;
                 if ($request->logo) {
-                    $logo = time().'.'.$request->logo->extension();  
-                    $request->logo->move(public_path('upload/business-logo'), $logo);
-                    $image_path = app_path("upload/business-logo/{$data->business_logo}");
-                    if(File::exists($image_path)) {
-                        unlink($image_path);
-                    }
+                    $logo = fileUpload($request->logo, 'upload/business-logo');  
+                    removeFile("upload/business-logo/".$data->business_logo);
                 } else $logo = $data->business_logo;
                 if ($request->signature) {
-                    $signature = time().'.'.$request->signature->extension();  
-                    $request->signature->move(public_path('upload/signature'), $signature);
-                    $image_path = app_path("upload/signature/{$data->signature}");
-                    if(File::exists($image_path)) {
-                        unlink($image_path);
-                    }
+                    $signature = fileUpload($request->signature, 'upload/signature');  
+                    removeFile("upload/signature/".$data->signature);
                 } else $signature = $data->signature;
 
                 $user = User::where('id', auth()->user()->id)->update([
@@ -300,25 +288,11 @@ class HomeController extends Controller
     public function updateCourseDetails(Request $request){
         try {
             $course = Course::where('id', encrypt_decrypt('decrypt',$request->hide))->first();
-            // $imageName = $course->certificates;
-            // if ($request->certificates) {
-            //     $imageName = time().'.'.$request->certificates->extension();  
-            //     $request->certificates->move(public_path('upload/course-certificates'), $imageName);
-
-            //     $image_path = app_path("upload/course-certificates/{$course->certificates}");
-            //     if(File::exists($image_path)) {
-            //         unlink($image_path);
-            //     }
-            // }
+            
             $disclaimers_introduction = $course->introduction_image;
             if ($request->disclaimers_introduction) {
-                $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
-                $request->disclaimers_introduction->move(public_path('upload/disclaimers-introduction'), $disclaimers_introduction);
-
-                $image_path = app_path("upload/disclaimers-introduction/{$course->introduction_image}");
-                if(File::exists($image_path)) {
-                    unlink($image_path);
-                }
+                $disclaimers_introduction = fileUpload($request->disclaimers_introduction, 'upload/disclaimers-introduction'); 
+                removeFile("upload/disclaimers-introduction/".$course->introduction_image);
             }
 
             Course::where('id', encrypt_decrypt('decrypt',$request->hide))->update([
@@ -380,8 +354,7 @@ class HomeController extends Controller
         try{
             // dd($request->all());
             if ($request->newvideo) {
-                $videoName = time().'.'.$request->newvideo->extension();  
-                $request->newvideo->move(public_path('upload/course'), $videoName);
+                $videoName = fileUpload($request->newvideo, 'upload/course');  
             }
             $step = CourseChapterStep::where('id', encrypt_decrypt('decrypt',$request->vidId))->update(['details'=> $videoName]);
             return redirect()->back()->with('message', 'Video added successfully');
@@ -394,8 +367,7 @@ class HomeController extends Controller
         try{
             // dd($request->all());
             if ($request->newpdf) {
-                $pdfName = time().'.'.$request->newpdf->extension();  
-                $request->newpdf->move(public_path('upload/course'), $pdfName);
+                $pdfName = fileUpload($request->newpdf, 'upload/course');  
             }
             $step = CourseChapterStep::where('id', encrypt_decrypt('decrypt',$request->pdfId))->update(['details'=> $pdfName]);
             return redirect()->back()->with('message', 'PDF added successfully');
@@ -507,8 +479,7 @@ class HomeController extends Controller
                     if($type[$key] == 'video'){
                         if(count($request->video) > 0){
                             foreach($request->video as $keyVideo => $valueVideo){
-                                $videoName = time().'.'.$request->video[$keyVideo]->extension();  
-                                $request->video[$keyVideo]->move(public_path('upload/course'), $videoName); 
+                                $videoName = fileUpload($request->video[$keyVideo], 'upload/course'); 
 
                                 $ChapterQuiz = new CourseChapterStep;
                                 $ChapterQuiz->type = 'video';
@@ -525,8 +496,7 @@ class HomeController extends Controller
                     else if($type[$key] == 'pdf'){
                         if(count($request->pdf) > 0){
                             foreach($request->pdf as $keyPdf => $valuePdf){
-                                $pdfName = time().'.'.$request->pdf[$keyPdf]->extension();  
-                                $request->pdf[$keyPdf]->move(public_path('upload/course'), $pdfName);
+                                $pdfName = fileUpload($request->pdf[$keyPdf], 'upload/course');  
 
                                 $ChapterQuiz = new CourseChapterStep;
                                 $ChapterQuiz->type = 'pdf';
@@ -645,13 +615,8 @@ class HomeController extends Controller
     public function submitcourse(Request $request) 
     {
         try {
-            // if ($request->certificates) {
-            //     $imageName = time().'.'.$request->certificates->extension();  
-            //     $request->certificates->move(public_path('upload/course-certificates'), $imageName);
-            // }
             if ($request->disclaimers_introduction) {
-                $disclaimers_introduction = time().'.'.$request->disclaimers_introduction->extension();  
-                $request->disclaimers_introduction->move(public_path('upload/disclaimers-introduction'), $disclaimers_introduction);
+                $disclaimers_introduction = fileUpload($request->disclaimers_introduction, 'upload/disclaimers-introduction'); 
             }
             $course = new Course;
             $course->admin_id = Auth::user()->id;
@@ -682,7 +647,7 @@ class HomeController extends Controller
                     $notify->message = 'New Course ('.$request->input('title') . ') added by ' . auth()->user()->first_name . ' ' . auth()->user()->last_name;
                     if(auth()->user()->profile_image == "" || auth()->user()->profile_image == null){
                         $profile_image = null;
-                    } else $profile_image = assets('upload/profile-image/'.auth()->user()->profile_image);
+                    } else $profile_image = uploadAssets('upload/profile-image/'.auth()->user()->profile_image);
                     $notify->image = $profile_image;
                     $notify->is_seen = '0';
                     $notify->created_at = date('Y-m-d H:i:s');
@@ -770,10 +735,7 @@ class HomeController extends Controller
 
             $quiz = CourseChapterStep::where('id',$id)->first();
             $image_name = $quiz->details;
-            $image_path = public_path('upload/course/'.$image_name);
-            if(File::exists($image_path)) {
-                File::delete($image_path);
-            }
+            removeFile("upload/course/".$image_name);
             CourseChapterStep::where('id',$id)->update([
                 'details' => null,
             ]);
@@ -793,10 +755,7 @@ class HomeController extends Controller
 
             $quiz = CourseChapterStep::where('id',$id)->first();
             $image_name = $quiz->details;
-            $image_path = public_path('upload/course/'.$image_name);
-            if(File::exists($image_path)) {
-                File::delete($image_path);
-            }
+            removeFile("upload/course/".$image_name);
             CourseChapterStep::where('id',$id)->update([
                 'details' => null,
             ]);
@@ -1313,8 +1272,7 @@ class HomeController extends Controller
 
     public function help_support_save_img(Request $request){
         try {
-            $name = time().'.'.$request->image->extension();  
-            $request->image->move(public_path('upload/chat'), $name); 
+            $name = fileUpload($request->image, 'upload/chat');  
             return response()->json(['status' => true, 'url' => $name, 'message' => 'image upload successfully.']);
         } catch (\Exception $e) {
             return $e->getMessage();

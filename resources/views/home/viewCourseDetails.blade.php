@@ -197,7 +197,7 @@
                                 @if($value->profile_image == '' || $value->profile_image == null)
                                 <img src="{{ assets('assets/superadmin-images/user.png') }}">
                                 @else
-                                <img src="{{ assets('upload/products/'.$value->profile_image) }}">
+                                <img src="{{ uploadAssets('upload/products/'.$value->profile_image) }}">
                                 @endif
                                 </div>
                                 <div class="pmu-comment-content">

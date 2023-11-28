@@ -58,7 +58,7 @@
                                     <div class="small-12 large-4 columns">
                                         <div class="containers">
                                             <div class="imageWrapper">
-                                                <img style="width: 120px !important; border-radius: 8px;" class="image" src="{{ assets('upload/products/'. $coverimg->attribute_value) }}">
+                                                <img style="width: 120px !important; border-radius: 8px;" class="image" src="{{ uploadAssets('upload/products/'. $coverimg->attribute_value) }}">
                                             </div>
                                         </div>
                                     </div>
@@ -288,7 +288,7 @@
                         <div class="d-flex row">
                             @foreach($attr as $valAttr)
                             <div class="col-2 mx-2 my-4" style="width: 160px; height: 80px;">
-                                <img class="p-0" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" src="{!! assets('upload/products/'.$valAttr->attribute_value) !!}" />
+                                <img class="p-0" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" src="{!! uploadAssets('upload/products/'.$valAttr->attribute_value) !!}" />
                                 <a href="{{ route('SA.Delete.Products.Image', encrypt_decrypt('encrypt', $valAttr->id)) }}" onclick="return confirm('Are you sure you want to delete this product image?');"><i style="border: 1px solid red; background: red; border-radius: 50%; padding: 5px; color: white; position: relative; top: -90px; right: -144px;" class="las la-trash"></i></a>
                             </div>
                             @endforeach

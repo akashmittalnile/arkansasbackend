@@ -63,7 +63,7 @@ class ApiController extends Controller
                 $b1['content_creator_category'] = isset($data->category_name) ? $data->category_name : '';
                 $b1['content_creator_id'] = isset($data->admin_id) ? $data->admin_id : '';
                 if ($data->profile_image) {
-                    $profile_image = url('upload/profile-image/'.$data->profile_image);
+                    $profile_image = uploadAssets('upload/profile-image/'.$data->profile_image);
                 } else {
                     $profile_image = '';
                 }
@@ -91,12 +91,12 @@ class ApiController extends Controller
                 $b1['tags'] = $tags;
                 $b1['valid_upto'] = $data->valid_upto;
                 if (!empty($data->certificates)) {
-                    $b1['certificates_image'] = url('upload/course-certificates/' . $data->certificates);
+                    $b1['certificates_image'] = uploadAssets('upload/course-certificates/' . $data->certificates);
                 } else {
                     $b1['certificates_image'] = '';
                 }
                 if (!empty($data->introduction_image)) {
-                    $b1['introduction_video'] = url('upload/disclaimers-introduction/' . $data->introduction_image);
+                    $b1['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $data->introduction_image);
                 } else {
                     $b1['introduction_video'] = '';
                 }
@@ -131,7 +131,7 @@ class ApiController extends Controller
                     $b2['id'] = isset($data->id) ? $data->id : '';
                     $b2['category_name'] = isset($data->name) ? $data->name : '';
                     if (!empty($data->icon)) {
-                        $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                        $b2['category_image'] = uploadAssets('upload/category-image/' . $data->icon);
                     } else {
                         $b2['category_image'] = '';
                     }
@@ -150,7 +150,7 @@ class ApiController extends Controller
                     $b7['id'] = isset($data->id) ? $data->id : '';
                     $b7['category_name'] = isset($data->name) ? $data->name : '';
                     if (!empty($data->icon)) {
-                        $b7['category_image'] = url('upload/category-image/' . $data->icon);
+                        $b7['category_image'] = uploadAssets('upload/category-image/' . $data->icon);
                     } else {
                         $b7['category_image'] = '';
                     }
@@ -169,7 +169,7 @@ class ApiController extends Controller
                     $b8['id'] = isset($data->id) ? $data->id : '';
                     $b8['category_name'] = isset($data->name) ? $data->name : '';
                     if (!empty($data->icon)) {
-                        $b8['category_image'] = url('upload/category-image/' . $data->icon);
+                        $b8['category_image'] = uploadAssets('upload/category-image/' . $data->icon);
                     } else {
                         $b8['category_image'] = '';
                     }
@@ -196,7 +196,7 @@ class ApiController extends Controller
                 $b3['content_creator_category'] = isset($data->category_name) ? $data->category_name : '';
                 $b3['content_creator_id'] = isset($data->admin_id) ? $data->admin_id : '';
                 if ($data->profile_image) {
-                    $profile_image = url('upload/profile-image/'.$data->profile_image);
+                    $profile_image = uploadAssets('upload/profile-image/'.$data->profile_image);
                 } else {
                     $profile_image = '';
                 }
@@ -225,12 +225,12 @@ class ApiController extends Controller
             
                 $b3['valid_upto'] = $data->valid_upto;
                 if (!empty($data->certificates)) {
-                    $b3['certificates_image'] = url('upload/course-certificates/' . $data->certificates);
+                    $b3['certificates_image'] = uploadAssets('upload/course-certificates/' . $data->certificates);
                 } else {
                     $b3['certificates_image'] = '';
                 }
                 if (!empty($data->introduction_image)) {
-                    $b3['introduction_video'] = url('upload/disclaimers-introduction/' . $data->introduction_image);
+                    $b3['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $data->introduction_image);
                 } else {
                     $b3['introduction_video'] = '';
                 }
@@ -268,7 +268,7 @@ class ApiController extends Controller
                 if ($User->profile_image == '') {
                     $profile_image = '';
                 } else {
-                    $profile_image = url('upload/profile-image/' . $User->profile_image);
+                    $profile_image = uploadAssets('upload/profile-image/' . $User->profile_image);
                 }
 
                 $tags = [];
@@ -293,7 +293,7 @@ class ApiController extends Controller
                 $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                 $datas_image = array();
                 foreach ($all_products_image as $k => $val) {
-                    $datasImage = url('upload/products/' . $val->attribute_value);
+                    $datasImage = uploadAssets('upload/products/' . $val->attribute_value);
                     $datas_image[] = $datasImage;
                 }
                 $b4['Product_image'] = $datas_image;
@@ -331,7 +331,7 @@ class ApiController extends Controller
                 if ($User->profile_image == '') {
                     $profile_image = '';
                 } else {
-                    $profile_image = url('upload/profile-image/' . $User->profile_image);
+                    $profile_image = uploadAssets('upload/profile-image/' . $User->profile_image);
                 }
 
                 $tags = [];
@@ -357,7 +357,7 @@ class ApiController extends Controller
                 $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                 $datas_image = array();
                 foreach ($all_products_image as $k => $val) {
-                    $datasImage = url('upload/products/' . $val->attribute_value);
+                    $datasImage = uploadAssets('upload/products/' . $val->attribute_value);
                     $datas_image[] = $datasImage;
                 }
                 $b5['Product_image'] = $datas_image;
@@ -391,7 +391,7 @@ class ApiController extends Controller
                     $b6['id'] = isset($data->id) ? $data->id : '';
                     $b6['category_name'] = isset($data->name) ? $data->name : '';
                     if (!empty($data->icon)) {
-                        $b6['category_image'] = url('upload/category-image/' . $data->icon);
+                        $b6['category_image'] = uploadAssets('upload/category-image/' . $data->icon);
                     } else {
                         $b6['category_image'] = '';
                     }
@@ -425,12 +425,12 @@ class ApiController extends Controller
                 $temp['course_fee'] = $value->course_fee;
                 $temp['valid_upto'] = $value->valid_upto;
                 if (!empty($value->certificates)) {
-                    $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                    $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $value->certificates);
                 } else {
                     $temp['certificates_image'] = '';
                 }
                 if (!empty($value->introduction_image)) {
-                    $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                    $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);
                 } else {
                     $temp['introduction_video'] = '';
                 }
@@ -448,7 +448,7 @@ class ApiController extends Controller
                 }
                 $temp['title'] = $value->title;
                 if ($value->profile_image) {
-                    $profile_image = url('upload/profile-image/'.$value->profile_image);
+                    $profile_image = uploadAssets('upload/profile-image/'.$value->profile_image);
                 } else {
                     $profile_image = '';
                 }
@@ -534,7 +534,7 @@ class ApiController extends Controller
                                 $temp['course_fee'] = $value->course_fee ?? null;
                                 $temp['valid_upto'] = $value->valid_upto ?? null;
                                 if (!empty($value->introduction_image)) {
-                                    $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                                    $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);
                                 } else {
                                     $temp['introduction_video'] = '';
                                 }
@@ -546,7 +546,7 @@ class ApiController extends Controller
                                 }
                                 $temp['title'] = $value->title;
                                 if ($value->profile_image) {
-                                    $profile_image = url('upload/profile-image/'.$value->profile_image);
+                                    $profile_image = uploadAssets('upload/profile-image/'.$value->profile_image);
                                 } else {
                                     $profile_image = '';
                                 }
@@ -574,7 +574,7 @@ class ApiController extends Controller
                                 $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                                 $datas_image = array();
                                 foreach ($all_products_image as $k => $val) {
-                                    $datasImage = url('upload/products/' . $val->attribute_value);
+                                    $datasImage = uploadAssets('upload/products/' . $val->attribute_value);
                                     $datas_image[] = $datasImage;
                                 }
                                 $temp['Product_image'] = $datas_image;
@@ -590,7 +590,7 @@ class ApiController extends Controller
                                 if ($User->profile_image == '') {
                                     $profile_image = '';
                                 } else {
-                                    $profile_image = url('upload/profile-image/' . $User->profile_image);
+                                    $profile_image = uploadAssets('upload/profile-image/' . $User->profile_image);
                                 }
                                 $temp['creator_image'] = $profile_image;
                                 $temp['creator_id'] = $value->added_by;
@@ -633,7 +633,7 @@ class ApiController extends Controller
                         $b2['id'] = isset($data->id) ? $data->id : '';
                         $b2['category_name'] = isset($data->name) ? $data->name : '';
                         if (!empty($data->icon)) {
-                            $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                            $b2['category_image'] = uploadAssets('upload/category-image/' . $data->icon);
                         } else {
                             $b2['category_image'] = '';
                         }
@@ -714,12 +714,12 @@ class ApiController extends Controller
                     $temp['tags'] = $tags;
                     $temp['valid_upto'] = $item->valid_upto;
                     if (!empty($item->certificates)) {
-                        $temp['certificates_image'] = url('upload/course-certificates/' . $item->certificates);
+                        $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $item->certificates);
                     } else {
                         $temp['certificates_image'] = '';
                     }
                     if (!empty($item->introduction_image)) {
-                        $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $item->introduction_image);
+                        $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $item->introduction_image);
                     } else {
                         $temp['introduction_video'] = '';
                     }
@@ -739,7 +739,7 @@ class ApiController extends Controller
                     }
 
                     if ($item->profile_image) {
-                        $profile_image = url('upload/profile-image/'.$item->profile_image);
+                        $profile_image = uploadAssets('upload/profile-image/'.$item->profile_image);
                     } else {
                         $profile_image = '';
                     }
@@ -771,7 +771,7 @@ class ApiController extends Controller
                     $b2['id'] = isset($data->id) ? $data->id : '';
                     $b2['category_name'] = isset($data->name) ? $data->name : '';
                     if (!empty($data->icon)) {
-                        $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                        $b2['category_image'] = uploadAssets('upload/category-image/' . $data->icon);
                     } else {
                         $b2['category_image'] = '';
                     }
@@ -810,7 +810,7 @@ class ApiController extends Controller
                     $temp['rating'] = 4.6;
                     $temp['is_like'] = 1;
                     if ($item->profile_image) {
-                        $profile_image = url('upload/profile-image/'.$item->profile_image);
+                        $profile_image = uploadAssets('upload/profile-image/'.$item->profile_image);
                     } else {
                         $profile_image = '';
                     }
@@ -843,7 +843,7 @@ class ApiController extends Controller
                     foreach ($category as $keys => $item) {
                         $temp['id'] = $item->id;
                         $temp['category_name'] = $item->name;
-                        $temp['category_image'] = url('upload/category-image/' .$item->icon);
+                        $temp['category_image'] = uploadAssets('upload/category-image/' .$item->icon);
                         $temp['status'] = $item->status;
                         $temp['type'] = $item->type;
                         $temp['type_name'] = ($item->type==1) ? "Course" : "Product";
@@ -1106,12 +1106,12 @@ class ApiController extends Controller
                         $temp['course_fee'] = $value->course_fee;
                         $temp['valid_upto'] = $value->valid_upto;
                         if (!empty($value->certificates)) {
-                            $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                            $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $value->certificates);
                         } else {
                             $temp['certificates_image'] = '';
                         }
                         if (!empty($value->introduction_image)) {
-                            $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                            $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);
                         } else {
                             $temp['introduction_video'] = '';
                         }
@@ -1129,7 +1129,7 @@ class ApiController extends Controller
                         }
                         $temp['title'] = $value->title;
                         if ($value->profile_image) {
-                            $profile_image = url('upload/profile-image/'.$value->profile_image);
+                            $profile_image = uploadAssets('upload/profile-image/'.$value->profile_image);
                         } else {
                             $profile_image = '';
                         }
@@ -1146,7 +1146,7 @@ class ApiController extends Controller
                         $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                         $datas_image = array();
                         foreach ($all_products_image as $k => $val) {
-                            $datasImage = url('upload/products/' . $val->attribute_value);
+                            $datasImage = uploadAssets('upload/products/' . $val->attribute_value);
                             $datas_image[] = $datasImage;
                         }
                         $temp['Product_image'] = $datas_image;
@@ -1168,7 +1168,7 @@ class ApiController extends Controller
                         if ($User->profile_image == '') {
                             $profile_image = '';
                         } else {
-                            $profile_image = url('upload/profile-image/' . $User->profile_image);
+                            $profile_image = uploadAssets('upload/profile-image/' . $User->profile_image);
                         }
                         $temp['creator_image'] = $profile_image;
                         $temp['creator_id'] = $value->added_by;
@@ -1211,7 +1211,7 @@ class ApiController extends Controller
                     $b2['id'] = isset($data->id) ? $data->id : '';
                     $b2['category_name'] = isset($data->name) ? $data->name : '';
                     if (!empty($data->icon)) {
-                        $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                        $b2['category_image'] = uploadAssets('upload/category-image/' . $data->icon);
                     } else {
                         $b2['category_image'] = '';
                     }
@@ -1293,12 +1293,12 @@ class ApiController extends Controller
                             $temp['course_fee'] = $value->course_fee;
                             $temp['valid_upto'] = $value->valid_upto;
                             if (!empty($value->certificates)) {
-                                $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                                $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $value->certificates);
                             } else {
                                 $temp['certificates_image'] = '';
                             }
                             if (!empty($value->introduction_image)) {
-                                $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                                $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);
                             } else {
                                 $temp['introduction_video'] = '';
                             }
@@ -1316,7 +1316,7 @@ class ApiController extends Controller
                             }
                             $temp['title'] = $value->title;
                             if ($value->profile_image) {
-                                $profile_image = url('upload/profile-image/'.$value->profile_image);
+                                $profile_image = uploadAssets('upload/profile-image/'.$value->profile_image);
                             } else {
                                 $profile_image = '';
                             }
@@ -1333,7 +1333,7 @@ class ApiController extends Controller
                             $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                             $datas_image = array();
                             foreach ($all_products_image as $k => $val) {
-                                $datasImage = url('upload/products/' . $val->attribute_value);
+                                $datasImage = uploadAssets('upload/products/' . $val->attribute_value);
                                 $datas_image[] = $datasImage;
                             }
                             $temp['Product_image'] = $datas_image;
@@ -1355,7 +1355,7 @@ class ApiController extends Controller
                             if ($User->profile_image == '') {
                                 $profile_image = '';
                             } else {
-                                $profile_image = url('upload/profile-image/' . $User->profile_image);
+                                $profile_image = uploadAssets('upload/profile-image/' . $User->profile_image);
                             }
                             $temp['creator_image'] = $profile_image;
                             $temp['creator_id'] = $value->added_by;
@@ -1426,12 +1426,12 @@ class ApiController extends Controller
                         $temp['course_fee'] = $item->course_fee;
                         $temp['valid_upto'] = $item->valid_upto;
                         if (!empty($item->certificates)) {
-                            $temp['certificates_image'] = url('upload/course-certificates/' . $item->certificates);
+                            $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $item->certificates);
                         } else {
                             $temp['certificates_image'] = '';
                         }
                         if (!empty($item->introduction_image)) {
-                            $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $item->introduction_image);
+                            $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $item->introduction_image);
                         } else {
                             $temp['introduction_video'] = '';
                         }
@@ -1449,7 +1449,7 @@ class ApiController extends Controller
                         }
                         $temp['title'] = $item->title;
                         if ($item->profile_image) {
-                            $profile_image = url('upload/profile-image/'.$item->profile_image);
+                            $profile_image = uploadAssets('upload/profile-image/'.$item->profile_image);
                         } else {
                             $profile_image = '';
                         }
@@ -1555,10 +1555,10 @@ class ApiController extends Controller
                                 $arr1['title'] = $vals->title;
                                 $arr1['description'] = $vals->description;
                                 if($vals->type == 'assignment'){
-                                    $arr1['file'] = (isset($isComplete->id) ? (isset($isComplete->file) ? url('upload/course/' . $isComplete->file) : null) : null);
+                                    $arr1['file'] = (isset($isComplete->id) ? (isset($isComplete->file) ? uploadAssets('upload/course/' . $isComplete->file) : null) : null);
                                     $arr1['filename'] = $isComplete->file ?? null;
                                 }else{
-                                    $arr1['file'] = ($vals->details == null || $vals->details == "") ? null : url('upload/course/' . $vals->details);
+                                    $arr1['file'] = ($vals->details == null || $vals->details == "") ? null : uploadAssets('upload/course/' . $vals->details);
                                     $arr1['filename'] = $vals->details ?? null;
                                 }
                                 
@@ -1609,7 +1609,7 @@ class ApiController extends Controller
                         $datas_image = array();
                         
                         foreach ($all_products_image as $k => $val) {
-                            $datasImage = url('upload/products/' . $val->attribute_value);
+                            $datasImage = uploadAssets('upload/products/' . $val->attribute_value);
                             $datas_image[] = $datasImage;
                         }
                         $temp['Product_image'] = $datas_image;
@@ -1635,7 +1635,7 @@ class ApiController extends Controller
                         if ($User->profile_image == '') {
                             $profile_image = '';
                         } else {
-                            $profile_image = url('upload/profile-image/' . $User->profile_image);
+                            $profile_image = uploadAssets('upload/profile-image/' . $User->profile_image);
                         }
                         $temp['creator_image'] = $profile_image;
                         $temp['creator_id'] = $item->added_by;
@@ -1669,7 +1669,7 @@ class ApiController extends Controller
                         $tempReview['rating'] = $valReview->rating;
                         $tempReview['review'] = $valReview->review;
                         if(isset($valReview->profile_image) && $valReview->profile_image != ""){
-                            $valReview->profile_image = url('upload/profile-image/' . $valReview->profile_image);
+                            $valReview->profile_image = uploadAssets('upload/profile-image/' . $valReview->profile_image);
                         } else $valReview->profile_image = null;
                         $tempReview['profile_image'] = $valReview->profile_image;
                         $tempReview['created_date'] = $valReview->created_date;
@@ -1856,7 +1856,7 @@ class ApiController extends Controller
                         $data[$key]['review'] = $c->review;
                         $user_name = User::where('id', $c->userid)->first();
                         $data[$key]['user_name'] = $user_name->first_name . ' ' . $user_name->last_name;
-                        $data[$key]['profile_image'] = (isset($user_name->profile_image) && ($user_name->profile_image!="")) ? url('upload/profile-image/' . $user_name->profile_image) : null;
+                        $data[$key]['profile_image'] = (isset($user_name->profile_image) && ($user_name->profile_image!="")) ? uploadAssets('upload/profile-image/' . $user_name->profile_image) : null;
                     }
                     return response()->json([
                         "status" => true,
@@ -1887,9 +1887,9 @@ class ApiController extends Controller
                     $temp['last_name'] = ucfirst($user->last_name);
                     $temp['phone'] = $user->phone;
                     if (isset($user->profile_image) && $user->profile_image != "") {
-                        $temp['profile_image'] = url('upload/profile-image/' . $user->profile_image);
+                        $temp['profile_image'] = uploadAssets('upload/profile-image/' . $user->profile_image);
                     } else {
-                        $temp['profile_image'] = url('assets/superadmin-images/no-image.png');
+                        $temp['profile_image'] = assets('assets/superadmin-images/no-image.png');
                     }
                     $temp['company'] = $user->company;
                     $temp['professional_title'] = 'Tatto Artist';
@@ -1920,13 +1920,8 @@ class ApiController extends Controller
 
                 $img = null;
                 if($request->profile_image){
-                    $img = time().'.'.$request->profile_image->extension();  
-                    $request->profile_image->move(public_path('upload/profile-image'), $img);
-
-                    $image_path = app_path("upload/profile-image/".auth()->user()->profile_image);
-                    if(File::exists($image_path)) {
-                        unlink($image_path);
-                    }
+                    $img = fileUpload($request->profile_image, 'upload/profile-image');
+                    removeFile("upload/profile-image/".auth()->user()->profile_image);
                 }else $img = auth()->user()->profile_image;
 
                 User::where('id', auth()->user()->id)->update([
@@ -1938,7 +1933,7 @@ class ApiController extends Controller
 
                 $user = User::where('id', auth()->user()->id)->first();
                 if(isset($user->profile_image) && $user->profile_image != ""){
-                    $user->profile_image = url('upload/profile-image/'.$user->profile_image);
+                    $user->profile_image = uploadAssets('upload/profile-image/'.$user->profile_image);
                 }
                 return response()->json([
                     'status' => true,
@@ -1974,7 +1969,7 @@ class ApiController extends Controller
                         $notify->message = 'Hello, ' . auth()->user()->first_name . "\nYour password has been changed successfully.";
                         if(auth()->user()->profile_image == "" || auth()->user()->profile_image == null){
                             $profile_image = null;
-                        } else $profile_image = assets('upload/profile-image/'.auth()->user()->profile_image);
+                        } else $profile_image = uploadAssets('upload/profile-image/'.auth()->user()->profile_image);
                         $notify->image = $profile_image;
                         $notify->is_seen = '0';
                         $notify->created_at = date('Y-m-d H:i:s');
@@ -2022,7 +2017,7 @@ class ApiController extends Controller
     //                     $temp['id'] = $item->id;
     //                     $temp['user_id'] = $item->user_id;
     //                     if ($item->certificate_image) {
-    //                         $temp['certificate_image'] = url('upload/certificate-image/' . $item->certificate_image);
+    //                         $temp['certificate_image'] = uploadAssets('upload/certificate-image/' . $item->certificate_image);
     //                     } else {
     //                         $temp['certificate_image'] = '';
     //                     }
@@ -2056,7 +2051,7 @@ class ApiController extends Controller
                         $temp['type'] = $item->type;
                         $temp['is_read'] = $item->is_read;
                         if ($item->image) {
-                            $temp['image'] = url('upload/notification-image/' . $item->image);
+                            $temp['image'] = uploadAssets('upload/notification-image/' . $item->image);
                         } else {
                             $temp['image'] = '';
                         }
@@ -2091,9 +2086,9 @@ class ApiController extends Controller
 
                         $card_type = $value->card_type;
                         if ($card_type == 'VISA') {
-                            $temp['card_image'] = url('upload/notification-image/visa.png');
+                            $temp['card_image'] = uploadAssets('upload/notification-image/visa.png');
                         } else {
-                            $temp['card_image'] = url('upload/notification-image/m-card.png');
+                            $temp['card_image'] = uploadAssets('upload/notification-image/m-card.png');
                         }
                         $response[] = $temp;
                     }
@@ -2266,7 +2261,7 @@ class ApiController extends Controller
 
                         if($request->type==1){
                             $temp['course_valid_date'] = date('d M, Y', strtotime($value->valid_upto));
-                            $temp['introduction_video'] = url('/upload/disclaimers-introduction/'.$value->introduction_image);
+                            $temp['introduction_video'] = assets('/upload/disclaimers-introduction/'.$value->introduction_image);
                             $temp['course_id'] = $value->id ?? 0;
                             $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
                             if(isset($isCourseComplete->id)){
@@ -2281,7 +2276,7 @@ class ApiController extends Controller
                         }else{
                             $temp['product_id'] = $value->id ?? 0;
                             $productImg = ProductAttibutes::where('product_id', $value->id)->where('attribute_code', 'Image')->first();
-                            $temp['Product_image'][0] = (isset($productImg->attribute_value) && $productImg->attribute_value!="") ? url('upload/products/'.$productImg->attribute_value):null;
+                            $temp['Product_image'][0] = (isset($productImg->attribute_value) && $productImg->attribute_value!="") ? uploadAssets('upload/products/'.$productImg->attribute_value):null;
                         }
 
                         $temp['item_id'] = $value->itemid ?? null;
@@ -2298,7 +2293,7 @@ class ApiController extends Controller
                         
                         $ContentCreator = User::where('id', $value->added_by)->first();
                         if (isset($ContentCreator->profile_image) && $ContentCreator->profile_image != '' && $ContentCreator->profile_image != null) {
-                            $profile_image = url('upload/profile-image/' . $ContentCreator->profile_image);
+                            $profile_image = uploadAssets('upload/profile-image/' . $ContentCreator->profile_image);
                         } else {
                             $profile_image = '';
                         }
@@ -2323,7 +2318,7 @@ class ApiController extends Controller
                             $b2['id'] = isset($data->id) ? $data->id : '';
                             $b2['category_name'] = isset($data->name) ? $data->name : '';
                             if (!empty($data->icon)) {
-                                $b2['category_image'] = url('upload/category-image/' . $data->icon);
+                                $b2['category_image'] = uploadAssets('upload/category-image/' . $data->icon);
                             } else {
                                 $b2['category_image'] = '';
                             }
@@ -2412,8 +2407,7 @@ class ApiController extends Controller
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             } else{
-                $fileName = time().'.'.$request->file->extension();  
-                $request->file->move(public_path('upload/course'), $fileName);
+                $fileName = fileUpload($request->file, 'upload/course');  
 
                 $step = CourseChapterStep::where('id', $request->chapter_step_id)->where('type', 'assignment')->first();
                 if(isset($step->course_chapter_id)){
@@ -2736,10 +2730,10 @@ class ApiController extends Controller
                 $temp['title'] = $val->title;
                 $temp['status'] = $val->status;
 
-                if(isset($val->profile_image)) $temp['creator_image'] = url('upload/profile-image/'.$val->profile_image);
+                if(isset($val->profile_image)) $temp['creator_image'] = uploadAssets('upload/profile-image/'.$val->profile_image);
                 else $temp['creator_image'] = null;
                 
-                if(isset($val->introduction_image)) $temp['video'] = url('upload/disclaimers-introduction/'.$val->introduction_image);
+                if(isset($val->introduction_image)) $temp['video'] = uploadAssets('upload/disclaimers-introduction/'.$val->introduction_image);
                 else $temp['video'] = null;
 
                 $temp['creator_name'] = $val->first_name . ' ' . $val->last_name;
@@ -2780,12 +2774,12 @@ class ApiController extends Controller
                 $temp['course_fee'] = $value->course_fee;
                 $temp['valid_upto'] = $value->valid_upto;
                 if (!empty($value->certificates)) {
-                    $temp['certificates_image'] = url('upload/course-certificates/' . $value->certificates);
+                    $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $value->certificates);
                 } else {
                     $temp['certificates_image'] = '';
                 }
                 if (!empty($value->introduction_image)) {
-                    $temp['introduction_video'] = url('upload/disclaimers-introduction/' . $value->introduction_image);
+                    $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);
                 } else {
                     $temp['introduction_video'] = '';
                 }
@@ -2803,7 +2797,7 @@ class ApiController extends Controller
                 }
                 $temp['title'] = $value->title;
                 if ($value->profile_image) {
-                    $profile_image = url('upload/profile-image/'.$value->profile_image);
+                    $profile_image = uploadAssets('upload/profile-image/'.$value->profile_image);
                 } else {
                     $profile_image = '';
                 }
@@ -2887,10 +2881,10 @@ class ApiController extends Controller
                 if(isset($item->id)){
                     if($item->product_type == 1){
                         $data = DB::table('course as c')->leftJoin('users as u', 'u.id', '=', 'c.admin_id')->select('u.first_name', 'u.last_name', 'u.profile_image', 'c.title')->where('c.id', $item->product_id)->first();
-                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? url('/upload/profile-image/'.$data->profile_image) : null;
+                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? assets('/upload/profile-image/'.$data->profile_image) : null;
                     } else {
                         $data = DB::table('product as p')->leftJoin('users as u', 'u.id', '=', 'p.added_by')->select('u.first_name', 'u.last_name', 'u.profile_image', 'p.name as title')->where('p.id', $item->product_id)->first();
-                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? url('/upload/profile-image/'.$data->profile_image) : null;
+                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? assets('/upload/profile-image/'.$data->profile_image) : null;
                     }
                     $order->creator_name = $data;
                 }
@@ -2909,13 +2903,13 @@ class ApiController extends Controller
                     $temp['total_amount_paid'] = $val->amount*$val->quantity;
                     $temp['quantity'] = $val->quantity;
                     $temp['admin_fee'] = $val->admin_amount;
-                    $temp['video'] = ($val->product_type==1) ? url('upload/disclaimers-introduction/'.$val->image) : null;
-                    $temp['image'] = ($val->product_type==2) ? url('upload/products/'.$val->image) : null;
+                    $temp['video'] = ($val->product_type==1) ? uploadAssets('upload/disclaimers-introduction/'.$val->image) : null;
+                    $temp['image'] = ($val->product_type==2) ? uploadAssets('upload/products/'.$val->image) : null;
                     $avgRating = DB::table('user_review as ur')->where('ur.object_id', $val->product_id)->where('ur.object_type', $val->product_type)->avg('ur.rating');
                     $temp['avg_rating'] = number_format((float)$avgRating, 1, '.', '');
                     $user = User::where('id', $val->added_by)->first();
                     $temp['creator_name'] = $user->first_name . ' ' . $user->last_name;
-                    $temp['creator_image'] = ($user->profile_image!="" && isset($user->profile_image)) ? url('/upload/profile-image/'.$user->profile_image) : null;
+                    $temp['creator_image'] = ($user->profile_image!="" && isset($user->profile_image)) ? assets('/upload/profile-image/'.$user->profile_image) : null;
                     $other_detail[] = $temp;
                 }
 

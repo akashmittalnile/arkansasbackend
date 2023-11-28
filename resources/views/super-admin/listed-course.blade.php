@@ -58,7 +58,7 @@
                             <div class="side-profile-item">
                                 <div class="side-profile-media">
                                     @if (!empty($user->profile_image))
-                                        <img src="{!! assets('upload/profile-image/'.$user->profile_image) !!}">
+                                        <img src="{!! uploadAssets('upload/profile-image/'.$user->profile_image) !!}">
                                     @else
                                         <img src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                                     @endif

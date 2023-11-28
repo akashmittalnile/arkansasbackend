@@ -65,7 +65,7 @@
                         <div class="side-profile-item">
                             <div class="side-profile-media">
                                 @if(isset($order->profile_image) && $order->profile_image != "")
-                                <img src="{{ assets('upload/profile-image/'.$order->profile_image) }}">
+                                <img src="{{ uploadAssets('upload/profile-image/'.$order->profile_image) }}">
                                 @else
                                 <img src="{{ assets('assets/website-images/user.jpg') }}">
                                 @endif
