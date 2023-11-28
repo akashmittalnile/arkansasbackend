@@ -216,7 +216,7 @@
 </script>
 
 <script>
-    const baseUrl = "{{ env('APP_URL') }}" + '/upload/chat/';
+    const baseUrl = "{{ env('CHAT_IMAGE_URL') }}" + '/upload/chat/';
     $(document).ready(function() {
 
         const receiver_id = $("#ajax-chat-url").val();

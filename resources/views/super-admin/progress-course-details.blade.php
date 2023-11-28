@@ -25,7 +25,7 @@
                         <div class="pmu-course-details-media w-25">
                             <a data-fancybox data-type="iframe" data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0" href="javascript:;">
                                 <video width="300" height="210" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
-                                    <source src="{{ assets( 'upload/disclaimers-introduction/' . $course->introduction_image) }}" type="video/mp4">
+                                    <source src="{{ uploadAssets('upload/disclaimers-introduction/' . $course->introduction_image) }}" type="video/mp4">
                                     Your browser does not support the video tag.
                                 </video>
                                 <!-- <div class="pmu-video-icon"><img src="{!! assets('assets/superadmin-images/video.svg')!!}"></div> -->

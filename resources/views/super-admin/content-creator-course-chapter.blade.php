@@ -158,7 +158,7 @@
                                                             <div class="upload-file-text">
                                                                 <h3>video</h3>
                                                                 <video width="165" height="90" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
-                                                                    <source src="{{ assets( 'upload/course/' . $data->details) }}" type="video/mp4">
+                                                                    <source src="{{ uploadAssets('upload/course/' . $data->details) }}" type="video/mp4">
                                                                     Your browser does not support the video tag.
                                                                 </video>
                                                             </div>

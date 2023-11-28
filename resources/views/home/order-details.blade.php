@@ -138,7 +138,7 @@
                                     <div class="pmu-course-details-item">
                                         <div class="pmu-course-details-media">
                                             <video width="170" height="130">
-                                                <source src="{{ assets( 'upload/disclaimers-introduction/' . $val->introduction_image) }}" type="video/mp4">
+                                                <source src="{{ uploadAssets('upload/disclaimers-introduction/' . $val->introduction_image) }}" type="video/mp4">
                                                 Your browser does not support the video tag.
                                             </video>
                                         </div>
