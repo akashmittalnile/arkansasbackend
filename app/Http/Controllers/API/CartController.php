@@ -14,6 +14,7 @@ use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Models\ProductAttibutes;
 use App\Models\Setting;
+use App\Models\ShippingMethod;
 use App\Models\TempData;
 use App\Models\User;
 use App\Models\UserCourse;
@@ -212,7 +213,7 @@ class CartController extends Controller
     {
         $proImg = ProductAttibutes::where('product_id', $pro->id)->where('attribute_code', 'cover_image')->first();
         $data = [
-            'qty' => $old['qty'], 'total_amount' => $pro->price * $old['qty'], 'regular_price' => $pro->price, 'product_id' => $pro->id, 'name' => $pro->name, 'short_description' => $pro->product_desc, 'sale_price' => $pro->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $pro->package_weight, 'package_weight_unit' => $pro->package_weight_unit, 'package_length' => $pro->package_length, 'package_length_unit' => $pro->package_length_unit, 'package_width' => $pro->package_width, 'package_width_unit' => $pro->package_width_unit, 'package_height' => $pro->package_height, 'package_height_unit' => $pro->package_height_unit, 'content_creator_id' => $pro->added_by, 'shippingId' => null, 'shippingPrice' => null, 'service_code' => null
+            'qty' => $old['qty'], 'total_amount' => $pro->price * $old['qty'], 'regular_price' => $pro->price, 'product_id' => $pro->id, 'name' => $pro->name, 'short_description' => $pro->product_desc, 'sale_price' => $pro->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $pro->package_weight, 'package_weight_unit' => $pro->package_weight_unit, 'package_length' => $pro->package_length, 'package_length_unit' => $pro->package_length_unit, 'package_width' => $pro->package_width, 'package_width_unit' => $pro->package_width_unit, 'package_height' => $pro->package_height, 'package_height_unit' => $pro->package_height_unit, 'content_creator_id' => $pro->added_by, 'shippingId' => $old['shippingId'], 'shippingPrice' => $old['shippingPrice'], 'service_code' => $old['service_code'], 'compare_rate_list' => $old['compare_rate_list'] ?? []
         ];
         return $data;
     }
@@ -282,6 +283,10 @@ class CartController extends Controller
                         $res['items'][$i]['product_id'] = $old['products'][$i]['product_id'];
                         $res['items'][$i]['name'] = $old['products'][$i]['name'];
                         $res['items'][$i]['short_description'] = $old['products'][$i]['short_description'];
+                        $res['items'][$i]['compare_rate_list'] = $old['products'][$i]['compare_rate_list'] ?? [];
+                        $res['items'][$i]['shipping_id'] = $old['products'][$i]['shippingId'] ?? null;
+                        $res['items'][$i]['shipping_price'] = $old['products'][$i]['shippingPrice'] ?? 0;
+                        $res['items'][$i]['service_code'] = $old['products'][$i]['service_code'] ?? null;
 
                         $category = Category::where('id', $pro->category_id)->first();
                         $added = User::where('id', $pro->added_by)->first();
@@ -311,8 +316,10 @@ class CartController extends Controller
                     $res['subTotal'] = $old['subTotal'] = $price;
                     $res['totalQty'] = $old['totalQty'] = $qty;
                     $res['tax'] = $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
-                    $res['totalPrice'] = $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'];
+                    $res['totalPrice'] = $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'] + $old['shippingPrice'];
                     $res['totalItem'] = $old['totalItem'];
+                    $res['shippingPrice'] = $old['shippingPrice'];
+                    $res['shippingAddressId'] = $old['shipping_address']['address_id'];
                     $res['isCouponApplied'] = $old['isCouponApplied'];
                     $res['couponCode'] = $old['appliedCouponCode'];
                     $res['couponPrice'] = $old['appliedCouponPrice'];
@@ -343,16 +350,21 @@ class CartController extends Controller
                 $tax = Setting::where('attribute_code', 'tax')->first();
                 $qty = 0;
                 $price = 0;
+                $ship_price = 0;
                 if (isset($cart->id)) {
                     $old = unserialize($cart->data);
                     for ($i = 0; $i < count($old['products']); $i++) {
                         if ($old['products'][$i]['product_id'] == $request->product_id) {
                             $old['products'][$i]['qty'] = $request->quantity;
                             $old['products'][$i]['total_amount'] = $old['products'][$i]['qty'] * $old['products'][$i]['regular_price'];
+                            $old['products'][$i]['shippingId'] = null;
+                            $old['products'][$i]['shippingPrice'] = 0;
                         }
+                        $old['products'][$i]['service_code'] = null;
 
                         $qty += $old['products'][$i]['qty'];
                         $price += $old['products'][$i]['total_amount'];
+                        $ship_price += $old['products'][$i]['shippingPrice'];
                     }
 
                     if($old['couponType'] == 1){
@@ -366,7 +378,8 @@ class CartController extends Controller
                     if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
                         $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
                     else $old['tax'] = 0;
-                    $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'];
+                    $old['shippingPrice'] = 0;
+                    $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'] + $old['shippingPrice'];
                     $old['totalItem'] = count($old['products']);
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($old)
@@ -447,6 +460,7 @@ class CartController extends Controller
                 $tax = Setting::where('attribute_code', 'tax')->first();
                 $qty = 0;
                 $price = 0;
+                $ship_price = 0;
                 if (isset($cart->id)) {
                     $old = unserialize($cart->data);
                     $data = $old;
@@ -454,8 +468,12 @@ class CartController extends Controller
                         if ($old['products'][$i]['product_id'] == $request->product_id) {
                             array_splice($data['products'], $i, 1);
                         } else {
+                            $data['products'][$i]['shippingPrice'] = 0;
+                            $data['products'][$i]['shippingId'] = null;
+                            $data['products'][$i]['service_code'] = null;
                             $qty += $old['products'][$i]['qty'];
                             $price += $old['products'][$i]['total_amount'];
+                            $ship_price += $old['products'][$i]['shippingPrice'];
                         }
                     }
 
@@ -470,7 +488,8 @@ class CartController extends Controller
                     if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
                         $data['tax'] = ($data['subTotal'] * $tax->attribute_value) / 100;
                     else $data['tax'] = 0;
-                    $data['totalPrice'] = $data['subTotal'] + $data['tax'] - $data['appliedCouponPrice'];
+                    $data['shippingPrice'] = $ship_price;
+                    $data['totalPrice'] = $data['subTotal'] + $data['tax'] - $data['appliedCouponPrice'] + $data['shippingPrice'];
                     $data['totalItem'] = count($data['products']);
 
                     if(count($data['products']) == 0){
@@ -686,7 +705,7 @@ class CartController extends Controller
         }
     }
 
-    public function choose_shipping(Request $request)
+    public function get_shipping_rates(Request $request)
     {
         try {
             // return response()->json(['status' => false, 'Message' => 'Api under progress']);
@@ -700,10 +719,19 @@ class CartController extends Controller
                 for ($i = 0; $i < count($old['products']); $i++) {
                     $pro = Product::where('id', $old['products'][$i]['product_id'])->first();
                     $rates = $this->compare_rates($pro, $old['shipping_address'] ?? null);
-                    dd($rates);
+                    // return $rates;
+                    $data['products'][$i]['compare_rate_list'] = $rates;
+                    // dd($data);
                 }
-            }
-            return response()->json(['status' => true, 'message' => 'Shipping options', 'data' => $data]);
+                $data['checkout'] = [
+                    'address' => 1,
+                    'shipping' => 1,
+                ];
+                TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
+                    'data' => serialize($data)
+                ]);
+                return response()->json(['status' => true, 'message' => 'Choose shipping options']);
+            } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -724,9 +752,9 @@ class CartController extends Controller
             CURLOPT_POSTFIELDS => '{
                 "rate_options": {
                     "carrier_ids": [
-                        "se-4941122",
-                        "se-4941079",
-                        "se-4970170"
+                        "se-5451953",
+                        "se-5451955",
+                        "se-5451954"
                     ],
                     "service_codes": [
                         "usps_priority_mail",
@@ -773,13 +801,128 @@ class CartController extends Controller
             }',
             CURLOPT_HTTPHEADER => array(
                 'Content-Type: application/json',
-                'API-Key: '
+                'API-Key: '.env('SHIP_ENGINE_KEY')
             ),
         ));
 
         $response = curl_exec($curl);
         curl_close($curl);
         $jsonData = json_decode($response, true);
-        return $jsonData;
+
+        $shippings = ShippingMethod::where('status', 1)->get();
+        $new_arr = [];
+        $shipping_cost_arr = [];
+
+        foreach ($shippings as $key => $value) {
+            $fetch = $this->carrierCodeNew($value->serviceCode);
+            // dd($fetch);
+            $final = [];
+            $selected_shipping_rate = 0;
+            $temp_arr_neww = [];
+            $final_temp = [];
+            if (isset($jsonData) && count($jsonData) > 0) {
+                foreach ($jsonData as $key => $rate) {
+                    // return $rate['rates'];
+                    if (isset($rate['rates'])) {
+                        foreach ($rate['rates'] as $key1 => $value1) {
+                            // return $value1['rate_details'];
+                            if (count($value1['rate_details']) > 0) {
+                                // dd($value1['service_type']);
+                                if (in_array($value1['service_type'], $fetch)) {
+                                    $temp_arr_neww[$value1['shipping_amount']['amount']] = $value1;
+                                    // array_push($final_temp, $temp_arr_neww);
+                                    array_push($final, $value1);
+                                }
+                            }
+                        }
+                    } else {
+                        continue;
+                    }
+                }
+                // dd($final);
+            } else {
+                return response()->json(['status' => false, 'msg' => 'API not working!', 'final_arr' => $final]);
+            }
+            ksort($temp_arr_neww);
+            if (isset($final) && (count($final) > 0)) {
+                $arr = reset($final);
+                $reset_temp = reset($temp_arr_neww);
+                foreach ($reset_temp['rate_details'] as  $price) {
+                    $selected_shipping_rate += $price['amount']['amount'];
+                }
+                if ($reset_temp['estimated_delivery_date'] != NULL) {
+                    $estimated_delivery_date =  date('m/d/Y h:i', strtotime($reset_temp['estimated_delivery_date']));
+                } else {
+                    $estimated_delivery_date = 'NA';
+                }
+                $shipping_cost_arr[] = $selected_shipping_rate;
+                $temp = ['id' => $value->id, 'name' => $value->name, 'code' => $value->serviceCode, 'service_type' => $reset_temp['service_type'], 'service_code' => $reset_temp['service_code'], 'carrier_id' => $reset_temp['carrier_id'], 'estimated_delivery_date' => $estimated_delivery_date, 'price' => $selected_shipping_rate];
+                array_push($new_arr, $temp);
+            }
+            if ($selected_shipping_rate == 0) {
+                continue;
+            }
+        }
+        return $new_arr;
+    }
+
+    public function carrierCodeNew($key){
+        $arr = [
+            'next_day' => [
+                'FedEx Standard Overnight®',
+                'USPS Priority Mail Express',
+                'UPS Next Day Air Saver®'
+            ],
+            'two_day' => [
+                'FedEx 2Day®',
+                'USPS Priority Mail'
+            ],
+            'ground' => [
+                'FedEx Ground®',
+                'UPS® Ground'
+            ]
+        ];
+
+        if (isset($arr[$key])) {
+            return $arr[$key];
+        } else return [];
+    }
+
+    public function choose_shipping_option(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'product_id' => 'required',
+                'service_code' => 'required',
+                'shipping_price' => 'required',
+                'shipping_id' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }else{
+                $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
+                $tax = Setting::where('attribute_code', 'tax')->first();
+                $ship_price = 0;
+                if (isset($cart->id)) {
+                    $old = unserialize($cart->data);
+                    for ($i = 0; $i < count($old['products']); $i++) {
+                        if ($old['products'][$i]['product_id'] == $request->product_id) {
+                            $old['products'][$i]['service_code'] = $request->service_code;
+                            $old['products'][$i]['shippingPrice'] = $request->shipping_price;
+                            $old['products'][$i]['shippingId'] = $request->shipping_id;
+                            $ship_price += $old['products'][$i]['shippingPrice'];
+                        }
+                    }
+                    $old['shippingPrice'] = $old['shippingPrice'] + $ship_price;
+                    $old['totalPrice'] = $old['totalPrice'] + $ship_price;
+                    TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
+                        'data' => serialize($old)
+                    ]);
+                    return response()->json(['status' => true, 'message' => 'Shipping rate save successfully.']);
+                } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
     }
 }
