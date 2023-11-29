@@ -207,7 +207,7 @@
     $(document).on('click', "#resultOpenModal", function() {
         quizId = $(this).attr('data-quiz');
         $.ajax({
-            url: "{{ route('Home.student.result', ['id'=> encrypt_decrypt('encrypt', $id)]) }}",
+            url: "{{ route('SA.student.result', ['id'=> encrypt_decrypt('encrypt', $id)]) }}",
             method: 'GET',
             data: {
                 quizId : quizId,

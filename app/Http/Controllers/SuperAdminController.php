@@ -24,6 +24,7 @@ use App\Models\ProductAttibutes;
 use App\Models\Setting;
 use App\Models\UserChapterStatus;
 use App\Models\UserCourse;
+use App\Models\UserQuizAnswer;
 use App\Models\WalletBalance;
 use App\Models\WalletHistory;
 use Auth;
@@ -1090,7 +1091,7 @@ class SuperAdminController extends Controller
             if($request->filled('status')) $course->where('uc.status', $request->status);
             if($request->filled('title')) $course->where('c.title', 'like', '%' . $request->title . '%');
             if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
-            $course = $course->where('uc.user_id', $user_id)->where('is_expire', 0)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = uc.course_id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND order_product_detail.product_id = c.id AND order_product_detail.product_type = 1) as order_id"))->orderBy('uc.id')->distinct('uc.id')->paginate(3);
+            $course = $course->where('uc.user_id', $user_id)->where('is_expire', 0)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = uc.course_id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND order_product_detail.product_id = c.id AND order_product_detail.product_type = 1) as order_id"))->orderByDesc('uc.id')->distinct('uc.id')->paginate(3);
 
         return view('super-admin.student-detail',compact('data', 'course', 'id'));
         } catch (\Exception $e) {
@@ -2460,6 +2461,20 @@ class SuperAdminController extends Controller
         try {
             $name = fileUpload($request->image, 'upload/chat');   
             return response()->json(['status' => true, 'url' => $name, 'message' => 'image upload successfully.']);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function studentResult($id, Request $request){
+        try{
+            $quizId = encrypt_decrypt('decrypt',$request->quizId);
+            $userId = encrypt_decrypt('decrypt',$id);
+            $total = ChapterQuiz::where('step_id', $quizId)->whereIn('type', ['quiz', 'survey'])->sum('marks');
+            $obtained = UserQuizAnswer::where('quiz_id', $quizId)->where('userid',$userId)->sum('marks_obtained');
+            $courseStep = CourseChapterStep::where('id', $quizId)->whereIn('type', ['quiz'])->first();
+            $passingPercentage = $courseStep->passing ?? 33;
+            return response()->json(['status'=> true, 'total' => $total, 'obtained' => $obtained, 'percen' => $passingPercentage]);
         } catch (\Exception $e) {
             return $e->getMessage();
         }

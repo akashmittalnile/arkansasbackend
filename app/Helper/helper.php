@@ -265,29 +265,85 @@ if (!function_exists('assets')) {
 if (!function_exists('uploadAssets')) {
     function uploadAssets($path)
     {
-        return asset('public/'.$path);
-        // return asset('../../'.$path);
+        $appEnv = env('APP_ENV');
+        if($appEnv == 'prodAdmin' || $appEnv == 'prodCC'){
+            return "https://permanentmakeupuniversity.com/$path";
+        } elseif($appEnv == 'nile'){
+           return asset('public/'.$path); 
+        } else{
+            return asset('../../'.$path);
+        }
     }
 }
 
 if (!function_exists('fileUpload')) {
     function fileUpload($file, $path, $url = 0)
     {
-        $name = time().'.'.$file->extension();  
-        $file->move(public_path("$path"), $name);
-        if($url == 1){
-            return public_path("$path/$name");
+        $appEnv = env('APP_ENV');
+        if($appEnv == 'prodAdmin'){
+            $docsPath = $_SERVER["DOCUMENT_ROOT"];
+            $newPath = str_replace("admin.permanentmakeupuniversity.com","",$docsPath);
+            $name = time().'.'.$file->extension();  
+            $file->move($newPath.$path, $name);
+            if($url == 1){
+                return public_path("https://permanentmakeupuniversity.com/$path/$name");
+            }
+            return $name;
+        } elseif($appEnv == 'prodCC'){
+            $docsPath = $_SERVER["DOCUMENT_ROOT"];
+            $newPath = str_replace("contentcreator.permanentmakeupuniversity.com","",$docsPath);
+            $name = time().'.'.$file->extension();  
+            $file->move($newPath.$path, $name);
+            if($url == 1){
+                return public_path("https://permanentmakeupuniversity.com/$path/$name");
+            }
+            return $name;
+        } elseif($appEnv == 'nile'){
+            $name = time().'.'.$file->extension();  
+            $file->move(public_path("$path"), $name);
+            if($url == 1){
+                return public_path("$path/$name");
+            }
+            return $name;
+        } else{
+            $name = time().'.'.$file->extension();  
+            $file->move(public_path("../../$path"), $name);
+            if($url == 1){
+                return public_path("../../$path/$name");
+            }
+            return $name;
         }
-        return $name;
     }
 }
 
 if (!function_exists('removeFile')) {
     function removeFile($path)
     {
-        $link = app_path("$path");
-        if(File::exists($link)) {
-            unlink($link);
+        $appEnv = env('APP_ENV');
+        if($appEnv == 'prodAdmin'){
+            $docsPath = $_SERVER["DOCUMENT_ROOT"];
+            $newPath = str_replace("admin.permanentmakeupuniversity.com","",$docsPath);
+            $link = $newPath.$path;
+            if(File::exists($link)) {
+                unlink($link);
+            }
+        } elseif($appEnv == 'prodCC'){
+            $docsPath = $_SERVER["DOCUMENT_ROOT"];
+            $newPath = str_replace("contentcreator.permanentmakeupuniversity.com","",$docsPath);
+            $link = $newPath.$path;
+            if(File::exists($link)) {
+                unlink($link);
+            }
+        } elseif($appEnv == 'nile'){
+            $link = app_path("$path");
+            if(File::exists($link)) {
+                unlink($link);
+            }
+        } else{
+            $link = app_path("../../$path");
+            if(File::exists($link)) {
+                unlink($link);
+            }
         }
     }
 }

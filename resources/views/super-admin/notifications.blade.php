@@ -55,7 +55,7 @@
                     <div class="col-md-12">
                         <div class="manage-notification-item">
                             <div class="manage-notification-image">
-                                <img src="{!! assets('/upload/notification/'.$val->image) !!}">
+                                <img src="{!! uploadAssets('upload/notification/'.$val->image) !!}">
                             </div>
 
                             <div class="manage-notification-content">

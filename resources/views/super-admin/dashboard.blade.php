@@ -108,7 +108,7 @@
                         <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
                         <td>
                             @if ($val->profile_image!=null && $val->profile_image!="")
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('/upload/profile-image/'.$val->profile_image) !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! uploadAssets('upload/profile-image/'.$val->profile_image) !!}">
                             @else
                                 <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                             @endif
@@ -153,7 +153,7 @@
                         <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
                         <td>
                             @if ($val->profile_image!=null && $val->profile_image!="")
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('/upload/profile-image/'.$val->profile_image) !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! uploadAssets('upload/profile-image/'.$val->profile_image) !!}">
                             @else
                                 <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                             @endif
@@ -198,7 +198,7 @@
                         <td><span class="sno">{{ number_format((int)$key)+1 }}</span> </td>
                         <td>
                             @if ($val->profile_image!=null && $val->profile_image!="")
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('/upload/profile-image/'.$val->profile_image) !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! uploadAssets('upload/profile-image/'.$val->profile_image) !!}">
                             @else
                                 <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.png') !!}">
                             @endif
