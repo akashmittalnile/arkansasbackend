@@ -2162,16 +2162,31 @@ class ApiController extends Controller
         try {
             $user_id = Auth::user()->id;
             if ($user_id) {
-                $cart_value = AddToCart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
-                $cart_count = cartCount();
-                $discount = 0;
-                $total_amount = ($cart_value) - $discount;
-
                 $tax = Setting::where('attribute_code','tax')->first();
-                if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
-                    $tax_amount = ($total_amount*$tax->attribute_value)/100;
-                else $tax_amount = 0;
-
+                $shopping_cart = AddToCart::where('userid', auth()->user()->id)->where('object_type', 1)->get();
+                if(count($shopping_cart)>0){
+                    $cart_value = AddToCart::where('userid', $user_id)->where('object_type', 1)->sum(\DB::raw('cart_value * quantity'));
+                    $cart_count = cartCount();
+                    $discount = 0;
+                    $total_amount = ($cart_value) - $discount;
+                    if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
+                        $tax_amount = ($total_amount*$tax->attribute_value)/100;
+                    else $tax_amount = 0;
+                    $ship_price = 0;
+                }else{
+                    $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
+                    if (isset($cart->id)) {
+                        $old = unserialize($cart->data);
+                        $cart_value = $old['subTotal'];
+                        $cart_count = cartCount();
+                        $discount = $old['appliedCouponPrice'] ?? 0;
+                        if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
+                            $tax_amount = $old['tax'];
+                        else $tax_amount = 0;
+                        $total_amount = $old['subTotal'] - $old['appliedCouponPrice'] + $old['shippingPrice'];
+                        $ship_price = $old['shippingPrice'] ?? 0;
+                    } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
+                }
                 return response()->json([
                     'status' => true,
                     'message' => 'Cart details.',
@@ -2179,7 +2194,7 @@ class ApiController extends Controller
                     'order_count' => $cart_count,
                     'discount' => $discount,
                     'tax' => number_format((float) $tax_amount, 2, '.', ''),
-                    'shipping_cost' => '0.00',
+                    'shipping_cost' => $ship_price,
                     'total' => number_format((float) ($total_amount+$tax_amount),2, '.', ''),
                 ]);
             } else {

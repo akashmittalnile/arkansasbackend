@@ -319,7 +319,7 @@ class CartController extends Controller
                     $res['totalPrice'] = $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'] + $old['shippingPrice'];
                     $res['totalItem'] = $old['totalItem'];
                     $res['shippingPrice'] = $old['shippingPrice'];
-                    $res['shippingAddressId'] = $old['shipping_address']['address_id'];
+                    $res['shippingAddressId'] = $old['shipping_address']['address_id'] ?? null;
                     $res['isCouponApplied'] = $old['isCouponApplied'];
                     $res['couponCode'] = $old['appliedCouponCode'];
                     $res['couponPrice'] = $old['appliedCouponPrice'];
