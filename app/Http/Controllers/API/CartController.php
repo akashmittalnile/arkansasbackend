@@ -124,14 +124,14 @@ class CartController extends Controller
     {
         $tax = Setting::where('attribute_code', 'tax')->first();
         $data['products'][0] = [
-            'qty' => 1, 'total_amount' => $product->price, 'regular_price' => $product->price, 'product_id' => $product->id, 'name' => $product->name, 'short_description' => $product->product_desc, 'sale_price' => $product->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $product->package_weight, 'package_weight_unit' => $product->package_weight_unit, 'package_length' => $product->package_length, 'package_length_unit' => $product->package_length_unit, 'package_width' => $product->package_width, 'package_width_unit' => $product->package_width_unit, 'package_height' => $product->package_height, 'package_height_unit' => $product->package_height_unit, 'content_creator_id' => $product->added_by, 'shippingId' => null, 'shippingPrice' => 0, 'service_code' => null
+            'qty' => 1, 'total_amount' => $product->sale_price, 'regular_price' => $product->price, 'product_id' => $product->id, 'name' => $product->name, 'short_description' => $product->product_desc, 'sale_price' => $product->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $product->package_weight, 'package_weight_unit' => $product->package_weight_unit, 'package_length' => $product->package_length, 'package_length_unit' => $product->package_length_unit, 'package_width' => $product->package_width, 'package_width_unit' => $product->package_width_unit, 'package_height' => $product->package_height, 'package_height_unit' => $product->package_height_unit, 'content_creator_id' => $product->added_by, 'shipmentId' => null, 'shippingPrice' => 0, 'service_code' => null
         ];
         $data['totalQty'] = 1;
-        $data['subTotal'] = $product->price;
+        $data['subTotal'] = $product->sale_price;
         if (isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
             $data['tax'] = ($data['subTotal'] * $tax->attribute_value) / 100;
         else $data['tax'] = 0;
-        $data['totalPrice'] = $product->price + $data['tax'];
+        $data['totalPrice'] = $product->sale_price + $data['tax'];
         $data['totalItem'] = 1;
         $data['shippingId'] = null;
         $data['shippingPrice'] = 0;
@@ -161,7 +161,7 @@ class CartController extends Controller
                 if ($i < $length) {
                     if ($oldcart['products'][$i]['product_id'] == $product->id) {
                         $oldcart['products'][$i]['qty'] = $oldcart['products'][$i]['qty'] + 1;
-                        $oldcart['products'][$i]['total_amount'] = $oldcart['products'][$i]['regular_price'] * $oldcart['products'][$i]['qty'];
+                        $oldcart['products'][$i]['total_amount'] = $oldcart['products'][$i]['sale_price'] * $oldcart['products'][$i]['qty'];
                         $existingpro = true;
                     }
                     $data['products'][$i] = $oldcart['products'][$i];
@@ -169,7 +169,7 @@ class CartController extends Controller
                     $price += $data['products'][$i]['total_amount'];
                 } else if (!$existingpro) {
                     $data['products'][$i] = [
-                        'qty' => 1, 'total_amount' => $product->price, 'regular_price' => $product->price, 'product_id' => $product->id, 'name' => $product->name, 'short_description' => $product->product_desc, 'sale_price' => $product->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $product->package_weight, 'package_weight_unit' => $product->package_weight_unit, 'package_length' => $product->package_length, 'package_length_unit' => $product->package_length_unit, 'package_width' => $product->package_width, 'package_width_unit' => $product->package_width_unit, 'package_height' => $product->package_height, 'package_height_unit' => $product->package_height_unit, 'content_creator_id' => $product->added_by, 'shippingId' => null, 'shippingPrice' => 0, 'service_code' => null
+                        'qty' => 1, 'total_amount' => $product->sale_price, 'regular_price' => $product->price, 'product_id' => $product->id, 'name' => $product->name, 'short_description' => $product->product_desc, 'sale_price' => $product->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $product->package_weight, 'package_weight_unit' => $product->package_weight_unit, 'package_length' => $product->package_length, 'package_length_unit' => $product->package_length_unit, 'package_width' => $product->package_width, 'package_width_unit' => $product->package_width_unit, 'package_height' => $product->package_height, 'package_height_unit' => $product->package_height_unit, 'content_creator_id' => $product->added_by, 'shipmentId' => null, 'shippingPrice' => 0, 'service_code' => null
                     ];
                     $qty += $data['products'][$i]['qty'];
                     $price += $data['products'][$i]['total_amount'];
@@ -213,7 +213,7 @@ class CartController extends Controller
     {
         $proImg = ProductAttibutes::where('product_id', $pro->id)->where('attribute_code', 'cover_image')->first();
         $data = [
-            'qty' => $old['qty'], 'total_amount' => $pro->price * $old['qty'], 'regular_price' => $pro->price, 'product_id' => $pro->id, 'name' => $pro->name, 'short_description' => $pro->product_desc, 'sale_price' => $pro->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $pro->package_weight, 'package_weight_unit' => $pro->package_weight_unit, 'package_length' => $pro->package_length, 'package_length_unit' => $pro->package_length_unit, 'package_width' => $pro->package_width, 'package_width_unit' => $pro->package_width_unit, 'package_height' => $pro->package_height, 'package_height_unit' => $pro->package_height_unit, 'content_creator_id' => $pro->added_by, 'shippingId' => $old['shippingId'], 'shippingPrice' => $old['shippingPrice'], 'service_code' => $old['service_code'], 'compare_rate_list' => $old['compare_rate_list'] ?? []
+            'qty' => $old['qty'], 'total_amount' => $pro->sale_price * $old['qty'], 'regular_price' => $pro->price, 'product_id' => $pro->id, 'name' => $pro->name, 'short_description' => $pro->product_desc, 'sale_price' => $pro->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $pro->package_weight, 'package_weight_unit' => $pro->package_weight_unit, 'package_length' => $pro->package_length, 'package_length_unit' => $pro->package_length_unit, 'package_width' => $pro->package_width, 'package_width_unit' => $pro->package_width_unit, 'package_height' => $pro->package_height, 'package_height_unit' => $pro->package_height_unit, 'content_creator_id' => $pro->added_by, 'shipmentId' => $old['shipmentId'], 'shippingPrice' => $old['shippingPrice'], 'service_code' => $old['service_code'], 'compare_rate_list' => $old['compare_rate_list'] ?? []
         ];
         return $data;
     }
@@ -284,7 +284,7 @@ class CartController extends Controller
                         $res['items'][$i]['name'] = $old['products'][$i]['name'];
                         $res['items'][$i]['short_description'] = $old['products'][$i]['short_description'];
                         $res['items'][$i]['compare_rate_list'] = $old['products'][$i]['compare_rate_list'] ?? [];
-                        $res['items'][$i]['shipping_id'] = $old['products'][$i]['shippingId'] ?? null;
+                        $res['items'][$i]['shippment_id'] = $old['products'][$i]['shipmentId'] ?? null;
                         $res['items'][$i]['shipping_price'] = $old['products'][$i]['shippingPrice'] ?? 0;
                         $res['items'][$i]['service_code'] = $old['products'][$i]['service_code'] ?? null;
 
@@ -356,8 +356,8 @@ class CartController extends Controller
                     for ($i = 0; $i < count($old['products']); $i++) {
                         if ($old['products'][$i]['product_id'] == $request->product_id) {
                             $old['products'][$i]['qty'] = $request->quantity;
-                            $old['products'][$i]['total_amount'] = $old['products'][$i]['qty'] * $old['products'][$i]['regular_price'];
-                            $old['products'][$i]['shippingId'] = null;
+                            $old['products'][$i]['total_amount'] = $old['products'][$i]['qty'] * $old['products'][$i]['sale_price'];
+                            $old['products'][$i]['shipmentId'] = null;
                             $old['products'][$i]['shippingPrice'] = 0;
                         }
                         $old['products'][$i]['service_code'] = null;
@@ -408,6 +408,14 @@ class CartController extends Controller
                     if (isset($cart->id)) {
                         $old = unserialize($cart->data);
                         $data = $old;
+                        for ($i = 0; $i < count($old['products']); $i++) {
+                            $data['products'][$i]['compare_rate_list'] = [];
+                            $data['products'][$i]['shipmentId'] = null;
+                            $data['products'][$i]['shippingPrice'] = 0;
+                            $data['products'][$i]['service_code'] = null;
+                        }
+                        $data['totalPrice'] = $data['totalPrice'] - $data['shippingPrice'];
+                        $data['shippingPrice'] = 0;
                         $data['shipping_address'] = [
                             'address_id' => $address->id, 'first_name' => $address->first_name, 'middle_name' => $address->middle_name, 'last_name' => $address->last_name, 'email' => $address->email, 'phone' => $address->phone, 'company_name' => $address->company_name, 'address_line_1' => $address->address_line_1, 'address_line_2' => $address->address_line_2 ?? null, 'city' => $address->city, 'state' => $address->state, 'country' => $address->country, 'zip_code' => $address->zip_code, 'latitude' => $address->latitude, 'longitude' => $address->longitude, 'address_type' => $address->address_type, 'is_default_address' => $address->default_address
                         ];
@@ -469,7 +477,7 @@ class CartController extends Controller
                             array_splice($data['products'], $i, 1);
                         } else {
                             $data['products'][$i]['shippingPrice'] = 0;
-                            $data['products'][$i]['shippingId'] = null;
+                            $data['products'][$i]['shipmentId'] = null;
                             $data['products'][$i]['service_code'] = null;
                             $qty += $old['products'][$i]['qty'];
                             $price += $old['products'][$i]['total_amount'];
@@ -592,18 +600,55 @@ class CartController extends Controller
                             $userCourse->save();
                         }
                     }
-
                     Addtocart::where('userid', $user_id)->delete();
-
-                    $data['status'] = 1;
-                    $data['message'] = 'Order placed successfully';
-                    $data['order_id'] = $insertedId;
-                    $data['total_amount'] = number_format((float)($total_price+$tax_amount), 2, '.', '');
-                    return response()->json($data);
+                    
+                    return response()->json(['status' => true, 'message' => 'Order placed successfully.', 'order_id' => $insertedId, 'total_amount' => number_format((float)($total_price+$tax_amount), 2, '.', '')]);
                 } else {
-                    $data['status'] = 0;
-                    $data['message'] = 'Opps!Order Cart is Empty';
-                    return response()->json($data);
+                    $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
+                    if (isset($cart->id)) {
+                        $old = unserialize($cart->data);
+                        $data = $old;
+                        $admin_cut = 0;
+                        for ($i = 0; $i < count($old['products']); $i++) {
+                            $admin_cut += $old['products'][$i]['total_amount'] ?? 0;
+                        }
+                        $insertedId = Order::insertGetId([
+                            'user_id' => $user_id,
+                            'order_number' => $order_no,
+                            'amount' => $old['subTotal'] ?? 0,
+                            'admin_amount' => $admin_cut,
+                            'taxes' => number_format((float)$old['tax'] ?? 0, 2, '.', ''),
+                            'delivery_charges' => number_format((float)$old['shippingPrice'] ?? 0, 2, '.', ''),
+                            'coupon_discount_price' => number_format((float)$old['appliedCouponPrice'] ?? 0, 2, '.', ''),
+                            'coupon_id' => $old['couponId'] ?? 0,
+                            'total_amount_paid' => number_format((float)($old['totalPrice']), 2, '.', ''),/*Total amount of order*/
+                            'shipping_address_id' => $old['shipping_address']['shipping_address_id'] ?? null,
+                            'cart_json' => serialize($data),
+                            'payment_id' => null,
+                            'payment_type' => null,
+                            'created_date' => date('Y-m-d H:i:s'),
+                            'status' => 0,
+                        ]);
+                        for ($i = 0; $i < count($old['products']); $i++) {
+                            $OrderDetail = new OrderDetail;
+                            $OrderDetail->order_id = $insertedId;
+                            $OrderDetail->product_id = $old['products'][$i]['product_id'];
+                            $OrderDetail->product_type = 2;
+                            $OrderDetail->quantity = $old['products'][$i]['qty'];
+                            $OrderDetail->amount = $old['products'][$i]['total_amount'];
+                            $OrderDetail->admin_amount = $old['products'][$i]['total_amount'];
+                            $OrderDetail->shipment_id = $old['products'][$i]['shipmentId'];
+                            $OrderDetail->shipping_price = $old['products'][$i]['shippingPrice'];
+                            $OrderDetail->created_date = date('Y-m-d H:i:s');
+                            $OrderDetail->save();
+                        }
+                        TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->delete();
+                       
+                        return response()->json(['status' => true, 'message' => 'Order placed successfully.', 'order_id' => $insertedId, 'total_amount' => number_format((float)($old['totalPrice'] ?? 0), 2, '.', '')]);
+                    } else {
+                        return response()->json(['status' => true, 'message' => 'Opps! Cart is Empty']);
+                    }
+
                 }
             } else {
                 return response()->json(['status' => false, 'Message' => 'Please login']);
@@ -895,7 +940,7 @@ class CartController extends Controller
                 'product_id' => 'required',
                 'service_code' => 'required',
                 'shipping_price' => 'required',
-                'shipping_id' => 'required',
+                'carrier_id' => 'required',
             ]);
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
@@ -907,9 +952,14 @@ class CartController extends Controller
                     $old = unserialize($cart->data);
                     for ($i = 0; $i < count($old['products']); $i++) {
                         if ($old['products'][$i]['product_id'] == $request->product_id) {
+                            $pro = Product::where('id', $old['products'][$i]['product_id'])->first();
+                            $shipment_id = $this->create_shipment($pro, $old['shipping_address'] ?? null, $request->service_code, $request->carrier_id);
+                            if($shipment_id==null || $shipment_id == '') {
+                                return response()->json(['status' => false, 'message' => 'Unable to create shipment!']);
+                            }
                             $old['products'][$i]['service_code'] = $request->service_code;
                             $old['products'][$i]['shippingPrice'] = $request->shipping_price;
-                            $old['products'][$i]['shippingId'] = $request->shipping_id;
+                            $old['products'][$i]['shipmentId'] = $shipment_id;
                             $ship_price += $old['products'][$i]['shippingPrice'];
                         }
                     }
@@ -923,6 +973,77 @@ class CartController extends Controller
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function create_shipment($pro, $address, $code, $carrier_id)
+    {
+        // dd($carrier_id);
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.shipengine.com/v1/shipments',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => '{
+                "shipments": [{
+                    "service_code": "' .$code. '",
+                    "carrier_id": "' . $carrier_id . '",
+                    "ship_from": {
+                        "name": "Arkansas",
+                        "company_name": "Arkansas",
+                        "address_line1": "4625 Windfern Rd",
+                        "city_locality": "Houston",
+                        "state_province": "TX",
+                        "postal_code": "77041",
+                        "country_code": "US",
+                        "phone": "(713) 329-3503"
+                    },
+                    "ship_to": {
+                        "name": "'.$address['first_name']. '' . $address['last_name'] .'",
+                        "address_line1": "' . $address['address_line_1'] . '",
+                        "city_locality": "' . $address['city'] . '",
+                        "state_province": "' . $address['state'] . '",
+                        "postal_code": "' . $address['zip_code'] . '",
+                        "country_code": "US",
+                        "address_residential_indicator":"yes"
+                    },
+                    "packages": [
+                        {
+                            "weight": {
+                                "value": ' . $pro->package_weight . ',
+                                "unit": "pound"
+                            },
+                            "dimensions": {
+                                "length": ' . $pro->package_length . ',
+                                "width": ' . $pro->package_width . ',
+                                "height": ' . $pro->package_height . ',
+                                "unit": "inch"
+                            }
+                        }
+                    ]
+                }]
+            }',
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'API-Key: '.env('SHIP_ENGINE_KEY')
+            ),
+        ));
+
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $jsonData = json_decode($response, true);
+
+        // dd($jsonData);
+
+        if ((isset($jsonData['shipments'])) && (count($jsonData['shipments']) > 0)) {
+            return $jsonData['shipments'][0]['shipment_id'];
+        } else {
+            return null;
         }
     }
 }

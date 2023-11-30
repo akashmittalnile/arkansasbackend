@@ -289,6 +289,7 @@ class ApiController extends Controller
                 $b4['creator_id'] = $data->added_by;
                 $b4['created_at'] = date('d/m/y,H:i', strtotime($data->created_date));
                 $b4['price'] = $data->price;
+                $b4['sale_price'] = $data->sale_price ?? 0;
                 $b4['status'] = $data->status;
                 $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                 $datas_image = array();
@@ -571,6 +572,7 @@ class ApiController extends Controller
 
                             if(isset($value->id)){
                                $temp['price'] = $value->price;
+                               $temp['sale_price'] = $value->sale_price ?? 0;
                                 $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                                 $datas_image = array();
                                 foreach ($all_products_image as $k => $val) {
@@ -1143,6 +1145,7 @@ class ApiController extends Controller
                             if($avgRating < min($request->rating)) continue;
                     } else {
                         $temp['price'] = $value->price;
+                        $temp['sale_price'] = $value->sale_price ?? 0;
                         $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                         $datas_image = array();
                         foreach ($all_products_image as $k => $val) {
@@ -1329,7 +1332,8 @@ class ApiController extends Controller
                             if($request->filled('rating'))
                                 if($avgRating < min($request->rating)) continue;
                     } else {
-                            $temp['price'] = $value->price;
+                            $temp['price'] = $value->regular_price;
+                            $temp['sale_price'] = $value->sale_price ?? 0;
                             $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                             $datas_image = array();
                             foreach ($all_products_image as $k => $val) {
@@ -1605,6 +1609,7 @@ class ApiController extends Controller
 
                         
                         $temp['price'] = $item->price;
+                        $temp['sale_price'] = $item->sale_price ?? 0;
                         $all_products_image = ProductAttibutes::where('product_id', $item->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                         $datas_image = array();
                         
