@@ -2112,7 +2112,7 @@ class SuperAdminController extends Controller
             $pdf = PDF::loadView('home.pdf-invoice', compact('order', 'orderDetails', 'transaction'), [], [ 
                 'mode' => 'utf-8',
                 'title' => 'Order Invoice',
-                'format' => 'Legal',
+                'format' => 'A4',
             ]);
             return $pdf->stream($order->order_number.'-invoice.pdf');
         } catch (\Exception $e) {
@@ -2330,11 +2330,13 @@ class SuperAdminController extends Controller
     public function product_order_details(Request $request, $id){
         try{
             $id = encrypt_decrypt('decrypt', $id);
-            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes')->first();
+            $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', 'orders.total_amount_paid', 'orders.delivery_charges', 'orders.amount', 'orders.coupon_discount_price')->first();
+
+            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
 
             $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
 
-            return view('super-admin.product-order-details')->with(compact('order', 'transaction'));
+            return view('super-admin.product-order-details')->with(compact('order', 'transaction', 'orderDetails'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

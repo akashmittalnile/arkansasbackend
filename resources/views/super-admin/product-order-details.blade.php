@@ -134,10 +134,21 @@
 
                                 <div class="col-md-8">
                                     @php $amount = 0; $admin = 0; @endphp
-                                    @forelse($order->orderProduct as $key => $val)
+                                    @forelse($orderDetails as $key => $val)
                                     <div class="pmu-course-details-item">
-                                        <div class="pmu-course-details-media">
+                                        <div class="pmu-course-details-media" style="width: 210px;">
+                                            @if($val->product_type == 2)
                                             <img src="{{ uploadAssets('upload/products/'.$val->image) }}">
+                                            @elseif ($val->product_type == 1)
+                                            <a data-fancybox data-type="iframe"
+                                            data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0"
+                                            href="javascript:;">
+                                                <video width="210" height="140" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
+                                                    <source src="{{ uploadAssets('upload/disclaimers-introduction/' . $val->image) }}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            </a>
+                                            @endif
                                         </div>
                                         <div class="pmu-course-details-content">
                                             <div class="coursestatus"><img src="{{ assets('assets/website-images/tick.svg') }}">
@@ -148,7 +159,7 @@
                                                 @endif
                                             </div>
                                             <h2 class="text-capitalize">{{ $val->title ?? "NA" }}</h2>
-                                            <div class="pmu-course-details-price">${{ number_format((float)$val->amount, 2) }}</div>
+                                            <div class="pmu-course-details-price">${{ number_format((float)$val->amount, 2, '.', '') }}</div>
                                         </div>
                                     </div>
                                     @php $amount += $val->amount; $admin += $val->admin_amount; @endphp
@@ -161,24 +172,26 @@
 
                                     <div class="cart-summary-info">
                                         <div class="cart-summary-item">
-                                            <div class="cart-summary-text">Total Amount</div>
-                                            <div class="cart-summary-value" id="total-amount">${{$amount-$admin}}</div>
+                                            <div class="cart-summary-text">Sub Total</div>
+                                            <div class="cart-summary-value" id="total-amount">${{ number_format((float)$order->amount ?? 0, 2, '.', '') }}</div>
                                         </div>
+                                        @if($order->delivery_charges != null && $order->delivery_charges != '' && $order->delivery_charges != 0)
                                         <div class="cart-summary-item">
-                                            <div class="cart-summary-text">Admin Fee</div>
-                                            <div class="cart-summary-value" id="admin-fee">${{$admin}}</div>
+                                            <div class="cart-summary-text">Shipping Fee</div>
+                                            <div class="cart-summary-value" id="admin-fee">${{$order->delivery_charges ?? 0}}</div>
                                         </div>
+                                        @endif
                                         <div class="cart-summary-item">
                                             <div class="cart-summary-text">Tax</div>
-                                            <div class="cart-summary-value">${{ $order->taxes ?? 0 }}</div>
+                                            <div class="cart-summary-value">${{ number_format((float)$order->taxes ?? 0, 2, '.', '') }}</div>
                                         </div>
                                         <div class="cart-summary-item">
-                                            <div class="cart-summary-text">Discount</div>
-                                            <div class="cart-summary-value">$0</div>
+                                            <div class="cart-summary-text">Coupon Discount</div>
+                                            <div class="cart-summary-value">${{ number_format((float)$order->coupon_discount_price ?? 0, 2, '.', '') }}</div>
                                         </div>
                                         <div class="cart-summary-total-item">
                                             <div class="cart-summary-total-text">Total Fee Paid</div>
-                                            <div class="cart-summary-total-value" id="total-cost">${{$amount+$order->taxes}}</div>
+                                            <div class="cart-summary-total-value" id="total-cost">${{$order->total_amount_paid ?? 0}}</div>
                                         </div>
                                     </div>
 

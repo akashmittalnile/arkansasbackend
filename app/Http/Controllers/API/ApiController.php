@@ -3013,34 +3013,88 @@ class ApiController extends Controller
                 if(isset($request->is_default) && $request->is_default==1){
                     Address::where('user_id', auth()->user()->id)->update(['default_address'=> 0]);
                 }
-                $address = new Address;
-                $address->user_id = auth()->user()->id;
-                $address->first_name = $request->first_name;
-                $address->middle_name = $request->middle_name ?? null;
-                $address->last_name = $request->last_name;
-                $address->email = $request->email;
-                $address->phone = $request->phone;
-                $address->company_name = $request->company_name ?? null;
-                $address->address_line_1 = $request->address_line_1;
-                $address->address_line_2 = $request->address_line_2 ?? null;
-                $address->latitude = $request->latitude;
-                $address->longitude = $request->longitude;
-                $address->city = $request->city;
-                $address->state = $request->state;
-                $address->country = $request->country;
-                $address->zip_code = $request->zip_code;
-                $address->address_type = $request->address_type;
-                $address->default_address = $request->is_default ?? 0;
-                $address->created_at = date('Y-m-d H:i:s');
-                $address->updated_at = date('Y-m-d H:i:s');
-                if($address->save()){
-                    return response()->json(['status' => true, 'message'=> 'New Address Added Successfully.']);
-                }else{
-                    return response()->json(['status' => false, 'message'=> 'Something went wrong.']);
+                $valid = $this->validateAddress($request);
+                if($valid[0]['status']){
+                    $address = new Address;
+                    $address->user_id = auth()->user()->id;
+                    $address->first_name = $request->first_name;
+                    $address->middle_name = $request->middle_name ?? null;
+                    $address->last_name = $request->last_name;
+                    $address->email = $request->email;
+                    $address->phone = $request->phone;
+                    $address->company_name = $request->company_name ?? null;
+                    $address->address_line_1 = $request->address_line_1;
+                    $address->address_line_2 = $request->address_line_2 ?? null;
+                    $address->latitude = $request->latitude;
+                    $address->longitude = $request->longitude;
+                    $address->city = $request->city;
+                    $address->state = $request->state;
+                    $address->country = $request->country;
+                    $address->zip_code = $request->zip_code;
+                    $address->address_type = $request->address_type;
+                    $address->default_address = $request->is_default ?? 0;
+                    $address->created_at = date('Y-m-d H:i:s');
+                    $address->updated_at = date('Y-m-d H:i:s');
+                    if($address->save()){
+                        return response()->json(['status' => true, 'message'=> 'New Address Added Successfully.']);
+                    }else{
+                        return response()->json(['status' => false, 'message'=> 'Something went wrong.']);
+                    }
+                } else {
+                    return response()->json($valid[0]);
                 }
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function validateAddress($data){
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.shipengine.com/v1/addresses/validate',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => "[
+            {
+                'address_line1': '$data->address_line_1',
+                'city_locality': '$data->city',
+                'state_province': '$data->state',
+                'postal_code': '$data->zip_code',
+                'country_code': 'US'
+            }
+        ]",
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'API-Key: ' . env('SHIP_ENGINE_KEY')
+            ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $res = json_decode($response);
+
+        if($res[0]->status != 'verified') {
+            foreach ($res[0]->messages as $key => $item) {
+                if($item->message == 'Invalid postal_code.') {
+                    $error_msg = 'Please enter a valid Zip Code!';
+                } else {
+                    $error_msg = $item->message;
+                }
+                return array(["status" => false, "msg" => $error_msg]);
+            }
+        } elseif ($res[0]->status == 'verified') {
+            $zip_code_response = explode('-',$res[0]->matched_address->postal_code);
+            if($zip_code_response[0] != $data->zip_code)
+            {
+                return array([ "status" => false, "msg" => 'The correct zip code is '.$zip_code_response[0], "data" => $zip_code_response[0]]);
+            } else {
+                return array(["status" => true]);
+            }
         }
     }
 
@@ -3102,26 +3156,31 @@ class ApiController extends Controller
                 if(isset($request->is_default) && $request->is_default==1){
                     Address::where('user_id', auth()->user()->id)->update(['default_address'=> 0]);
                 }
-                Address::where('user_id', auth()->user()->id)->where('id', $request->id)->update([
-                    'first_name' => $request->first_name,
-                    'middle_name' => $request->middle_name ?? null,
-                    'last_name' => $request->last_name,
-                    'email' => $request->email,
-                    'phone' => $request->phone,
-                    'company_name' => $request->company_name ?? null,
-                    'address_line_1' => $request->address_line_1,
-                    'address_line_2' => $request->address_line_2 ?? null,
-                    'latitude' => $request->latitude,
-                    'longitude' => $request->longitude,
-                    'city' => $request->city,
-                    'state' => $request->state,
-                    'country' => $request->country,
-                    'zip_code' => $request->zip_code,
-                    'address_type' => $request->address_type,
-                    'default_address' => $request->is_default ?? 0,
-                    'updated_at' => date('Y-m-d H:i:s'),
-                ]);
-                return response()->json(['status' => true, 'message'=> 'Address Updated Successfully.']);
+                $valid = $this->validateAddress($request);
+                if($valid[0]['status']){
+                    Address::where('user_id', auth()->user()->id)->where('id', $request->id)->update([
+                        'first_name' => $request->first_name,
+                        'middle_name' => $request->middle_name ?? null,
+                        'last_name' => $request->last_name,
+                        'email' => $request->email,
+                        'phone' => $request->phone,
+                        'company_name' => $request->company_name ?? null,
+                        'address_line_1' => $request->address_line_1,
+                        'address_line_2' => $request->address_line_2 ?? null,
+                        'latitude' => $request->latitude,
+                        'longitude' => $request->longitude,
+                        'city' => $request->city,
+                        'state' => $request->state,
+                        'country' => $request->country,
+                        'zip_code' => $request->zip_code,
+                        'address_type' => $request->address_type,
+                        'default_address' => $request->is_default ?? 0,
+                        'updated_at' => date('Y-m-d H:i:s'),
+                    ]);
+                    return response()->json(['status' => true, 'message'=> 'Address Updated Successfully.']);
+                } else {
+                    return response()->json($valid[0]);
+                }
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
