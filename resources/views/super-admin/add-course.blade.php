@@ -42,18 +42,11 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Course Fees</h4>
+                                                <h4>Course Fees <span class="text-danger">(in $)</span></h4>
                                                 <input type="number" class="form-control" name="course_fee"
                                                     placeholder="Enter Course Fees" min="1" step="0.01" required>
                                             </div>
                                         </div>
-
-                                        <!-- <div class="col-md-4">
-                                            <div class="form-group">
-                                                <h4>Valid Up-To</h4>
-                                                <input type="date" class="form-control" name="valid_upto" placeholder="4 Month" required>
-                                            </div>
-                                        </div> -->
 
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -66,7 +59,6 @@
                                                 </select>
                                             </div>
                                         </div>
-                                        
 
                                         <div class="col-md-12">
                                             <div class="form-group">
@@ -95,7 +87,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Introduction Video (mp4 only | Size: 2MB)</h4>
+                                                <h4>Introduction Video (mp4 only | Size: 10MB)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction" accept="video/mp4"
                                                         id="UploadTrainingVideo"
@@ -125,8 +117,11 @@
         </div>
     </div>
 
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-alpha1/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Include jQuery Validation Plugin -->
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/jquery.validation/1.19.3/additional-methods.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
@@ -152,10 +147,6 @@
             }
         });
     </script>
-    
-    <!-- Include jQuery Validation Plugin -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/jquery.validation/1.16.0/jquery.validate.min.js"></script>
 
     <!-- Style of h2 tag and error message  jQuery Validation -->
     <style>
@@ -204,7 +195,7 @@
                     },
                     disclaimers_introduction: {
                         required: true,
-                        filesize : 2,
+                        filesize : 10,
                     },
                 },
                 messages: {

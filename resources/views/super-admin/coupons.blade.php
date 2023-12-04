@@ -119,8 +119,20 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label for="">Coupon Available for ? <span class="text-danger">*</span></label>
+                                    <!-- <input type="text" value="Product" class="form-control" name="object_type"> -->
+                                    <select class="form-control" name="object_type" id="object_create_type" style="padding: 13px 10px;">
+                                        <option value="">Coupon Available for ?</option>
+                                        <option value="1">Courses</option>
+                                        <option value="2">Products</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label for="">Coupon Type <span class="text-danger">*</span></label>
-                                    <select class="form-control" name="type" style="padding: 13px 10px;">
+                                    <select class="form-control" name="type" id="type_create" style="padding: 13px 10px;">
                                         <option value="">Coupon Type</option>
                                         <option value="1">Flat</option>
                                         <option value="2">Percentage</option>
@@ -128,29 +140,30 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-6" style="display: none;" id="course_input">
+                                <div class="form-group">
+                                    <label for="">Course <span class="text-danger">*</span></label>
+                                    <select class="form-control" name="course" id="course_create" style="padding: 13px 10px;" required>
+                                        <option value="">Select Course</option>
+                                        @foreach($course as $val)
+                                        <option value="{{ $val->id }}" data-amount="{{ $val->max_discount }}" >{{ $val->title }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" id="min_amount_input">
                                 <div class="form-group">
                                     <label for="">Minumum Order Amount <span class="text-danger">*</span></label>
-                                    <input type="number" min="0.1" step="0.01" class="form-control" placeholder="Minumum Order Amount" name="min_amount">
+                                    <input type="number" min="0.1" step="0.01" class="form-control" placeholder="Minumum Order Amount" name="min_amount" required>
                                 </div>
                             </div>
 
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Coupon Discount Value <span class="text-danger">*</span></label>
-                                    <input type="number" min="0.1" step="0.01" class="form-control" placeholder="Coupon Discount Amount" name="amount">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="">Coupon Available for ? <span class="text-danger">*</span></label>
-                                    <input type="text" value="Product" disabled class="form-control" name="object_type">
-                                    <!-- <select class="form-control" name="object_type" disabled style="padding: 13px 10px;">
-                                        <option value="">Coupon Available for ?</option>
-                                        <option value="1">Courses</option>
-                                        <option value="2" selected>Products</option>
-                                    </select> -->
+                                    <input type="number" id="amount_create" min="0.1" step="0.01" class="form-control" placeholder="Coupon Discount Amount" name="amount" required>
+                                    <span id="note" style="font-weight: 500;"></span>
                                 </div>
                             </div>
 
@@ -201,6 +214,18 @@
 
                             <div class="col-md-6">
                                 <div class="form-group">
+                                    <label for="">Coupon Available for ? <span class="text-danger">*</span></label>
+                                    <!-- <input type="text" value="Product" class="form-control" name="object_type"> -->
+                                    <select class="form-control" name="object_type" id="object_edit_type" style="padding: 13px 10px;">
+                                        <option value="">Coupon Available for ?</option>
+                                        <option value="1">Courses</option>
+                                        <option value="2">Products</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
                                     <label for="">Coupon Type <span class="text-danger">*</span></label>
                                     <select class="form-control" name="type" style="padding: 13px 10px;" id="typeEdit">
                                         <option value="">Coupon Type</option>
@@ -210,7 +235,19 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-6">
+                            <div class="col-md-6" style="display: none;" id="course_input_edit">
+                                <div class="form-group">
+                                    <label for="">Course <span class="text-danger">*</span></label>
+                                    <select class="form-control" name="course" id="course_edit" style="padding: 13px 10px;" required>
+                                        <option value="">Select Course</option>
+                                        @foreach($course as $val)
+                                        <option value="{{ $val->id }}" data-amount="{{ $val->max_discount }}" >{{ $val->title }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6" id="min_amount_input_edit">
                                 <div class="form-group">
                                     <label for="">Minumum Order Amount <span class="text-danger">*</span></label>
                                     <input type="number" min="0.1" step="0.01" id="minAmountEdit" class="form-control" placeholder="Minumum Order Amount" name="min_amount">
@@ -221,18 +258,7 @@
                                 <div class="form-group">
                                     <label for="">Coupon Discount Value <span class="text-danger">*</span></label>
                                     <input type="number" min="0.1" step="0.01" id="amountEdit" class="form-control" placeholder="Coupon Discount Amount" name="amount">
-                                </div>
-                            </div>
-
-                            <div class="col-md-6">
-                                <div class="form-group">
-                                    <label for="">Coupon Available for <span class="text-danger">*</span></label>
-                                    <input type="text" value="Product" disabled class="form-control" name="object_type">
-                                    <!-- <select class="form-control" name="object_type" disabled style="padding: 13px 10px;">
-                                        <option value="">Coupon Available for ?</option>
-                                        <option value="1">Courses</option>
-                                        <option value="2" selected>Products</option>
-                                    </select> -->
+                                    <span id="noteEdit" style="font-weight: 500;"></span>
                                 </div>
                             </div>
 
@@ -271,7 +297,37 @@
     $('#CreateCoupon, #editCoupon').on('hidden.bs.modal', function(e) {
         $(this).find('form').trigger('reset');
         $(this).find('.error.invalid-feedback').remove();
-    })
+    });
+
+    $(document).on('change', "#course_create", function(){
+        let amount = $(this).find('option:selected').data('amount');
+        $("#amount_create").attr('max', amount);
+        $("#note").html(`NOTE: Max discount for this course is ${amount}%`);
+    });
+
+    $(document).on('change', "#course_edit", function(){
+        let amount = $(this).find('option:selected').data('amount');
+        $("#amountEdit").attr('max', amount);
+        $("#noteEdit").html(`NOTE: Max discount for this course is ${amount}%`);
+    });
+
+    $(document).on('change', "#object_create_type", function(){
+        $val = $(this).val();
+        if($val == 1){
+            $("#min_amount_input").hide();
+            $("#type_create").attr('disabled', true);
+            $("#type_create").val(2);
+            $("#course_input").show();
+        } else {
+            $("#course_input").hide();
+            $("#min_amount_input").show();
+            $("#type_create").attr('disabled', false);
+            $("#type_create").val("");
+            $("#amount_create").removeAttr('max');
+            $("#note").html('');
+        }
+    });
+
     $(document).ready(function() {
 
         $(document).on('click', '.edit-btn', function(){
@@ -284,14 +340,43 @@
                 },
                 success: function (data) {
                     if (data.status) {
-                        $("input[name='id']").val(id);
-                        $("#codeEdit").val(data.data.coupon_code);
-                        $("#typeEdit").val(data.data.coupon_discount_type);
-                        $("#minAmountEdit").val(data.data.min_order_amount);
-                        $("#amountEdit").val(data.data.coupon_discount_amount);
-                        $("#dateEdit").val(data.data.coupon_expiry_date);
-                        $("#descEdit").val(data.data.description);
-                        $("#editCoupon").modal('show');
+                        if(data.data.object_type == 1){
+                            $("#course_input_edit").show();
+                            $("#min_amount_input_edit").hide();
+                            $("#typeEdit").attr('disabled', true);
+                            $("#object_edit_type").attr('disabled', true);
+                            $("#object_edit_type").val(1);
+                            $("#typeEdit").val(2);
+                            $("#course_edit").show();
+
+                            $("input[name='id']").val(id);
+                            $("#codeEdit").val(data.data.coupon_code);
+                            $("#typeEdit").val(data.data.coupon_discount_type);
+                            $("#amountEdit").val(data.data.coupon_discount_amount);
+                            $("#course_edit").val(data.data.object_id);
+                            $("#dateEdit").val(data.data.coupon_expiry_date);
+                            $("#descEdit").val(data.data.description);
+                            $("#editCoupon").modal('show'); 
+                        }else{
+                            $("#course_input_edit").hide();
+                            $("#min_amount_input_edit").show();
+                            $("#typeEdit").attr('disabled', false);
+                            $("#object_edit_type").attr('disabled', true);
+                            $("#typeEdit").val("");
+                            $("#object_edit_type").val(2);
+                            $("#amountEdit").removeAttr('max');
+                            $("#noteEdit").html('');
+
+                            $("input[name='id']").val(id);
+                            $("#codeEdit").val(data.data.coupon_code);
+                            $("#typeEdit").val(data.data.coupon_discount_type);
+                            $("#course_edit").val("");
+                            $("#minAmountEdit").val(data.data.min_order_amount);
+                            $("#amountEdit").val(data.data.coupon_discount_amount);
+                            $("#dateEdit").val(data.data.coupon_expiry_date);
+                            $("#descEdit").val(data.data.description);
+                            $("#editCoupon").modal('show'); 
+                        }
                     }
                 }
             });
@@ -323,12 +408,6 @@
                 object_type: {
                     required: true,
                 },
-                amount: {
-                    required: true,
-                },
-                min_amount: {
-                    required: true,
-                },
                 date: {
                     required: true,
                 },
@@ -345,6 +424,9 @@
                 },
                 amount: {
                     required: 'Please enter coupon discount value',
+                },
+                course: {
+                    required: 'Please select the course',
                 },
                 min_amount: {
                     required: 'Please enter minimum order amount',

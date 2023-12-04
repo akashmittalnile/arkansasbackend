@@ -66,7 +66,7 @@
                                             </div>
                                         </div> --}}
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Course Fees</h4>
                                                 <input type="number" class="form-control" name="course_fee"
@@ -74,7 +74,7 @@
                                             </div>
                                         </div>
 
-                                        <div class="col-md-6">
+                                        <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Category</h4>
                                                 <select name="course_category" id="" class="form-control">
@@ -83,6 +83,13 @@
                                                         <option @if($course->category_id == $val->id) selected @endif value="{{ $val->id }}">{{ $val->name }}</option>
                                                     @endforeach
                                                 </select>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="form-group">
+                                                <h4>Maximum Discount <span class="text-danger">(in %)</span></h4>
+                                                <input type="number" max="100" step="0.1" class="form-control" name="discount" placeholder="Maximum Discount (in %)" required value="{{ $course->max_discount }}">
                                             </div>
                                         </div>
 
@@ -114,7 +121,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Introduction Video (mp4 only | Size: 2MB)</h4>
+                                                <h4>Introduction Video (mp4 only | Size: 10MB)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction"
                                                         id="disclaimers_introduction"
@@ -168,6 +175,13 @@
     </script>
 
     <style>
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+            margin: 0;
+        }
         .error {
             color: red;
         }
@@ -183,6 +197,9 @@
             $('#AddCourse').validate({
                 rules: {
                     title: {
+                        required: true,
+                    },
+                    discount: {
                         required: true,
                     },
                     description: {
@@ -203,12 +220,15 @@
                         required:true,
                     },
                     disclaimers_introduction: {
-                        filesize : 2,
+                        filesize : 10,
                     },
                 },
                 messages: {
                     title: {
                         required: 'Please enter title',
+                    },
+                    discount: {
+                        required: 'Please enter maximum discount percentage',
                     },
                     description: {
                         required: 'Please enter description',

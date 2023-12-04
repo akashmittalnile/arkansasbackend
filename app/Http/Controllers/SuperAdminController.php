@@ -2197,7 +2197,8 @@ class SuperAdminController extends Controller
             $coupon = DB::table('coupons as c');
             if($request->filled('coupon_code')) $coupon->where('coupon_code', 'like', '%'.$request->coupon_code.'%');
             $coupon = $coupon->orderByDesc('id')->paginate(12);
-            return view('super-admin.coupons')->with(compact('coupon'));
+            $course = Course::where('status', 1)->orderByDesc('id')->get();
+            return view('super-admin.coupons')->with(compact('coupon', 'course'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -2224,20 +2225,21 @@ class SuperAdminController extends Controller
         try{
             $validator = Validator::make($request->all(), [
                 'code' => 'required',
-                'type' => 'required',
                 'amount' => 'required',
-                'min_amount' => 'required',
                 'date' => 'required',
             ]);
             if ($validator->fails()) {
+                dd(1);
                 return redirect()->back()->withErrors($validator)->withInput();
             } else {
+                // dd(2);
                 $coupon = new Coupon;
                 $coupon->coupon_code = $request->code;
-                $coupon->object_type = $request->object_type ?? 2;
+                $coupon->object_id = $request->course ?? null;
+                $coupon->object_type = $request->object_type;
                 $coupon->coupon_expiry_date = $request->date;
-                $coupon->coupon_discount_type = $request->type;
-                $coupon->min_order_amount = $request->min_amount;
+                $coupon->coupon_discount_type = $request->type ?? 2;
+                $coupon->min_order_amount = $request->min_amount ?? null;
                 $coupon->coupon_discount_amount = $request->amount;
                 $coupon->description = $request->description ?? null;
                 $coupon->status = 1;
@@ -2266,9 +2268,7 @@ class SuperAdminController extends Controller
             $validator = Validator::make($request->all(), [
                 'id' => 'required',
                 'code' => 'required',
-                'type' => 'required',
                 'amount' => 'required',
-                'min_amount' => 'required',
                 'date' => 'required',
             ]);
             if ($validator->fails()) {
@@ -2277,10 +2277,11 @@ class SuperAdminController extends Controller
                 $id = encrypt_decrypt('decrypt', $request->id);
                 Coupon::where('id', $id)->update([
                     'coupon_code' => $request->code,
-                    'object_type' => $request->object_type ?? 2,
+                    'object_id' => $request->course ?? null,
+                    'object_type' => ($request->course == "" || $request->course == null) ? 2 : $request->object_type ?? 1,
                     'coupon_expiry_date' => $request->date,
-                    'coupon_discount_type' => $request->type,
-                    'min_order_amount' => $request->min_amount,
+                    'coupon_discount_type' => $request->type ?? 2,
+                    'min_order_amount' => $request->min_amount ?? null,
                     'coupon_discount_amount' => $request->amount,
                     'description' => $request->description ?? null,
                     'status' => 1

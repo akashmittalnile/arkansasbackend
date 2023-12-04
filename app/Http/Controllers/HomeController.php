@@ -299,6 +299,7 @@ class HomeController extends Controller
                 'title' => $request->title,
                 'description' => $request->description,
                 'course_fee' => $request->course_fee,
+                'max_discount' =>  $request->discount,
                 'valid_upto' => $request->valid_upto ?? null,
                 'tags' => serialize($request->tags),
                 'certificates' => null,
@@ -623,6 +624,7 @@ class HomeController extends Controller
             $course->title = $request->input('title');
             $course->description = $request->input('description');
             $course->course_fee = $request->input('course_fee');
+            $course->max_discount = $request->input('discount');
             $course->valid_upto = $request->input('valid_upto') ?? null;
             $course->tags = serialize($request->input('tags'));
             $course->certificates = null;
