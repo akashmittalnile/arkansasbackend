@@ -6,13 +6,22 @@
         <div class="pmu-filter-heading">
             <h2>Manage Coupon</h2>
         </div>
-        <div class="pmu-search-filter wd60">
+        <div class="pmu-search-filter wd80">
             <form action="">
                 <div class="row g-2">
-                    <div class="col-md-4">
+                    <div class="col-md-3">
                         <div class="form-group search-form-group">
                             <input type="text" class="form-control" value="{{ request()->coupon_code }}" name="coupon_code" placeholder="Search by Coupon Code">
                             <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group form-group">
+                            <select name="type" id="" class="form-control">
+                                <option @if(request()->type=="") selected @endif value="">Select Coupon Type</option>
+                                <option @if(request()->type=="1") selected @endif value="1">Course</option>
+                                <option @if(request()->type=="2") selected @endif value="2">Product</option>
+                            </select>
                         </div>
                     </div>
                     <div class="col-md-1">
@@ -27,11 +36,10 @@
                     </div>
                     <div class="col-md-3">
                         <div class="form-group">
-                            <a class="Create-btn" data-bs-toggle="modal" data-bs-target="#CreateCoupon">Create
-                                New Coupon</a>
+                            <a class="Create-btn" data-bs-toggle="modal" data-bs-target="#CreateCoupon">Create New Coupon</a>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-1">
                         <div class="form-group">
                             <a class="Create-btn" href="{{ route('SA.Products') }}">Back</a>
                         </div>

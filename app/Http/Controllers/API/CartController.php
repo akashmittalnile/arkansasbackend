@@ -476,12 +476,11 @@ class CartController extends Controller
                         if ($old['products'][$i]['product_id'] == $request->product_id) {
                             array_splice($data['products'], $i, 1);
                         } else {
-                            $data['products'][$i]['shippingPrice'] = 0;
-                            $data['products'][$i]['shipmentId'] = null;
-                            $data['products'][$i]['service_code'] = null;
-                            $qty += $old['products'][$i]['qty'];
-                            $price += $old['products'][$i]['total_amount'];
-                            $ship_price += $old['products'][$i]['shippingPrice'];
+                            if ($old['products'][$i]['product_id'] != $request->product_id) {
+                                $qty += $old['products'][$i]['qty'];
+                                $price += $old['products'][$i]['total_amount'];
+                                $ship_price += $old['products'][$i]['shippingPrice'];
+                            }
                         }
                     }
 

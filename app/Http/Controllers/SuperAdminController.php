@@ -2196,6 +2196,7 @@ class SuperAdminController extends Controller
         try{
             $coupon = DB::table('coupons as c');
             if($request->filled('coupon_code')) $coupon->where('coupon_code', 'like', '%'.$request->coupon_code.'%');
+            if($request->filled('type')) $coupon->where('object_type', $request->type);
             $coupon = $coupon->orderByDesc('id')->paginate(12);
             $course = Course::where('status', 1)->orderByDesc('id')->get();
             return view('super-admin.coupons')->with(compact('coupon', 'course'));
