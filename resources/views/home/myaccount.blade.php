@@ -50,7 +50,7 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <h4>Phone</h4>
-                                    <input type="text" maxlength="12" class="form-control" name="phone" placeholder="Phone" value="{{ $user->phone }}">
+                                    <input type="text" maxlength="12" class="form-control phone" name="phone" placeholder="Phone" value="{{ $user->phone }}">
                                 </div>
                             </div>
 

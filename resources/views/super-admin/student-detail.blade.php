@@ -62,7 +62,7 @@
                                             </div>
                                             <div class="side-profile-total-content">
                                                 <h2>Phone No.</h2>
-                                                <p>{{ $data->phone ?? "NA" }}</p>
+                                                <p>+1 {{ $data->phone ?? "NA" }}</p>
                                             </div>
                                         </div>
                                     </div>

@@ -3085,13 +3085,13 @@ class ApiController extends Controller
                 } else {
                     $error_msg = $item->message;
                 }
-                return array(["status" => false, "msg" => $error_msg]);
+                return array(["status" => false, "message" => $error_msg]);
             }
         } elseif ($res[0]->status == 'verified') {
             $zip_code_response = explode('-',$res[0]->matched_address->postal_code);
             if($zip_code_response[0] != $data->zip_code)
             {
-                return array([ "status" => false, "msg" => 'The correct zip code is '.$zip_code_response[0], "data" => $zip_code_response[0]]);
+                return array([ "status" => false, "message" => 'The correct zip code is '.$zip_code_response[0], "data" => $zip_code_response[0]]);
             } else {
                 return array(["status" => true]);
             }
