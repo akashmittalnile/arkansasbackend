@@ -2286,7 +2286,7 @@ class ApiController extends Controller
 
                         if($request->type==1){
                             $temp['course_valid_date'] = date('d M, Y', strtotime($valid));
-                            $temp['introduction_video'] = assets('/upload/disclaimers-introduction/'.$value->introduction_image);
+                            $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);
                             $temp['course_id'] = $value->id ?? 0;
                             $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
                             if(isset($isCourseComplete->id)){

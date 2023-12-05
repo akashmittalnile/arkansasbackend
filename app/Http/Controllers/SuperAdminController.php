@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Address;
 use App\Models\CardDetail;
 use Illuminate\Http\Request;
 use App\Models\Course;
@@ -184,7 +185,8 @@ class SuperAdminController extends Controller
             $user = User::where('id', auth()->user()->id)->first();
             $tax = Setting::where('attribute_code', 'tax')->first();
             $course = Setting::where('attribute_code', 'course_purchase_validity')->first();
-            return view('super-admin.my-account')->with(compact('user', 'tax', 'course'));
+            $add = Address::where('user_id', auth()->user()->id)->first();
+            return view('super-admin.my-account')->with(compact('user', 'tax', 'course', 'add'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -248,10 +250,113 @@ class SuperAdminController extends Controller
                 User::where('id', auth()->user()->id)->update([
                     'password' => Hash::make($request->new_pswd)
                 ]);
-                return redirect()->back()->with('message', 'Password changed successfully');
+                return redirect()->back()->with(['message'=> 'Password changed successfully', 'tab'=> 1]);
             }
         } catch (\Exception $e) {
             return $e->getMessage();
+        }
+    }
+
+    public function storeAddress(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'address_line_1' => 'required',
+                'city' => 'required',
+                'state' => 'required',
+                'zip_code' => 'required',
+                'country' => 'required',
+            ]);
+            if ($validator->fails()) {
+                dd(1);
+                return redirect()->back()->withErrors($validator)->withInput();
+            } else {
+                $address = Address::where('user_id', auth()->user()->id)->first();
+                if(isset($address->id)){
+                    $verify = $this->validateAddress($request);
+                    if(!$verify[0]['status']){
+                        return redirect()->back()->with(['error'=> $verify[0]['message'], 'tab'=> 3]);
+                    }
+                    $address->address_line_1 = $request->address_line_1;
+                    $address->address_line_2 = $request->address_line_2 ?? null;
+                    $address->city = $request->city;
+                    $address->state = $request->state;
+                    $address->country = $request->country;
+                    $address->zip_code = $request->zip_code;
+                    $address->save();
+                }else{
+                    $verify = $this->validateAddress($request);
+                    if(!$verify[0]['status']){
+                        return redirect()->back()->with(['error'=> $verify[0]['message'], 'tab'=> 3]);
+                    }
+                    $address = new Address;
+                    $address->user_id = auth()->user()->id;
+                    $address->address_line_1 = $request->address_line_1;
+                    $address->address_line_2 = $request->address_line_2 ?? null;
+                    $address->city = $request->city;
+                    $address->state = $request->state;
+                    $address->country = $request->country;
+                    $address->zip_code = $request->zip_code;
+                    $address->save();
+                }
+                return redirect()->back()->with(['message'=> 'Address save successfully', 'tab'=> 3]);
+            }
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function validateAddress($data){
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.shipengine.com/v1/addresses/validate',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => "[
+            {
+                'address_line1': '$data->address_line_1',
+                'city_locality': '$data->city',
+                'state_province': '$data->state',
+                'postal_code': '$data->zip_code',
+                'country_code': 'US'
+            }
+        ]",
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'API-Key: ' . env('SHIP_ENGINE_KEY')
+            ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $res = json_decode($response);
+
+        if($res[0]->status != 'verified') {
+            foreach ($res[0]->messages as $key => $item) {
+                if($item->message == 'Invalid postal_code.') {
+                    $error_msg = 'Please enter a valid Zip Code!';
+                } else {
+                    $error_msg = $item->message;
+                }
+                return array(["status" => false, "message" => $error_msg]);
+            }
+        } elseif ($res[0]->status == 'verified') {
+            $zip_code_response = explode('-',$res[0]->matched_address->postal_code);
+            $city_response = explode('-',$res[0]->matched_address->city_locality);
+            $state_response = explode('-',$res[0]->matched_address->state_province);
+            if($zip_code_response[0] != $data->zip_code)
+            {
+                return array([ "status" => false, "message" => 'The correct zip code is '.$zip_code_response[0], "data" => $zip_code_response[0]]);
+            } else if(strtoupper($city_response[0]) != strtoupper($data->city)){
+                return array([ "status" => false, "message" => 'The correct city is '.$city_response[0], "data" => $city_response[0]]);
+            }  else if(strtoupper($state_response[0]) != strtoupper($data->state)){
+                return array([ "status" => false, "message" => 'The correct state code is '.$state_response[0], "data" => $state_response[0]]);
+            }  else {
+                return array(["status" => true]);
+            }
         }
     }
 
@@ -290,7 +395,7 @@ class SuperAdminController extends Controller
                     }
                     
                     return redirect()->back()->with(['message'=> 'Settings changed successfully.', 'tab'=> 2]);
-                } return redirect()->back()->with(['message'=> 'Invalid Request.', 'tab'=> 2]);
+                } return redirect()->back()->with(['error'=> 'Invalid Request.', 'tab'=> 2]);
             }
         return view('super-admin.help-support',compact('courses', 'user'));
         } catch (\Exception $e) {

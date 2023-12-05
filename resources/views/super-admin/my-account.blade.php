@@ -16,17 +16,86 @@
         <strong>{{ session()->get('message') }}</strong>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
+    @elseif (session()->has('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>{{ session()->get('error') }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
     @endif
 
     <div class="pmu-tab-nav">
         <ul class="nav nav-tabs">
             <li class="nav-item"><a class="nav-link active" href="#Profile" data-bs-toggle="tab">Profile</a> </li>
             <li class="nav-item"><a class="nav-link" href="#Password" data-bs-toggle="tab" id="passwordTab">Password</a> </li>
+            <li class="nav-item"><a class="nav-link" href="#Address" data-bs-toggle="tab" id="addressTab">Address</a> </li>
             <li class="nav-item"><a class="nav-link" href="#TaxSetting" data-bs-toggle="tab" id="arkansasSetting">Arkansas Setting</a> </li>
         </ul>
     </div>
 
     <div class="pmu-tab-content tab-content">
+
+        <div class="tab-pane" id="Address">
+            <div class="myaccount-card">
+                <div class="myaccount-card-form">
+                    <form action="{{ route('SA.Store.Address') }}" method="POST" id="address-form">@csrf
+                        <div class="row">
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>Address Line 1</h4>
+                                    <input type="text" class="form-control" name="address_line_1" id="address_line_1" placeholder="Address Line 1" value="{{ $add->address_line_1 ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>Address Line 2</h4>
+                                    <input type="text" class="form-control" name="address_line_2" id="address_line_2" placeholder="Address Line 2" value="{{ $add->address_line_2 ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>City</h4>
+                                    <input type="text" class="form-control" name="city" id="city" placeholder="City" value="{{ $add->city ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>State</h4>
+                                    <select name="state" id="state" class="form-control">
+                                        <option value="">Select State</option>
+                                        @foreach(config('constant.states') as $key => $state)
+                                            <option @if(isset($add->state) && $add->state==$key) selected @else {{$key=='TX'?'selected':''}} @endif value="{{$key}}">{{$state}} ({{$key}})</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>Zip Code</h4>
+                                    <input type="text" class="form-control" name="zip_code" id="zip_code" placeholder="Zip Code" value="{{ $add->zip_code ?? '' }}">
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <h4>Country</h4>
+                                    <select name="country" id="country" class="form-control">
+                                        <option value="">Select State</option>
+                                        <option selected value="US">United States</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <a class="cancelbtn" href="{{ route('SA.Dashboard') }}" style="color: #fff;">Cancel</a>
+                                    <button class="Createbtn" type="submit">Save</button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    
         <div class="tab-pane active" id="Profile">
             <div class="myaccount-card">
                 <div class="myaccount-card-form">
@@ -128,6 +197,7 @@
                 </div>
             </div>
         </div>
+
         <div class="tab-pane" id="Password">
             <div class="myaccount-card">
                 <div class="myaccount-card-form">
@@ -163,6 +233,7 @@
                 </div>
             </div>
         </div>
+
         <div class="tab-pane" id="TaxSetting">
             <div class="myaccount-card">
                 <div class="myaccount-card-form">
@@ -221,6 +292,7 @@
     var tab = "{{ session()->get('tab') ?? false }}";
     if (tab == 1) $("#passwordTab").get(0).click();
     if (tab == 2) $("#arkansasSetting").get(0).click();
+    if (tab == 3) $("#addressTab").get(0).click();
 
     $(document).ready(function() {
 
@@ -352,6 +424,61 @@
                 },
                 bus_title: {
                     required: 'Please enter business sub title',
+                },
+            },
+            submitHandler: function(form) {
+                // This function will be called when the form is valid and ready to be submitted
+                form.submit();
+            },
+            errorElement: "span",
+            errorPlacement: function(error, element) {
+                error.addClass("invalid-feedback");
+                element.closest(".form-group").append(error);
+
+            },
+            highlight: function(element, errorClass, validClass) {
+                $(element).addClass("is-invalid");
+            },
+            unhighlight: function(element, errorClass, validClass) {
+                $(element).removeClass("is-invalid");
+            },
+        });
+
+        $('#zip_code').mask('00000');
+
+        $('#address-form').validate({
+            rules: {
+                address_line_1: {
+                    required: true,
+                },
+                city: {
+                    required: true,
+                },
+                state: {
+                    required: true,
+                },
+                country: {
+                    required: true,
+                },
+                zip_code: {
+                    required: true,
+                },
+            },
+            messages: {
+                address_line_1: {
+                    required: 'Please enter address line 1',
+                },
+                city: {
+                    required: 'Please enter city',
+                },
+                state: {
+                    required: 'Please select state',
+                },
+                country: {
+                    required: 'Please select country',
+                },
+                zip_code: {
+                    required: 'Please enter zip code',
                 },
             },
             submitHandler: function(form) {
