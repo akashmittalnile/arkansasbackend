@@ -2906,10 +2906,10 @@ class ApiController extends Controller
                 if(isset($item->id)){
                     if($item->product_type == 1){
                         $data = DB::table('course as c')->leftJoin('users as u', 'u.id', '=', 'c.admin_id')->select('u.first_name', 'u.last_name', 'u.profile_image', 'c.title')->where('c.id', $item->product_id)->first();
-                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? assets('/upload/profile-image/'.$data->profile_image) : null;
+                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? uploadAssets('upload/profile-image/'.$data->profile_image) : null;
                     } else {
                         $data = DB::table('product as p')->leftJoin('users as u', 'u.id', '=', 'p.added_by')->select('u.first_name', 'u.last_name', 'u.profile_image', 'p.name as title')->where('p.id', $item->product_id)->first();
-                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? assets('/upload/profile-image/'.$data->profile_image) : null;
+                        $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? uploadAssets('upload/profile-image/'.$data->profile_image) : null;
                     }
                     $order->creator_name = $data;
                 }
@@ -2934,7 +2934,7 @@ class ApiController extends Controller
                     $temp['avg_rating'] = number_format((float)$avgRating, 1, '.', '');
                     $user = User::where('id', $val->added_by)->first();
                     $temp['creator_name'] = $user->first_name . ' ' . $user->last_name;
-                    $temp['creator_image'] = ($user->profile_image!="" && isset($user->profile_image)) ? assets('/upload/profile-image/'.$user->profile_image) : null;
+                    $temp['creator_image'] = ($user->profile_image!="" && isset($user->profile_image)) ? uploadAssets('upload/profile-image/'.$user->profile_image) : null;
                     $other_detail[] = $temp;
                 }
 

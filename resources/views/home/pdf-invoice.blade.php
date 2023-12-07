@@ -109,7 +109,7 @@
                     <h6 style="margin: 0 0 10px 0;color: #2d2f3c;font-size: 16px;font-weight: bold;padding: 0;">Purchased By :</h6>
                     <p style="font-size: 15px;font-weight: bold;color: #858796;margin:0">{{ $order->first_name ?? "NA" }} {{ $order->last_name ?? "" }}</p>
                     <p style="font-size: 14px;font-weight: normal;color: #858796;margin:0">{{ $order->email ?? "NA" }}</p>
-                    <p style="font-size: 14px;font-weight: normal;color: #858796;margin:0;line-height: normal;">{{ $order->phone ?? "NA" }}</p>
+                    <p style="font-size: 14px;font-weight: normal;color: #858796;margin:0;line-height: normal;">+1 {{ $order->phone ?? "NA" }}</p>
                   </td>
                 </tr>
               </table>
@@ -157,9 +157,14 @@
                     <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">S.No.</th>
                     <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">Title</th>
                     <th style="font-size: 14px;background: #f0f0f0;border: none;color: #2d2f3c;padding: 10px">Type</th>
-                    <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Net Amount</th>
+                    @if($order->order_for==1)
+                    <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Actual Amount</th>
+                    <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Discount Amount</th>
+                    @else
+                    <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Amount</th>
+                    <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Shipping Amount</th>
+                    @endif
                     <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Quantity</th>
-                    <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Admin Fee</th>
                     <th style="font-size: 14px;background: #f0f0f0; border: none; color: #2d2f3c;padding: 10px">Total Fee Paid</th>
                   </tr>
                 </thead>
@@ -175,10 +180,21 @@
                         @else Product
                         @endif
                     </td>
-                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->amount-$val->admin_amount }}</td>
+
+                    @if($order->order_for==1)
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)$val->course_fee, 2, '.', '') }}</td>
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)($val->course_fee-$val->amount), 2, '.', '') ?? 0 }}</td>
+                    @else
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)($val->amount), 2, '.', '') ?? 0 }}</td>
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)($val->shipping_price), 2, '.', '') ?? 0 }}</td>
+                    @endif
+                    
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">{{ $val->quantity ?? 1 }}</td>
-                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->admin_amount * $val->quantity }}</td>
-                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ $val->amount * $val->quantity }}</td>
+                    @if($order->order_for == 1)
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)$val->course_fee, 2, '.', '') }}</td>
+                    @else
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)($val->amount * $val->quantity), 2, '.', '') }}</td>
+                    @endif
                   </tr>
                   @php $amount += $val->amount; $admin += $val->admin_amount;  @endphp
                   @empty
@@ -187,19 +203,40 @@
                   <tr>
                     <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Sub Total
                     </td>
-                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;"> ${{ $order->total_amount_paid - $order->taxes }}
+                    @if($order->order_for == 1)
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">
+                      &nbsp;${{ number_format((float)($order->amount + $order->coupon_discount_price ?? 0), 2, '.', '') }}
+                    </td>
+                    @else
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">
+                      ${{ number_format((float)$order->amount, 2, '.', '') }}
+                    </td>
+                    @endif
+                  </tr>
+                  @if($order->order_for == 2)
+                  <tr>
+                    <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Shipping Fee
+                    </td>
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">+${{number_format((float)$order->delivery_charges ?? 0, 2, '.', '')}}
                     </td>
                   </tr>
+                  @endif
                   <tr>
                     <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Tax
                     </td>
-                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;"> ${{ $order->taxes ?? 0 }}
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">+${{ number_format((float)$order->taxes ?? 0, 2, '.', '') }}
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Coupon Discount
+                    </td>
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">-${{ number_format((float)$order->coupon_discount_price ?? 0, 2, '.', '') }}
                     </td>
                   </tr>
                   <tr>
                     <td colspan="6" style="font-size: 16px;font-weight: bold;border-top: 1px solid #f0f0f0;border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0;color: #858796;padding: 10px;margin: 0;"> Total
                     </td>
-                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;"> ${{ $order->total_amount_paid ?? 0 }}
+                    <td colspan="1" style="font-size: 14px; font-weight: bold;border-top: 1px solid #f0f0f0; border-bottom: 1px solid #f0f0f0;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">&nbsp;${{ $order->total_amount_paid ?? 0 }}
                     </td>
                   </tr>
 

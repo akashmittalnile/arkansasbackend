@@ -97,9 +97,9 @@ class CartController extends Controller
                         if($request->object_type == 1){
                             $user = User::where('id', $course->admin_id)->first();
                             if(isset($user->id) && $user->role == 3){
-                                $admin_value = $request->cart_value;
+                                $admin_value = $course->course_fee;
                             } else if(isset($user->id) && $user->role == 2){
-                                $admin_value = number_format((float)(($request->cart_value * $user->admin_cut)/100), 2);
+                                $admin_value = number_format((float)(($course->course_fee * $user->admin_cut)/100), 2);
                             }
                         }
                         $cart->cart_value = $cart_value;
@@ -226,6 +226,7 @@ class CartController extends Controller
                 $tax = Setting::where('attribute_code', 'tax')->first();
                 $response = array();
                 $qty = 0;
+                $totalDiscountPrice = 0;
                 $price = 0;
                 foreach ($shopping_cart as $keys => $item) {
                     $temp['product_id'] = $item->object_id;
@@ -254,15 +255,44 @@ class CartController extends Controller
                         } else $temp['image'] = null;
                         $avgRating = DB::table('user_review as ur')->where('object_id', $item->object_id)->where('object_type', $item->object_type)->avg('rating');
                         $temp['avg_rating'] = number_format($avgRating, 1);
+
+                        $dprice = 0;
+                        if(isset($item->coupon_id) && $item->coupon_id!=''){
+                            $appliedCoupon = Coupon::where('object_type', 1)->where('object_id', $item->object_id)->where('id', $item->coupon_id)->first();
+                            $dprice = (($value->course_fee*$appliedCoupon->coupon_discount_amount)/100);
+                        }
+
+                        
+                        $temp['is_coupon_applied'] = (isset($item->coupon_id) && $item->coupon_id!='') ? true : false;
+                        $temp['coupon_code'] = $appliedCoupon->coupon_code ?? null;
+                        $temp['coupon_discount'] = number_format((float)$dprice, 2, '.', '') ?? null;
+
+                        $coupons = Coupon::where('object_type', 1)->where('object_id', $item->object_id)->get();
+                        $list = [];
+                        foreach($coupons as $val){
+                            $c['id'] = $val->id;
+                            $c['code'] = $val->coupon_code;
+                            $c['expiry_date'] = date('d M Y', strtotime($val->coupon_expiry_date));
+                            $c['coupon_for'] = 'Course';
+                            $c['discount_type'] = $val->	coupon_discount_type;
+                            $c['discount_type_name'] = ($val->coupon_discount_type==1) ? 'Flat' : 'Percentage';
+                            $c['discount_amount'] = $val->coupon_discount_amount;
+                            $c['description'] = $val->description;
+                            $c['created_at'] = date('d M Y, h:iA', strtotime($val->created_at));
+                            $list[] = $c;
+                        }
+                        $temp['coupons'] = $list;
                     }
+                    $totalDiscountPrice += $dprice ?? 0;
                     $qty += $item->quantity;
                     $price += $value->course_fee;
                     $response['items'][] = $temp;
                 }
                 $response['subTotal'] = $price;
                 $response['totalQty'] = $qty;
-                $response['tax'] = ($price * $tax->attribute_value) / 100;
-                $response['totalPrice'] = $price + $response['tax'];
+                $response['tax'] = (($price-$totalDiscountPrice) * $tax->attribute_value) / 100;
+                $response['totalPrice'] = number_format((float)$price + $response['tax'] - $totalDiscountPrice, 2, '.', '');
+                $response['couponPrice'] = $totalDiscountPrice;
                 $response['totalItem'] = $qty;
                 return response()->json(['status' => true, 'message' => 'Cart list', 'data' => $response, 'type' => 1]);
             }else{
@@ -357,9 +387,10 @@ class CartController extends Controller
                         if ($old['products'][$i]['product_id'] == $request->product_id) {
                             $old['products'][$i]['qty'] = $request->quantity;
                             $old['products'][$i]['total_amount'] = $old['products'][$i]['qty'] * $old['products'][$i]['sale_price'];
-                            $old['products'][$i]['shipmentId'] = null;
-                            $old['products'][$i]['shippingPrice'] = 0;
                         }
+                        $old['products'][$i]['compare_rate_list'] = [];
+                        $old['products'][$i]['shipmentId'] = null;
+                        $old['products'][$i]['shippingPrice'] = 0;
                         $old['products'][$i]['service_code'] = null;
 
                         $qty += $old['products'][$i]['qty'];
@@ -475,13 +506,17 @@ class CartController extends Controller
                     for ($i = 0; $i < count($old['products']); $i++) {
                         if ($old['products'][$i]['product_id'] == $request->product_id) {
                             array_splice($data['products'], $i, 1);
-                        } else {
-                            if ($old['products'][$i]['product_id'] != $request->product_id) {
-                                $qty += $old['products'][$i]['qty'];
-                                $price += $old['products'][$i]['total_amount'];
-                                $ship_price += $old['products'][$i]['shippingPrice'];
-                            }
                         }
+                    }
+
+                    for ($i = 0; $i < count($data['products']); $i++) {
+                        $data['products'][$i]['compare_rate_list'] = [];
+                        $data['products'][$i]['shipmentId'] = null;
+                        $data['products'][$i]['shippingPrice'] = 0;
+                        $data['products'][$i]['service_code'] = null;
+                        $qty += $old['products'][$i]['qty'];
+                        $price += $old['products'][$i]['total_amount'];
+                        $ship_price += $old['products'][$i]['shippingPrice'];
                     }
 
                     if($data['couponType'] == 1){
@@ -551,31 +586,50 @@ class CartController extends Controller
                     $admin_cut_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('admin_cut_value * quantity'));
                     $order_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
                     $total_price = $order_price;
+                    $dprice = 0;
 
                     $tax = Setting::where('attribute_code','tax')->first();
                     if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
                         $tax_amount = ($total_price*$tax->attribute_value)/100;
                     else $tax_amount = 0;
 
+                    foreach ($carts as $cart) {
+                        $course = Course::where('id', $cart->object_id)->first();
+                        $c = Coupon::where('object_type', 1)->where('object_id', $cart->object_id)->where('id', $cart->coupon_id)->first();
+                        if(isset($c->id)){
+                            $p = (($course->course_fee*$c->coupon_discount_amount)/100);
+                            $dprice += $p;
+                        }
+                    }
+
                     $insertedId = Order::insertGetId([
                         'user_id' => $user_id,
                         'order_number' => $order_no,
-                        'amount' => $order_price - $admin_cut_price,
+                        'order_for' => 1,
+                        'amount' => $order_price,
                         'admin_amount' => $admin_cut_price,
                         'taxes' => number_format((float)$tax_amount, 2, '.', ''),
                         'total_amount_paid' => number_format((float)($total_price+$tax_amount), 2, '.', ''),/*Total amount of order*/
                         'payment_id' => null,
+                        'coupon_discount_price' => $dprice ?? 0,
                         'payment_type' => null,
                         'created_date' => date('Y-m-d H:i:s'),
                         'status' => 0,
                     ]);
 
                     foreach ($carts as $cart) {
+                        $discountPrice = 0;
+                        $coupon = Coupon::where('object_type', 1)->where('object_id', $cart->object_id)->where('id', $cart->coupon_id)->first();
+                        if(isset($coupon->id)){
+                           $discountPrice = (($cart->cart_value*$coupon->coupon_discount_amount)/100); 
+                        }
+
                         $OrderDetail = new OrderDetail;
                         $OrderDetail->order_id = $insertedId;
                         $OrderDetail->product_id = $cart->object_id;
                         $OrderDetail->product_type = $cart->object_type;
-                        $OrderDetail->quantity = $cart->quantity;
+                        $OrderDetail->coupon_id = $cart->coupon_id ?? null;
+                        $OrderDetail->coupon_discount_price = $discountPrice;
                         $OrderDetail->amount = $cart->cart_value;
                         $OrderDetail->admin_amount = $cart->admin_cut_value;
                         $OrderDetail->created_date = date('Y-m-d H:i:s');
@@ -589,13 +643,13 @@ class CartController extends Controller
                             $userCourse = new UserCourse;
                             $userCourse->course_id = $cart->object_id;
                             $userCourse->user_id = $user_id;
-                            $userCourse->buy_price = $cart->cart_value;
+                            $userCourse->buy_price = $cart->cart_value-$discountPrice;
                             $userCourse->payment_id = null;
                             $userCourse->buy_date = date('Y-m-d H:i:s');
                             $userCourse->status = 0;
                             $userCourse->is_expire = 0;
                             $userCourse->created_date = date('Y-m-d H:i:s');
-                            $userCourse->coupon_id = null;
+                            $userCourse->coupon_id = $cart->coupon_id ?? null;
                             $userCourse->save();
                         }
                     }
@@ -614,6 +668,7 @@ class CartController extends Controller
                         $insertedId = Order::insertGetId([
                             'user_id' => $user_id,
                             'order_number' => $order_no,
+                            'order_for' => 2,
                             'amount' => $old['subTotal'] ?? 0,
                             'admin_amount' => $admin_cut,
                             'taxes' => number_format((float)$old['tax'] ?? 0, 2, '.', ''),
@@ -660,15 +715,18 @@ class CartController extends Controller
     public function get_coupons(Request $request){
         try{
             $now = Carbon::now();
-            $coupon = Coupon::where('status', 1)->where('coupon_expiry_date', '>', $now)->orderByDesc('id')->get();
+            $coupon = Coupon::where('status', 1);
+            if($request->filled('type')) $coupon->where('object_type', $request->type ?? 2);
+            $coupon = $coupon->where('coupon_expiry_date', '>', $now)->orderByDesc('id')->get();
             $response = [];
             foreach($coupon as $val){
                 $temp['id'] = $val->id;
                 $temp['code'] = $val->coupon_code;
                 $temp['expiry_date'] = date('d M Y', strtotime($val->coupon_expiry_date));
+                $temp['coupon_for'] = ($val->object_type==1) ? 'Course' : 'Product';
                 $temp['discount_type'] = $val->	coupon_discount_type;
                 $temp['discount_type_name'] = ($val->coupon_discount_type==1) ? 'Flat' : 'Percentage';
-                $temp['min_order'] = $val->min_order_amount;
+                $temp['min_order'] = $val->min_order_amount ?? null;
                 $temp['discount_amount'] = $val->coupon_discount_amount;
                 $temp['description'] = $val->description;
                 $temp['created_at'] = date('d M Y, h:iA', strtotime($val->created_at));
@@ -749,6 +807,81 @@ class CartController extends Controller
         }
     }
 
+    public function coupon_applied_course(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'code' => 'required',
+                'course_id' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else {
+                $exist = Coupon::where('coupon_code', strtoupper($request->code))->where('object_type', 1)->first();
+                if(isset($exist->id)){
+                    if($exist->object_id != $request->course_id){
+                        return response()->json(['status' => false, 'message' => 'This coupon is not for this course!']);
+                    }
+                    $cart = Addtocart::where('userid', auth()->user()->id)->where('object_id', $request->course_id)->where('object_type', 1)->first();
+                    if (isset($cart->id)) {
+                        $course = Course::where('id', $request->course_id)->first();
+                        $amount = (($cart->cart_value * $exist->coupon_discount_amount)/100);
+                        $admin_value = $course->course_fee;
+                        
+                        $user = User::where('id', $course->admin_id)->first();
+                        if(isset($user->id) && $user->role == 3){
+                            $admin_value = $course->course_fee-$amount;
+                        } else if(isset($user->id) && $user->role == 2){
+                            $admin_value = number_format((float)((($course->course_fee-$amount) * $user->admin_cut)/100), 2);
+                        }
+                        
+                        Addtocart::where('userid', auth()->user()->id)->where('object_id', $request->course_id)->where('object_type', 1)->update([
+                            'coupon_id' => $exist->id,
+                            'admin_cut_value' => $admin_value,
+                            'cart_value' => $course->course_fee-$amount
+                        ]);
+                        return response()->json(['status' => true, 'message' => 'Coupon applied.']);
+                    } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
+                } else return response()->json(['status' => false, 'message' => 'Invalid coupon code!']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function remove_coupon_applied_course(Request $request)
+    {
+        try {
+            $validator = Validator::make($request->all(), [
+                'course_id' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else {
+                $cart = Addtocart::where('userid', auth()->user()->id)->where('object_id', $request->course_id)->where('object_type', 1)->first();
+                if (isset($cart->id)) {
+                    $course = Course::where('id', $request->course_id)->first();
+                    $admin_value = $course->course_fee;
+                        
+                    $user = User::where('id', $course->admin_id)->first();
+                    if(isset($user->id) && $user->role == 3){
+                        $admin_value = $course->course_fee;
+                    } else if(isset($user->id) && $user->role == 2){
+                        $admin_value = number_format((float)((($course->course_fee) * $user->admin_cut)/100), 2);
+                    }
+
+                    Addtocart::where('userid', auth()->user()->id)->where('object_id', $request->course_id)->where('object_type', 1)->update([
+                        'coupon_id' => null,
+                        'admin_cut_value' => $admin_value,
+                        'cart_value' => $course->course_fee
+                    ]);
+                    return response()->json(['status' => true, 'message' => 'Coupon removed.']);
+                } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
     public function get_shipping_rates(Request $request)
     {
         try {
@@ -784,6 +917,15 @@ class CartController extends Controller
     public function compare_rates($pro, $address)
     {
         $curl = curl_init();
+        $admin = User::where('role', 3)->first();
+        $adminAddress = Address::where('user_id', $admin->id)->first();
+        $add = array();
+        $add['address_line_1'] = $adminAddress->address_line_1 ?? "4625 Windfern Rd";
+        $add['city'] = $adminAddress->city ?? "Houston";
+        $add['state'] = $adminAddress->state ?? 'TX';
+        $add['zip_code'] = $adminAddress->zip_code ?? 77041;
+        $add['country'] = $adminAddress->country ?? 'US';
+        
         curl_setopt_array($curl, array(
             CURLOPT_URL => 'https://api.shipengine.com/v1/rates',
             CURLOPT_RETURNTRANSFER => true,
@@ -811,11 +953,11 @@ class CartController extends Controller
                     "ship_from": {
                         "name": "Arkansas",
                         "company_name": "Arkansas",
-                        "address_line1": "4625 Windfern Rd",
-                        "city_locality": "Houston",
-                        "state_province": "TX",
-                        "postal_code": "77041",
-                        "country_code": "US",
+                        "address_line1": "'. $add['address_line_1'] .'",
+                        "city_locality": "'. $add['city'] .'",
+                        "state_province": "'. $add['state'] .'",
+                        "postal_code": "'. $add['zip_code'] .'",
+                        "country_code": "'. $add['country'] .'",
                         "phone": "(713) 329-3503"
                     },
                     "ship_to": {

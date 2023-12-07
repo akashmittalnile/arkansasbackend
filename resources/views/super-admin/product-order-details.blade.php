@@ -102,7 +102,7 @@
                                         </div>
                                         <div class="side-profile-total-content">
                                             <h2>Phone No.</h2>
-                                            <p>{{ $order->phone ?? "NA" }}</p>
+                                            <p>+1 {{ $order->phone ?? "NA" }}</p>
                                         </div>
                                     </div>
                                 </div>
@@ -159,7 +159,11 @@
                                                 @endif
                                             </div>
                                             <h2 class="text-capitalize">{{ $val->title ?? "NA" }}</h2>
+                                            @if($val->product_type == 1)
+                                            <div class="pmu-course-details-price">${{ number_format((float)$val->course_fee, 2, '.', '') }}</div>
+                                            @else
                                             <div class="pmu-course-details-price">${{ number_format((float)$val->amount, 2, '.', '') }}</div>
+                                            @endif
                                         </div>
                                     </div>
                                     @php $amount += $val->amount; $admin += $val->admin_amount; @endphp
@@ -173,21 +177,25 @@
                                     <div class="cart-summary-info">
                                         <div class="cart-summary-item">
                                             <div class="cart-summary-text">Sub Total</div>
-                                            <div class="cart-summary-value" id="total-amount">${{ number_format((float)$order->amount ?? 0, 2, '.', '') }}</div>
+                                            @if($order->order_for == 1)
+                                            <div class="cart-summary-value" id="total-amount">${{ number_format((float)($order->amount + $order->coupon_discount_price ?? 0), 2, '.', '') }}</div>
+                                            @else
+                                            <div class="cart-summary-value" id="total-amount">${{ number_format((float)($order->amount ?? 0), 2, '.', '') }}</div>
+                                            @endif
                                         </div>
                                         @if($order->delivery_charges != null && $order->delivery_charges != '' && $order->delivery_charges != 0)
                                         <div class="cart-summary-item">
                                             <div class="cart-summary-text">Shipping Fee</div>
-                                            <div class="cart-summary-value" id="admin-fee">${{$order->delivery_charges ?? 0}}</div>
+                                            <div class="cart-summary-value" id="admin-fee">+${{$order->delivery_charges ?? 0}}</div>
                                         </div>
                                         @endif
                                         <div class="cart-summary-item">
                                             <div class="cart-summary-text">Tax</div>
-                                            <div class="cart-summary-value">${{ number_format((float)$order->taxes ?? 0, 2, '.', '') }}</div>
+                                            <div class="cart-summary-value">+${{ number_format((float)$order->taxes ?? 0, 2, '.', '') }}</div>
                                         </div>
                                         <div class="cart-summary-item">
                                             <div class="cart-summary-text">Coupon Discount</div>
-                                            <div class="cart-summary-value">${{ number_format((float)$order->coupon_discount_price ?? 0, 2, '.', '') }}</div>
+                                            <div class="cart-summary-value">-${{ number_format((float)$order->coupon_discount_price ?? 0, 2, '.', '') }}</div>
                                         </div>
                                         <div class="cart-summary-total-item">
                                             <div class="cart-summary-total-text">Total Fee Paid</div>

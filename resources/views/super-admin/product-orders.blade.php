@@ -57,7 +57,7 @@
                         <div class="col-md-9">
                             <div class="pmu-table-info-card">
                                 <h2>Total Admin Earning by @if(request()->type == '1') Course @elseif(request()->type == '2') Product @else Course @endif</h2>
-                                <div class="pmu-table-value">${{ number_format((float)$fee->sum ?? 0, 2) }}</div>
+                                <div class="pmu-table-value">${{ number_format((float)$fee ?? 0, 2) }}</div>
                             </div>
                         </div>
                         <div class="col-md-3">
