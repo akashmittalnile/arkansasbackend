@@ -68,6 +68,13 @@ class CartController extends Controller
                         if (isset($isAlready->id)) {
                             return response()->json(['status' => false, 'message' => "You can't add to cart a courses now. Only one type of items allow either Course or Product.", 'error' => 1]);
                         }
+                        if($isCart > 0){
+                            $creatorId = AddToCart::join('course as c', 'c.id', '=', 'shopping_cart.object_id')->where('shopping_cart.userid', $user_id)->select('c.admin_id')->first();
+                            $anotherCreator = Course::where('id', $request->object_id)->where('admin_id', $creatorId->admin_id)->first();
+                            if(!isset($anotherCreator->id)){
+                                return response()->json(['status' => false, 'message' => "You can't add to cart a courses from another creator."]);
+                            }
+                        }
                         $isAlreadyCart = AddToCart::where('userid', $user_id)->where('object_id', $request->object_id)->first();
                         if(isset($isAlreadyCart->id)){
                             return response()->json(['status' => false, 'message' => 'Already in cart. Please try another courses.']);
@@ -356,7 +363,7 @@ class CartController extends Controller
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($old)
                     ]);
-                    $address = Address::where('user_id', auth()->user()->id)->get();
+                    $address = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'shipping')->get();
                     return response()->json(['status' => true, 'message' => 'Cart list', 'data' => $res, 'address' => $address, 'type' => 2]);
                 } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
             }
@@ -433,7 +440,7 @@ class CartController extends Controller
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             } else {
-                $address = Address::where('user_id', auth()->user()->id)->where('id', $request->address_id)->first();
+                $address = Address::where('user_id', auth()->user()->id)->where('id', $request->address_id)->where('shipping_type', 'shipping')->first();
                 if (isset($address->id)) {
                     $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
                     if (isset($cart->id)) {

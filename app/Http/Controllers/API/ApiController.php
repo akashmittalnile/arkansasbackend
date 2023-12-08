@@ -2993,7 +2993,7 @@ class ApiController extends Controller
 
     public function storeAddress(Request $request){
         try{
-            $validator = Validator::make($request->all(), [
+            $rules = [
                 'first_name' => 'required',
                 'last_name' => 'required',
                 'email' => 'required|email',
@@ -3006,7 +3006,22 @@ class ApiController extends Controller
                 'country' => 'required',
                 'zip_code' => 'required',
                 'address_type' => 'required',
-            ]);
+                'billig_checkbox' => 'required',
+            ];
+            if($request->billig_checkbox==0){
+                $rules['billing_first_name'] = 'required';
+                $rules['billing_last_name'] = 'required';
+                $rules['billing_email'] = 'required';
+                $rules['billing_phone'] = 'required';
+                $rules['billing_address_line_1'] = 'required';
+                $rules['billing_latitude'] = 'required';
+                $rules['billing_longitude'] = 'required';
+                $rules['billing_city'] = 'required';
+                $rules['billing_state'] = 'required';
+                $rules['billing_country'] = 'required';
+                $rules['billing_zip_code'] = 'required';
+            }
+            $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             } else {
@@ -3031,11 +3046,69 @@ class ApiController extends Controller
                     $address->state = $request->state;
                     $address->country = $request->country;
                     $address->zip_code = $request->zip_code;
-                    $address->address_type = $request->address_type;
+                    $address->address_type = $request->address_type ?? 'residential';
+                    $address->shipping_type = 'shipping';
                     $address->default_address = $request->is_default ?? 0;
                     $address->created_at = date('Y-m-d H:i:s');
                     $address->updated_at = date('Y-m-d H:i:s');
-                    if($address->save()){
+                    $address->save();
+
+                    $billingAddressExist = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->first();
+                    if(isset($billingAddressExist->id)){
+                        $billingAddress = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->first();
+                    }else{
+                        $billingAddress = new Address;
+                    }
+                    if($request->billig_checkbox==1){
+                        $billingAddress->user_id = auth()->user()->id;
+                        $billingAddress->first_name = $request->first_name;
+                        $billingAddress->middle_name = $request->middle_name ?? null;
+                        $billingAddress->last_name = $request->last_name;
+                        $billingAddress->email = $request->email;
+                        $billingAddress->phone = $request->phone;
+                        $billingAddress->company_name = $request->company_name ?? null;
+                        $billingAddress->address_line_1 = $request->address_line_1;
+                        $billingAddress->address_line_2 = $request->address_line_2 ?? null;
+                        $billingAddress->latitude = $request->latitude;
+                        $billingAddress->longitude = $request->longitude;
+                        $billingAddress->city = $request->city;
+                        $billingAddress->state = $request->state;
+                        $billingAddress->country = $request->country;
+                        $billingAddress->zip_code = $request->zip_code;
+                        $billingAddress->address_type = null;
+                        $billingAddress->shipping_type = 'billing';
+                        $billingAddress->default_address = 0;
+                        $billingAddress->created_at = date('Y-m-d H:i:s');
+                        $billingAddress->updated_at = date('Y-m-d H:i:s');
+                    }else if($request->billig_checkbox==0){
+                        $validBilling = $this->validateBillingAddress($request);
+                        if($validBilling[0]['status']){
+                            $billingAddress = new Address;
+                            $billingAddress->user_id = auth()->user()->id;
+                            $billingAddress->first_name = $request->billing_first_name;
+                            $billingAddress->middle_name = $request->billing_middle_name ?? null;
+                            $billingAddress->last_name = $request->billing_last_name;
+                            $billingAddress->email = $request->billing_email;
+                            $billingAddress->phone = $request->billing_phone;
+                            $billingAddress->company_name = $request->billing_company_name ?? null;
+                            $billingAddress->address_line_1 = $request->billing_address_line_1;
+                            $billingAddress->address_line_2 = $request->billing_address_line_2 ?? null;
+                            $billingAddress->latitude = $request->billing_latitude;
+                            $billingAddress->longitude = $request->billing_longitude;
+                            $billingAddress->city = $request->billing_city;
+                            $billingAddress->state = $request->billing_state;
+                            $billingAddress->country = $request->billing_country;
+                            $billingAddress->zip_code = $request->billing_zip_code;
+                            $billingAddress->address_type = null;
+                            $billingAddress->shipping_type = 'billing';
+                            $billingAddress->default_address = 0;
+                            $billingAddress->created_at = date('Y-m-d H:i:s');
+                            $billingAddress->updated_at = date('Y-m-d H:i:s');
+                        } else {
+                            return response()->json($validBilling[0]);
+                        }
+                    }
+                    if($billingAddress->save()){
                         return response()->json(['status' => true, 'message'=> 'New Address Added Successfully.']);
                     }else{
                         return response()->json(['status' => false, 'message'=> 'Something went wrong.']);
@@ -3089,10 +3162,71 @@ class ApiController extends Controller
             }
         } elseif ($res[0]->status == 'verified') {
             $zip_code_response = explode('-',$res[0]->matched_address->postal_code);
+            $city_response = explode('-',$res[0]->matched_address->city_locality);
+            $state_response = explode('-',$res[0]->matched_address->state_province);
             if($zip_code_response[0] != $data->zip_code)
             {
                 return array([ "status" => false, "message" => 'The correct zip code is '.$zip_code_response[0], "data" => $zip_code_response[0]]);
-            } else {
+            } else if(strtoupper($city_response[0]) != strtoupper($data->city)){
+                return array([ "status" => false, "message" => 'The correct city is '.$city_response[0], "data" => $city_response[0]]);
+            }  else if(strtoupper($state_response[0]) != strtoupper($data->state)){
+                return array([ "status" => false, "message" => 'The correct state code is '.$state_response[0], "data" => $state_response[0]]);
+            }  else {
+                return array(["status" => true]);
+            }
+        }
+    }
+
+    public function validateBillingAddress($data){
+        $curl = curl_init();
+        curl_setopt_array($curl, array(
+            CURLOPT_URL => 'https://api.shipengine.com/v1/addresses/validate',
+            CURLOPT_RETURNTRANSFER => true,
+            CURLOPT_ENCODING => '',
+            CURLOPT_MAXREDIRS => 10,
+            CURLOPT_TIMEOUT => 0,
+            CURLOPT_FOLLOWLOCATION => true,
+            CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+            CURLOPT_CUSTOMREQUEST => 'POST',
+            CURLOPT_POSTFIELDS => "[
+            {
+                'address_line1': '$data->billing_address_line_1',
+                'city_locality': '$data->billing_city',
+                'state_province': '$data->billing_state',
+                'postal_code': '$data->billing_zip_code',
+                'country_code': 'US'
+            }
+        ]",
+            CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'API-Key: ' . env('SHIP_ENGINE_KEY')
+            ),
+        ));
+        $response = curl_exec($curl);
+        curl_close($curl);
+        $res = json_decode($response);
+
+        if($res[0]->status != 'verified') {
+            foreach ($res[0]->messages as $key => $item) {
+                if($item->message == 'Invalid postal_code.') {
+                    $error_msg = 'Please enter a valid billing Zip Code!';
+                } else {
+                    $error_msg = $item->message;
+                }
+                return array(["status" => false, "message" => $error_msg]);
+            }
+        } elseif ($res[0]->status == 'verified') {
+            $zip_code_response = explode('-',$res[0]->matched_address->postal_code);
+            $city_response = explode('-',$res[0]->matched_address->city_locality);
+            $state_response = explode('-',$res[0]->matched_address->state_province);
+            if($zip_code_response[0] != $data->billing_zip_code)
+            {
+                return array([ "status" => false, "message" => 'The correct billing zip code is '.$zip_code_response[0], "data" => $zip_code_response[0]]);
+            } else if(strtoupper($city_response[0]) != strtoupper($data->billing_city)){
+                return array([ "status" => false, "message" => 'The correct billing city is '.$city_response[0], "data" => $city_response[0]]);
+            }  else if(strtoupper($state_response[0]) != strtoupper($data->billing_state)){
+                return array([ "status" => false, "message" => 'The correct billing state code is '.$state_response[0], "data" => $state_response[0]]);
+            }  else {
                 return array(["status" => true]);
             }
         }
@@ -3100,9 +3234,10 @@ class ApiController extends Controller
 
     public function getAddress(){
         try{
-            $address = Address::where('user_id', auth()->user()->id)->get();
+            $address = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'shipping')->get();
+            $billing = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->first();
             if(count($address) > 0){
-                return response()->json(['status' => true, 'message'=> 'Addresses', 'data'=> $address]);
+                return response()->json(['status' => true, 'message'=> 'Addresses', 'data'=> $address, 'billing' => isset($billing->id) ? $billing : null]);
             }else {
                 return response()->json(['status' => false, 'message'=> 'No address found']);
             }
@@ -3113,9 +3248,10 @@ class ApiController extends Controller
 
     public function getAddressDetails($id){
         try{
-            $address = Address::where('user_id', auth()->user()->id)->where('id', $id)->first();
+            $address = Address::where('user_id', auth()->user()->id)->where('id', $id)->where('shipping_type', 'shipping')->first();
+            $billing = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->first();
             if(isset($address)){
-                return response()->json(['status' => true, 'message'=> 'Address', 'data'=> $address]);
+                return response()->json(['status' => true, 'message'=> 'Address', 'data'=> $address, 'billing' => isset($billing->id) ? $billing : null]);
             }else {
                 return response()->json(['status' => false, 'message'=> 'No address found']);
             }
@@ -3135,7 +3271,7 @@ class ApiController extends Controller
 
     public function updateAddress(Request $request){
         try{
-            $validator = Validator::make($request->all(), [
+            $rules = [
                 'id' => 'required',
                 'first_name' => 'required',
                 'last_name' => 'required',
@@ -3149,7 +3285,22 @@ class ApiController extends Controller
                 'country' => 'required',
                 'zip_code' => 'required',
                 'address_type' => 'required',
-            ]);
+                'billig_checkbox' => 'required'
+            ];
+            if($request->billig_checkbox==0){
+                $rules['billing_first_name'] = 'required';
+                $rules['billing_last_name'] = 'required';
+                $rules['billing_email'] = 'required';
+                $rules['billing_phone'] = 'required';
+                $rules['billing_address_line_1'] = 'required';
+                $rules['billing_latitude'] = 'required';
+                $rules['billing_longitude'] = 'required';
+                $rules['billing_city'] = 'required';
+                $rules['billing_state'] = 'required';
+                $rules['billing_country'] = 'required';
+                $rules['billing_zip_code'] = 'required';
+            }
+            $validator = Validator::make($request->all(), $rules);
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             } else {
@@ -3173,10 +3324,68 @@ class ApiController extends Controller
                         'state' => $request->state,
                         'country' => $request->country,
                         'zip_code' => $request->zip_code,
-                        'address_type' => $request->address_type,
+                        'address_type' => $request->address_type ?? 'residential',
+                        'shipping_type' => 'shipping',
                         'default_address' => $request->is_default ?? 0,
                         'updated_at' => date('Y-m-d H:i:s'),
                     ]);
+
+                    $billingAddressExist = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->first();
+                    if(isset($billingAddressExist->id)){
+                        $billingAddress = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->first();
+                    }else{
+                        $billingAddress = new Address;
+                    }
+                    if($request->billig_checkbox==1){
+                        $billingAddress->user_id = auth()->user()->id;
+                        $billingAddress->first_name = $request->first_name;
+                        $billingAddress->middle_name = $request->middle_name ?? null;
+                        $billingAddress->last_name = $request->last_name;
+                        $billingAddress->email = $request->email;
+                        $billingAddress->phone = $request->phone;
+                        $billingAddress->company_name = $request->company_name ?? null;
+                        $billingAddress->address_line_1 = $request->address_line_1;
+                        $billingAddress->address_line_2 = $request->address_line_2 ?? null;
+                        $billingAddress->latitude = $request->latitude;
+                        $billingAddress->longitude = $request->longitude;
+                        $billingAddress->city = $request->city;
+                        $billingAddress->state = $request->state;
+                        $billingAddress->country = $request->country;
+                        $billingAddress->zip_code = $request->zip_code;
+                        $billingAddress->address_type = null;
+                        $billingAddress->shipping_type = 'billing';
+                        $billingAddress->default_address = 0;
+                        $billingAddress->created_at = date('Y-m-d H:i:s');
+                        $billingAddress->updated_at = date('Y-m-d H:i:s');
+                    }else if($request->billig_checkbox==0){
+                        $validBilling = $this->validateBillingAddress($request);
+                        if($validBilling[0]['status']){
+                            $billingAddress = new Address;
+                            $billingAddress->user_id = auth()->user()->id;
+                            $billingAddress->first_name = $request->billing_first_name;
+                            $billingAddress->middle_name = $request->billing_middle_name ?? null;
+                            $billingAddress->last_name = $request->billing_last_name;
+                            $billingAddress->email = $request->billing_email;
+                            $billingAddress->phone = $request->billing_phone;
+                            $billingAddress->company_name = $request->billing_company_name ?? null;
+                            $billingAddress->address_line_1 = $request->billing_address_line_1;
+                            $billingAddress->address_line_2 = $request->billing_address_line_2 ?? null;
+                            $billingAddress->latitude = $request->billing_latitude;
+                            $billingAddress->longitude = $request->billing_longitude;
+                            $billingAddress->city = $request->billing_city;
+                            $billingAddress->state = $request->billing_state;
+                            $billingAddress->country = $request->billing_country;
+                            $billingAddress->zip_code = $request->billing_zip_code;
+                            $billingAddress->address_type = null;
+                            $billingAddress->shipping_type = 'billing';
+                            $billingAddress->default_address = 0;
+                            $billingAddress->created_at = date('Y-m-d H:i:s');
+                            $billingAddress->updated_at = date('Y-m-d H:i:s');
+                        } else {
+                            return response()->json($validBilling[0]);
+                        }
+                    }
+                    $billingAddress->save();
                     return response()->json(['status' => true, 'message'=> 'Address Updated Successfully.']);
                 } else {
                     return response()->json($valid[0]);
