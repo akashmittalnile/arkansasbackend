@@ -2439,11 +2439,56 @@ class SuperAdminController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', 'orders.total_amount_paid', 'orders.delivery_charges', 'orders.amount', 'orders.coupon_discount_price', 'orders.order_for')->first();
 
-            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, c.course_fee, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
+            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, c.course_fee, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image, order_product_detail.shipengine_label_id, order_product_detail.shipengine_label_url"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
 
             $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
 
             return view('super-admin.product-order-details')->with(compact('order', 'transaction', 'orderDetails'));
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function generate_label($id, $orderId){
+        try{
+            $id = encrypt_decrypt('decrypt', $id);
+            $orderId = encrypt_decrypt('decrypt', $orderId);
+            $product = OrderDetail::where('product_id', $id)->where('product_type', 2)->where('order_id', $orderId)->first();
+            if (!isset($product->shipment_id)) {
+                return redirect()->back()->with('error', 'Shipment not created for this order!');
+            }
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+                CURLOPT_URL => 'https://api.shipengine.com/v1/labels/shipment/'.$product->shipment_id,
+                CURLOPT_RETURNTRANSFER => true,
+                CURLOPT_ENCODING => '',
+                CURLOPT_MAXREDIRS => 10,
+                CURLOPT_TIMEOUT => 0,
+                CURLOPT_FOLLOWLOCATION => true,
+                CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+                CURLOPT_CUSTOMREQUEST => 'POST',
+                CURLOPT_POSTFIELDS => '{
+            "validate_address": "no_validation",
+            "label_layout": "4x6",
+            "label_format": "pdf",
+            "label_download_type": "url",
+            "display_scheme": "label"
+            }',
+                CURLOPT_HTTPHEADER => array(
+                    'Content-Type: application/json',
+                    'API-Key: ' . env('SHIP_ENGINE_KEY')
+                ),
+            ));
+            $response = curl_exec($curl);
+            curl_close($curl);
+            $jsonData = json_decode($response, true);
+
+            if (isset($jsonData['errors']) && (count($jsonData['errors']) > 0)) {
+                return redirect()->back()->with('error', $jsonData['errors'][0]['message']);
+            } else {
+                OrderDetail::where('product_id', $id)->where('product_type', 2)->where('order_id', $orderId)->update(['shipengine_label_response' => serialize($jsonData), 'shipengine_label_url' => $jsonData['label_download']['href'], 'shipengine_label_id' => $jsonData['label_id']]);
+            }
+            return redirect()->back()->with('message', 'Label generated successfully!');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -2584,6 +2629,15 @@ class SuperAdminController extends Controller
             $courseStep = CourseChapterStep::where('id', $quizId)->whereIn('type', ['quiz'])->first();
             $passingPercentage = $courseStep->passing ?? 33;
             return response()->json(['status'=> true, 'total' => $total, 'obtained' => $obtained, 'percen' => $passingPercentage]);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function notifySeen(Request $request){
+        try{
+            Notify::where('user_id', auth()->user()->id)->update(['is_seen' => '1']);
+            return response()->json(['status' => true]);
         } catch (\Exception $e) {
             return $e->getMessage();
         }

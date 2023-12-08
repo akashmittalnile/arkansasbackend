@@ -11,9 +11,9 @@
             <ul class="navbar-nav">
                 <li class="nav-item noti-dropdown dropdown">
                     <a class="nav-link  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                        <div class="noti-icon">
+                        <div class="noti-icon" id="trigger-unseen">
                             <img src="{!! assets('assets/website-images/notification.svg') !!}" alt="user">
-                            @if(count(getNotification()) > 0)
+                            @if(getNotification('unseen') > 0)
                             <span class="noti-badge"></span>
                             @endif
                         </div>
@@ -94,4 +94,25 @@
             <span class="icon-menu"></span>
         </button>
     </nav>
+
+    <script>
+        $(document).on('click', '#trigger-unseen', function(){
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                },
+                type: 'GET',
+                url: "{{ route('notify.seen.content') }}",
+                success: function (data){
+                    if(data.status){
+                        $('.noti-badge').addClass('d-none');
+                    }
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            })
+        })
+    </script>
+
 </div>

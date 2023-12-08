@@ -74,10 +74,17 @@
                     </a>
                 </li>
 
-                <li class="nav-item @if ($currentURL == 'SA.Products' || $currentURL =='SA.AddProduct' || $currentURL == 'SA.Edit.Products' || $currentURL == 'SA.Coupons' || $currentURL == 'SA.Product.View.Details') active @endif">
+                <li class="nav-item @if ($currentURL == 'SA.Products' || $currentURL =='SA.AddProduct' || $currentURL == 'SA.Edit.Products' || $currentURL == 'SA.Product.View.Details') active @endif">
                     <a class="nav-link" href="{{ route('SA.Products') }}">
                         <span class="menu-icon"><img src="{!! assets('assets/superadmin-images/products.svg') !!}"></span>
                         <span class="menu-title">Manage Products</span>
+                    </a>
+                </li>
+
+                <li class="nav-item @if ($currentURL == 'SA.Coupons') active @endif">
+                    <a class="nav-link" href="{{ route('SA.Coupons') }}">
+                        <span class="menu-icon"><img src="{!! assets('assets/superadmin-images/products.svg') !!}"></span>
+                        <span class="menu-title">Manage Coupons</span>
                     </a>
                 </li>
 

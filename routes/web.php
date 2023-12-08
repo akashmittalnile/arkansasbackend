@@ -23,6 +23,8 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
     Route::get('/check_coupon_code', 'SuperAdminController@checkCouponCode')->name('checkCouponCode');
     Route::post('/image-upload', 'SuperAdminController@imageUpload')->name('imageUpload');
     Route::post('/image-delete', 'SuperAdminController@destroy')->name('imageDelete');
+    Route::get('/notify-seen', 'SuperAdminController@notifySeen')->name('notify.seen');
+    Route::get('content/notify-seen', 'HomeController@notifySeen')->name('notify.seen.content');
     Route::get('/check_password', 'SuperAdminController@checkPassword')->name('checkPassword');
     
     /**
@@ -252,6 +254,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
         Route::get('/super-admin/orders', 'SuperAdminController@product_orders')->name('SA.Product.Orders');
         Route::get('/super-admin/orders-details/{id}', 'SuperAdminController@product_order_details')->name('SA.Product.order.details');
+        Route::get('/super-admin/generate-rate/{id}/{orderId}', 'SuperAdminController@generate_label')->name('SA.Generate.Label');
 
         Route::get('/super-admin/posts', 'SuperAdminController@posts')->name('SA.Posts');
         Route::get('/super-admin/create-post', 'SuperAdminController@create_post')->name('SA.Create.Post');

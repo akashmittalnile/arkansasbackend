@@ -2256,7 +2256,7 @@ class ApiController extends Controller
                         $orders->whereIntegerInRaw('c.category_id', $request->category);
                     }
                 } else {
-                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes');
+                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.shipengine_label_id');
                     if($request->filled('title')){
                         $orders->where('p.name', 'like', '%' . $request->title . '%');
                     }
@@ -2296,12 +2296,12 @@ class ApiController extends Controller
                             else{
                                 $temp['course_completed'] = 0;
                                 $temp['certificate'] = null;
-                            } 
-
+                            }
                         }else{
                             $temp['product_id'] = $value->id ?? 0;
                             $productImg = ProductAttibutes::where('product_id', $value->id)->where('attribute_code', 'cover_image')->first();
                             $temp['Product_image'][0] = (isset($productImg->attribute_value) && $productImg->attribute_value!="") ? uploadAssets('upload/products/'.$productImg->attribute_value):null;
+                            $temp['shipengine_label'] = isset($value->shipengine_label_id) ? 'Label generated' : 'Label not generate yet';
                         }
 
                         $temp['item_id'] = $value->itemid ?? null;

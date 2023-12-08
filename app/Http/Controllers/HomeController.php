@@ -1300,4 +1300,13 @@ class HomeController extends Controller
             return $e->getMessage();
         }
     }
+
+    public function notifySeen(Request $request){
+        try{
+            Notify::where('user_id', auth()->user()->id)->update(['is_seen' => '1']);
+            return response()->json(['status' => true]);
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

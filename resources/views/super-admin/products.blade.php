@@ -9,13 +9,13 @@
             <div class="pmu-search-filter wd80">
                 <form action="">
                     <div class="row g-2">
-                        <div class="col-md-3">
+                        <div class="col-md-4">
                             <div class="form-group search-form-group">
                                 <input type="text" class="form-control" value="{{ request()->name }}" name="name" placeholder="Search by Product Name">
                                 <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                             </div>
                         </div>
-                        <div class="col-md-2">
+                        <div class="col-md-3">
                             <div class="form-group">
                                 <select class="form-control" name="status">
                                     <option @if(request()->status=="") selected @endif value="">Select Product Type</option>
@@ -37,11 +37,6 @@
                         <div class="col-md-2">
                             <div class="form-group">
                                 <a class="Create-btn" style="padding: 13.8px 0px;" href="{{ route('SA.AddProduct')}}">Create Products</a>
-                            </div>
-                        </div>
-                        <div class="col-md-2">
-                            <div class="form-group">
-                                <a class="Create-btn" href="{{ route('SA.Coupons')}}">Manage Coupon</a>
                             </div>
                         </div>
                         <!-- <div class="col-md-3">

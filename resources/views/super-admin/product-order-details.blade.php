@@ -28,6 +28,18 @@
         </div>
     </div>
 
+    @if (session()->has('message'))
+    <div class="alert alert-success alert-dismissible fade show" role="alert">
+        <strong>{{ session()->get('message') }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @elseif (session()->has('error'))
+    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        <strong>{{ session()->get('error') }}</strong>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    @endif
+
     <div class="pmu-content-list">
         <div class="pmu-content">
             <div class="row">
@@ -160,9 +172,14 @@
                                             </div>
                                             <h2 class="text-capitalize">{{ $val->title ?? "NA" }}</h2>
                                             @if($val->product_type == 1)
-                                            <div class="pmu-course-details-price">${{ number_format((float)$val->course_fee, 2, '.', '') }}</div>
-                                            @else
                                             <div class="pmu-course-details-price">${{ number_format((float)$val->amount, 2, '.', '') }}</div>
+                                            @else
+                                            <div class="pmu-course-details-price mb-2">${{ number_format((float)$val->amount, 2, '.', '') }}</div>
+                                                @if(!isset($val->shipengine_label_id))
+                                                <a class="newcourse-btn" href="{{ route('SA.Generate.Label', ['id' => encrypt_decrypt('encrypt', $val->product_id), 'orderId' => encrypt_decrypt('encrypt',$order->id)]) }}">Generate Label</a>
+                                                @else
+                                                <a class="newcourse-btn" href="{{ $val->shipengine_label_url }}" target="_blank">View Label</a>
+                                                @endif
                                             @endif
                                         </div>
                                     </div>

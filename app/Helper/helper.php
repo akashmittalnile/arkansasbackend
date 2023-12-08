@@ -191,10 +191,16 @@ if (!function_exists('encrypt_decrypt')) {
 }
 
 if (!function_exists('getNotification')) {
-    function getNotification()
+    function getNotification($seen = null)
     {
-        $notify = Notify::where('user_id', auth()->user()->id)->get();
-        return $notify;
+        if($seen=='unseen'){
+            $notify = Notify::where('user_id', auth()->user()->id)->where('is_seen', '0')->count();
+            return $notify;
+        } else {
+            $notify = Notify::where('user_id', auth()->user()->id)->get();
+            return $notify;
+        }
+        
     }
 }
 
