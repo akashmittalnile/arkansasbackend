@@ -2486,7 +2486,7 @@ class SuperAdminController extends Controller
             if (isset($jsonData['errors']) && (count($jsonData['errors']) > 0)) {
                 return redirect()->back()->with('error', $jsonData['errors'][0]['message']);
             } else {
-                OrderDetail::where('product_id', $id)->where('product_type', 2)->where('order_id', $orderId)->update(['shipengine_label_response' => serialize($jsonData), 'shipengine_label_url' => $jsonData['label_download']['href'], 'shipengine_label_id' => $jsonData['label_id']]);
+                OrderDetail::where('product_id', $id)->where('product_type', 2)->where('order_id', $orderId)->update(['order_status' => 2, 'shipengine_label_response' => serialize($jsonData), 'shipengine_label_url' => $jsonData['label_download']['href'], 'shipengine_label_id' => $jsonData['label_id']]);
             }
             return redirect()->back()->with('message', 'Label generated successfully!');
         } catch (\Exception $e) {

@@ -2248,7 +2248,7 @@ class ApiController extends Controller
                 }
                 $orders = OrderDetail::leftJoin('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('order_product_detail.product_type', $request->type)->where('o.user_id', $user_id);
                 if($request->type == 1){
-                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes');
+                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.order_status as order_pro_status');
                     if($request->filled('title')){
                         $orders->where('c.title', 'like', '%' . $request->title . '%');
                     }
@@ -2256,7 +2256,7 @@ class ApiController extends Controller
                         $orders->whereIntegerInRaw('c.category_id', $request->category);
                     }
                 } else {
-                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.shipengine_label_id');
+                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.order_status as order_pro_status');
                     if($request->filled('title')){
                         $orders->where('p.name', 'like', '%' . $request->title . '%');
                     }
@@ -2301,9 +2301,9 @@ class ApiController extends Controller
                             $temp['product_id'] = $value->id ?? 0;
                             $productImg = ProductAttibutes::where('product_id', $value->id)->where('attribute_code', 'cover_image')->first();
                             $temp['Product_image'][0] = (isset($productImg->attribute_value) && $productImg->attribute_value!="") ? uploadAssets('upload/products/'.$productImg->attribute_value):null;
-                            $temp['shipengine_label'] = isset($value->shipengine_label_id) ? 'Label generated' : 'Label not generate yet';
                         }
-
+                        $temp['order_product_status_id'] = $value->order_pro_status ?? 0;
+                        $temp['order_product_status'] = orderStatus($value->order_pro_status ?? 0);
                         $temp['item_id'] = $value->itemid ?? null;
                         $temp['title'] = $value->title ?? "NA";
                         $temp['description'] = $value->desc ?? "NA";

@@ -114,4 +114,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('save-order', [CartController::class, "save_order"]);
     Route::post('empty-cart', [CartController::class, "empty_cart"]);
 
+    Route::get('return-reasons', [CartController::class, "returnReasons"]);
+    Route::post('return-order', [CartController::class, "returnOrder"]);
+
 });

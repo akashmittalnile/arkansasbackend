@@ -1,7 +1,25 @@
 <?php 
 
 return [
-	
+	'role' => array(
+		'1'=>'User',
+		'2'=>'Content Creator',
+		'3'=>'Super Admin',
+	),
+	'user_status' => array(
+		'0'=>'Pending',
+		'1'=>'Active',
+		'2'=>'Inactive',
+		'3'=>'Rejected',
+	),
+	'order_status' => array(
+		'0'=>'Payment pending',
+		'1'=>'Paid',
+		'2'=>'Label generated',
+		'3'=>'Delivered',
+		'4'=>'Return intiated',
+		'5'=>'Returned',
+	),
 	'states'=>array(
 		'AL'=>'ALABAMA',
 		'AK'=>'ALASKA',

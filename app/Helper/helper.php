@@ -261,6 +261,18 @@ if (!function_exists('cartCount')) {
     }
 }
 
+if (!function_exists('orderStatus')) {
+    function orderStatus($status)
+    {
+        foreach(config('constant.order_status') as $key => $val){
+            if($key == $status){
+                return $val;
+            }
+        }
+        return null;
+    }
+}
+
 if (!function_exists('assets')) {
     function assets($path)
     {

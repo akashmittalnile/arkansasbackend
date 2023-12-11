@@ -11,8 +11,10 @@ use App\Models\Coupon;
 use App\Models\Course;
 use App\Models\Order;
 use App\Models\OrderDetail;
+use App\Models\OrderProductReturnStatus;
 use App\Models\Product;
 use App\Models\ProductAttibutes;
+use App\Models\ReturningReason;
 use App\Models\Setting;
 use App\Models\ShippingMethod;
 use App\Models\TempData;
@@ -633,6 +635,7 @@ class CartController extends Controller
 
                         $OrderDetail = new OrderDetail;
                         $OrderDetail->order_id = $insertedId;
+                        $OrderDetail->order_status = 0;
                         $OrderDetail->product_id = $cart->object_id;
                         $OrderDetail->product_type = $cart->object_type;
                         $OrderDetail->coupon_id = $cart->coupon_id ?? null;
@@ -693,6 +696,7 @@ class CartController extends Controller
                         for ($i = 0; $i < count($old['products']); $i++) {
                             $OrderDetail = new OrderDetail;
                             $OrderDetail->order_id = $insertedId;
+                            $OrderDetail->order_status = 0;
                             $OrderDetail->product_id = $old['products'][$i]['product_id'];
                             $OrderDetail->product_type = 2;
                             $OrderDetail->quantity = $old['products'][$i]['qty'];
@@ -1192,6 +1196,95 @@ class CartController extends Controller
             return $jsonData['shipments'][0]['shipment_id'];
         } else {
             return null;
+        }
+    }
+
+    public function returnReasons(Request $request){
+        try{
+            $reason = ReturningReason::where('status', 1)->get();
+            return response()->json(['status' => true, 'message'=> 'Returning reasons', 'data' => $reason]);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function returnOrder(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'product_id' => 'required',
+                'order_id' => 'required',
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }else{
+                $orderPro = OrderDetail::where('order_id', $request->order_id)->where('product_id', $request->product_id)->where('order_status', 3)->where('product_type', 2)->first();
+                if(isset($orderPro->id)){
+                    $data = $this->returnLabel($orderPro->shipengine_label_id);
+                    if(isset($data['errors']) && (count($data['errors'])>0)) {
+                        return response()->json(["status" => false, "msg" => $data['errors'][0]['message']]);
+                    } else if(!isset($data['label_download'])) {
+                        return response()->json(["status" => false, "msg" => 'Error in Return Label API']);
+                    }
+                    $returnOrder = new OrderProductReturnStatus;
+                    $returnOrder->order_product_detail_id = $orderPro->id;
+                    $returnOrder->user_id = auth()->user()->id;
+                    $returnOrder->return_date = date('Y-m-d');
+                    $returnOrder->return_reason_id = $request->return_reason_id ?? null;
+                    $returnOrder->return_reason_comment = $request->return_reason_comment ?? null;
+                    $returnOrder->shipengine_label_response = serialize($data);
+                    $returnOrder->shipengine_label_url = $data['label_download']['href'];
+                    $returnOrder->created_at = date('Y-m-d H:i:s');
+                    $returnOrder->updated_at = date('Y-m-d H:i:s');
+                    $returnOrder->save();
+
+                    OrderDetail::where('order_id', $request->order_id)->where('product_id', $request->product_id)->where('order_status', 3)->where('product_type', 2)->update(['order_status'=> 4]);
+
+                    $track_id = '';
+                    $tracking_data = (!empty($returnOrder->shipengine_label_response)) ? json_decode($returnOrder->shipengine_label_response) : null;
+                    if(!empty($tracking_data)){
+                        $track_id = $tracking_data->tracking_number;
+                    }
+
+                    return response()->json(['status' => true, 'message'=> 'You have returned this product!', "return_tracking_id" => $track_id]);
+                } else return response()->json(['status' => false, 'message'=> 'Order Product not found.']);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function returnLabel($label_id){
+        try{
+            $curl = curl_init();
+            curl_setopt_array($curl, array(
+              CURLOPT_URL => 'https://api.shipengine.com/v1/labels/'.$label_id.'/return',
+              CURLOPT_RETURNTRANSFER => true,
+              CURLOPT_ENCODING => '',
+              CURLOPT_MAXREDIRS => 10,
+              CURLOPT_TIMEOUT => 0,
+              CURLOPT_FOLLOWLOCATION => true,
+              CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+              CURLOPT_CUSTOMREQUEST => 'POST',
+              CURLOPT_POSTFIELDS =>'{
+              "charge_event": "carrier_default",
+              "label_layout": "4x6",
+              "label_format": "pdf",
+              "label_download_type": "url",
+              "display_scheme": "label",
+              "label_image_id": ""
+            }',
+              CURLOPT_HTTPHEADER => array(
+                'Content-Type: application/json',
+                'API-Key: '.env('SHIP_ENGINE_KEY')
+              ),
+            ));
+
+            $response = curl_exec($curl);
+            curl_close($curl);
+            $jsonData = json_decode($response, true);
+            return $jsonData;
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
         }
     }
 }

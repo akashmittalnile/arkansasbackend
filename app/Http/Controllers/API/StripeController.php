@@ -64,6 +64,7 @@ class StripeController extends Controller
                         'payment_id' => $transactionId,
                         'payment_type' => 'stripe'
                     ]);
+                    OrderDetail::where('order_id', $request->order_id)->update(['order_status' => 1]);
                     $orderDetails = OrderDetail::where('order_id', $request->order_id)->where('product_type', 1)->get();
                     foreach($orderDetails as $val){
                         $userCourse = UserCourse::where('course_id', $val->product_id)->where('user_id', auth()->user()->id)->update(['payment_id'=>$transactionId]);
