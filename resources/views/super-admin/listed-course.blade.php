@@ -65,7 +65,7 @@
 
                                 </div>
                                 <div class="side-profile-text">
-                                    <h2>{{ ucfirst($user->first_name) }}{{ ucfirst($user->last_name) }}</h2>
+                                    <h2 class="text-capitalize">{{ $user->first_name ?? "NA" }} {{ $user->last_name ?? "" }}</h2>
                                     <p>
                                         @if ($user->CreatorType == 1)
                                             Permanent Makeup Training
@@ -227,12 +227,10 @@
                                                         <a data-fancybox data-type="iframe"
                                                             data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0"
                                                             href="javascript:;">
-                                                            <video width="415" height="240" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
+                                                            <video class="w-100 h-100" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
                                                                 <source src="{{ uploadAssets('upload/disclaimers-introduction/' . $data->introduction_image) }}" type="video/mp4">
                                                                 Your browser does not support the video tag.
                                                             </video>
-                                                            <!-- <div class="pmu-video-icon"><img src="{!! assets('assets/superadmin-images/video.svg') !!}"></div> -->
-                                                        </a>
                                                     </div>
                                                     <div class="pmu-course-content">
                                                         <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! assets('assets/superadmin-images/tick.svg') !!}">

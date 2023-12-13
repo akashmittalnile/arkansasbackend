@@ -27,12 +27,14 @@ Route::post('reset-password', [AuthController::class, 'reset_password']);
 Route::post('verify-otp', [AuthController::class, "verify_otp"]);
 Route::post('resend-otp', [AuthController::class, "resend_otp"]);
 
-Route::get('contest/{chapterId}/{quizId}/{userId}', [ApiController::class, "contestQuizSurvey"]);
-Route::get('result/{quizId}/{userId}', [ApiController::class, "resultQuizSurvey"]);
-Route::post('contest-form', [ApiController::class, "contestForm"])->name('contest.form');
-Route::get('survey/{chapterId}/{surveyId}/{userId}', [ApiController::class, "surveyFormUrl"]);
-Route::post('survey-form', [ApiController::class, "surveyForm"])->name('survey.form');
-Route::get('thank-you/{quizId}/{userId}', [ApiController::class, "resultSurvey"]);
+Route::group(['middleware' => ['web']], function () {
+    Route::get('survey/{chapterId}/{surveyId}/{userId}', [ApiController::class, "surveyFormUrl"]);
+    Route::post('survey-form', [ApiController::class, "surveyForm"])->name('survey.form');
+    Route::get('thank-you/{quizId}/{userId}', [ApiController::class, "resultSurvey"]);
+    Route::get('contest/{chapterId}/{quizId}/{userId}', [ApiController::class, "contestQuizSurvey"]);
+    Route::get('result/{quizId}/{userId}', [ApiController::class, "resultQuizSurvey"]);
+    Route::post('contest-form', [ApiController::class, "contestForm"])->name('contest.form');
+});
 
 Route::get('download-pdf/{id}/{uid}', [ApiController::class, "generate_pdf"]);
 Route::get('download-invoice/{id}', [ApiController::class, "download_invoice"]);

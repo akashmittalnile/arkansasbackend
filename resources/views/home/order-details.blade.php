@@ -41,7 +41,7 @@
                             <div class="added-bank-info-text mx-2">
                                 <h2>{{ $order->order_number }}</h2>
                                 <ul class="added-summary-list d-flex flex-column mt-2" style="gap: 0px">
-                                    <li>Order Date: <span>{{ date('d M, Y H:iA', strtotime($order->created_date)) }}</span></li>
+                                    <li>Order Date: <span>{{ date('d M, Y H:i A', strtotime($order->created_date)) }}</span></li>
                                     <li>Status: 
                                         <span>
                                             @if($order->status == 1) Payment Done
@@ -71,7 +71,7 @@
                                 @endif
                             </div>
                             <div class="side-profile-text">
-                                <h2>{{ $order->first_name ?? "NA" }} {{ $order->last_name ?? "" }}</h2>
+                                <h2 class="text-capitalize">{{ $order->first_name ?? "NA" }} {{ $order->last_name ?? "" }}</h2>
                                 <p>
                                     @if($order->role==1) Student
                                     @elseif($order->role==2) Content Creator
@@ -116,8 +116,9 @@
                                             <h2>Account Status</h2>
                                             <p>
                                                 @if($order->ustatus==0) Pending
-                                                @elseif($order->ustatus==1) Approved
-                                                @elseif($order->ustatus==2) Rejected
+                                                @elseif($order->ustatus==1) Active
+                                                @elseif($order->ustatus==2) Inactive
+                                                @elseif($order->ustatus==3) Rejected
                                                 @endif
                                             </p>
                                         </div>
@@ -133,55 +134,83 @@
                             <div class="row">
 
                                 <div class="col-md-8">
-                                    @php $amount = 0; $admin = 0;  @endphp
-                                    @forelse($order->orderCourse as $key => $val)
+                                @php $amount = 0; $admin = 0; @endphp
+                                    @forelse($orderDetails as $key => $val)
                                     <div class="pmu-course-details-item">
-                                        <div class="pmu-course-details-media">
-                                            <video width="170" height="130">
-                                                <source src="{{ uploadAssets('upload/disclaimers-introduction/' . $val->introduction_image) }}" type="video/mp4">
-                                                Your browser does not support the video tag.
-                                            </video>
+                                        <div class="pmu-course-details-media" style="width: 210px;">
+                                            @if($val->product_type == 2)
+                                            <img src="{{ uploadAssets('upload/products/'.$val->image) }}">
+                                            @elseif ($val->product_type == 1)
+                                            <a data-fancybox data-type="iframe"
+                                            data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0"
+                                            href="javascript:;">
+                                                <video class="w-100 h-100" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
+                                                    <source src="{{ uploadAssets('upload/disclaimers-introduction/' . $val->image) }}" type="video/mp4">
+                                                    Your browser does not support the video tag.
+                                                </video>
+                                            </a>
+                                            @endif
                                         </div>
                                         <div class="pmu-course-details-content">
                                             <div class="coursestatus"><img src="{{ assets('assets/website-images/tick.svg') }}">
-                                            @if ($val->status == 0)
+                                                @if ($val->status == 0)
                                                 Unpublished
-                                            @else
-                                                Published 
-                                            @endif
+                                                @else
+                                                Published
+                                                @endif
                                             </div>
                                             <h2 class="text-capitalize">{{ $val->title ?? "NA" }}</h2>
-                                            <div class="pmu-course-details-price">${{ number_format((float)$val->amount, 2) }}</div>
+                                            @if($val->product_type == 1)
+                                            <div class="pmu-course-details-price">
+                                                @if($val->amount == $val->course_fee)
+                                                ${{ number_format((float)$val->course_fee, 2, '.', '') }}
+                                                @else
+                                                <del style="font-size: 1rem; font-weight: 500;">${{ number_format($val->course_fee,2) ? : 0}}</del> &nbsp; ${{ number_format($val->amount,2) ? : 0}}
+                                                @endif
+                                            </div>
+                                            @else
+                                            <div class="pmu-course-details-price mb-2">${{ number_format((float)$val->amount, 2, '.', '') }}</div>
+                                                @if(!isset($val->shipengine_label_id))
+                                                <a class="newcourse-btn" href="{{ route('SA.Generate.Label', ['id' => encrypt_decrypt('encrypt', $val->product_id), 'orderId' => encrypt_decrypt('encrypt',$order->id)]) }}">Generate Label</a>
+                                                @else
+                                                <a class="newcourse-btn" href="{{ $val->shipengine_label_url }}" target="_blank">View Label</a>
+                                                @endif
+                                            @endif
                                         </div>
                                     </div>
-                                    @php $amount += $val->amount; $admin += $val->admin_amount;  @endphp
+                                    @php $amount += $val->amount; $admin += $val->admin_amount; @endphp
                                     @empty
                                     @endforelse
-
                                 </div>
 
                                 <div class="col-md-4">
 
                                     <div class="cart-summary-info">
                                         <div class="cart-summary-item">
-                                            <div class="cart-summary-text">Total Amount</div>
-                                            <div class="cart-summary-value" id="total-amount">${{$amount-$admin}}</div>
+                                            <div class="cart-summary-text">Sub Total</div>
+                                            @if($order->order_for == 1)
+                                            <div class="cart-summary-value" id="total-amount">${{ number_format((float)($order->amount + $order->coupon_discount_price ?? 0), 2, '.', '') }}</div>
+                                            @else
+                                            <div class="cart-summary-value" id="total-amount">${{ number_format((float)($order->amount ?? 0), 2, '.', '') }}</div>
+                                            @endif
                                         </div>
+                                        @if($order->delivery_charges != null && $order->delivery_charges != '' && $order->delivery_charges != 0)
                                         <div class="cart-summary-item">
-                                            <div class="cart-summary-text">Admin Fee</div>
-                                            <div class="cart-summary-value" id="admin-fee">${{$admin}}</div>
+                                            <div class="cart-summary-text">Shipping Fee</div>
+                                            <div class="cart-summary-value" id="admin-fee">+${{$order->delivery_charges ?? 0}}</div>
                                         </div>
+                                        @endif
                                         <div class="cart-summary-item">
                                             <div class="cart-summary-text">Tax</div>
-                                            <div class="cart-summary-value">${{ $order->taxes ?? 0 }}</div>
+                                            <div class="cart-summary-value">+${{ number_format((float)$order->taxes ?? 0, 2, '.', '') }}</div>
                                         </div>
                                         <div class="cart-summary-item">
-                                            <div class="cart-summary-text">Discount</div>
-                                            <div class="cart-summary-value">$0</div>
+                                            <div class="cart-summary-text">Coupon Discount</div>
+                                            <div class="cart-summary-value">-${{ number_format((float)$order->coupon_discount_price ?? 0, 2, '.', '') }}</div>
                                         </div>
                                         <div class="cart-summary-total-item">
                                             <div class="cart-summary-total-text">Total Fee Paid</div>
-                                            <div class="cart-summary-total-value" id="total-cost">${{$amount+$order->taxes}}</div>
+                                            <div class="cart-summary-total-value" id="total-cost">${{$order->total_amount_paid ?? 0}}</div>
                                         </div>
                                     </div>
 

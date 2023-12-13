@@ -592,7 +592,7 @@ class SuperAdminController extends Controller
             $course->course_id = $last_id->id;
             $course->save();
 
-            return redirect()->route('SA.Course.Chapter', ['courseID'=> encrypt_decrypt('encrypt', $last_id->id), 'chapterID'=> encrypt_decrypt('encrypt', $course['id '])])->with('message', 'Chapter created successfully');
+            return redirect()->route('SA.Course.Chapter', ['courseID'=> encrypt_decrypt('encrypt', $last_id->id), 'chapterID'=> encrypt_decrypt('encrypt', $course['id '])])->with('message', 'Course created successfully');
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1198,7 +1198,7 @@ class SuperAdminController extends Controller
             if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
             $course = $course->where('uc.user_id', $user_id)->where('is_expire', 0)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = uc.course_id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND order_product_detail.product_id = c.id AND order_product_detail.product_type = 1) as order_id"))->orderByDesc('uc.id')->distinct('uc.id')->paginate(3);
 
-        return view('super-admin.student-detail',compact('data', 'course', 'id'));
+            return view('super-admin.student-detail',compact('data', 'course', 'id'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1500,6 +1500,7 @@ class SuperAdminController extends Controller
                         $notify->title = 'New Course';
                         $notify->message = 'New Course ('.$cc->title . ') added by ' . $ccUser->first_name . ' ' . $ccUser->last_name;
                         $notify->is_seen = '0';
+                        $notify->redirect_url = null;
                         $notify->created_at = date('Y-m-d H:i:s');
                         $notify->updated_at = date('Y-m-d H:i:s');
                         $notify->save();
@@ -2210,7 +2211,7 @@ class SuperAdminController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', 'orders.total_amount_paid', 'orders.delivery_charges', 'orders.amount', 'orders.coupon_discount_price', 'orders.order_for')->first();
 
-            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, c.course_fee, order_product_detail.shipping_price, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
+            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, c.course_fee, order_product_detail.shipping_price, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->orderByDesc('order_product_detail.id')->get();
 
             $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
             
@@ -2439,7 +2440,7 @@ class SuperAdminController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', 'orders.total_amount_paid', 'orders.delivery_charges', 'orders.amount', 'orders.coupon_discount_price', 'orders.order_for')->first();
 
-            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, c.course_fee, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image, order_product_detail.shipengine_label_id, order_product_detail.shipengine_label_url"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
+            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, c.course_fee, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image, order_product_detail.shipengine_label_id, order_product_detail.shipengine_label_url"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->orderByDesc('order_product_detail.id')->get();
 
             $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
 
@@ -2586,7 +2587,8 @@ class SuperAdminController extends Controller
             if($request->filled('status')) $course->where('course.status', $request->status);
             if($request->filled('creator')) $course->where('u.id', encrypt_decrypt('decrypt', $request->creator));
             $course = $course->where('admin_id', '!=', '1')->select('u.first_name', 'u.last_name', 'u.profile_image', 'course.*')->orderByDesc('course.id')->paginate(10);
-            return view('super-admin.content-creator-course')->with(compact('course'));
+            $cc = Course::join('users as u', 'u.id', '=', 'course.admin_id')->select('u.first_name', 'u.last_name', 'u.id')->where('u.status', 1)->where('u.role', 2)->distinct('u.id')->get();
+            return view('super-admin.content-creator-course')->with(compact('course', 'cc'));
         } catch (\Exception $e) {
             return $e->getMessage();
         }

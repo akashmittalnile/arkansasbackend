@@ -20,6 +20,8 @@ class Review extends Model
         'rating',
         'review',
         'status',
+        'created_date',
+        'modified_date',
         // Add more attributes as needed...
     ];
 }

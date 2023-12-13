@@ -223,6 +223,16 @@ if (!function_exists('dataSet')) {
     }
 }
 
+if (!function_exists('isCouponExpired')) {
+    function isCouponExpired($date)
+    {
+        $now = Carbon::now();
+        if($date > $now){
+            return false;
+        } else return true;
+    }
+}
+
 if (!function_exists('sendEmail')) {
     function sendEmail($data)
     {
@@ -232,7 +242,7 @@ if (!function_exists('sendEmail')) {
 }
 
 if (!function_exists('getUser')) {
-    function getUser($role = null, $status = null)
+    function getUser($role = null, $status = null, $createdCourse = false)
     {
         $data = DB::table('users');
         if ($role != null) $data->where('role', $role);

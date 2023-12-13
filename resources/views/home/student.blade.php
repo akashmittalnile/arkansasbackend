@@ -73,7 +73,7 @@
                             <div class="creator-table-col-3">
                                 <div class="creator-table-box">
                                     <div class="creator-table-text">Phone No.</div>
-                                    <div class="creator-table-value">{{ $data->phone ?? "NA" }}</div>
+                                    <div class="creator-table-value">+1 {{ $data->phone ?? "NA" }}</div>
                                 </div>
                             </div>
                             <div class="creator-table-col-2">

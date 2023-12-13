@@ -97,8 +97,14 @@
                                             @endif
                                         </div>
 
-                                        <h2>{{ ($data->name) ? : ''}}</h2>
-                                        <div class="pmu-course-price">${{ number_format($data->price,2) ? : 0}}</div>
+                                        <h2>{{ ($data->name != "" && $data->name != null) ? (strlen($data->name) > 40 ?  substr($data->name, 0, 40)."....." : $data->name) : "NA" }}</h2>
+                                        <div class="pmu-course-price">
+                                            @if($data->price == $data->sale_price)
+                                            ${{ number_format($data->price,2) ? : 0}}
+                                            @else
+                                            <del style="font-size: 1rem; font-weight: 500;">${{ number_format($data->price,2) ? : 0}}</del> &nbsp; ${{ number_format($data->sale_price,2) ? : 0}}
+                                            @endif
+                                        </div>
                                         <p>{{ ($data->product_desc != "" && $data->product_desc != null) ? (strlen($data->product_desc) > 53 ?  substr($data->product_desc, 0, 53)."....." : $data->product_desc) : "NA" }}</p>
                                         {{-- <div class="notification-tag">
                                             <h3>Course Tags:</h3>

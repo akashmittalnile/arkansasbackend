@@ -1332,7 +1332,7 @@ class ApiController extends Controller
                             if($request->filled('rating'))
                                 if($avgRating < min($request->rating)) continue;
                     } else {
-                            $temp['price'] = $value->regular_price;
+                            $temp['price'] = $value->price;
                             $temp['sale_price'] = $value->sale_price ?? 0;
                             $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                             $datas_image = array();
@@ -2891,13 +2891,15 @@ class ApiController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             }else{
                 $id = $request->order_id;
-                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('orders.total_amount_paid', 'u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', DB::raw("orders.amount + orders.admin_amount as total_amount"))->first();
+                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('orders.total_amount_paid', 'u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', 'orders.delivery_charges', 'orders.coupon_discount_price', 'orders.amount', DB::raw("orders.amount - orders.coupon_discount_price + orders.taxes as total_amount"))->first();
 
                 $order->total_amount = number_format((float) $order->total_amount, 2, '.', '');
                 $order->total_amount_paid = number_format((float) $order->total_amount_paid, 2, '.', '');
+                $order->sub_total = number_format((float) $order->amount ?? 0, 2, '.', '');
                 $order->taxes = number_format((float) $order->taxes, 2, '.', '');
+                $order->coupon_discount_price = number_format((float) $order->coupon_discount_price ?? 0, 2, '.', '');
                 $order->created_date = date('d M, Y H:iA', strtotime($order->created_date));
-                $order->shipping_cost = "0.00";
+                $order->shipping_cost = number_format((float) $order->delivery_charges ?? 0, 2, '.', '');
 
                 $avgRating = DB::table('order_product_detail as opd')->leftJoin('user_review as ur', 'ur.object_id', '=', DB::raw('opd.product_id AND ur.object_type = opd.product_type'))->where('opd.id', $request->item_id)->avg('ur.rating');
                 $order->avg_rating = number_format($avgRating, 1, '.', '');

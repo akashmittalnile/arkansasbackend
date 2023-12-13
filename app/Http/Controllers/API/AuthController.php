@@ -167,6 +167,7 @@ class AuthController extends Controller
                     } else $profile_image = uploadAssets('upload/profile-image/'.auth()->user()->profile_image);
                     $notify->image = $profile_image;
                     $notify->is_seen = '0';
+                    $notify->redirect_url = null;
                     $notify->created_at = date('Y-m-d H:i:s');
                     $notify->updated_at = date('Y-m-d H:i:s');
                     $notify->save();

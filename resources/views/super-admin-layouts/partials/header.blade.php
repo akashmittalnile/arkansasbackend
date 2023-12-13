@@ -26,13 +26,22 @@
                         <div class="notification-body">
                             
                             @forelse(getNotification() as $val)
-                            <div class="notification-item">
-                                <div class="notification-item-icon"><i class="la la-bell"></i></div>
-                                <div class="notification-item-text">
-                                    <h2>{{ $val->message }}</h2>
-                                    <p><span><i class="fas fa-clock"></i>{{ date('d M, Y H:i') }}</span></p>
+                            <a href="{{ $val->redirect_url }}">
+                                <div class="notification-item">
+                                    @if($val->image == "" || $val->image == null)
+                                        <div class="notification-item-icon">
+                                            <i class="la la-bell"></i>
+                                        </div>
+                                    @else
+                                        <img src="{{ $val->image }}" alt="" style="width: 32px; height: 32px; border-radius: 50%; margin-right: 10px; line-height: 32px; text-align: center;" >
+                                    @endif
+                                    <div class="notification-item-text">
+                                        <h2>{{ $val->title ?? "NA" }}</h2>
+                                        <p style="color: #e0b220;">{{ $val->message ?? "NA" }}</p>
+                                        <p><span><i class="fas fa-clock"></i>{{ date('d M, Y H:i') }}</span></p>
+                                    </div>
                                 </div>
-                            </div>
+                            </a>
                             @empty
                             <div class="d-flex flex-column align-items-center justify-content-center">
                                 <div>

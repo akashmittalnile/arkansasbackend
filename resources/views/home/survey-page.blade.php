@@ -1,4 +1,3 @@
-<meta name="_token" content="{{csrf_token()}}" />
 <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/header-footer.css') !!}">
 <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-plugins/iconsax/iconsax.css') !!}">
 <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/auth.css') !!}">
@@ -8,6 +7,7 @@
 <link rel="stylesheet" type="text/css" href="{!! assets('assets/website-css/becomeacreator.css') !!}">
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/js/toastr.min.js"></script>
+<meta name="csrf-token" content="{{ csrf_token() }}" />
 <div class="course-player-quiz">
     <div class="course-player-quiz-inner">
         <h3 id="question">SURVEY QUESTION 1 OF {{ $questionCount }}</h3>
@@ -65,22 +65,38 @@
 
 <script>
 
+    $.ajaxSetup({
+        headers: {
+            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+        }
+    });
+
     $(document).ready(function(){
         $(".submit").click(function (e) {
             // alert(2);
             e.preventDefault();
             var id = $("input[name='option']:checked").val();
+            if(id=="" || id==null || id==undefined){
+                toastr.error('Please select one of these options.');
+                return false;
+            }
             var quiz_id = $("input[name='quiz_id']").val();
             var question_id = $("input[name='question_id']").val();
             let confirmIndex = $(this).attr('data-index');
+            let formData = new FormData();
+            formData.append('_token', "{{ csrf_token() }}");
+            formData.append('option', id);
+            formData.append('quiz_id', quiz_id);
+            formData.append('question_id', question_id);
+            formData.append('user_id', "{{ $userId }}");
             $.ajax({
                 url: "{{url('/')}}" + "/api/survey-form",
-                method: 'POST',
-                data: {
-                    option : id,
-                    quiz_id, question_id,
-                    user_id : "{{ $userId }}"
-                },
+                type: 'post',
+                headers: {'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')},
+                contentType: false,
+                cache: false,
+                processData:false,
+                data: formData,
                 success: function (data) {
                     console.log(data);
                     if (data.status) {
@@ -103,12 +119,6 @@
 
 
     })
-
-    $.ajaxSetup({
-        headers: {
-            'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-        }
-    });
     
     $(document).on('click', '#next-btn', function(){
         let cardIndex = $(this).attr('data-index');

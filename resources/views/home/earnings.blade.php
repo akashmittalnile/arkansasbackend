@@ -100,9 +100,9 @@
                             @forelse($orders as $index => $val)
                             <tr>
                                 <td><span class="sno">{{ $index+1 }}</span> </td>
-                                <td>{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</td>
+                                <td class="text-capitalize">{{ $val->first_name ?? "NA" }} {{ $val->last_name }}</td>
                                 <td>{{ $val->order_number ?? "NA" }}</td>
-                                <td>{{ date('d M, Y H:iA', strtotime($val->created_date)) }}</td>
+                                <td>{{ date('d M, Y H:i A', strtotime($val->created_date)) }}</td>
                                 <td>STRIPE</td>
                                 <td>${{ number_format((float)($val->amount-$val->admin_amount), 2) }}</td>
                                 <td>${{ number_format((float)$val->amount, 2) }}</td>

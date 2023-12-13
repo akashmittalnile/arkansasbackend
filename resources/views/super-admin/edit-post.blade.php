@@ -32,6 +32,7 @@
                                     <label for="makeMeSummernote1" class="form-label">Description <b class="text-danger">*</b></label>
                                     <textarea required name="description" cols="30" rows="10" id="makeMeSummernote1" class="form-control full-description" placeholder="Description">{{ $data->description }}</textarea>
                                     <input type="hidden" name="id" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
+                                    <span class="{{$errors->first('title')?'error invalid-feedback':''}}">{{$errors->first('title')}}</span>
                                 </div>
                             </div>
                         </div>
@@ -124,10 +125,10 @@
                 element.closest(".errorInForm").append(error);
             },
             highlight: function(element, errorClass, validClass) {
-                $(element).addClass("is-invali");
+                $(element).addClass("is-invalid");
             },
             unhighlight: function(element, errorClass, validClass) {
-                $(element).removeClass("is-invali");
+                $(element).removeClass("is-invalid");
             },
         });
     });

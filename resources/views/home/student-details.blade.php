@@ -36,7 +36,7 @@
 
                         <div class="side-profile-overview-info">
                             <div class="row g-1">
-                                <div class="col-md-12">
+                                <!-- <div class="col-md-12">
                                     <div class="side-profile-total-order">
                                         <div class="side-profile-total-icon">
                                             <img src="{!! assets('assets/superadmin-images/email1.svg') !!}">
@@ -58,7 +58,7 @@
                                             <p>{{ $data->phone ?? "NA" }}</p>
                                         </div>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <div class="col-md-12">
                                     <div class="side-profile-total-order">
@@ -67,7 +67,13 @@
                                         </div>
                                         <div class="side-profile-total-content">
                                             <h2>Account Status</h2>
-                                            <p>@if ($data->status==1) Active @else In-active @endif</p>
+                                            <p>
+                                                @if($data->status==0) Pending
+                                                @elseif($data->status==1) Active
+                                                @elseif($data->status==2) Inactive
+                                                @elseif($data->status==3) Rejected
+                                                @endif
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -127,10 +133,13 @@
                                 <div class="col-md-12">
                                     <div class="course-item">
                                         <div class="course-item-inner">
-                                            <div class="course-item-image">
-                                                <a data-fancybox="" data-type="iframe" data-src="https://www.facebook.com/plugins/video.php?height=314&amp;href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&amp;show_text=false&amp;width=560&amp;t=0" href="javascript:;">
-                                                    <video width="350" height="200" src="{{ uploadAssets('upload/disclaimers-introduction/'.$val->introduction_image) }}"></video>
-                                                    <!-- <div class="course-video-icon"><img src="{!! assets('assets/superadmin-images/video.svg') !!}"></div> -->
+                                            <div class="course-item-image w-25">
+                                                <a data-fancybox data-type="iframe" data-src="https://www.facebook.com/plugins/video.php?height=314&href=https%3A%2F%2Fwww.facebook.com%2Fapciedu%2Fvideos%2F203104562693996%2F&show_text=false&width=560&t=0" href="javascript:;">
+                                                    <video class="w-100 h-100" controls controlslist="nodownload noplaybackrate" disablepictureinpicture volume>
+                                                        <source src="{{ uploadAssets('upload/disclaimers-introduction/' . $val->introduction_image) }}" type="video/mp4">
+                                                        Your browser does not support the video tag.
+                                                    </video>
+                                                    <!-- <div class="pmu-video-icon"><img src="{!! assets('assets/superadmin-images/video.svg')!!}"></div> -->
                                                 </a>
                                             </div>
                                             <div class="course-item-content">
@@ -138,10 +147,16 @@
                                                     @if($val->status==1) Completed Course Successfully @else Ongoing Course @endif
                                                 </div>
                                                 <h2>{{ $val->title ?? "NA" }}</h2>
-                                                <div class="course-price">${{ number_format((float)$val->buy_price, 2) }}</div>
+                                                <div class="course-price">
+                                                    @if($val->buy_price == $val->course_fee)
+                                                    ${{ number_format((float)$val->course_fee, 2, '.', '') }}
+                                                    @else
+                                                    <del style="font-size: 1rem; font-weight: 500;">${{ number_format($val->course_fee,2) ? : 0}}</del> &nbsp; ${{ number_format($val->buy_price,2) ? : 0}}
+                                                    @endif
+                                                </div>
                                                 <div class="chapter-test-info">
                                                     <div class="chapter-text">Chapter {{ $val->chapter_count ?? 0 }}</div>
-                                                    <div class="chapter-action"><a href="{{ route('Home.progress.report', ['courseId' => encrypt_decrypt('encrypt', $val->id), 'id' => encrypt_decrypt('encrypt', $id)]) }}">Progress Report</a></div>
+                                                    <div class="chapter-action"><a href="{{ route('Home.progress.report', ['courseId' => encrypt_decrypt('encrypt', $val->id), 'id' => encrypt_decrypt('encrypt', $id)]) }}">Completion Status</a></div>
                                                 </div>
 
                                             </div>
@@ -150,8 +165,7 @@
                                             <ul>
                                                 <li>
                                                     <div class="course-info-box">
-                                                        <div class="course-info-text">Course Buy Date:
-                                                        </div>
+                                                        <div class="course-info-text">Course Buy Date : &nbsp;</div>
                                                         <div class="course-info-value"> {{ date('d M Y', strtotime($val->created_date)) }}</div>
                                                     </div>
                                                 </li>

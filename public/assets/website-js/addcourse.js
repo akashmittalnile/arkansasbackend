@@ -728,7 +728,7 @@ $(document).ready(function () {
                                             <div class="pmu-edit-questionnaire-content">
                                                 <input type="text" class="form-control"
                                                     placeholder="Enter Question Title" name="survey_question[${countForm}][${questionSurveyCounter}][text]"
-                                                    value="">
+                                                    value="" required>
                                             </div>
                                         </div>
                                         <div class="pmu-answer-option-list survey-op-${countForm}-${questionSurveyCounter}">

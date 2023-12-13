@@ -653,7 +653,7 @@ class CartController extends Controller
                             $userCourse = new UserCourse;
                             $userCourse->course_id = $cart->object_id;
                             $userCourse->user_id = $user_id;
-                            $userCourse->buy_price = $cart->cart_value-$discountPrice;
+                            $userCourse->buy_price = $cart->cart_value;
                             $userCourse->payment_id = null;
                             $userCourse->buy_date = date('Y-m-d H:i:s');
                             $userCourse->status = 0;

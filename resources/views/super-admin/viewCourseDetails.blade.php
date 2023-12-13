@@ -218,7 +218,11 @@
                             @forelse($review as $value)
                             <div class="pmu-comment-item">
                                 <div class="pmu-comment-profile">
+                                    @if($value->profile_image == '' || $value->profile_image == null)
                                     <img src="{!! assets('assets/superadmin-images/user.png')!!}">
+                                    @else
+                                    <img src="{{ uploadAssets('upload/profile-image/'.$value->profile_image) }}">
+                                    @endif
                                 </div>
                                 <div class="pmu-comment-content">
                                     <div class="pmu-comment-head">

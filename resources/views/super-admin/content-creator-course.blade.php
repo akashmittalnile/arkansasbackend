@@ -28,7 +28,7 @@
                         <div class="form-group">
                             <select class="form-control" name="creator">
                                 <option @if(request()->creator=="") selected @endif value="">Select Content Creator</option>
-                                @foreach(getUser(2) as $val)
+                                @foreach($cc as $val)
                                 <option @if(request()->creator==encrypt_decrypt('encrypt',$val->id)) selected @endif value="{{encrypt_decrypt('encrypt',$val->id)}}">{{$val->first_name ?? "NA"}} {{$val->last_name ?? ""}}</option>
                                 @endforeach
                             </select>

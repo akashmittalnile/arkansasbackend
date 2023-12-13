@@ -30,7 +30,7 @@
                                 </div>
                                 <div class="mb-5 form-group errorInForm">
                                     <label for="makeMeSummernote1" class="form-label">Description <b class="text-danger">*</b></label>
-                                    <textarea required name="description" cols="30" rows="10" id="makeMeSummernote1" class="form-control full-description" placeholder="Description">{{old('full_description')}}</textarea>
+                                    <textarea required name="description" cols="30" rows="10" id="makeMeSummernote1" class="form-control full-description" placeholder="Description">{{old('description')}}</textarea>
                                 </div>
                             </div>
                         </div>
@@ -59,7 +59,7 @@
                 <div class="col-md-12">
                     <div class="product-item-card update-card">
                         <div class="pmu-item-content bg-white">
-                            <button class="btn update-btn btn-sm" type="submit">Update</button>
+                            <button class="btn update-btn btn-sm" type="submit">Create</button>
                         </div>
                     </div>
                 </div>
@@ -93,7 +93,6 @@
 <script>
 
     $(document).ready(function() {
-
         $('#AddProduct').validate({
             rules: {
                 title: {

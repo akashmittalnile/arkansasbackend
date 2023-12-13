@@ -15,7 +15,7 @@
                             <span class="search-icon"><img src="{!! assets('assets/superadmin-images/search-icon.svg') !!}"></span>
                         </div>
                     </div>
-                    <div class="col-md-2">
+                    <div class="col-md-3">
                         <div class="form-group form-group">
                             <select name="type" id="" class="form-control">
                                 <option @if(request()->type=="") selected @endif value="">Select Coupon Type</option>
@@ -39,11 +39,6 @@
                             <a class="Create-btn" data-bs-toggle="modal" data-bs-target="#CreateCoupon">Create New Coupon</a>
                         </div>
                     </div>
-                    <div class="col-md-1">
-                        <div class="form-group">
-                            <a class="Create-btn" href="{{ route('SA.Products') }}">Back</a>
-                        </div>
-                    </div>
                 </div>
             </form>
         </div>
@@ -64,7 +59,7 @@
                 <div class="col-md-6">
                     <div class="manage-coupon-card">
                         <div class="manage-coupon-content">
-                            <div class="coupon-code-value">{{ $val->coupon_code ?? "NA" }}</div>
+                            <div class="coupon-code-value">{{ $val->coupon_code ?? "NA" }} @if(isCouponExpired($val->coupon_expiry_date))<div class="coursestatus-unpublish" style="color: red; border: 1px solid red; font-size: 0.7rem; padding: 4px; position: absolute; right: 2%;">Expired</div>@endif</div>
                             <p>{{ $val->description ?? "NA" }}</p>
                             <div class="manage-coupon-list">
                                 <ul>
@@ -178,14 +173,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Valid Upto <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" min="{{ date('Y-m-d', strtotime('+1days')) }}" placeholder="" name="date" min="{{ date('Y-m-d', strtotime('+3days')) }}">
+                                    <input type="date" class="form-control" placeholder="" name="date" min="{{ date('Y-m-d', strtotime('+1days')) }}">
                                 </div>
                             </div>
 
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="">Description</label>
-                                    <textarea class="form-control" placeholder="Coupon Description (ex. Get 20% extra amount on timeshare points rent out" name="description"></textarea>
+                                    <textarea class="form-control" placeholder="Coupon Description" name="description"></textarea>
                                 </div>
                             </div>
 
@@ -273,14 +268,14 @@
                             <div class="col-md-6">
                                 <div class="form-group">
                                     <label for="">Valid Upto <span class="text-danger">*</span></label>
-                                    <input type="date" class="form-control" min="{{ date('Y-m-d', strtotime('+1days')) }}" placeholder="" id="dateEdit" name="date" min="{{ date('Y-m-d', strtotime('+3days')) }}">
+                                    <input type="date" class="form-control" placeholder="" id="dateEdit" name="date" min="{{ date('Y-m-d', strtotime('+1days')) }}">
                                 </div>
                             </div>
 
                             <div class="col-md-12">
                                 <div class="form-group">
                                     <label for="">Description</label>
-                                    <textarea class="form-control" id="descEdit" placeholder="Coupon Description (ex. Get 20% extra amount on timeshare points rent out" name="description"></textarea>
+                                    <textarea class="form-control" id="descEdit" placeholder="Coupon Description" name="description"></textarea>
                                 </div>
                             </div>
 
