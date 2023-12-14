@@ -277,7 +277,7 @@
                 </div>
 
                 <div class="product-item-card">
-                    <div class="card-header form-group">
+                    <div class="card-header form-group" style="border-bottom: none;">
                         <div class="d-flex align-items-center justify-content-between">
                             <h2>Upload Product Multiple Image (jpg,jpeg,png only)</h2>
                             <button class="file-upload" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
@@ -290,7 +290,7 @@
                 <div class="col-md-12">
                     <div class="product-item-card update-card">
                         <div class="pmu-item-content bg-white">
-                            <button class="btn update-btn btn-sm" type="submit">Submit</button>
+                            <button class="btn update-btn btn-sm" type="submit">Create</button>
                         </div>
                     </div>
                 </div>
@@ -370,12 +370,17 @@
                 url: '{{ route("imageDelete") }}',
                 data: {filename: name},
                 success: function (data){
-                    if(data.key == 2){
-                        const inde = arrOfImg.indexOf(data.file_name);
-                        if (inde > -1){
-                            arrOfImg.splice(inde, 1);
-                            $("#arrayOfImage").val(JSON.stringify(arrOfImg));
+                    if(data.status){
+                        console.log("File deleted successfully!!");
+                        if(data.key == 2){
+                            const inde = arrOfImg.indexOf(data.file_name);
+                            if (inde > -1){
+                                arrOfImg.splice(inde, 1);
+                                $("#arrayOfImage").val(JSON.stringify(arrOfImg));
+                            }
                         }
+                    }else{
+                        console.log("File not deleted!!");
                     }
                 },
                 error: function(e) {
@@ -391,11 +396,15 @@
             if(response.key == 1){
                 arrOfImg.push(response.file_name);
                 $("#arrayOfImage").val(JSON.stringify(arrOfImg));
+                file.upload.filename = response.file_name;
+                console.log(response);
             }
         },
         error: function(file, response)
         {
-            return false;
+            console.log(file.previewElement);
+            var fileRef;
+            return (fileRef = file.previewElement) != null ? fileRef.parentNode.removeChild(file.previewElement) : null;
         }
     };
     console.log(arrOfImg);

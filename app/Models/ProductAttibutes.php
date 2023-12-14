@@ -16,5 +16,6 @@ class ProductAttibutes extends Model
         'attribute_type',
         'attribute_code',
         'attribute_value',
+        'created_date',
     ];
 }

@@ -1887,10 +1887,11 @@ class SuperAdminController extends Controller
         $pro = ProductAttibutes::where('attribute_value',$filename);
         if($request->filled('id')) $pro->where('product_id', encrypt_decrypt('decrypt', $request->id));
         else $pro->where('product_id', null);
-        $pro = $pro->delete();
-
         removeFile("upload/products/".$filename);
-        return response()->json(['status'=>true, 'file_name'=> $filename, 'key'=> 2]);  
+        if($pro->delete()){
+           return response()->json(['status'=>true, 'file_name'=> $filename, 'key'=> 2]);   
+        }
+        return response()->json(['status'=>false, 'file_name'=> $filename, 'key'=> 2]);   
     }
 
     public function account_approval_request(Request $request) 
@@ -2521,9 +2522,13 @@ class SuperAdminController extends Controller
                 'title' => 'required',
                 'description' => 'required',
                 'status' => 'required',
+            ], [
+                'title' => 'Please enter title',
+                'description' => 'Please enter description',
+                'status' => 'Please select status',
             ]);
             if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator->errors()->first())->withInput();
+                return redirect()->back()->withErrors($validator->errors())->withInput();
             } else {
                 $page = new Page;
                 $page->title = $request->title ?? null;
@@ -2563,9 +2568,13 @@ class SuperAdminController extends Controller
                 'title' => 'required',
                 'description' => 'required',
                 'status' => 'required',
+            ], [
+                'title' => 'Please enter title',
+                'description' => 'Please enter description',
+                'status' => 'Please select status',
             ]);
             if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator->errors()->first())->withInput();
+                return redirect()->back()->withErrors($validator->errors())->withInput();
             } else {
                 $id = encrypt_decrypt('decrypt', $request->id);
                 Page::where('id', $id)->update([

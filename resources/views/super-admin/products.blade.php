@@ -68,7 +68,7 @@
                                     <div class="pmu-course-media">
                                         <a href="{{ route('SA.Product.View.Details', encrypt_decrypt('encrypt',$data->id)) }}">
                                             <?php
-                                                $first_image = \App\Models\ProductAttibutes::where('product_id', $data->id)->first();
+                                                $first_image = \App\Models\ProductAttibutes::where('product_id', $data->id)->where('attribute_code', 'cover_image')->first();
                                             ?>
                                                 <img src="{!! uploadAssets('upload/products/'.$first_image->attribute_value) !!}"> 
                                                 {{-- <img src="{!! assets('assets/superadmin-images/p2.jpg') !!}"> --}}

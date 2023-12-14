@@ -3008,9 +3008,9 @@ class ApiController extends Controller
                 'country' => 'required',
                 'zip_code' => 'required',
                 'address_type' => 'required',
-                'billig_checkbox' => 'required',
+                'billing_checkbox' => 'required',
             ];
-            if($request->billig_checkbox==0){
+            if($request->billing_checkbox==0){
                 $rules['billing_first_name'] = 'required';
                 $rules['billing_last_name'] = 'required';
                 $rules['billing_email'] = 'required';
@@ -3061,7 +3061,7 @@ class ApiController extends Controller
                     }else{
                         $billingAddress = new Address;
                     }
-                    if($request->billig_checkbox==1){
+                    if($request->billing_checkbox==1){
                         $billingAddress->user_id = auth()->user()->id;
                         $billingAddress->first_name = $request->first_name;
                         $billingAddress->middle_name = $request->middle_name ?? null;
@@ -3082,7 +3082,7 @@ class ApiController extends Controller
                         $billingAddress->default_address = 0;
                         $billingAddress->created_at = date('Y-m-d H:i:s');
                         $billingAddress->updated_at = date('Y-m-d H:i:s');
-                    }else if($request->billig_checkbox==0){
+                    }else if($request->billing_checkbox==0){
                         $validBilling = $this->validateBillingAddress($request);
                         if($validBilling[0]['status']){
                             $billingAddress = new Address;
@@ -3287,9 +3287,9 @@ class ApiController extends Controller
                 'country' => 'required',
                 'zip_code' => 'required',
                 'address_type' => 'required',
-                'billig_checkbox' => 'required'
+                'billing_checkbox' => 'required'
             ];
-            if($request->billig_checkbox==0){
+            if($request->billing_checkbox==0){
                 $rules['billing_first_name'] = 'required';
                 $rules['billing_last_name'] = 'required';
                 $rules['billing_email'] = 'required';
@@ -3338,7 +3338,7 @@ class ApiController extends Controller
                     }else{
                         $billingAddress = new Address;
                     }
-                    if($request->billig_checkbox==1){
+                    if($request->billing_checkbox==1){
                         $billingAddress->user_id = auth()->user()->id;
                         $billingAddress->first_name = $request->first_name;
                         $billingAddress->middle_name = $request->middle_name ?? null;
@@ -3359,7 +3359,7 @@ class ApiController extends Controller
                         $billingAddress->default_address = 0;
                         $billingAddress->created_at = date('Y-m-d H:i:s');
                         $billingAddress->updated_at = date('Y-m-d H:i:s');
-                    }else if($request->billig_checkbox==0){
+                    }else if($request->billing_checkbox==0){
                         $validBilling = $this->validateBillingAddress($request);
                         if($validBilling[0]['status']){
                             $billingAddress = new Address;

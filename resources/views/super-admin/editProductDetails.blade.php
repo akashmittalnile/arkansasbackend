@@ -278,18 +278,18 @@
                 </div>
 
                 <div class="product-item-card">
-                    <div class="card-header form-group">
+                    <div class="card-header form-group" style="border-bottom: none;">
                         <div class="d-flex align-items-center justify-content-between">
                             <h2>Upload Product Multiple Image (jpg,jpeg,png only)</h2>
                             <button class="file-upload" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
                                 upload Multiple image
                             </button>
                         </div>
-                        <div class="d-flex row">
+                        <div class="d-flex row mb-4">
                             @foreach($attr as $valAttr)
                             <div class="col-2 mx-2 my-4" style="width: 160px; height: 80px;">
-                                <img class="p-0" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px; box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;" src="{!! uploadAssets('upload/products/'.$valAttr->attribute_value) !!}" />
-                                <a href="{{ route('SA.Delete.Products.Image', encrypt_decrypt('encrypt', $valAttr->id)) }}" onclick="return confirm('Are you sure you want to delete this product image?');"><i style="border: 1px solid red; background: red; border-radius: 50%; padding: 5px; color: white; position: relative; top: -90px; right: -144px;" class="las la-trash"></i></a>
+                                <img class="img-fluid img-thumbnail rounded" style="height: 120px !important; width: 160px !important; object-fit: contain; object-position: center;" src="{!! uploadAssets('upload/products/'.$valAttr->attribute_value) !!}" />
+                                <a href="{{ route('SA.Delete.Products.Image', encrypt_decrypt('encrypt', $valAttr->id)) }}" onclick="return confirm('Are you sure you want to delete this product image?');"><i style="border: 1px solid red; background: red; border-radius: 50%; padding: 5px; color: white; position: relative; top: -125px; right: -119px;" class="las la-trash"></i></a>
                             </div>
                             @endforeach
                         </div>
@@ -370,12 +370,16 @@ Dropzone.options.dropzone = {
         $.ajax({
             headers: {
                         'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-                    },
+            },
             type: 'POST',
             url: '{{ route("imageDelete") }}',
             data: {filename: name, id: $("#img-id").val()},
             success: function (data){
-                console.log("File deleted successfully!!");
+                if(data.status){
+                    console.log("File deleted successfully!!");
+                }else{
+                    console.log("File not deleted!!");
+                }
             },
             error: function(e) {
                 console.log(e);
@@ -387,11 +391,14 @@ Dropzone.options.dropzone = {
     },
     success: function(file, response) 
     {
-        // console.log(response);
+        file.upload.filename = response.file_name;
+        console.log(response);
     },
     error: function(file, response)
     {
-       return false;
+        console.log(file.previewElement);
+        var fileRef;
+        return (fileRef = file.previewElement) != null ? fileRef.parentNode.removeChild(file.previewElement) : null;
     }
 };
 </script>

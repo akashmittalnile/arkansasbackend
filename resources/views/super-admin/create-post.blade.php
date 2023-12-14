@@ -27,10 +27,12 @@
                                 <div class="mb-3 form-group errorInForm">
                                     <label for="productname" class="form-label">Title <b class="text-danger">*</b></label>
                                     <input type="text" placeholder="Title" name="title" class="form-control" id="productname" aria-describedby="productname" value="{{old('title')}}">
+                                    <span class="error">{{ $errors->first('title') }}</span>
                                 </div>
                                 <div class="mb-5 form-group errorInForm">
                                     <label for="makeMeSummernote1" class="form-label">Description <b class="text-danger">*</b></label>
-                                    <textarea required name="description" cols="30" rows="10" id="makeMeSummernote1" class="form-control full-description" placeholder="Description">{{old('description')}}</textarea>
+                                    <textarea name="description" cols="30" rows="10" id="makeMeSummernote1" class="form-control full-description" placeholder="Description">{{old('description')}}</textarea>
+                                    <span class="error">{{ $errors->first('description') }}</span>
                                 </div>
                             </div>
                         </div>
@@ -49,6 +51,7 @@
                                             <option @if(old('status')=="1" ) selected @endif value="1">Active</option>
                                             <option @if(old('status')=="0" ) selected @endif value="0">In-active</option>
                                         </select>
+                                        <span class="error">{{ $errors->first('status') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -93,12 +96,9 @@
 <script>
 
     $(document).ready(function() {
-        $('#AddProduct').validate({
+        $('#AddProdu').validate({
             rules: {
                 title: {
-                    required: true,
-                },
-                description: {
                     required: true,
                 },
                 status: {

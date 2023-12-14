@@ -209,7 +209,7 @@ class AuthController extends Controller
                 return response()->json(['status' => true, 'message' => "OTP send to your " . $msg . ". OTP is expire in 5 minutes...", 'otp' => $code]);
             }
 
-        } else return errorMsg($msg . " not found.");
+        } else return errorMsg('Entered email address is not registered with us');
     }
 
     public function resend_otp(Request $request)

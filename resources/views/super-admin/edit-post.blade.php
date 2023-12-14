@@ -27,12 +27,13 @@
                                 <div class="mb-3 form-group errorInForm">
                                     <label for="productname" class="form-label">Title <b class="text-danger">*</b></label>
                                     <input type="text" placeholder="Title" name="title" class="form-control" id="productname" aria-describedby="productname" value="{{ $data->title }}">
+                                    <span class="error">{{ $errors->first('title') }}</span>
                                 </div>
                                 <div class="mb-5 form-group errorInForm">
                                     <label for="makeMeSummernote1" class="form-label">Description <b class="text-danger">*</b></label>
                                     <textarea required name="description" cols="30" rows="10" id="makeMeSummernote1" class="form-control full-description" placeholder="Description">{{ $data->description }}</textarea>
+                                    <span class="error">{{ $errors->first('description') }}</span>
                                     <input type="hidden" name="id" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
-                                    <span class="{{$errors->first('title')?'error invalid-feedback':''}}">{{$errors->first('title')}}</span>
                                 </div>
                             </div>
                         </div>
@@ -51,6 +52,7 @@
                                             <option @if($data->status=="1" ) selected @endif value="1">Active</option>
                                             <option @if($data->status=="0" ) selected @endif value="0">In-active</option>
                                         </select>
+                                        <span class="error">{{ $errors->first('status') }}</span>
                                     </div>
                                 </div>
                             </div>
