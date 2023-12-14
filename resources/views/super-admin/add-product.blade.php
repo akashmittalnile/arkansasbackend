@@ -278,11 +278,18 @@
 
                 <div class="product-item-card">
                     <div class="card-header form-group" style="border-bottom: none;">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h2>Upload Product Multiple Image (jpg,jpeg,png only)</h2>
-                            <button class="file-upload" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                upload Multiple image
-                            </button>
+                        <div class="d-flex flex-column justify-content-between">
+                            <div class="product-gallery-parent-div">
+                                <h2>Upload Product Multiple Image (jpg,jpeg,png only)</h2>
+                            </div> 
+                            <div class="dropzone m-3" id="multipleImage">
+                                <div class="dz-default dz-message">
+                                    <span>Click once inside the box to upload an image 
+                                        <br>
+                                        <small class="text-danger">Make sure the image size is less than 1 MB</small>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -295,25 +302,6 @@
                     </div>
                 </div>
             </form>
-        </div>
-    </div>
-</div>
-
-
-<div class="modal ro-modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Upload Product Multiple Image (jpg,jpeg,png only)</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form method="post" action="{{ route('imageUpload') }}" enctype="multipart/form-data" class="dropzone" id="dropzone">
-                    @csrf
-                </form> 
-            </div>
         </div>
     </div>
 </div>
@@ -349,7 +337,7 @@
 <script type="text/javascript">
     let arrOfImg = [];
 
-    Dropzone.options.dropzone = {
+    Dropzone.options.multipleImage = {
         maxFilesize: 1,
         renameFile: function(file) {
             var dt = new Date();
@@ -359,6 +347,10 @@
         acceptedFiles: ".jpeg,.jpg,.png",
         timeout: 5000,
         addRemoveLinks: true,
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        url: "{{ route('imageUpload') }}",
         removedfile: function(file) 
         {
             var name = file.upload.filename;
@@ -379,6 +371,10 @@
                                 $("#arrayOfImage").val(JSON.stringify(arrOfImg));
                             }
                         }
+                        let oplength = arrOfImg.length;
+                        if(oplength>0){
+                        $('.dz-default.dz-message').hide(); 
+                        } else $('.dz-default.dz-message').show();
                     }else{
                         console.log("File not deleted!!");
                     }
@@ -397,11 +393,18 @@
                 arrOfImg.push(response.file_name);
                 $("#arrayOfImage").val(JSON.stringify(arrOfImg));
                 file.upload.filename = response.file_name;
-                console.log(response);
+                let oplength = arrOfImg.length;
+                if(oplength>0){
+                    $('.dz-default.dz-message').hide(); 
+                } else $('.dz-default.dz-message').show();
             }
         },
         error: function(file, response)
         {
+            let oplength = arrOfImg.length;
+            if(oplength>0){
+               $('.dz-default.dz-message').hide(); 
+            } else $('.dz-default.dz-message').show();
             console.log(file.previewElement);
             var fileRef;
             return (fileRef = file.previewElement) != null ? fileRef.parentNode.removeChild(file.previewElement) : null;

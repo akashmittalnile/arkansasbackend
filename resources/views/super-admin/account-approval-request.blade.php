@@ -63,7 +63,7 @@
                                 <div class="creator-table-content">
                                     <div class="creator-profile-info">
                                         <div class="creator-profile-image">
-                                            <img src="{!! assets('assets/superadmin-images/no-image.png') !!}">
+                                            <img src="{!! assets('assets/superadmin-images/no-image.svg') !!}">
                                         </div>
                                         <div class="creator-profile-text">
                                             <h2>{{ ucfirst($data->first_name) }} {{ ucfirst($data->last_name) }}</h2>

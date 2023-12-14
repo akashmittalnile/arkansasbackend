@@ -60,7 +60,7 @@
                                     @if (!empty($user->profile_image))
                                         <img src="{!! uploadAssets('upload/profile-image/'.$user->profile_image) !!}">
                                     @else
-                                        <img src="{!! assets('assets/superadmin-images/no-image.png') !!}">
+                                        <img src="{!! assets('assets/superadmin-images/no-image.svg') !!}">
                                     @endif
 
                                 </div>

@@ -110,7 +110,7 @@
                             @if ($val->profile_image!=null && $val->profile_image!="")
                                 <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! uploadAssets('upload/profile-image/'.$val->profile_image) !!}">
                             @else
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.png') !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.svg') !!}">
                             @endif
                         </td>
                         <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
@@ -155,7 +155,7 @@
                             @if ($val->profile_image!=null && $val->profile_image!="")
                                 <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! uploadAssets('upload/profile-image/'.$val->profile_image) !!}">
                             @else
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.png') !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.svg') !!}">
                             @endif
                         </td>
                         <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>
@@ -200,7 +200,7 @@
                             @if ($val->profile_image!=null && $val->profile_image!="")
                                 <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! uploadAssets('upload/profile-image/'.$val->profile_image) !!}">
                             @else
-                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.png') !!}">
+                                <img width="40" height="40" style="border-radius: 50%; object-fit: cover; object-position: center;" src="{!! assets('assets/superadmin-images/no-image.svg') !!}">
                             @endif
                         </td>
                         <td class="text-capitalize">{{ dataSet($val->first_name) }} {{ $val->last_name ?? '' }}</td>

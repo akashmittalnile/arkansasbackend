@@ -231,6 +231,7 @@
                                 </select>
                             </div>
                         </div>
+                        <input type="hidden" id="arrayOfImage" name="array_of_image" value="">
                         <div class="product-item-card right-card">
                             <div class="card-header">
                                 <h2>SKU Code <b class="text-danger">*</b></h2>
@@ -279,19 +280,18 @@
 
                 <div class="product-item-card">
                     <div class="card-header form-group" style="border-bottom: none;">
-                        <div class="d-flex align-items-center justify-content-between">
-                            <h2>Upload Product Multiple Image (jpg,jpeg,png only)</h2>
-                            <button class="file-upload" type="button" data-bs-toggle="modal" data-bs-target="#exampleModal">
-                                upload Multiple image
-                            </button>
-                        </div>
-                        <div class="d-flex row mb-4">
-                            @foreach($attr as $valAttr)
-                            <div class="col-2 mx-2 my-4" style="width: 160px; height: 80px;">
-                                <img class="img-fluid img-thumbnail rounded" style="height: 120px !important; width: 160px !important; object-fit: contain; object-position: center;" src="{!! uploadAssets('upload/products/'.$valAttr->attribute_value) !!}" />
-                                <a href="{{ route('SA.Delete.Products.Image', encrypt_decrypt('encrypt', $valAttr->id)) }}" onclick="return confirm('Are you sure you want to delete this product image?');"><i style="border: 1px solid red; background: red; border-radius: 50%; padding: 5px; color: white; position: relative; top: -125px; right: -119px;" class="las la-trash"></i></a>
+                        <div class="d-flex flex-column justify-content-between">
+                            <div class="product-gallery-parent-div">
+                                <h2>Upload Product Multiple Image (jpg,jpeg,png only)</h2>
+                            </div> 
+                            <div class="dropzone m-3" id="multipleImage">
+                                <div class="dz-default dz-message">
+                                    <span>Click once inside the box to upload an image 
+                                        <br>
+                                        <small class="text-danger">Make sure the image size is less than 1 MB</small>
+                                    </span>
+                                </div>
                             </div>
-                            @endforeach
                         </div>
                     </div>
                 </div>
@@ -305,25 +305,6 @@
                 </div>
             </form>
             
-        </div>
-    </div>
-</div>
-
-<div class="modal ro-modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="exampleModalLabel">Upload Product Multiple Image (jpg,jpeg,png only)</h5>
-                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body">
-                <form method="post" action="{{ route('imageUpload') }}" enctype="multipart/form-data" class="dropzone" id="dropzone">
-                    <input type="hidden" name="id" id="img-id" value="{{ encrypt_decrypt('encrypt', $product->id) }}">
-                    @csrf
-                </form> 
-            </div>
         </div>
     </div>
 </div>
@@ -352,55 +333,120 @@
     h2 {
         color: white;
     }
+    .dz-image-preview .dz-image img{
+        object-fit: cover;
+        object-position: center;
+        width: 120px;
+        height: 120px;
+    }
 </style>
 <script type="text/javascript">
-Dropzone.options.dropzone = {
-    maxFilesize: 1,
-    renameFile: function(file) {
-        var dt = new Date();
-        var time = dt.getTime();
-       return time+file.name;
-    },
-    acceptedFiles: ".jpeg,.jpg,.png",
-    timeout: 5000,
-    addRemoveLinks: true,
-    removedfile: function(file) 
-    {
-        var name = file.upload.filename;
-        $.ajax({
-            headers: {
-                        'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
-            },
-            type: 'POST',
-            url: '{{ route("imageDelete") }}',
-            data: {filename: name, id: $("#img-id").val()},
-            success: function (data){
-                if(data.status){
-                    console.log("File deleted successfully!!");
-                }else{
-                    console.log("File not deleted!!");
-                }
-            },
-            error: function(e) {
-                console.log(e);
+    var files = [];
+    var removeFiles = [];
+    let arrOfImg = [];
+    var proID = "{{ encrypt_decrypt('encrypt', $product->id) }}";
+
+    const removeImageExist = (id) => {
+        removeFiles.push(id);
+        $(`#removeImageExist${id}`).remove();
+        $("#removed_files").val(removeFiles.join(","));
+    };
+
+    Dropzone.options.multipleImage = {
+        maxFilesize: 1,
+        renameFile: function(file) {
+            var dt = new Date();
+            var time = dt.getTime();
+        return time+file.name;
+        },
+        acceptedFiles: ".jpeg,.jpg,.png",
+        timeout: 5000,
+        addRemoveLinks: true,
+        headers: {
+            'X-CSRF-TOKEN': '{{ csrf_token() }}'
+        },
+        url: "{{ route('imageUpload', ['id' => encrypt_decrypt('encrypt', $product->id)] ) }}",
+        removedfile: function(file) 
+        {
+            var name = file.upload ? file.upload.filename : file.name;
+            var id = "{{encrypt_decrypt('encrypt', $product->id)}}";
+            if (file.name) {
+                removeImageExist(file.id);
             }
-        });
-        var fileRef;
-        return (fileRef = file.previewElement) != null ? 
-        fileRef.parentNode.removeChild(file.previewElement) : void 0;
-    },
-    success: function(file, response) 
-    {
-        file.upload.filename = response.file_name;
-        console.log(response);
-    },
-    error: function(file, response)
-    {
-        console.log(file.previewElement);
-        var fileRef;
-        return (fileRef = file.previewElement) != null ? fileRef.parentNode.removeChild(file.previewElement) : null;
-    }
-};
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="_token"]').attr('content')
+                },
+                type: 'POST',
+                url: '{{ route("imageDelete") }}',
+                data: {filename: name, id : id},
+                success: function (data){
+                    if(data.status){
+                        console.log("File deleted successfully!!");
+                        if(data.key == 2){
+                            const inde = arrOfImg.indexOf(data.file_name);
+                            if (inde > -1){
+                                arrOfImg.splice(inde, 1);
+                                $("#arrayOfImage").val(JSON.stringify(arrOfImg));
+                            }
+                        }
+                        let oplength = arrOfImg.length;
+                        if(oplength>0){
+                            $('.dz-default.dz-message').hide(); 
+                        } else $('.dz-default.dz-message').show();
+                    }else{
+                        console.log("File not deleted!!");
+                    }
+                    console.log(arrOfImg);
+                },
+                error: function(e) {
+                    console.log(e);
+                }
+            }); 
+            var fileRef;
+            return (fileRef = file.previewElement) != null ? 
+            fileRef.parentNode.removeChild(file.previewElement) : void 0;
+        },
+        success: function(file, response) 
+        {
+            if(response.key == 1){
+                arrOfImg.push(response.file_name);
+                $("#arrayOfImage").val(JSON.stringify(arrOfImg));
+                file.upload.filename = response.file_name;
+                let oplength = arrOfImg.length;
+                if(oplength>0){
+                    $('.dz-default.dz-message').hide(); 
+                } else $('.dz-default.dz-message').show();
+            }
+            file.upload.filename = response.file_name;
+            console.log(response);
+            console.log(arrOfImg);
+        },
+        error: function(file, response)
+        {
+            console.log(file.previewElement);
+            let oplength = arrOfImg.length;
+            if(oplength>0){
+               $('.dz-default.dz-message').hide(); 
+            } else $('.dz-default.dz-message').show();
+            console.log(arrOfImg);
+            var fileRef;
+            return (fileRef = file.previewElement) != null ? fileRef.parentNode.removeChild(file.previewElement) : null;
+        },
+        init: function() {
+            var existingImages = {!! json_encode($attr)  !!};
+            var multipleImage = this;
+            existingImages.forEach(function(image) {
+                arrOfImg.push(image.name);
+                var mockFile = {
+                    name: image.name,
+                    id: image.id
+                };
+                multipleImage.displayExistingFile(mockFile, image.path);
+            });
+            console.log(arrOfImg);
+        },
+    };
 </script>
 
 <!-- Include jQuery Validation -->

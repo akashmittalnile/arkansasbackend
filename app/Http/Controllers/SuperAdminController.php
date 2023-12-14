@@ -1482,9 +1482,9 @@ class SuperAdminController extends Controller
             $course_id = $request->course_id;
             $admin_id = $request->admin_id;
             $adminID = encrypt_decrypt('encrypt',$admin_id);
-            Course::where('id',$course_id)->update(['status' => $status]);
             $cc = Course::where('id',$course_id)->first();
-            if(isset($cc->id) && $request->status==1){
+            Course::where('id',$course_id)->update(['status' => $status, 'is_new' => 1]);
+            if(isset($cc->id) && $request->status==1 && ($cc->is_new == 0)){
                 $ccUser = User::where('id', $cc->admin_id)->first();
                 $user = User::where('role', 1)->where('status', 1)->get();
                 if(count($user) > 0){
@@ -1678,7 +1678,15 @@ class SuperAdminController extends Controller
                 $combined[] = $comb;
             }
             $coverimg = ProductAttibutes::where('product_id', $id)->where('attribute_code', 'cover_image')->first();
-            $attr = ProductAttibutes::where('product_id', $id)->where('attribute_code', 'slide_image')->get();
+            $slideImg = ProductAttibutes::where('product_id', $id)->where('attribute_code', 'slide_image')->get();
+            $attr = [];
+            foreach($slideImg as $val){
+                $tem['path'] = uploadAssets('upload/products/'.$val->attribute_value);
+                $tem['name'] = $val->attribute_value;
+                $tem['size'] = 10024;
+                $tem['id'] = $val->id;
+                $attr[] = $tem;
+            }
             return view('super-admin.editProductDetails')->with(compact('product', 'combined', 'coverimg', 'attr'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1755,9 +1763,18 @@ class SuperAdminController extends Controller
             
             if(isset($request->product_image)){
                 $name = fileUpload($request->product_image, 'upload/products/');
-                $course = ProductAttibutes::where('product_id', $id)->update([
+                $course = ProductAttibutes::where('product_id', $id)->where('attribute_code', 'cover_image')->update([
                     'attribute_value' => $name,
                 ]);
+            }
+
+            $array_of_image = json_decode($request->array_of_image);
+            if(is_array($array_of_image) && count($array_of_image)>0){
+                foreach($array_of_image as $val){
+                    ProductAttibutes::where('attribute_value', $val)->where('attribute_code', 'slide_image')->update([
+                        'product_id' => $id,
+                    ]);
+                }
             }
             
             return redirect()->route('SA.Products')->with('message','Product updated successfully');
@@ -1850,7 +1867,7 @@ class SuperAdminController extends Controller
                 $array_of_image = json_decode($request->array_of_image);
                 if(is_array($array_of_image) && count($array_of_image)>0){
                     foreach($array_of_image as $val){
-                        ProductAttibutes::where('attribute_value', $val)->update([
+                        ProductAttibutes::where('attribute_value', $val)->where('attribute_code', 'slide_image')->update([
                             'product_id' => $product_id->id,
                         ]);
                     }
@@ -1870,7 +1887,7 @@ class SuperAdminController extends Controller
         $pro_id = isset($request->id) ? encrypt_decrypt('decrypt', $request->id) : null;
             
         $course = ProductAttibutes::create([
-            'product_id' => $pro_id,
+            'product_id' => null,
             'attribute_type' => 'Slide Image',
             'attribute_code' => 'slide_image',
             'attribute_value' => $name,
@@ -1885,11 +1902,9 @@ class SuperAdminController extends Controller
         $filename =  $request->get('filename');
 
         $pro = ProductAttibutes::where('attribute_value',$filename);
-        if($request->filled('id')) $pro->where('product_id', encrypt_decrypt('decrypt', $request->id));
-        else $pro->where('product_id', null);
-        removeFile("upload/products/".$filename);
         if($pro->delete()){
-           return response()->json(['status'=>true, 'file_name'=> $filename, 'key'=> 2]);   
+            removeFile("upload/products/".$filename);
+            return response()->json(['status'=>true, 'file_name'=> $filename, 'key'=> 2]);   
         }
         return response()->json(['status'=>false, 'file_name'=> $filename, 'key'=> 2]);   
     }

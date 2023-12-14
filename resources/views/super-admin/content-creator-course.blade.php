@@ -68,7 +68,7 @@
                         <div class="creator-profile-info">
                             <div class="creator-profile-image">
                                 @if(empty($data->profile_image))
-                                <img src="{!! assets('assets/superadmin-images/no-image.png') !!}">
+                                <img src="{!! assets('assets/superadmin-images/no-image.svg') !!}">
                                 @else
                                 <img src="{!! uploadAssets('upload/profile-image/'.$data->profile_image) !!}">
                                 @endif

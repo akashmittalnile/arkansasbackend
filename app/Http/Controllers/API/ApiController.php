@@ -354,6 +354,7 @@ class ApiController extends Controller
                 $b5['creator_id'] = $data->added_by;
                 $b5['created_at'] = date('d/m/y,H:i', strtotime($data->created_at));
                 $b5['price'] = $data->price;
+                $b5['sale_price'] = $data->sale_price ?? 0;
                 $b5['status'] = $data->status;
                 $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                 $datas_image = array();
@@ -1894,7 +1895,7 @@ class ApiController extends Controller
                     if (isset($user->profile_image) && $user->profile_image != "") {
                         $temp['profile_image'] = uploadAssets('upload/profile-image/' . $user->profile_image);
                     } else {
-                        $temp['profile_image'] = assets('assets/superadmin-images/no-image.png');
+                        $temp['profile_image'] = assets('assets/superadmin-images/no-image.svg');
                     }
                     $temp['company'] = $user->company;
                     $temp['professional_title'] = 'Tatto Artist';
