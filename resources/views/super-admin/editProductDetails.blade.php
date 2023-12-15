@@ -277,14 +277,22 @@
                         </div>
                     </div>
                 </div>
-
+                <a href="#product-gallery-parent-div" id="redirectbtn" class="d-none">btn</a>
                 <div class="product-item-card">
                     <div class="card-header form-group" style="border-bottom: none;">
                         <div class="d-flex flex-column justify-content-between">
-                            <div class="product-gallery-parent-div">
+                            <div class="product-gallery-parent-div" id="product-gallery-parent-div">
                                 <h2>Upload Product Multiple Image (jpg,jpeg,png only)</h2>
                             </div> 
                             <div class="dropzone m-3" id="multipleImage">
+                                @foreach($attr as $valAttr)
+                                <div class="dz-preview dz-image-preview">
+                                    <div class="dz-image">
+                                        <img src="{!! $valAttr['path'] !!}" />
+                                    </div>
+                                    <a href="{{ route('SA.Delete.Products.Image', encrypt_decrypt('encrypt', $valAttr['id'])) }}" class="dz-remove dz-remove-image">Remove Link</a>
+                                </div>
+                                @endforeach
                                 <div class="dz-default dz-message">
                                     <span>Click once inside the box to upload an image 
                                         <br>
@@ -341,6 +349,10 @@
     }
 </style>
 <script type="text/javascript">
+
+    var idredirect = "{{ session()->get('idredirect') ?? 0 }}";
+    if(idredirect == 1) $("#redirectbtn").get(0).click();
+
     var files = [];
     var removeFiles = [];
     let arrOfImg = [];
@@ -432,20 +444,7 @@
             console.log(arrOfImg);
             var fileRef;
             return (fileRef = file.previewElement) != null ? fileRef.parentNode.removeChild(file.previewElement) : null;
-        },
-        init: function() {
-            var existingImages = {!! json_encode($attr)  !!};
-            var multipleImage = this;
-            existingImages.forEach(function(image) {
-                arrOfImg.push(image.name);
-                var mockFile = {
-                    name: image.name,
-                    id: image.id
-                };
-                multipleImage.displayExistingFile(mockFile, image.path);
-            });
-            console.log(arrOfImg);
-        },
+        }
     };
 </script>
 
@@ -458,6 +457,16 @@
 
     
     $(document).ready(function() {
+        var existingImages = {!! json_encode($attr)  !!};
+        existingImages.forEach(function(image) {
+            arrOfImg.push(image.name);
+        });
+        console.log(existingImages);
+        let oplength = arrOfImg.length;
+        if(oplength>0){
+           $('.dz-default.dz-message').hide(); 
+        } else $('.dz-default.dz-message').show();
+
         $('.code').mask('000-000-000');
 
         $(".select2-container .selection .select2-selection .select2-search__field").addClass('form-control');

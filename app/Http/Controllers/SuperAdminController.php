@@ -1653,7 +1653,7 @@ class SuperAdminController extends Controller
             if($count == 1) return redirect()->back()->with('message', "Minimum one product image must be required. Can't Remove");
             removeFile("upload/products/".$attr->attribute_value);
             ProductAttibutes::where('id', $id)->delete();
-            return redirect()->back()->with('message', 'Product image successfully');
+            return redirect()->back()->with(['message'=> 'Product image successfully', 'idredirect' => 1]);
         } catch (\Exception $e) {
             return $e->getMessage();
         }
@@ -1887,7 +1887,7 @@ class SuperAdminController extends Controller
         $pro_id = isset($request->id) ? encrypt_decrypt('decrypt', $request->id) : null;
             
         $course = ProductAttibutes::create([
-            'product_id' => null,
+            'product_id' => $pro_id,
             'attribute_type' => 'Slide Image',
             'attribute_code' => 'slide_image',
             'attribute_value' => $name,
