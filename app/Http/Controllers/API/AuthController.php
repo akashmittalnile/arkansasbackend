@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\Notify;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
@@ -155,16 +156,18 @@ class AuthController extends Controller
                 ], 200);
             } else {
                 $user->password = bcrypt($request->password);
+                $user->verification_code = null;
+                $user->updated_at = null;
                 if ($user->save()) {
                     $notify = new Notify;
-                    $notify->added_by = auth()->user()->id;
-                    $notify->user_id = auth()->user()->id;
+                    $notify->added_by = $user_login_source->id;
+                    $notify->user_id = $user_login_source->id;
                     $notify->module_name = 'password';
                     $notify->title = 'Password Reset Successfully';
-                    $notify->message = 'Hello, ' . auth()->user()->first_name . "\nYour password has been reset successfully.";
-                    if(auth()->user()->profile_image == "" || auth()->user()->profile_image == null){
+                    $notify->message = 'Hello, ' . $user_login_source->first_name . "\nYour password has been reset successfully.";
+                    if($user_login_source->profile_image == "" || $user_login_source->profile_image == null){
                         $profile_image = null;
-                    } else $profile_image = uploadAssets('upload/profile-image/'.auth()->user()->profile_image);
+                    } else $profile_image = uploadAssets('upload/profile-image/'.$user_login_source->profile_image);
                     $notify->image = $profile_image;
                     $notify->is_seen = '0';
                     $notify->redirect_url = null;
@@ -173,10 +176,10 @@ class AuthController extends Controller
                     $notify->save();
 
                     $data = array(
-                        'msg' => 'Hello, ' . auth()->user()->first_name . "\nYour password has been reset successfully.",
+                        'msg' => 'Hello, ' . $user_login_source->first_name . "\nYour password has been reset successfully.",
                         'title' => 'Password Reset Successfully'
                     );
-                    sendNotification(auth()->user()->fcm_token ?? "", $data);
+                    sendNotification($user_login_source->fcm_token ?? "", $data);
 
                     return response()->json([
                         'status' => true,
@@ -200,15 +203,24 @@ class AuthController extends Controller
         }
 
         $user = User::where('email', $request->email)->where('status', 1)->orderBy('id','DESC')->first();
-        $msg = "Email address";
+        $msg = " registered email address";
 
         if (isset($user->id)) {
             $code = rand(1000, 9999);
             $user->Verification_code = $code;
+            $user->updated_at = date('Y-m-d H:i:s');
             if ($user->save()) {
+                $data['subject']    = 'Arkansas Student Forgot Password OTP';
+                $data['from_email'] = env('MAIL_FROM_ADDRESS');
+                $data['site_title'] = 'Arkansas Student Forgot Password OTP';
+                $data['view'] = 'email.otp';
+                $data['otp'] = $code;
+                $data['customer_name'] = $user->first_name ?? 'NA' + ' ' + $user->last_name ?? '';
+                $data['to_email'] = $user->email ?? 'NA';
+                sendEmail($data);
+
                 return response()->json(['status' => true, 'message' => "OTP send to your " . $msg . ". OTP is expire in 5 minutes...", 'otp' => $code]);
             }
-
         } else return errorMsg('Entered email address is not registered with us');
     }
 
@@ -218,7 +230,16 @@ class AuthController extends Controller
             $user = User::where('email', $request->email)->where('status', 1)->orderBy('id','DESC')->first();
             $code = rand(1000, 9999);
             $user->verification_code = $code;
+            $user->updated_at = date('Y-m-d H:i:s');
             $user->save();
+            $data['subject']    = 'Arkansas Student Forgot Password OTP';
+            $data['from_email'] = env('MAIL_FROM_ADDRESS');
+            $data['site_title'] = 'Arkansas Student Forgot Password OTP';
+            $data['view'] = 'email.otp';
+            $data['otp'] = $code;
+            $data['customer_name'] = $user->first_name ?? 'NA' + ' ' + $user->last_name ?? '';
+            $data['to_email'] = $user->email ?? 'NA';
+            sendEmail($data);
             return response()->json(['status' => true, 'message' => 'OTP resend successfully.', 'code' => $code]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -241,7 +262,15 @@ class AuthController extends Controller
                 {
                     if($user->verification_code == $request->otp)
                     {
-                        return response()->json(['status' => true, 'message' => 'Verification successfully.']);
+                        $now = Carbon::now();
+                        $fivemin = date('Y-m-d H:i:s', strtotime($user->updated_at.'+5 mins'));
+                        if($fivemin >= $now){
+                            return response()->json(['status' => true, 'message' => 'Verification successfully.']);
+                        }else{
+                            $user->verification_code = null;
+                            $user->save();
+                            return response()->json(['status' => false, 'message' => 'OTP verification timeout. Please click resend otp']);
+                        }
                     }else{
                         return response()->json(['status' => false, 'message' => 'OTP is incorrect.']);
                     }
