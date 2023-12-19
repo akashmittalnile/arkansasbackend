@@ -4,7 +4,7 @@
 <div class="body-main-content">
     <div class="pmu-filter-section">
         <div class="pmu-filter-heading">
-            <h2>Posts</h2>
+            <h2>Pages</h2>
         </div>
         <div class="pmu-search-filter wd80">
             <form action="">

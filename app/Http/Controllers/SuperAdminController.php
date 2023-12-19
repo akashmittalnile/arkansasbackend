@@ -679,7 +679,7 @@ class SuperAdminController extends Controller
             $combined[] = $comb;
         }
         $reviewAvg = DB::table('user_review as ur')->where('object_id', $id)->where('object_type', 1)->avg('rating');
-        $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date')->where('object_id', $id)->where('object_type', 1)->get();
+        $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date', 'u.profile_image')->where('object_id', $id)->where('object_type', 1)->get();
         return view('super-admin.viewCourseDetails')->with(compact('course', 'combined', 'review', 'reviewAvg'));
     }
 
@@ -2256,9 +2256,9 @@ class SuperAdminController extends Controller
             $courseId = encrypt_decrypt('decrypt',$courseId);
             $id = encrypt_decrypt('decrypt',$id);
 
-            $course = Course::where('id', $courseId)->first();
+            $course = Course::join('order_product_detail as opd', 'opd.product_id', '=', 'course.id')->join('orders as o', 'o.id', '=', 'opd.order_id')->where('course.id', $courseId)->select('course.*', 'opd.amount')->where('opd.product_type', 1)->where('user_id', $id)->first();
             $course->tags = unserialize($course->tags);
-            $tags = Tag::where('status', 1)->where('type', 2)->get();
+            $tags = Tag::where('status', 1)->where('type', 1)->get();
             $combined = array();
             foreach ($tags as $arr) {
                 $comb = array('id' => $arr['id'], 'name' => $arr['tag_name'], 'selected' => false);
@@ -2271,7 +2271,7 @@ class SuperAdminController extends Controller
                 $combined[] = $comb;
             }
             $reviewAvg = DB::table('user_review as ur')->where('object_id', $courseId)->where('object_type', 1)->avg('rating');
-            $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date')->where('object_id', $courseId)->where('object_type', 1)->get();
+            $review = DB::table('user_review as ur')->join('users as u', 'u.id', '=', 'ur.userid')->select('u.first_name', 'u.last_name', 'ur.rating', 'ur.review', 'ur.created_date', 'u.profile_image')->where('object_id', $courseId)->where('object_type', 1)->get();
 
             $userCourse = UserCourse::where('user_id', $id)->where('course_id', $courseId)->where('status', 1)->orderByDesc('id')->first();
             if(isset($userCourse->id)){

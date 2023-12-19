@@ -652,7 +652,7 @@ class HomeController extends Controller
                     } else $profile_image = uploadAssets('upload/profile-image/'.auth()->user()->profile_image);
                     $notify->image = $profile_image;
                     $notify->is_seen = '0';
-                    $notify->redirect_url = route('SA.Content-Creator.Course');
+                    $notify->redirect_url = 'https://admin.permanentmakeupuniversity.com/super-admin/content-creator-course';
                     $notify->created_at = date('Y-m-d H:i:s');
                     $notify->updated_at = date('Y-m-d H:i:s');
                     $notify->save();

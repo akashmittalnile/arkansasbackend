@@ -59,7 +59,18 @@
                 <div class="col-md-6">
                     <div class="manage-coupon-card">
                         <div class="manage-coupon-content">
-                            <div class="coupon-code-value">{{ $val->coupon_code ?? "NA" }} @if(isCouponExpired($val->coupon_expiry_date))<div class="coursestatus-unpublish" style="color: red; border: 1px solid red; font-size: 0.7rem; padding: 4px; position: absolute; right: 2%;">Expired</div>@endif</div>
+                            <div class="d-flex flex-row">
+                                <div class="coupon-code-value">{{ $val->coupon_code ?? "NA" }} 
+                                    @if(isCouponExpired($val->coupon_expiry_date))
+                                    <div class="coursestatus-unpublish" style="color: red; border: 1px solid red; font-size: 0.7rem; padding: 4px; position: absolute; right: 2%;">Expired</div>
+                                    @endif
+                                </div>
+                                @if($val->object_type==2)
+                                <div class="coursestatus-unpublish" style="color: green; border: 1px solid green; font-size: 0.7rem;padding: 4px; margin-left: 10px;">Product</div>
+                                @else
+                                <div class="coursestatus-unpublish" style="color: #d7d708; border: 1px solid #d7d708; font-size: 0.7rem;padding: 4px; margin-left: 10px;">Course</div>
+                                @endif
+                            </div>
                             <p>{{ $val->description ?? "NA" }}</p>
                             <div class="manage-coupon-list">
                                 <ul>
@@ -67,12 +78,12 @@
                                     <li><span>Valid Upto:</span> {{ date('d M, Y', strtotime($val->coupon_expiry_date)) }}</li>
                                     <li>
                                         <span>Discount type:</span>
-                                        @if($val->coupon_discount_type == 1) Flat &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; 
+                                        @if($val->coupon_discount_type == 1) Flat &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;
                                         @elseif($val->coupon_discount_type == 2) Percentage
                                         @endif
                                     </li>
                                     <li>
-                                        <span>Discount Value:</span> 
+                                        <span>Discount Value:</span>
                                         @if($val->coupon_discount_type == 1)$@endif{{ $val->coupon_discount_amount ?? 0 }}@if($val->coupon_discount_type == 2)%@endif
                                     </li>
                                 </ul>
@@ -149,7 +160,7 @@
                                     <select class="form-control" name="course" id="course_create" style="padding: 13px 10px;" required>
                                         <option value="">Select Course</option>
                                         @foreach($course as $val)
-                                        <option value="{{ $val->id }}" data-amount="{{ $val->max_discount }}" >{{ $val->title }}</option>
+                                        <option value="{{ $val->id }}" data-amount="{{ $val->max_discount }}">{{ $val->title }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -244,7 +255,7 @@
                                     <select class="form-control" name="course" id="course_edit" style="padding: 13px 10px;" required>
                                         <option value="">Select Course</option>
                                         @foreach($course as $val)
-                                        <option value="{{ $val->id }}" data-amount="{{ $val->max_discount }}" >{{ $val->title }}</option>
+                                        <option value="{{ $val->id }}" data-amount="{{ $val->max_discount }}">{{ $val->title }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -302,21 +313,21 @@
         $(this).find('.error.invalid-feedback').remove();
     });
 
-    $(document).on('change', "#course_create", function(){
+    $(document).on('change', "#course_create", function() {
         let amount = $(this).find('option:selected').data('amount');
         $("#amount_create").attr('max', amount);
         $("#note").html(`NOTE: Max discount for this course is ${amount}%`);
     });
 
-    $(document).on('change', "#course_edit", function(){
+    $(document).on('change', "#course_edit", function() {
         let amount = $(this).find('option:selected').data('amount');
         $("#amountEdit").attr('max', amount);
         $("#noteEdit").html(`NOTE: Max discount for this course is ${amount}%`);
     });
 
-    $(document).on('change', "#object_create_type", function(){
+    $(document).on('change', "#object_create_type", function() {
         $val = $(this).val();
-        if($val == 1){
+        if ($val == 1) {
             $("#min_amount_input").hide();
             $("#type_create").attr('disabled', true);
             $("#type_create").val(2);
@@ -333,7 +344,7 @@
 
     $(document).ready(function() {
 
-        $(document).on('click', '.edit-btn', function(){
+        $(document).on('click', '.edit-btn', function() {
             let id = $(this).attr('data-id');
             $.ajax({
                 url: arkansasUrl + '/super-admin/get-coupon-details',
@@ -341,9 +352,9 @@
                 data: {
                     id
                 },
-                success: function (data) {
+                success: function(data) {
                     if (data.status) {
-                        if(data.data.object_type == 1){
+                        if (data.data.object_type == 1) {
                             $("#course_input_edit").show();
                             $("#min_amount_input_edit").hide();
                             $("#typeEdit").attr('disabled', true);
@@ -359,8 +370,8 @@
                             $("#course_edit").val(data.data.object_id);
                             $("#dateEdit").val(data.data.coupon_expiry_date);
                             $("#descEdit").val(data.data.description);
-                            $("#editCoupon").modal('show'); 
-                        }else{
+                            $("#editCoupon").modal('show');
+                        } else {
                             $("#course_input_edit").hide();
                             $("#min_amount_input_edit").show();
                             $("#typeEdit").attr('disabled', false);
@@ -378,15 +389,15 @@
                             $("#amountEdit").val(data.data.coupon_discount_amount);
                             $("#dateEdit").val(data.data.coupon_expiry_date);
                             $("#descEdit").val(data.data.description);
-                            $("#editCoupon").modal('show'); 
+                            $("#editCoupon").modal('show');
                         }
                     }
                 }
             });
         });
 
-        $("input[name='code']").keyup(function(){
-            $(this).val(function(){
+        $("input[name='code']").keyup(function() {
+            $(this).val(function() {
                 return this.value.toUpperCase();
             })
         })
@@ -400,7 +411,9 @@
                         type: 'get',
                         url: arkansasUrl + '/check_coupon_code',
                         data: {
-                            'code': function () { return $("#code").val(); }
+                            'code': function() {
+                                return $("#code").val();
+                            }
                         },
                         dataType: 'json'
                     }
@@ -465,8 +478,12 @@
                         type: 'get',
                         url: arkansasUrl + '/check_coupon_code',
                         data: {
-                            'code': function () { return $("#codeEdit").val(); },
-                            'coupon_id': function () { return $("#coupon_id_input").val(); }
+                            'code': function() {
+                                return $("#codeEdit").val();
+                            },
+                            'coupon_id': function() {
+                                return $("#coupon_id_input").val();
+                            }
                         },
                         dataType: 'json'
                     }

@@ -316,9 +316,6 @@ class ApiController extends Controller
 
                 $AllProducts[] = $b4;
             }
-            $AllProducts = collect($AllProducts);
-            $AllProducts = $AllProducts->sortByDesc('avg_rating')->values();
-            $AllProducts = $AllProducts->all();
             
             $sug_products = Product::leftJoin('category as c', 'c.id', '=', 'product.category_id')->where('product.status', 1)->orderBy('product.id', 'DESC')->select('product.*', 'c.name as catname')->get(); /*Get data of Suggested Product*/
             $b5 = array();
@@ -2285,10 +2282,10 @@ class ApiController extends Controller
                             $valid = date('d M, Y', strtotime($value->created_date . '+' . $course_purchase->attribute_value . 'days'));
                         }
 
+                        $temp['id'] = $value->id ?? 0;
                         if($request->type==1){
                             $temp['course_valid_date'] = date('d M, Y', strtotime($valid));
                             $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);
-                            $temp['course_id'] = $value->id ?? 0;
                             $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
                             if(isset($isCourseComplete->id)){
                                 $temp['course_completed'] = 1;
@@ -2299,7 +2296,6 @@ class ApiController extends Controller
                                 $temp['certificate'] = null;
                             }
                         }else{
-                            $temp['product_id'] = $value->id ?? 0;
                             $productImg = ProductAttibutes::where('product_id', $value->id)->where('attribute_code', 'cover_image')->first();
                             $temp['Product_image'][0] = (isset($productImg->attribute_value) && $productImg->attribute_value!="") ? uploadAssets('upload/products/'.$productImg->attribute_value):null;
                         }
@@ -2324,7 +2320,7 @@ class ApiController extends Controller
                             $profile_image = '';
                         }
                         $temp['content_creator_image'] = $profile_image;
-                        $temp['content_creator_name'] = $ContentCreator->first_name ?? 'NA' .' '.$ContentCreator->last_name ?? '';
+                        $temp['content_creator_name'] = $ContentCreator->first_name .' '.$ContentCreator->last_name ?? '';
                         $temp['content_creator_id'] = isset($ContentCreator->id) ? $ContentCreator->id : '';
 
                         $review = Review::where('object_id', $value->id)->where('object_type', $request->type)->where('userid', $user_id)->first();

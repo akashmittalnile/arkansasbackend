@@ -41,7 +41,7 @@
                             </div>
 
                             <h2>{{ ($course->title) ? : ''}}</h2>
-                            <div class="pmu-course-details-price">${{ number_format($course->course_fee,2) ? : 0}}</div>
+                            <div class="pmu-course-details-price">${{ number_format($course->amount,2) ? : 0}}</div>
                             <p>{{ ($course->description) ? : ''}}</p>
                             <div class="course-tag">
                                 <h3>Tags:</h3>
@@ -144,7 +144,11 @@
                             @forelse($review as $value)
                             <div class="pmu-comment-item">
                                 <div class="pmu-comment-profile">
-                                    <img src="{!! assets('assets/superadmin-images/user.png')!!}">
+                                    @if($value->profile_image == '' || $value->profile_image == null)
+                                    <img src="{!! assets('assets/superadmin-images/no-image.svg')!!}">
+                                    @else
+                                    <img src="{{ uploadAssets('upload/profile-image/'.$value->profile_image) }}">
+                                    @endif
                                 </div>
                                 <div class="pmu-comment-content">
                                     <div class="pmu-comment-head">

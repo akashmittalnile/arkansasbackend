@@ -1,5 +1,5 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Permanent Makeup University - Edit Post')
+@section('title', 'Permanent Makeup University - Edit Page')
 @section('content')
 <meta name="_token" content="{{csrf_token()}}" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between">
         <div class="pmu-filter-section">
             <div class="pmu-filter-heading">
-                <h2>Edit Post</h2>
+                <h2>Edit Page</h2>
             </div>
         </div>
         <a href="{{ route('SA.Posts') }}"><button class="product-list-btn"><i class="bbi bi-caret-left me-2"></i>Post List</button></a>
@@ -21,7 +21,7 @@
                     <div class="col-md-8">
                         <div class="product-item-card">
                             <div class="card-header">
-                                <h2>Post Info</h2>
+                                <h2>Page Info</h2>
                             </div>
                             <div class="pmu-item-content">
                                 <div class="mb-3 form-group errorInForm">
@@ -31,7 +31,7 @@
                                 </div>
                                 <div class="mb-5 form-group errorInForm">
                                     <label for="makeMeSummernote1" class="form-label">Description <b class="text-danger">*</b></label>
-                                    <textarea required name="description" cols="30" rows="10" id="makeMeSummernote1" class="form-control full-description" placeholder="Description">{{ $data->description }}</textarea>
+                                    <textarea name="description" cols="30" rows="10" id="makeMeSummernote1" class="form-control full-description" placeholder="Description">{{ $data->description }}</textarea>
                                     <span class="error">{{ $errors->first('description') }}</span>
                                     <input type="hidden" name="id" value="{{ encrypt_decrypt('encrypt', $data->id) }}">
                                 </div>
@@ -97,7 +97,7 @@
 <script>
     $(document).ready(function() {
 
-        $('#AddProduct').validate({
+        $('#AddProduc').validate({
             rules: {
                 title: {
                     required: true,

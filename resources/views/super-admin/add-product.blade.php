@@ -248,7 +248,7 @@
                         </div>
                         <div class="product-item-card right-card">
                             <div class="card-header">
-                                <h2>Sale Pricing (USD)</h2>
+                                <h2>Sale Pricing (USD) <b class="text-danger">*</b></h2>
                             </div>
                             <div class="pmu-item-content search-select form-group">
                                 <input type="text" class="form-control percentage-input" placeholder="Sale Pricing (USD)" id="sale_price" name="sale_price" value="{{ old('sale_price') }}">
@@ -316,7 +316,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.13/js/select2.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta3/js/bootstrap.bundle.min.js"></script>
+<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/5.0.0-beta3/js/bootstrap.bundle.min.js"></script> -->
 <script src="https://cdn.jsdelivr.net/npm/summernote@0.8.18/dist/summernote-lite.min.js"></script>
 <script src="{{ assets('assets/superadmin-js/create-product.js') }}"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/dropzone/5.9.0/dropzone.js"></script>
@@ -430,6 +430,11 @@
             return this.optional(element) || (element.files[0].size <= param * 1000000)
         }, 'File size must be less than {0} MB');
 
+        $.validator.addMethod("greaterThan", function (value, element, param) {
+            var $otherElement = $(param);
+            return parseInt(value, 10) >= parseInt($otherElement.val(), 10);
+        }, 'Regular price should be greater than sale price');
+
         $('#AddProduct').validate({
             rules: {
                 name: {
@@ -512,12 +517,24 @@
                 },
                 regular_price: {
                     required: true,
+                    greaterThan: "#sale_price"
+                },
+                sale_price: {
+                    required: true,
+                    min: 0.1
                 },
                 stock_quantity: {
                     required: true,
                 },
             },
-
+            messages:{
+                regular_price: {
+                    max: 'Regular price should be greater than sale price'
+                },
+                sale_price: {
+                    min: 'Sale price should be greater than $0.1'
+                }
+            },
             submitHandler: function(form) {
                 // This function will be called when the form is valid and ready to be submitted
                 form.submit();

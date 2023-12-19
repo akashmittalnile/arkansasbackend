@@ -158,7 +158,7 @@
                                                 </div>
                                                 <div class="course-item-content">
                                                     <div class="{{ ($val->status==1) ? 'coursestatus' : 'coursestatus-unpublish' }}"><img src="{!! assets('assets/superadmin-images/tick.svg') !!}">
-                                                        @if($val->status==1) Completed Course Successfully @else Ongoing Course @endif
+                                                        @if($val->status==1) Completed @else Ongoing Course @endif
                                                     </div>
                                                     <h2>{{ $val->title ?? "NA" }}</h2>
                                                     <div class="course-price">${{ number_format((float)$val->buy_price, 2) }}</div>

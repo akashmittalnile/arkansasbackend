@@ -1,5 +1,5 @@
 @extends('super-admin-layouts.app-master')
-@section('title', 'Permanent Makeup University - Create Post')
+@section('title', 'Permanent Makeup University - Create Page')
 @section('content')
 <meta name="_token" content="{{csrf_token()}}" />
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
@@ -8,7 +8,7 @@
     <div class="d-flex justify-content-between">
         <div class="pmu-filter-section">
             <div class="pmu-filter-heading">
-                <h2>Create Post</h2>
+                <h2>Create Page</h2>
             </div>
         </div>
         <a href="{{ route('SA.Posts') }}"><button class="product-list-btn"><i class="bbi bi-caret-left me-2"></i>Post List</button></a>

@@ -36,7 +36,7 @@
                                                                     @if($val->profile_image!="" && $val->profile_image!=null)
                                                                     <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ uploadAssets('upload/profile-image/'.$val->profile_image) }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @else
-                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('assets/website-images/user.jpg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
+                                                                    <img style="border-radius: 50%; object-fit: cover; object-position: center;" src="{{ assets('assets/website-images/no-image.svg') }}" alt="avatar" class="d-flex align-self-center me-3" width="60" height="60">
                                                                     @endif
                                                                     <span class="badge bg-success badge-dot"></span>
                                                                 </div>
