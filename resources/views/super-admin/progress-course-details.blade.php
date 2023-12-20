@@ -160,8 +160,13 @@
                                 </div>
                             </div>
                             @empty
-                            <div class="text-center">
-                                No rating & review found
+                            <div class="d-flex flex-column align-items-center justify-content-center mt-5">
+                                <div>
+                                    <img src="{{ assets('/assets/superadmin-images/nodata.svg') }}" alt="">
+                                </div>
+                                <div class="font-weight-bold">
+                                    <p class="font-weight-bold" style="font-size: 1.2rem;">No rating & review found</p> 
+                                </div>
                             </div>
                             @endforelse
 

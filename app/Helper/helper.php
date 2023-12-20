@@ -6,6 +6,7 @@ use App\Models\Notify;
 use App\Models\Tag;
 use Illuminate\Support\Carbon;
 use App\Mail\DefaultMail;
+use App\Models\Product;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\File;
@@ -201,6 +202,38 @@ if (!function_exists('getNotification')) {
             return $notify;
         }
         
+    }
+}
+
+if (!function_exists('stockAvailable')) {
+    function stockAvailable($id, $qty, $cart = null)
+    {
+        $pro = Product::where('id', $id)->first();
+        if(isset($pro->id)){
+            if($pro->status == 0)
+                return ['status' => false, 'message' => 'Product is temporily inactive'];
+            else if($pro->stock_available == 0 || $pro->unit == 0 || $pro->unit < $qty)
+                return ['status' => false, 'message' => 'Out of stock now!'];
+            else{
+                if(isset($cart->id)){
+                    $quantity = 0;
+                    $oldcart = unserialize($cart->data);
+                    for ($i = 0; $i < count($oldcart['products']); $i++) {
+                        if ($oldcart['products'][$i]['product_id'] == $id) {
+                            $quantity += $oldcart['products'][$i]['qty'];
+                        }
+                    }
+                    if(($pro->unit-$quantity) < $qty){
+                        return ['status' => false, 'message' => 'Out of stock now!'];
+                    } else {
+                        return ['status' => true, 'message' => 'In stock'];
+                    }
+                } else {
+                    return ['status' => true, 'message' => 'In stock'];
+                }
+            }
+                
+        } else return ['status' => false, 'message' => 'Product not found'];
     }
 }
 

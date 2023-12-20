@@ -54,7 +54,7 @@
     <div class="pmu-content-list">
         <div class="pmu-table-content">
             <div class="pmu-card-table pmu-table-card">
-                <table class="table">
+                <table class="table" >
                     <thead>
                         <tr>
                             <th>S.no</th>
@@ -100,6 +100,9 @@
 <style>
     a:hover {
         color: #fff;
+    }
+    td p{
+        margin-bottom: 0;
     }
 </style>
 @endsection

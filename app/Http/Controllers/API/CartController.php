@@ -48,6 +48,10 @@ class CartController extends Controller
                         if($isCart > 0){
                             return response()->json(['status' => false, 'message' => "You can't add to cart a product now. Only one type of items allow either Course or Product.", 'error' => 2]);
                         }
+                        $in_stock = stockAvailable($request->object_id, 1, $isAlready);
+                        if(!$in_stock['status']){
+                            return response()->json(['status' => false, 'message' => $in_stock['message']]);
+                        }
                         $product = Product::where('id', $request->object_id)->first();
                         $proImg = ProductAttibutes::where('product_id', $request->object_id)->where('attribute_code', 'cover_image')->first();
                         if (isset($isAlready->id)) {
@@ -299,7 +303,7 @@ class CartController extends Controller
                 }
                 $response['subTotal'] = $price;
                 $response['totalQty'] = $qty;
-                $response['tax'] = (($price-$totalDiscountPrice) * $tax->attribute_value) / 100;
+                $response['tax'] = (($price) * $tax->attribute_value) / 100;
                 $response['totalPrice'] = number_format((float)$price + $response['tax'] - $totalDiscountPrice, 2, '.', '');
                 $response['couponPrice'] = $totalDiscountPrice;
                 $response['totalItem'] = $qty;
@@ -326,6 +330,10 @@ class CartController extends Controller
                         $res['items'][$i]['shippment_id'] = $old['products'][$i]['shipmentId'] ?? null;
                         $res['items'][$i]['shipping_price'] = $old['products'][$i]['shippingPrice'] ?? 0;
                         $res['items'][$i]['service_code'] = $old['products'][$i]['service_code'] ?? null;
+
+                        $in_stock = stockAvailable($old['products'][$i]['product_id'], $old['products'][$i]['qty']);
+                        $res['items'][$i]['in_stock'] = $in_stock['status'] ?? null;
+                        $res['items'][$i]['in_stock_status'] = $in_stock['message'] ?? null;
 
                         $category = Category::where('id', $pro->category_id)->first();
                         $added = User::where('id', $pro->added_by)->first();
@@ -358,7 +366,7 @@ class CartController extends Controller
                     $res['totalPrice'] = $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'] + $old['shippingPrice'];
                     $res['totalItem'] = $old['totalItem'];
                     $res['shippingPrice'] = $old['shippingPrice'];
-                    $res['shippingAddressId'] = $old['shipping_address']['address_id'] ?? null;
+                    $res['shippingAddressId'] = $old['shipping_address'] ?? null;
                     $res['isCouponApplied'] = $old['isCouponApplied'];
                     $res['couponCode'] = $old['appliedCouponCode'];
                     $res['couponPrice'] = $old['appliedCouponPrice'];
@@ -377,7 +385,7 @@ class CartController extends Controller
     public function update_product_quantity(Request $request)
     {
         try {
-            // return response()->json(['status' => false, 'Message' => 'Api under progress']);
+            return response()->json(['status' => false, 'message' => 'Cannot update the quantity of product!']);
             $validator = Validator::make($request->all(), [
                 'product_id' => 'required',
                 'quantity' => 'required'
@@ -595,11 +603,13 @@ class CartController extends Controller
                     $admin_cut_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('admin_cut_value * quantity'));
                     $order_price = Addtocart::where('userid', $user_id)->sum(\DB::raw('cart_value * quantity'));
                     $total_price = $order_price;
+                    $object_id = Addtocart::where('userid', $user_id)->where('object_type', 1)->pluck('object_id');
+                    $total_amount_for_tax = Course::whereIn('id', $object_id)->sum(\DB::raw('course_fee'));
                     $dprice = 0;
 
                     $tax = Setting::where('attribute_code','tax')->first();
                     if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
-                        $tax_amount = ($total_price*$tax->attribute_value)/100;
+                        $tax_amount = ($total_amount_for_tax*$tax->attribute_value)/100;
                     else $tax_amount = 0;
 
                     foreach ($carts as $cart) {
@@ -629,8 +639,9 @@ class CartController extends Controller
                     foreach ($carts as $cart) {
                         $discountPrice = 0;
                         $coupon = Coupon::where('object_type', 1)->where('object_id', $cart->object_id)->where('id', $cart->coupon_id)->first();
+                        $course_fee = Course::where('id', $cart->object_id)->first();
                         if(isset($coupon->id)){
-                           $discountPrice = (($cart->cart_value*$coupon->coupon_discount_amount)/100); 
+                           $discountPrice = (($course_fee->course_fee*$coupon->coupon_discount_amount)/100); 
                         }
 
                         $OrderDetail = new OrderDetail;
@@ -672,6 +683,12 @@ class CartController extends Controller
                         $old = unserialize($cart->data);
                         $data = $old;
                         $admin_cut = 0;
+                        for ($i = 0; $i < count($old['products']); $i++) {
+                            $in_stock = stockAvailable($old['products'][$i]['product_id'], 1);
+                            if(!$in_stock['status']){
+                                return response()->json(['status' => false, 'message' => '('.$old['products'][$i]['name'] .') is '. strtolower($in_stock['message'])]);
+                            }
+                        }
                         for ($i = 0; $i < count($old['products']); $i++) {
                             $admin_cut += $old['products'][$i]['total_amount'] ?? 0;
                         }

@@ -162,10 +162,10 @@
                                             <h2 class="text-capitalize">{{ $val->title ?? "NA" }}</h2>
                                             @if($val->product_type == 1)
                                             <div class="pmu-course-details-price">
-                                                @if($val->amount == $val->course_fee)
-                                                ${{ number_format((float)$val->course_fee, 2, '.', '') }}
+                                                @if($val->amount == ($val->amount+$val->coupon_discount_price))
+                                                ${{ number_format((float)$val->amount+$val->coupon_discount_price, 2, '.', '') }}
                                                 @else
-                                                <del style="font-size: 1rem; font-weight: 500;">${{ number_format($val->course_fee,2) ? : 0}}</del> &nbsp; ${{ number_format($val->amount,2) ? : 0}}
+                                                <del style="font-size: 1rem; font-weight: 500;">${{ number_format($val->amount+$val->coupon_discount_price,2) ? : 0}}</del> &nbsp; ${{ number_format($val->amount,2) ? : 0}}
                                                 @endif
                                             </div>
                                             @else

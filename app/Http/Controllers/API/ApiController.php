@@ -291,6 +291,9 @@ class ApiController extends Controller
                 $b4['price'] = $data->price;
                 $b4['sale_price'] = $data->sale_price ?? 0;
                 $b4['status'] = $data->status;
+                $b4['alert'] = ($data->unit <= 5) ? 'Only '.$data->unit.' left in stock' : null;
+                $b4['in_stock'] = ($data->stock_available==0 || $data->unit == 0) ? false : true;
+                $b4['in_stock_status'] = ($data->stock_available==0 || $data->unit == 0) ? 'Out of stock' : 'Stock available';
                 $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                 $datas_image = array();
                 foreach ($all_products_image as $k => $val) {
@@ -353,6 +356,9 @@ class ApiController extends Controller
                 $b5['price'] = $data->price;
                 $b5['sale_price'] = $data->sale_price ?? 0;
                 $b5['status'] = $data->status;
+                $b5['alert'] = ($data->unit <= 5) ? 'Only '.$data->unit.' left in stock' : null;
+                $b5['in_stock'] = ($data->stock_available==0 || $data->unit == 0) ? false : true;
+                $b5['in_stock_status'] = ($data->stock_available==0 || $data->unit == 0) ? 'Out of stock' : 'Stock available';
                 $all_products_image = ProductAttibutes::where('product_id', $data->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                 $datas_image = array();
                 foreach ($all_products_image as $k => $val) {
@@ -569,16 +575,19 @@ class ApiController extends Controller
                             $value = $value->where('product.status', 1)->where('product.id', $item->object_id)->orderBy('product.id', 'DESC')->select('product.*', 'cat.id as catid', 'cat.name as catname')->first();
 
                             if(isset($value->id)){
-                               $temp['price'] = $value->price;
-                               $temp['sale_price'] = $value->sale_price ?? 0;
-                                $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
+                                $temp['price'] = $value->price;
+                                $temp['sale_price'] = $value->sale_price ?? 0;
+                                $temp['alert'] = ($value->unit <= 5) ? 'Only '.$value->unit.' left in stock' : null;
+                                $temp['in_stock'] = ($value->stock_available==0 || $value->unit == 0) ? false : true;
+                                $temp['in_stock_status'] = ($value->stock_available==0 || $value->unit == 0) ? 'Out of stock' : 'Stock available';
+                                $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Getdata of All Product*/
                                 $datas_image = array();
                                 foreach ($all_products_image as $k => $val) {
                                     $datasImage = uploadAssets('upload/products/' . $val->attribute_value);
                                     $datas_image[] = $datasImage;
                                 }
                                 $temp['Product_image'] = $datas_image;
-                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
+                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->wher('object_type', '=', 2)->first();
                                 if (isset($exists)) {
                                     $temp['isLike'] = 1;
                                 } else {
@@ -1332,6 +1341,9 @@ class ApiController extends Controller
                     } else {
                             $temp['price'] = $value->price;
                             $temp['sale_price'] = $value->sale_price ?? 0;
+                            $temp['alert'] = ($value->unit <= 5) ? 'Only '.$value->unit.' left in stock' : null;
+                            $temp['in_stock'] = ($value->stock_available==0 || $value->unit == 0) ? false : true;
+                            $temp['in_stock_status'] = ($value->stock_available==0 || $value->unit == 0) ? 'Out of stock' : 'Stock available';
                             $all_products_image = ProductAttibutes::where('product_id', $value->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                             $datas_image = array();
                             foreach ($all_products_image as $k => $val) {
@@ -1604,10 +1616,12 @@ class ApiController extends Controller
                         if(isset($isPurchase->id)){
                             $temp['isPurchased'] = true; 
                         } else $temp['isPurchased'] = false;
-
                         
                         $temp['price'] = $item->price;
                         $temp['sale_price'] = $item->sale_price ?? 0;
+                        $temp['alert'] = ($item->unit <= 5) ? 'Only '.$item->unit.' left in stock' : null;
+                        $temp['in_stock'] = ($item->stock_available==0 || $item->unit == 0) ? false : true;
+                        $temp['in_stock_status'] = ($item->stock_available==0 || $item->unit == 0) ? 'Out of stock' : 'Stock available';
                         $all_products_image = ProductAttibutes::where('product_id', $item->id)->orderBy('id', 'ASC')->get(); /*Get data of All Product*/
                         $datas_image = array();
                         
@@ -2171,11 +2185,19 @@ class ApiController extends Controller
                     $cart_value = AddToCart::where('userid', $user_id)->where('object_type', 1)->sum(\DB::raw('cart_value * quantity'));
                     $cart_count = cartCount();
                     $discount = 0;
-                    $total_amount = ($cart_value) - $discount;
+                    foreach($shopping_cart as $cart){
+                        $coupon = Coupon::where('object_type', 1)->where('object_id', $cart->object_id)->where('id', $cart->coupon_id)->first();
+                        if(isset($coupon->id)){
+                            $discount += (($cart->cart_value*$coupon->coupon_discount_amount)/100); 
+                        }
+                    }
+                    $total_amount = ($cart_value);
                     if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
                         $tax_amount = ($total_amount*$tax->attribute_value)/100;
                     else $tax_amount = 0;
                     $ship_price = 0;
+                    $cart_value = $cart_value+$discount;
+                    $type = 1;
                 }else{
                     $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
                     if (isset($cart->id)) {
@@ -2188,6 +2210,7 @@ class ApiController extends Controller
                         else $tax_amount = 0;
                         $total_amount = $old['subTotal'] - $old['appliedCouponPrice'] + $old['shippingPrice'];
                         $ship_price = $old['shippingPrice'] ?? 0;
+                        $type = 2;
                     } else return response()->json(['status' => false, 'message' => 'Cart empty!']);
                 }
                 return response()->json([
@@ -2199,6 +2222,7 @@ class ApiController extends Controller
                     'tax' => number_format((float) $tax_amount, 2, '.', ''),
                     'shipping_cost' => $ship_price,
                     'total' => number_format((float) ($total_amount+$tax_amount),2, '.', ''),
+                    'type' => $type,
                 ]);
             } else {
                 return response()->json(['status' => false, 'Message' => 'Please login']);
@@ -2276,15 +2300,13 @@ class ApiController extends Controller
                         $temp['order_id'] = $value->order_id;
                         $temp['order_date'] = date('d M, Y H:iA', strtotime($value->order_date));
                         $temp['order_number'] = $value->order_number;
-
-                        $course_purchase = Setting::where('attribute_code','course_purchase_validity')->first();
-                        if(isset($course_purchase->id) && $course_purchase->attribute_value != '' && $course_purchase->attribute_value != 0){
-                            $valid = date('d M, Y', strtotime($value->created_date . '+' . $course_purchase->attribute_value . 'days'));
-                        }
-
                         $temp['id'] = $value->id ?? 0;
                         if($request->type==1){
-                            $temp['course_valid_date'] = date('d M, Y', strtotime($valid));
+                            $course_purchase = Setting::where('attribute_code','course_purchase_validity')->first();
+                            if(isset($course_purchase->id) && $course_purchase->attribute_value != '' && $course_purchase->attribute_value != 0){
+                                $valid = date('d M, Y', strtotime($value->order_date . '+' . $course_purchase->attribute_value . 'days'));
+                            }
+                            $temp['course_valid_date'] = $valid;
                             $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);
                             $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
                             if(isset($isCourseComplete->id)){

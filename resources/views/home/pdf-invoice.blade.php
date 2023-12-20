@@ -182,8 +182,8 @@
                     </td>
 
                     @if($order->order_for==1)
-                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)$val->course_fee, 2, '.', '') }}</td>
-                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)($val->course_fee-$val->amount), 2, '.', '') ?? 0 }}</td>
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)$val->amount+$val->coupon_discount_price, 2, '.', '') }}</td>
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)($val->amount+$val->coupon_discount_price-$val->amount), 2, '.', '') ?? 0 }}</td>
                     @else
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)($val->amount), 2, '.', '') ?? 0 }}</td>
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)($val->shipping_price), 2, '.', '') ?? 0 }}</td>
@@ -191,7 +191,7 @@
                     
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">{{ $val->quantity ?? 1 }}</td>
                     @if($order->order_for == 1)
-                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)$val->course_fee, 2, '.', '') }}</td>
+                    <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)$val->amount+$val->coupon_discount_price, 2, '.', '') }}</td>
                     @else
                     <td style="font-size: 14px; font-weight: 400;border-right: 1px solid #f0f0f0; line-height: 1.5; color: #858796; padding: 10px;">${{ number_format((float)($val->amount * $val->quantity), 2, '.', '') }}</td>
                     @endif

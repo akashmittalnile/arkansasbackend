@@ -566,7 +566,7 @@
                 },
                 sale_price: {
                     required: true,
-                    min: 0.1
+                    min: 50
                 },
                 stock_quantity: {
                     required: true,
@@ -577,7 +577,7 @@
                     max: 'Regular price should be greater than sale price'
                 },
                 sale_price: {
-                    min: 'Sale price should be greater than $0.1'
+                    min: 'Sale price should be greater than $50'
                 }
             },
             submitHandler: function(form) {

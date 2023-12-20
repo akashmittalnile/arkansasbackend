@@ -12,6 +12,7 @@ use App\Models\WalletBalance;
 use App\Models\WalletHistory;
 use App\Models\AddToCart;
 use App\Models\Notify;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use Stripe;
 use Illuminate\Support\Facades\Validator;
@@ -68,6 +69,14 @@ class StripeController extends Controller
                     $orderDetails = OrderDetail::where('order_id', $request->order_id)->where('product_type', 1)->get();
                     foreach($orderDetails as $val){
                         $userCourse = UserCourse::where('course_id', $val->product_id)->where('user_id', auth()->user()->id)->update(['payment_id'=>$transactionId]);
+                    }
+                    $stockQuantity = OrderDetail::where('order_id', $request->order_id)->where('product_type', 2)->get();
+                    foreach($stockQuantity as $stock){
+                        $quan = Product::where('id', $stock->product_id)->first();
+                        Product::where('id', $stock->product_id)->update([
+                            'unit' => $quan->unit-$stock->quantity,
+                            'stock_available' => (($quan->unit-$stock->quantity) <= 0) ? 0 : 1
+                        ]);
                     }
                     $walletBalance = WalletBalance::where('owner_id', 1)->where('owner_type', 3)->first();
                     $orderAdminAmount = Order::where('id', $request->order_id)->first();

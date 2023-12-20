@@ -148,11 +148,7 @@
                                                 </div>
                                                 <h2>{{ $val->title ?? "NA" }}</h2>
                                                 <div class="course-price">
-                                                    @if($val->buy_price == $val->course_fee)
-                                                    ${{ number_format((float)$val->course_fee, 2, '.', '') }}
-                                                    @else
-                                                    <del style="font-size: 1rem; font-weight: 500;">${{ number_format($val->course_fee,2) ? : 0}}</del> &nbsp; ${{ number_format($val->buy_price,2) ? : 0}}
-                                                    @endif
+                                                    ${{ number_format($val->buy_price,2) ? : 0}}
                                                 </div>
                                                 <div class="chapter-test-info">
                                                     <div class="chapter-text">Chapter {{ $val->chapter_count ?? 0 }}</div>

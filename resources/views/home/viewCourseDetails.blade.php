@@ -4,7 +4,7 @@
 <div class="body-main-content">
     <div class="pmu-filter-section">
         <div class="pmu-filter-heading">
-            <h2>Courses Details</h2>
+            <h2>Course Details</h2>
         </div>
         <div class="pmu-search-filter wd50">
             <div class="row g-2">
