@@ -35,7 +35,15 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
         if (Auth::attempt($credentials)) {
 
-            if(auth()->user()->status == 0){
+            if(auth()->user()->role != 1){
+                Auth::user()->tokens()->delete();
+                return response()->json([
+                    'status' => false,
+                    'message' => 'Invalid credentials...'
+                ]);
+            }
+
+            if(auth()->user()->status == 2){
                 Auth::user()->tokens()->delete();
                 return response()->json([
                     'status' => false,
@@ -99,7 +107,7 @@ class AuthController extends Controller
         $user->profile_image = $img;
         $user->email = $request->email;
         $user->status = 1;
-        $user->role = $request->role ?? 1;
+        $user->role = 1;
         $user->fcm_token = $request->fcm_token ?? null;
         $user->password = $request->password;
         $user->created_at = date('Y-m-d H:i:s');

@@ -433,7 +433,7 @@
         $.validator.addMethod("greaterThan", function (value, element, param) {
             var $otherElement = $(param);
             return parseInt(value, 10) >= parseInt($otherElement.val(), 10);
-        }, 'Regular price should be greater than sale price');
+        }, 'Regular price should be equal or greater than sale price');
 
         $('#AddProduct').validate({
             rules: {
@@ -517,7 +517,8 @@
                 },
                 regular_price: {
                     required: true,
-                    greaterThan: "#sale_price"
+                    greaterThan: "#sale_price",
+                    min: 50
                 },
                 sale_price: {
                     required: true,
@@ -529,7 +530,8 @@
             },
             messages:{
                 regular_price: {
-                    max: 'Regular price should be greater than sale price'
+                    max: 'Regular price should be greater than sale price',
+                    min: 'Regular price should be greater than $50'
                 },
                 sale_price: {
                     min: 'Sale price should be greater than $50'

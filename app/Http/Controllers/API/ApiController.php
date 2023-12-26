@@ -2278,7 +2278,7 @@ class ApiController extends Controller
                         $orders->whereIntegerInRaw('c.category_id', $request->category);
                     }
                 } else {
-                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.order_status as order_pro_status');
+                    $orders->leftJoin('product as p', 'p.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'p.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'p.name as title', 'p.product_desc as desc', 'p.price as price', 'p.sale_price', 'p.added_by as added_by', 'p.id as id', 'cat.name as catname', 'p.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.order_status as order_pro_status');
                     if($request->filled('title')){
                         $orders->where('p.name', 'like', '%' . $request->title . '%');
                     }
@@ -2329,6 +2329,7 @@ class ApiController extends Controller
                         $temp['total_amount_paid'] = $value->total_amount_paid ?? 0;
                         $temp['tax'] = $value->taxes ?? 0;
                         $temp['price'] = $value->price ?? 0;
+                        $temp['sale_price'] = $value->sale_price ?? 0;
                         $temp['category_id'] = $value->catid ?? null;
                         $temp['category_name'] = $value->catname ?? null;
                         $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', $request->type)->avg('rating');

@@ -56,6 +56,9 @@ class CartController extends Controller
                         $proImg = ProductAttibutes::where('product_id', $request->object_id)->where('attribute_code', 'cover_image')->first();
                         if (isset($isAlready->id)) {
                             $data = $this->updateCart($product, $proImg, $isAlready);
+                            if(isset($data['status']) && !$data['status']){
+                                return response()->json(['status' => false, 'message' => $data['message']]);
+                            }
                             TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                                 'data' => serialize($data)
                             ]);
@@ -173,9 +176,8 @@ class CartController extends Controller
             for ($i = 0; $i <= $length; $i++) {
                 if ($i < $length) {
                     if ($oldcart['products'][$i]['product_id'] == $product->id) {
-                        $oldcart['products'][$i]['qty'] = $oldcart['products'][$i]['qty'] + 1;
-                        $oldcart['products'][$i]['total_amount'] = $oldcart['products'][$i]['sale_price'] * $oldcart['products'][$i]['qty'];
                         $existingpro = true;
+                        return ['status' => false, 'message' => 'Already in cart. Please try another product.'];
                     }
                     $data['products'][$i] = $oldcart['products'][$i];
                     $qty += $data['products'][$i]['qty'];

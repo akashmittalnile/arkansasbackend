@@ -87,6 +87,11 @@
                                             <div class="col-md-2 mb-2">
                                                 <a class="Create-btn" href="{{ route('SA.Product.View.Details', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-eye"></i></a>
                                             </div>
+                                            @if($data->unit == 0 || $data->stock_available == 0)
+                                            <div class="coursestatus-unpublish" style="color: red; border: 2px solid red; font-size: 0.8rem;padding: 15px; margin-left: 10px; font-weight: 500;">Out of stock</div>
+                                            @elseif($data->unit > 0 || $data->stock_available == 1)
+                                            <div class="coursestatus-unpublish" style="color: green; border: 2px solid green; font-size: 0.8rem;padding: 15px; margin-left: 10px; font-weight: 500;">In stock</div>
+                                            @endif
                                         </div>
 
                                         <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! assets('assets/superadmin-images/tick.svg') !!}">
