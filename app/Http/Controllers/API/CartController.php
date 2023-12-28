@@ -81,7 +81,7 @@ class CartController extends Controller
                             $creatorId = AddToCart::join('course as c', 'c.id', '=', 'shopping_cart.object_id')->where('shopping_cart.userid', $user_id)->select('c.admin_id')->first();
                             $anotherCreator = Course::where('id', $request->object_id)->where('admin_id', $creatorId->admin_id)->first();
                             if(!isset($anotherCreator->id)){
-                                return response()->json(['status' => false, 'message' => "You can't add to cart a courses from another creator."]);
+                                return response()->json(['status' => false, 'message' => "A course from another creator is already added in your cart."]);
                             }
                         }
                         $isAlreadyCart = AddToCart::where('userid', $user_id)->where('object_id', $request->object_id)->first();
@@ -354,6 +354,18 @@ class CartController extends Controller
     
                         $qty += $old['products'][$i]['qty'];
                         $price += $old['products'][$i]['total_amount'];
+                    }
+
+                    if($old['isCouponApplied'] == 1) {
+                        $now = Carbon::now();
+                        $isCouponExist = Coupon::where('coupon_code', $old['appliedCouponCode'])->where('object_type', 2)->where('status', 1)->where('coupon_expiry_date', '>', $now)->first();
+                        if(!isset($isCouponExist->id)){
+                            $old['isCouponApplied'] = 0;
+                            $old['appliedCouponCode'] = null;
+                            $old['appliedCouponPrice'] = 0;
+                            $old['couponId'] = null;
+                            $old['couponType'] = null;
+                        }
                     }
     
                     if($old['couponType'] == 1){
@@ -779,7 +791,7 @@ class CartController extends Controller
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             } else {
-                $exist = Coupon::where('coupon_code', strtoupper($request->code))->first();
+                $exist = Coupon::where('coupon_code', strtoupper($request->code))->where('object_type', 2)->where('status', 1)->first();
                 if(isset($exist->id)){
                     $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
                     if (isset($cart->id)) {
@@ -846,7 +858,7 @@ class CartController extends Controller
             if ($validator->fails()) {
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             } else {
-                $exist = Coupon::where('coupon_code', strtoupper($request->code))->where('object_type', 1)->first();
+                $exist = Coupon::where('coupon_code', strtoupper($request->code))->where('object_type', 1)->where('status', 1)->first();
                 if(isset($exist->id)){
                     if($exist->object_id != $request->course_id){
                         return response()->json(['status' => false, 'message' => 'This coupon is not for this course!']);
@@ -1119,6 +1131,7 @@ class CartController extends Controller
                 $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
                 $tax = Setting::where('attribute_code', 'tax')->first();
                 $ship_price = 0;
+                $already_shipping_price = 0;
                 if (isset($cart->id)) {
                     $old = unserialize($cart->data);
                     for ($i = 0; $i < count($old['products']); $i++) {
@@ -1128,14 +1141,17 @@ class CartController extends Controller
                             if($shipment_id==null || $shipment_id == '') {
                                 return response()->json(['status' => false, 'message' => 'Unable to create shipment!']);
                             }
+                            if($old['products'][$i]['service_code'] != '' && $old['products'][$i]['service_code'] != null){
+                                $already_shipping_price = $old['products'][$i]['shippingPrice'];
+                            }
                             $old['products'][$i]['service_code'] = $request->service_code;
                             $old['products'][$i]['shippingPrice'] = $request->shipping_price;
                             $old['products'][$i]['shipmentId'] = $shipment_id;
                             $ship_price += $old['products'][$i]['shippingPrice'];
                         }
                     }
-                    $old['shippingPrice'] = $old['shippingPrice'] + $ship_price;
-                    $old['totalPrice'] = $old['totalPrice'] + $ship_price;
+                    $old['shippingPrice'] = $old['shippingPrice'] + $ship_price - $already_shipping_price;
+                    $old['totalPrice'] = $old['totalPrice'] + $ship_price - $already_shipping_price;
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($old)
                     ]);

@@ -587,7 +587,7 @@ class ApiController extends Controller
                                     $datas_image[] = $datasImage;
                                 }
                                 $temp['Product_image'] = $datas_image;
-                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->wher('object_type', '=', 2)->first();
+                                $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $value->id)->where('object_type', '=', 2)->first();
                                 if (isset($exists)) {
                                     $temp['isLike'] = 1;
                                 } else {
@@ -695,15 +695,15 @@ class ApiController extends Controller
             if ($limit == 0) {
                 $course->limit(2);
             }
-            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status')->paginate(4);
+            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status')->paginate(10);
 
             $response = array();
             if (isset($course)) {
                 foreach ($course as $keys => $item) {
-                    if($item->cc_status != 1){
-                        $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $item->id)->where('is_expire', 0)->orderByDesc('id')->first();
-                        if(!isset($purchasedCourse->id)) continue;
-                    } 
+                    if($item->cc_status != 1) continue;
+                    $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $item->id)->where('is_expire', 0)->orderByDesc('id')->first();
+                    if(isset($purchasedCourse->id)) continue;
+
                     $temp['id'] = $item->id;
                     $temp['admin_id'] = $item->admin_id;
                     $temp['title'] = $item->title;
@@ -2182,13 +2182,16 @@ class ApiController extends Controller
                 $tax = Setting::where('attribute_code','tax')->first();
                 $shopping_cart = AddToCart::where('userid', auth()->user()->id)->where('object_type', 1)->get();
                 if(count($shopping_cart)>0){
-                    $cart_value = AddToCart::where('userid', $user_id)->where('object_type', 1)->sum(\DB::raw('cart_value * quantity'));
+                    
                     $cart_count = cartCount();
                     $discount = 0;
+                    $cart_value = 0;
                     foreach($shopping_cart as $cart){
                         $coupon = Coupon::where('object_type', 1)->where('object_id', $cart->object_id)->where('id', $cart->coupon_id)->first();
                         if(isset($coupon->id)){
-                            $discount += (($cart->cart_value*$coupon->coupon_discount_amount)/100); 
+                            $cou = Course::where('id', $cart->object_id)->first();
+                            $cart_value += $cou->course_fee ?? 0;
+                            $discount += (($cou->course_fee*$coupon->coupon_discount_amount)/100); 
                         }
                     }
                     $total_amount = ($cart_value);
@@ -2196,7 +2199,8 @@ class ApiController extends Controller
                         $tax_amount = ($total_amount*$tax->attribute_value)/100;
                     else $tax_amount = 0;
                     $ship_price = 0;
-                    $cart_value = $cart_value+$discount;
+                    $cart_value = $cart_value;
+                    $total_amount = $total_amount - $discount;
                     $type = 1;
                 }else{
                     $cart = TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->first();
@@ -2270,7 +2274,7 @@ class ApiController extends Controller
                 }
                 $orders = OrderDetail::leftJoin('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('order_product_detail.product_type', $request->type)->where('o.user_id', $user_id);
                 if($request->type == 1){
-                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.order_status as order_pro_status');
+                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.order_status as order_pro_status', 'order_product_detail.coupon_discount_price', 'order_product_detail.amount');
                     if($request->filled('title')){
                         $orders->where('c.title', 'like', '%' . $request->title . '%');
                     }
@@ -2306,6 +2310,9 @@ class ApiController extends Controller
                             if(isset($course_purchase->id) && $course_purchase->attribute_value != '' && $course_purchase->attribute_value != 0){
                                 $valid = date('d M, Y', strtotime($value->order_date . '+' . $course_purchase->attribute_value . 'days'));
                             }
+                            $value->coupon_discount_price = $value->coupon_discount_price ?? 0;
+                            $temp['price'] = $value->amount - $value->coupon_discount_price;
+                            $temp['sale_price'] = $value->amount - $value->coupon_discount_price;
                             $temp['course_valid_date'] = $valid;
                             $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);
                             $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
@@ -2320,6 +2327,8 @@ class ApiController extends Controller
                         }else{
                             $productImg = ProductAttibutes::where('product_id', $value->id)->where('attribute_code', 'cover_image')->first();
                             $temp['Product_image'][0] = (isset($productImg->attribute_value) && $productImg->attribute_value!="") ? uploadAssets('upload/products/'.$productImg->attribute_value):null;
+                            $temp['price'] = $value->price ?? 0;
+                            $temp['sale_price'] = $value->sale_price ?? 0;
                         }
                         $temp['order_product_status_id'] = $value->order_pro_status ?? 0;
                         $temp['order_product_status'] = orderStatus($value->order_pro_status ?? 0);
@@ -2328,8 +2337,7 @@ class ApiController extends Controller
                         $temp['description'] = $value->desc ?? "NA";
                         $temp['total_amount_paid'] = $value->total_amount_paid ?? 0;
                         $temp['tax'] = $value->taxes ?? 0;
-                        $temp['price'] = $value->price ?? 0;
-                        $temp['sale_price'] = $value->sale_price ?? 0;
+                        
                         $temp['category_id'] = $value->catid ?? null;
                         $temp['category_name'] = $value->catname ?? null;
                         $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', $request->type)->avg('rating');
@@ -2757,7 +2765,6 @@ class ApiController extends Controller
             'mode' => 'utf-8'
         ]);
         $mpdf->img_dpi = 6;
-        $mpdf->imageVars['myvariable'] = file_get_contents('assets/website-images/logo-2.png');
         // $mpdf->showImageErrors = true;
         $mpdf->SetDisplayMode('fullpage');
         $mpdf->list_indent_first_level = 0; 
@@ -2911,11 +2918,11 @@ class ApiController extends Controller
                 return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
             }else{
                 $id = $request->order_id;
-                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('orders.total_amount_paid', 'u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', 'orders.delivery_charges', 'orders.coupon_discount_price', 'orders.amount', DB::raw("orders.amount - orders.coupon_discount_price + orders.taxes as total_amount"))->first();
+                $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('orders.cart_json','orders.order_for','orders.total_amount_paid', 'u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', 'orders.delivery_charges', 'orders.coupon_discount_price', 'orders.amount', DB::raw("orders.amount - orders.coupon_discount_price + orders.taxes as total_amount"))->first();
 
                 $order->total_amount = number_format((float) $order->total_amount, 2, '.', '');
                 $order->total_amount_paid = number_format((float) $order->total_amount_paid, 2, '.', '');
-                $order->sub_total = number_format((float) $order->amount ?? 0, 2, '.', '');
+                $order->sub_total = number_format((float) $order->amount + $order->coupon_discount_price ?? 0, 2, '.', '');
                 $order->taxes = number_format((float) $order->taxes, 2, '.', '');
                 $order->coupon_discount_price = number_format((float) $order->coupon_discount_price ?? 0, 2, '.', '');
                 $order->created_date = date('d M, Y H:iA', strtotime($order->created_date));
@@ -2926,6 +2933,17 @@ class ApiController extends Controller
 
                 $item = OrderDetail::where('id', $request->item_id)->first();
                 if(isset($item->id)){
+
+                    $isCourseComplete = UserCourse::where('course_id', $item->product_id)->where('user_id', auth()->user()->id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
+                    if(isset($isCourseComplete->id)){
+                        $order->course_completed = 1;
+                        $order->certificate = url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$isCourseComplete->course_id)."/".encrypt_decrypt('encrypt',auth()->user()->id);
+                    } 
+                    else{
+                        $order->course_completed = 0;
+                        $order->certificate = null;
+                    }
+
                     if($item->product_type == 1){
                         $data = DB::table('course as c')->leftJoin('users as u', 'u.id', '=', 'c.admin_id')->select('u.first_name', 'u.last_name', 'u.profile_image', 'c.title')->where('c.id', $item->product_id)->first();
                         $data->profile_image = ($data->profile_image!="" && isset($data->profile_image)) ? uploadAssets('upload/profile-image/'.$data->profile_image) : null;
@@ -2936,10 +2954,11 @@ class ApiController extends Controller
                     $order->creator_name = $data;
                 }
 
-                $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.admin_id, p.added_by) as added_by, ifnull(c.title,p.name) title, order_product_detail.id as itemid, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
+                $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.admin_id, p.added_by) as added_by, ifnull(c.title,p.name) title, order_product_detail.id as itemid, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image, ifnull(c.course_fee, p.sale_price) as actual_amount"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->get();
 
                 $other_detail = [];
                 foreach($orderDetails as $val){
+                    $val->quantity = $val->quantity ?? 1;
                     $temp['id'] = $val->product_id;
                     $temp['item_id'] = $val->itemid;
                     $temp['is_primary'] = ($val->itemid==$request->item_id) ? true : false;
@@ -2947,7 +2966,7 @@ class ApiController extends Controller
                     $temp['type_name'] = ($val->product_type==1) ? "Course" : "Product";
                     $temp['title'] = $val->title ?? "NA";
                     $temp['status'] = $val->status;
-                    $temp['total_amount_paid'] = $val->amount*$val->quantity;
+                    $temp['total_amount_paid'] = ($val->actual_amount*$val->quantity);
                     $temp['quantity'] = $val->quantity;
                     $temp['admin_fee'] = $val->admin_amount;
                     $temp['video'] = ($val->product_type==1) ? uploadAssets('upload/disclaimers-introduction/'.$val->image) : null;
@@ -2970,7 +2989,14 @@ class ApiController extends Controller
 
                 $invoice = url('/')."/api/download-invoice/".encrypt_decrypt('encrypt', $order->id);
 
-                return response()->json(['status' => true, 'message' => 'Order details', 'data' => $order, 'items' => $other_detail, 'invoice' => $invoice]);
+                $shipping_address = [];
+                $order->cart_json = unserialize($order->cart_json);
+                if(isset($order->cart_json['shipping_address']['address_id'])){
+                    $shipping_address = $order->cart_json['shipping_address'];
+                }
+                $order->cart_json = null;
+
+                return response()->json(['status' => true, 'message' => 'Order details', 'data' => $order, 'items' => $other_detail, 'invoice' => $invoice, 'shipping_address' => $shipping_address]);
             }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
@@ -3121,7 +3147,7 @@ class ApiController extends Controller
                             $billingAddress->state = $request->billing_state;
                             $billingAddress->country = $request->billing_country;
                             $billingAddress->zip_code = $request->billing_zip_code;
-                            $billingAddress->address_type = null;
+                            $billingAddress->address_type = $request->billing_address_type ?? null;
                             $billingAddress->shipping_type = 'billing';
                             $billingAddress->default_address = 0;
                             $billingAddress->created_at = date('Y-m-d H:i:s');
@@ -3273,6 +3299,11 @@ class ApiController extends Controller
             $address = Address::where('user_id', auth()->user()->id)->where('id', $id)->where('shipping_type', 'shipping')->first();
             $billing = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->first();
             if(isset($address)){
+                if(($address->first_name == $billing->first_name) && ($address->last_name == $billing->last_name) && ($address->email == $billing->email) && ($address->phone == $billing->phone) && ($address->address_line_1 == $billing->address_line_1) && ($address->city == $billing->city) && ($address->state == $billing->state) && ($address->country == $billing->country) && ($address->zip_code == $billing->zip_code)){
+                    $address->billing_checkbox = true;
+                } else {
+                    $address->billing_checkbox = false;
+                }
                 return response()->json(['status' => true, 'message'=> 'Address', 'data'=> $address, 'billing' => isset($billing->id) ? $billing : null]);
             }else {
                 return response()->json(['status' => false, 'message'=> 'No address found']);
@@ -3398,7 +3429,7 @@ class ApiController extends Controller
                             $billingAddress->state = $request->billing_state;
                             $billingAddress->country = $request->billing_country;
                             $billingAddress->zip_code = $request->billing_zip_code;
-                            $billingAddress->address_type = null;
+                            $billingAddress->address_type = $request->billing_address_type ?? null;
                             $billingAddress->shipping_type = 'billing';
                             $billingAddress->default_address = 0;
                             $billingAddress->created_at = date('Y-m-d H:i:s');

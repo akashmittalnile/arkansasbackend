@@ -13,7 +13,7 @@
       <tbody>
 		<tr>
 			<td valign="top" style="padding: 50px">
-				<img src="var:myvariable" alt="" style="width: 350px;height: auto;">
+				<img src="{{ assets('assets/website-images/logo-2.png') }}" alt="" style="width: 350px;height: auto;">
 			</td> 
 			<td valign="top" style="padding: 30px 50px 60px 50px">
 				<table align="center" cellpadding="0" cellspacing="0" width="100%"  style="font-family: Helvetica , sans-serif; margin:0px auto 10px auto; vertical-align: top;">
