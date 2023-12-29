@@ -89,7 +89,7 @@
                                         <div class="col-md-4">
                                             <div class="form-group">
                                                 <h4>Maximum Discount <span class="text-danger">(in %)</span></h4>
-                                                <input type="number" max="100" step="0.1" class="form-control" name="discount" placeholder="Maximum Discount (in %)" required value="{{ $course->max_discount }}">
+                                                <input type="number" step="0.1" class="form-control" name="discount" placeholder="Maximum Discount (in %)" required value="{{ $course->max_discount }}">
                                             </div>
                                         </div>
 
@@ -201,6 +201,8 @@
                     },
                     discount: {
                         required: true,
+                        max: 100,
+                        min: 1
                     },
                     description: {
                         required: true,
@@ -229,6 +231,8 @@
                     },
                     discount: {
                         required: 'Please enter maximum discount percentage',
+                        max: 'Discount should not be greater than 100%',
+                        min: 'Discount should be greater than or equal to 1%'
                     },
                     description: {
                         required: 'Please enter description',

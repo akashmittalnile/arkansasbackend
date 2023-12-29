@@ -20,58 +20,45 @@ class AuthController extends Controller
 
     public function login(Request $request)
     {
-        $validator = Validator::make($request->all(), [
-            'email' => 'required|string|email',
-            'password' => 'required|string',
-        ],
-        [
-            'email.required' => 'Please enter email address',
-            'email.email' => 'Please enter a valid email address',
-        ]);
-        if ($validator->fails()) {
-            return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
-        }
-
-        $credentials = $request->only('email', 'password');
-        if (Auth::attempt($credentials)) {
-
-            if(auth()->user()->role != 1){
-                Auth::user()->tokens()->delete();
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Invalid credentials...'
-                ]);
-            }
-
-            if(auth()->user()->status == 2){
-                Auth::user()->tokens()->delete();
-                return response()->json([
-                    'status' => false,
-                    'message' => 'Your account has been deactivated temporarily. Please contact arkansas@gmail.com for the same.'
-                ]);
-            }
-
-            if($request->filled('fcm_token')){
-                User::where('id', auth()->user()->id)->update(['fcm_token' => $request->fcm_token ?? null]);
-            }
-
-            $user = Auth::user();
-            if($user->profile_image!="" && $user->profile_image!=null){
-                $user->profile_image = uploadAssets('upload/profile-image/'.$user->profile_image);
-            }else $user->profile_image= null;
-            return response()->json([
-                'user' => $user,
-                'status' => true,
-                'authorization' => [
-                    'token' => $user->createToken('ApiToken')->plainTextToken,
-                ]
+        try{
+            $validator = Validator::make($request->all(), [
+                'email' => 'required|string|email',
+                'password' => 'required|string',
+            ],
+            [
+                'email.required' => 'Please enter email address',
+                'email.email' => 'Please enter a valid email address',
             ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            }else{
+                $user = User::where('email', $request->email)->where('role', 1)->first();
+                if (isset($user->id)) {
+                    if($user->status == 2){
+                        return response()->json(['status' => false, 'message' => 'Your account has been deactivated temporarily. Please contact arkansas@gmail.com for the same.'], 401);
+                    }
+                    if (Hash::check($request->password, $user->password)) {
+                        $token = $user->createToken("Arkansas_token")->plainTextToken;
+                        if($request->filled('fcm_token')){
+                            User::where('id', $user->id)->update(['fcm_token' => $request->fcm_token ?? null]);
+                        }
+                        if($user->profile_image!="" && $user->profile_image!=null){
+                            $user->profile_image = uploadAssets('upload/profile-image/'.$user->profile_image);
+                        }else $user->profile_image= null;
+                        return response()->json([
+                            'user' => $user,
+                            'status' => true,
+                            'message' => 'Logined successfully',
+                            'authorization' => [
+                                'token' => $token,
+                            ]
+                        ], 200);
+                    } else return response()->json(['status' => false, 'message' => 'Invalid credentials'], 401);
+                } else return response()->json(['status' => false, 'message' => 'Invalid credentials'], 401);
+            }
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
         }
-
-        return response()->json([
-            'status' => false,
-            'message' => 'Invalid credentials',
-        ], 401);
     }
 
 
@@ -273,7 +260,7 @@ class AuthController extends Controller
                         $now = Carbon::now();
                         $fivemin = date('Y-m-d H:i:s', strtotime($user->updated_at.'+5 mins'));
                         if($fivemin >= $now){
-                            return response()->json(['status' => true, 'message' => 'Verification successfully.']);
+                            return response()->json(['status' => true, 'message' => 'Updated successfully.']);
                         }else{
                             $user->verification_code = null;
                             $user->save();

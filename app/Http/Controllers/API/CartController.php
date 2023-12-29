@@ -138,6 +138,7 @@ class CartController extends Controller
 
     public function newCart($product, $proImg)
     {
+        $address = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'shipping')->where('default_address', 1)->first();
         $tax = Setting::where('attribute_code', 'tax')->first();
         $data['products'][0] = [
             'qty' => 1, 'total_amount' => $product->sale_price, 'regular_price' => $product->price, 'product_id' => $product->id, 'name' => $product->name, 'short_description' => $product->product_desc, 'sale_price' => $product->sale_price, 'image' => $proImg->attribute_value ?? '', 'package_weight' => $product->package_weight, 'package_weight_unit' => $product->package_weight_unit, 'package_length' => $product->package_length, 'package_length_unit' => $product->package_length_unit, 'package_width' => $product->package_width, 'package_width_unit' => $product->package_width_unit, 'package_height' => $product->package_height, 'package_height_unit' => $product->package_height_unit, 'content_creator_id' => $product->added_by, 'shipmentId' => null, 'shippingPrice' => 0, 'service_code' => null
@@ -160,12 +161,20 @@ class CartController extends Controller
         $data['couponType'] = null;
         $data['paymentMethod'] = "STRIPE";
         $data['addedDate'] = date('Y-m-d H:i:s');
+        if(isset($address->id)){
+            $data['shipping_address'] = [
+                'address_id' => $address->id, 'first_name' => $address->first_name, 'middle_name' => $address->middle_name, 'last_name' => $address->last_name, 'email' => $address->email, 'phone' => $address->phone, 'company_name' => $address->company_name, 'address_line_1' => $address->address_line_1, 'address_line_2' => $address->address_line_2 ?? null, 'city' => $address->city, 'state' => $address->state, 'country' => $address->country, 'zip_code' => $address->zip_code, 'latitude' => $address->latitude, 'longitude' => $address->longitude, 'address_type' => $address->address_type, 'is_default_address' => $address->default_address
+            ];
+        } else {
+            $data['shipping_address'] = [];
+        }
 
         return $data;
     }
 
     public function updateCart($product, $proImg, $cart)
     {
+        $address = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'shipping')->where('default_address', 1)->first();
         $tax = Setting::where('attribute_code', 'tax')->first();
         $oldcart = unserialize($cart->data);
         $length = count($oldcart['products']);
@@ -220,6 +229,13 @@ class CartController extends Controller
         $data['shippingTitle'] = 'Shipping';
         $data['paymentMethod'] = "STRIPE";
         $data['addedDate'] = date('Y-m-d H:i:s');
+        if(isset($address->id)){
+            $data['shipping_address'] = [
+                'address_id' => $address->id, 'first_name' => $address->first_name, 'middle_name' => $address->middle_name, 'last_name' => $address->last_name, 'email' => $address->email, 'phone' => $address->phone, 'company_name' => $address->company_name, 'address_line_1' => $address->address_line_1, 'address_line_2' => $address->address_line_2 ?? null, 'city' => $address->city, 'state' => $address->state, 'country' => $address->country, 'zip_code' => $address->zip_code, 'latitude' => $address->latitude, 'longitude' => $address->longitude, 'address_type' => $address->address_type, 'is_default_address' => $address->default_address
+            ];
+        } else {
+            $data['shipping_address'] = [];
+        }
 
         return $data;
     }
@@ -272,17 +288,26 @@ class CartController extends Controller
                         $temp['avg_rating'] = number_format($avgRating, 1);
 
                         $dprice = 0;
-                        if(isset($item->coupon_id) && $item->coupon_id!=''){
-                            $appliedCoupon = Coupon::where('object_type', 1)->where('object_id', $item->object_id)->where('id', $item->coupon_id)->first();
-                            $dprice = (($value->course_fee*$appliedCoupon->coupon_discount_amount)/100);
-                        }
-
-                        
+                        $now = Carbon::now();
                         $temp['is_coupon_applied'] = (isset($item->coupon_id) && $item->coupon_id!='') ? true : false;
-                        $temp['coupon_code'] = $appliedCoupon->coupon_code ?? null;
+                        if(isset($item->coupon_id) && $item->coupon_id!=''){
+                            $appliedCoupon = Coupon::where('object_type', 1)->where('object_id', $item->object_id)->where('id', $item->coupon_id)->where('status', 1)->where('coupon_expiry_date', '>=', $now)->first();
+                            if(isset($appliedCoupon->coupon_discount_amount)){
+                                $dprice = (($value->course_fee*$appliedCoupon->coupon_discount_amount)/100);
+                                $temp['coupon_code'] = $appliedCoupon->coupon_code ?? null;
+                                $temp['is_coupon_applied'] = true;
+                            }else{
+                                $temp['coupon_code'] = null;
+                                $temp['is_coupon_applied'] = false;
+                                AddToCart::where('id', $item->id)->where('object_id', $item->object_id)->update([
+                                    'coupon_id' => null
+                                ]);
+                            }
+                        }
+                        
                         $temp['coupon_discount'] = number_format((float)$dprice, 2, '.', '') ?? null;
 
-                        $coupons = Coupon::where('object_type', 1)->where('object_id', $item->object_id)->get();
+                        $coupons = Coupon::where('object_type', 1)->where('object_id', $item->object_id)->where('coupon_expiry_date', '>=', $now)->get();
                         $list = [];
                         foreach($coupons as $val){
                             $c['id'] = $val->id;
@@ -303,11 +328,11 @@ class CartController extends Controller
                     $price += $value->course_fee;
                     $response['items'][] = $temp;
                 }
-                $response['subTotal'] = $price;
+                $response['subTotal'] = number_format((float)$price, 2, '.', '');
                 $response['totalQty'] = $qty;
-                $response['tax'] = (($price) * $tax->attribute_value) / 100;
+                $response['tax'] = number_format((float)((($price) * $tax->attribute_value) / 100), 2, '.', '');
                 $response['totalPrice'] = number_format((float)$price + $response['tax'] - $totalDiscountPrice, 2, '.', '');
-                $response['couponPrice'] = $totalDiscountPrice;
+                $response['couponPrice'] = number_format((float)$totalDiscountPrice, 2, '.', '');
                 $response['totalItem'] = $qty;
                 return response()->json(['status' => true, 'message' => 'Cart list', 'data' => $response, 'type' => 1]);
             }else{
@@ -358,7 +383,7 @@ class CartController extends Controller
 
                     if($old['isCouponApplied'] == 1) {
                         $now = Carbon::now();
-                        $isCouponExist = Coupon::where('coupon_code', $old['appliedCouponCode'])->where('object_type', 2)->where('status', 1)->where('coupon_expiry_date', '>', $now)->first();
+                        $isCouponExist = Coupon::where('coupon_code', $old['appliedCouponCode'])->where('object_type', 2)->where('status', 1)->where('coupon_expiry_date', '>=', $now)->first();
                         if(!isset($isCouponExist->id)){
                             $old['isCouponApplied'] = 0;
                             $old['appliedCouponCode'] = null;
@@ -374,16 +399,16 @@ class CartController extends Controller
                         $old['appliedCouponPrice'] = ($old['subTotal'] * $old['discountValue'])/100;
                     }
     
-                    $res['subTotal'] = $old['subTotal'] = $price;
+                    $res['subTotal'] = $old['subTotal'] = number_format((float)$price, 2, '.', '');
                     $res['totalQty'] = $old['totalQty'] = $qty;
-                    $res['tax'] = $old['tax'] = ($old['subTotal'] * $tax->attribute_value) / 100;
-                    $res['totalPrice'] = $old['totalPrice'] = $old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'] + $old['shippingPrice'];
+                    $res['tax'] = $old['tax'] = number_format((float)(($old['subTotal'] * $tax->attribute_value) / 100), 2, '.', '');
+                    $res['totalPrice'] = $old['totalPrice'] = number_format((float)($old['subTotal'] + $old['tax'] - $old['appliedCouponPrice'] + $old['shippingPrice']), 2, '.', '');
                     $res['totalItem'] = $old['totalItem'];
-                    $res['shippingPrice'] = $old['shippingPrice'];
+                    $res['shippingPrice'] = number_format((float)$old['shippingPrice'], 2, '.', '');
                     $res['shippingAddressId'] = $old['shipping_address'] ?? null;
                     $res['isCouponApplied'] = $old['isCouponApplied'];
                     $res['couponCode'] = $old['appliedCouponCode'];
-                    $res['couponPrice'] = $old['appliedCouponPrice'];
+                    $res['couponPrice'] = number_format((float)$old['appliedCouponPrice'], 2, '.', '');
                     TempData::where('user_id', auth()->user()->id)->where('type', 'cart')->update([
                         'data' => serialize($old)
                     ]);
@@ -759,7 +784,7 @@ class CartController extends Controller
             $now = Carbon::now();
             $coupon = Coupon::where('status', 1);
             if($request->filled('type')) $coupon->where('object_type', $request->type ?? 2);
-            $coupon = $coupon->where('coupon_expiry_date', '>', $now)->orderByDesc('id')->get();
+            $coupon = $coupon->where('coupon_expiry_date', '>=', $now)->orderByDesc('id')->get();
             $response = [];
             foreach($coupon as $val){
                 $temp['id'] = $val->id;

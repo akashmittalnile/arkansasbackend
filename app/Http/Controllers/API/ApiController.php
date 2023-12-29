@@ -695,7 +695,7 @@ class ApiController extends Controller
             if ($limit == 0) {
                 $course->limit(2);
             }
-            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status')->paginate(10);
+            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status', DB::raw("(SELECT COALESCE(AVG(user_review.rating),0) FROM user_review WHERE user_review.object_id = course.id AND user_review.object_type = '1') as avg_rating"))->where('u.status', 1)->get()->sortByDesc('avg_rating');
 
             $response = array();
             if (isset($course)) {
@@ -732,7 +732,7 @@ class ApiController extends Controller
                     } else {
                         $temp['introduction_video'] = '';
                     }
-                    $temp['status'] = $item->status;
+                    $temp['status'] = $item->cc_status;
                     $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $item->id)->where('object_type', '=', 1)->first();
                     if (isset($exists)) {
                         $temp['isLike'] = 1;
@@ -757,19 +757,19 @@ class ApiController extends Controller
                     $temp['content_creator_category'] = isset($item->category_name) ? $item->category_name : '';
                     $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
-                    $avgRating = DB::table('user_review as ur')->where('object_id', $item->id)->where('object_type', 1)->avg('rating');
-                    $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
+                    
+                    $temp['avg_rating'] = number_format($item->avg_rating, 1, '.', '');
                     if($request->filled('rating'))
-                        if($avgRating < min($request->rating)) continue;
+                        if($item->avg_rating < min($request->rating)) continue;
                     $response[] = $temp;
                 }
             }
 
-            if(!$request->filled('price')){
-                $response = collect($response);
-                $response = $response->sortByDesc('avg_rating')->values();
-                $response = $response->all();
-            }
+            // if(!$request->filled('price')){
+            //     $response = collect($response);
+            //     $response = $response->sortByDesc('avg_rating')->values();
+            //     $response = $response->all();
+            // }
 
             $top_category = Category::where('status', 1)->where('type', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/
             $b2 = array();
@@ -789,7 +789,7 @@ class ApiController extends Controller
                     $TopCategory[] = $b2;
                 }
             }
-            return response()->json(['status' => true, 'message' => 'Trending Couse Listing', 'data' => $response, 'category' => $TopCategory, 'last_page_no' => $course->lastPage()]);
+            return response()->json(['status' => true, 'message' => 'Trending Couse Listing', 'data' => $response, 'category' => $TopCategory]);
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -1295,11 +1295,10 @@ class ApiController extends Controller
                 foreach ($datas as $keys => $value) {
                     if($request->filled('tag'))
                         if(!in_array($request->tag, unserialize($value->tags))) continue;
-                    if($type == 1 && $value->cc_status != 1){
-                        $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $value->id)->where('is_expire', 0)->orderByDesc('id')->first();
-                        if(!isset($purchasedCourse->id)) continue;
-                    } 
                     if ($type == 1) { /* 1 stand for course ,2 for product */
+                            if($value->cc_status != 1) continue;
+                            $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $value->id)->where('is_expire', 0)->orderByDesc('id')->first();
+                            if(isset($purchasedCourse->id)) continue;
                             $temp['course_fee'] = $value->course_fee;
                             $temp['valid_upto'] = $value->valid_upto;
                             if (!empty($value->certificates)) {
@@ -1868,17 +1867,22 @@ class ApiController extends Controller
                 $review = Review::where('object_id', $object_id)->where('object_type', $object_type)->get();
                 if (count($review) > 0) {
                     $data = [];
+                    $avg = 0;
                     foreach ($review as $key => $c) {
                         $data[$key] = $c->toArray();
+                        $data[$key]['created_date'] = date('d M, Y H:iA', strtotime($c->created_date));
                         $data[$key]['review'] = $c->review;
+                        $data[$key]['rating'] = $c->rating ?? 0;
                         $user_name = User::where('id', $c->userid)->first();
                         $data[$key]['user_name'] = $user_name->first_name . ' ' . $user_name->last_name;
                         $data[$key]['profile_image'] = (isset($user_name->profile_image) && ($user_name->profile_image!="")) ? uploadAssets('upload/profile-image/' . $user_name->profile_image) : null;
+                        $avg += $c->rating ?? 0;
                     }
                     return response()->json([
                         "status" => true,
                         "message" => "Review List",
-                        "review_list" => $data
+                        "review_list" => $data,
+                        'avg_rating' => $avg/count($review)
                     ]);
                 } else {
                     return response()->json(['status' => false, 'message' => 'No data found', 'review_list' => []]);
@@ -2188,11 +2192,11 @@ class ApiController extends Controller
                     $cart_value = 0;
                     foreach($shopping_cart as $cart){
                         $coupon = Coupon::where('object_type', 1)->where('object_id', $cart->object_id)->where('id', $cart->coupon_id)->first();
+                        $cou = Course::where('id', $cart->object_id)->first();
                         if(isset($coupon->id)){
-                            $cou = Course::where('id', $cart->object_id)->first();
-                            $cart_value += $cou->course_fee ?? 0;
                             $discount += (($cou->course_fee*$coupon->coupon_discount_amount)/100); 
                         }
+                        $cart_value += $cou->course_fee ?? 0;
                     }
                     $total_amount = ($cart_value);
                     if(isset($tax->id) && $tax->attribute_value != '' && $tax->attribute_value != 0)
@@ -2311,8 +2315,8 @@ class ApiController extends Controller
                                 $valid = date('d M, Y', strtotime($value->order_date . '+' . $course_purchase->attribute_value . 'days'));
                             }
                             $value->coupon_discount_price = $value->coupon_discount_price ?? 0;
-                            $temp['price'] = $value->amount - $value->coupon_discount_price;
-                            $temp['sale_price'] = $value->amount - $value->coupon_discount_price;
+                            $temp['price'] = $value->amount;
+                            $temp['sale_price'] = $value->amount;
                             $temp['course_valid_date'] = $valid;
                             $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);
                             $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
@@ -2934,6 +2938,19 @@ class ApiController extends Controller
                 $item = OrderDetail::where('id', $request->item_id)->first();
                 if(isset($item->id)){
 
+                    if($item->product_type == 1){
+                        $isObjectExist = Course::where('id', $item->product_id)->where('status', 1)->first();
+                        if(!isset($isObjectExist)){
+                            return response()->json(['status' => true, 'message' => 'This course is no longer exists.']);
+                        } 
+                    } else {
+                        $isObjectExist = Product::where('id', $item->product_id)->where('status', 1)->first();
+                        if(!isset($isObjectExist)){
+                            return response()->json(['status' => true, 'message' => 'This product is no longer exists.']);
+                        } 
+                    }
+                    
+
                     $isCourseComplete = UserCourse::where('course_id', $item->product_id)->where('user_id', auth()->user()->id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
                     if(isset($isCourseComplete->id)){
                         $order->course_completed = 1;
@@ -3034,6 +3051,23 @@ class ApiController extends Controller
         try{
             $notify = Notify::where('user_id', auth()->user()->id)->delete();
             return response()->json(['status' => true, 'message' => 'All Notifications Cleared']);
+        } catch (\Exception $e) {
+            return errorMsg("Exception -> " . $e->getMessage());
+        }
+    }
+
+    public function markDefault(Request $request){
+        try{
+            $validator = Validator::make($request->all(), [
+                'id' => 'required'
+            ]);
+            if ($validator->fails()) {
+                return response()->json(['status' => false, 'message' => $validator->errors()->first()]);
+            } else {
+                $user = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'shipping')->update(['default_address'=> 0]);
+                Address::where('id', $request->id)->where('user_id', auth()->user()->id)->where('shipping_type', 'shipping')->update(['default_address'=> 1]);
+                return response()->json(['status' => true, 'message' => 'Default address set.']);
+            }
         } catch (\Exception $e) {
             return errorMsg("Exception -> " . $e->getMessage());
         }
@@ -3283,7 +3317,7 @@ class ApiController extends Controller
     public function getAddress(){
         try{
             $address = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'shipping')->get();
-            $billing = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->first();
+            $billing = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->orderByDesc('id')->first();
             if(count($address) > 0){
                 return response()->json(['status' => true, 'message'=> 'Addresses', 'data'=> $address, 'billing' => isset($billing->id) ? $billing : null]);
             }else {
@@ -3297,7 +3331,7 @@ class ApiController extends Controller
     public function getAddressDetails($id){
         try{
             $address = Address::where('user_id', auth()->user()->id)->where('id', $id)->where('shipping_type', 'shipping')->first();
-            $billing = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->first();
+            $billing = Address::where('user_id', auth()->user()->id)->where('shipping_type', 'billing')->orderByDesc('id')->first();
             if(isset($address)){
                 if(($address->first_name == $billing->first_name) && ($address->last_name == $billing->last_name) && ($address->email == $billing->email) && ($address->phone == $billing->phone) && ($address->address_line_1 == $billing->address_line_1) && ($address->city == $billing->city) && ($address->state == $billing->state) && ($address->country == $billing->country) && ($address->zip_code == $billing->zip_code)){
                     $address->billing_checkbox = true;

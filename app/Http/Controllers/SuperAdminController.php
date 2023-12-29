@@ -1500,7 +1500,7 @@ class SuperAdminController extends Controller
                         $notify->title = 'New Course';
                         $notify->message = 'New Course ('.$cc->title . ') added by ' . $ccUser->first_name . ' ' . $ccUser->last_name;
                         $notify->is_seen = '0';
-                        $notify->redirect_url = null;
+                        $notify->redirect_url = $course_id;
                         $notify->created_at = date('Y-m-d H:i:s');
                         $notify->updated_at = date('Y-m-d H:i:s');
                         $notify->save();
@@ -1849,7 +1849,7 @@ class SuperAdminController extends Controller
                 $product->package_width_unit = $request->package_width_unit;
                 $product->package_height_unit = $request->package_height_unit;
                 $product->sku_code = $request->sku_code;
-                $product->stock_available = $request->stock_avail ?? 0;
+                $product->stock_available = $request->stock_avail ?? 1;
                 $product->save();
                 
                 $product_id = Product::orderBy('id','DESC')->first();
@@ -1872,6 +1872,33 @@ class SuperAdminController extends Controller
                         ]);
                     }
                 }
+
+                $users = User::where('role', 1)->where('status', 1)->get();
+                if(count($users) > 0){
+                    foreach($users as $val){
+                        $notify = new Notify;
+                        $notify->added_by = auth()->user()->id;
+                        $notify->user_id = $val->id;
+                        $notify->module_name = 'product';
+                        if(auth()->user()->profile_image == "" || auth()->user()->profile_image == null){
+                            $profile_image = null;
+                        } else $profile_image = uploadAssets('upload/profile-image/'.auth()->user()->profile_image);
+                        $notify->image = $profile_image;
+                        $notify->title = 'New Product';
+                        $notify->message = 'New Product ('.$request->input('name') . ') added by Arkansas';
+                        $notify->is_seen = '0';
+                        $notify->redirect_url = $product_id;
+                        $notify->created_at = date('Y-m-d H:i:s');
+                        $notify->updated_at = date('Y-m-d H:i:s');
+                        $notify->save();
+
+                        $data = array(
+                            'msg' => 'New Product ('.$request->input('name') . ') added by Arkansas',
+                            'title' => 'New Product'
+                        );
+                        sendNotification($val->fcm_token ?? "", $data);
+                    }
+                } 
                     
                 return redirect('/super-admin/products')->with('message','Product created successfully');
             }

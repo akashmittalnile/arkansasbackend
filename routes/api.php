@@ -96,6 +96,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/address-details/{id}', [ApiController::class, 'getAddressDetails']);
     Route::delete('/address/{id}', [ApiController::class, 'deleteAddress']);
     Route::post('/update-address', [ApiController::class, 'updateAddress']);
+    Route::post('/mark-as-default', [ApiController::class, 'markDefault']);
 
     Route::post('add-to-cart', [CartController::class, "add_to_cart"]);
     Route::get('cart-list', [CartController::class, "cart_list"]);

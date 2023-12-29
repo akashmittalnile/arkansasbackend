@@ -570,7 +570,7 @@ class HomeController extends Controller
                         if(count($request->survey_question) > 0){
                             foreach($request->survey_question as $keyS => $valueQ){
                                 $Step = new CourseChapterStep;
-                                $Step->title = $request->video_description[$keyS] ?? null;
+                                $Step->title = $request->survey_description[$keyS] ?? null;
                                 $Step->sort_order = $request->queue[$keyS] ?? -1;
                                 $Step->type = 'survey';
                                 $Step->description = null;
