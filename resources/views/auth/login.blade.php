@@ -59,7 +59,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group text-center">
-                                    <a class="ForgotPassword-text" href="{{ route('admin.forgot.password') }}">Forgot Password?</a>
+                                    <a class="ForgotPassword-text" target="_blank" href="{{ route('admin.forgot.password') }}">Forgot Password?</a>
                                 </div>
                             </div>
                         </form>

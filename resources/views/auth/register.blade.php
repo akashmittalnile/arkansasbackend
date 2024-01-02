@@ -105,7 +105,7 @@
                                             <div class="arkCheckbox">
                                                 <input type="checkbox" id="Accept the terms & conditions." name="terms_conditions" checked="checked">
                                                 <label for="Accept the terms & conditions.">
-                                                    <a href="{{ route('terms.condition') }}" target="_blank" style="color: #fff;">Accept the terms & conditions.</a>
+                                                    I accept the <a href="{{ route('terms.condition') }}" target="_blank" style="color: #fff;"><u>Terms & Conditions</u></a>
                                                 </label>
                                             </div>
                                         </div>
@@ -117,7 +117,7 @@
                                             <div class="arkCheckbox">
                                                 <input type="checkbox" id="privacy_policy" name="privacy_policy" checked="checked">
                                                 <label for="Privacy policy.">
-                                                    <a href="{{ route('privacy.policy') }}" target="_blank" style="color: #fff;">Privacy policy.</a>
+                                                    I accept the <a href="{{ route('privacy.policy') }}" target="_blank" style="color: #fff;"><u>Privacy policy</u></a>
                                                 </label>
                                             </div>
                                         </div>

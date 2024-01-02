@@ -1196,7 +1196,7 @@ class SuperAdminController extends Controller
             if($request->filled('status')) $course->where('uc.status', $request->status);
             if($request->filled('title')) $course->where('c.title', 'like', '%' . $request->title . '%');
             if($request->filled('date')) $course->whereDate('uc.buy_date', $request->date);
-            $course = $course->where('uc.user_id', $user_id)->where('is_expire', 0)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = uc.course_id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND order_product_detail.product_id = c.id AND order_product_detail.product_type = 1) as order_id"))->orderByDesc('uc.id')->distinct('uc.id')->paginate(3);
+            $course = $course->where('uc.user_id', $user_id)->where('is_expire', 0)->select('c.id', 'uc.status', 'uc.created_date', 'uc.updated_date', 'uc.buy_price', 'c.title', 'c.valid_upto', 'c.introduction_image', DB::raw('(select COUNT(*) FROM course_chapter WHERE course_chapter.course_id = uc.course_id) as chapter_count'), DB::raw("(SELECT orders.id FROM orders INNER JOIN order_product_detail ON orders.id = order_product_detail.order_id WHERE orders.user_id = $user_id AND orders.status = 1 AND order_product_detail.product_id = c.id AND order_product_detail.product_type = 1) as order_id"))->orderByDesc('uc.id')->distinct('uc.id')->paginate(3);
 
             return view('super-admin.student-detail',compact('data', 'course', 'id'));
         } catch (\Exception $e) {
@@ -1218,7 +1218,7 @@ class SuperAdminController extends Controller
             if($request->filled('order_date')){
                 $orders->whereDate('orders.created_date', date('Y-m-d', strtotime($request->order_date)));
             }
-            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->orderByDesc('orders.id')->paginate(10);
+            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->where('orders.status', 1)->orderByDesc('orders.id')->paginate(10);
             return view('super-admin.earnings',compact('orders', 'walletBalance'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -1238,7 +1238,7 @@ class SuperAdminController extends Controller
             if($request->filled('order_date')){
                 $orders->whereDate('orders.created_date', date('Y-m-d', strtotime($request->order_date)));
             }
-            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->orderByDesc('orders.id')->get();
+            $orders = $orders->select('orders.order_number', 'orders.id', 'orders.admin_amount', 'orders.amount', 'orders.total_amount_paid', 'orders.status', 'orders.created_date', 'u.first_name', 'u.last_name')->where('orders.status', 1)->orderByDesc('orders.id')->get();
             return $this->downloadEarningExcelFile($orders);
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -2483,7 +2483,7 @@ class SuperAdminController extends Controller
             $id = encrypt_decrypt('decrypt', $id);
             $order = Order::where('orders.id', $id)->leftJoin('users as u', 'u.id', '=', 'orders.user_id')->select('u.first_name', 'u.last_name', 'u.email', 'u.profile_image', 'u.phone', 'u.role', 'u.status as ustatus', 'orders.id', 'orders.order_number', 'orders.created_date', 'orders.status', 'orders.taxes', 'orders.total_amount_paid', 'orders.delivery_charges', 'orders.amount', 'orders.coupon_discount_price', 'orders.order_for')->first();
 
-            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, c.course_fee, order_product_detail.coupon_discount_price, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image, order_product_detail.shipengine_label_id, order_product_detail.shipengine_label_url"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.id', $id)->orderByDesc('order_product_detail.id')->get();
+            $orderDetails = DB::table('orders')->select(DB::raw("ifnull(c.title,p.name) title, c.course_fee, order_product_detail.coupon_discount_price, order_product_detail.quantity, order_product_detail.product_id, order_product_detail.product_type, ifnull(c.status,p.status) status, order_product_detail.amount, order_product_detail.admin_amount, ifnull(c.introduction_image,(select attribute_value from product_details pd where p.id = pd.product_id and attribute_code = 'cover_image' limit 1))  as image, order_product_detail.shipengine_label_id, order_product_detail.shipengine_label_url"))->join('users as u', 'orders.user_id', '=', 'u.id')->join('order_product_detail', 'orders.id', '=', 'order_product_detail.order_id')->leftjoin('course as c', 'c.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 1'))->leftjoin('product as p', 'p.id','=', DB::raw('order_product_detail.product_id AND order_product_detail.product_type = 2'))->where('orders.status', 1)->where('orders.id', $id)->orderByDesc('order_product_detail.id')->get();
 
             $transaction = Order::where('orders.id', $id)->leftJoin('payment_detail as pd', 'pd.id', '=', 'orders.payment_id')->leftJoin('payment_methods as pm', 'pm.id', '=', 'pd.card_id')->select('pm.card_no', 'pm.card_type', 'pm.method_type', 'pm.expiry')->first();
 

@@ -58,7 +58,7 @@
 
                                 <div class="col-md-12">
                                     <div class="form-group text-center">
-                                        <a class="becomeacreator-btn" href="{{ route('SA.LoginShow') }}">Cancel</a>
+                                        <!-- <a class="becomeacreator-btn" href="{{ route('SA.LoginShow') }}">Cancel</a> -->
                                         <button type="submit" class="becomeacreator-btn">Submit</button>
                                     </div>
                                 </div>

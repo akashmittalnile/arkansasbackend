@@ -43,7 +43,7 @@
 
                             <div class="col-md-12">
                                 <div class="form-group text-center">
-                                    <a class="becomeacreator-btn" href="{{ route('login') }}">Cancel</a>
+                                    <!-- <a class="becomeacreator-btn" href="{{ route('login') }}">Cancel</a> -->
                                     <button class="becomeacreator-btn" type="submit" id="LoginCheck">Submit</button>
                                 </div>
                             </div>
