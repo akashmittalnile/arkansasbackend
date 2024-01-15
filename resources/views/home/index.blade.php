@@ -22,6 +22,7 @@
                                     <option @if(request()->status == '') selected @endif value="">Select Course Type</option>
                                     <option @if(request()->status == '1') selected @endif value="1">Published</option>
                                     <option @if(request()->status == '0') selected @endif value="0">Unpublished</option>
+                                    <option @if(request()->status == '2') selected @endif value="2">Draft</option>
                                 </select>
                             </div>
                         </div>
@@ -91,9 +92,16 @@
                                             <div class="col-md-2 mb-2">
                                                 <a class="newcourse-btn" href="{{ route('Home.view.course', encrypt_decrypt('encrypt',$data->id)) }}"> <i class="las la-eye"></i></a>
                                             </div>
+                                            @if ($data->status == 2)
+                                            <div class="col-md-5 mb-2 mx-2">
+                                                <a class="newcourse-btn" href="{{ route('Home.Send.Admin', encrypt_decrypt('encrypt',$data->id)) }}">Send To Admin</a>
+                                            </div>
+                                            @endif
                                         </div>
 
                                         <a href="{{ url('admin/addcourse2/'.encrypt_decrypt('encrypt',$data->id))}}"> 
+
+                                        @if ($data->status != 2)
                                         <div class="@if($data->status == 0) coursestatus-unpublish @else coursestatus @endif"><img src="{!! assets('assets/website-images/tick.svg') !!}">
                                             @if ($data->status == 0)
                                                 Unpublished
@@ -101,6 +109,8 @@
                                                 Published 
                                             @endif
                                         </div>
+                                        @endif
+
                                         <h2>{{ ($data->title) ? : ''}}</h2>
                                         <div class="pmu-course-price">${{ number_format($data->course_fee,2) ? : 0}}</div>
                                         <p>{{ ($data->description != "" && $data->description != null) ? (strlen($data->description) > 53 ?  substr($data->description, 0, 53)."....." : $data->description) : "NA" }}</p>

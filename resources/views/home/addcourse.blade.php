@@ -105,24 +105,9 @@
                                             </div>
                                         </div>
 
-                                        <!-- <div class="col-md-6">
-                                            <div class="form-group">
-                                                <h4>Upload Course Certificate (jpg,jpeg,png only | Size: 1MB)</h4>
-                                                <div class="upload-signature">
-                                                    <input type="file" name="certificates" id="certificates"
-                                                        class="uploadsignature addsignature" required accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">
-                                                    <label for="certificates">
-                                                        <div class="signature-text">
-                                                            <span id="certificates_nam"><img id="prev-img" src="{!! assets('assets/website-images/upload.svg') !!}"> <small id="prev-small-line">Click here to Upload</small></span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div> -->
-
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Introduction Video (mp4 only | Size: 10MB)</h4>
+                                                <h4>Introduction Video (mp4 only | Size: 50MB)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction"
                                                         id="disclaimers_introduction"
@@ -220,8 +205,7 @@
                         required:true,
                     },
                     disclaimers_introduction: {
-                        required: true,
-                        filesize : 10,
+                        filesize : 50,
                     },
                 },
                 messages: {

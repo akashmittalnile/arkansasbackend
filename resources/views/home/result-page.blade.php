@@ -291,13 +291,13 @@
                     <div class="col-md-3">
                         <div class="quiz-results-card Correct">
                             <h3>{{ $totalCorrect ?? 0 }}</h3>
-                            <p>Correct Question</p>
+                            <p>Correct Answer</p>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="quiz-results-card Wrong">
                             <h3>{{ $totalWrong ?? 0 }}</h3>
-                            <p>Wrong Question</p>
+                            <p>Wrong Answer</p>
                         </div>
                     </div>
                 </div>

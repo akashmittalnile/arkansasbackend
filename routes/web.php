@@ -101,6 +101,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/help-support-save-img', 'HomeController@help_support_save_img')->name('Home.HelpSupport.Save.Img');
 
         Route::get('/addcourse', 'HomeController@addcourse')->name('Home.Addcourse');
+        Route::get('/send-admin/{id}', 'HomeController@sendAdmin')->name('Home.Send.Admin');
         Route::get('/admin/addcourse2/{courseID}', 'HomeController@add_course2')->name('Home.Addcourse2');
         Route::get('/admin/addcourse2/{courseID}/{chapterID}', 'HomeController@course_list')->name('Home.CourseList');
         Route::post('/submitcourse', 'HomeController@submitcourse')->name('Home.submitcourse');

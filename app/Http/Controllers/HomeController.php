@@ -305,7 +305,7 @@ class HomeController extends Controller
                 'certificates' => null,
                 'category_id' => $request->course_category,
                 'introduction_image' => $disclaimers_introduction,
-                'status' => 0,
+                'status' => 2,
             ]);
 
             return redirect()->route('home.index')->with('message','Course updated successfully');
@@ -624,18 +624,19 @@ class HomeController extends Controller
             $course->title = $request->input('title');
             $course->description = $request->input('description');
             $course->course_fee = $request->input('course_fee');
-            $course->max_discount = $request->input('discount');
+            $course->max_discount = $request->input('discount') ?? 1;
             $course->valid_upto = $request->input('valid_upto') ?? null;
             $course->tags = serialize($request->input('tags'));
             $course->certificates = null;
             $course->category_id = $request->course_category;
-            $course->status = 0;
+            $course->status = 2;
             $course->introduction_image = $disclaimers_introduction;
             $course->save(); 
 
             $last_id = Course::orderBy('id','DESC')->first();
             $course = new CourseChapter;
             $course->course_id = $last_id->id;
+            $course->chapter = 'Chapter One';
             $course->save();
 
             $user = User::where('role', 3)->get();
@@ -664,6 +665,13 @@ class HomeController extends Controller
         } catch (\Exception $e) {
             return $e->getMessage();
         }
+    }
+
+    public function sendAdmin($id) 
+    {
+        $id = encrypt_decrypt('decrypt', $id);
+        Course::where('id', $id)->update(['status' => 0]);
+        return redirect()->back()->with('message', 'Course successfully send to admin');
     }
 
     public function Addcourse() 

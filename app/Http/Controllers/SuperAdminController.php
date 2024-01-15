@@ -93,7 +93,7 @@ class SuperAdminController extends Controller
             $cc = User::where('role', 2)->whereIn('status', [1,2])->count();
             $stu = User::where('role', 1)->count();
             $pro = Product::count();
-            $course = Course::count();
+            $course = Course::where('status', '!=', 2)->count();
 
             $month = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
             $wallet = WalletBalance::join('wallet_history as wh', 'wh.wallet_id', '=', 'wallet_balance.id')->select(
@@ -171,7 +171,7 @@ class SuperAdminController extends Controller
 
             $user = User::where('role', 1)->orderByDesc('id')->limit(3)->get();
             $contentcreator = User::where('role', 2)->orderByDesc('id')->limit(3)->get();
-            $newCourse = Course::leftJoin('users as u', 'u.id', '=', 'course.admin_id')->where('u.role', 2)->select('course.title', 'course.course_fee', 'u.id', 'u.first_name', 'u.last_name', 'u.profile_image', 'course.id as courseid')->orderByDesc('course.id')->limit(3)->get();
+            $newCourse = Course::leftJoin('users as u', 'u.id', '=', 'course.admin_id')->where('u.role', 2)->select('course.title', 'course.course_fee', 'u.id', 'u.first_name', 'u.last_name', 'u.profile_image', 'course.id as courseid')->where('course.status', '!=', 2)->orderByDesc('course.id')->limit(3)->get();
 
             return view('super-admin.dashboard',compact('course', 'pro', 'stu', 'cc', 'userArr', 'walletArr', 'creator_over_graph', 'over_graph', 'user', 'contentcreator', 'newCourse'));
         } catch (\Exception $e) {
@@ -407,7 +407,7 @@ class SuperAdminController extends Controller
     {
         try {
             $user = User::where('role', 2)->where('status', 1)->get();
-            $courses = Course::orderBy('id','DESC')->get();
+            $courses = Course::where('status', '!=', 2)->orderBy('id','DESC')->get();
         return view('super-admin.help-support',compact('courses', 'user'));
         } catch (\Exception $e) {
             return $e->getMessage();
@@ -590,6 +590,7 @@ class SuperAdminController extends Controller
             $last_id = Course::orderBy('id','DESC')->first();
             $course = new CourseChapter;
             $course->course_id = $last_id->id;
+            $course->chapter = 'Chapter One';
             $course->save();
 
             return redirect()->route('SA.Course.Chapter', ['courseID'=> encrypt_decrypt('encrypt', $last_id->id), 'chapterID'=> encrypt_decrypt('encrypt', $course['id '])])->with('message', 'Course created successfully');
@@ -1399,7 +1400,7 @@ class SuperAdminController extends Controller
         try {
             $id = encrypt_decrypt('decrypt',$id);
             $user = User::where('id',$id)->first();
-            $courses = Course::where('admin_id',$id);
+            $courses = Course::where('admin_id',$id)->where('status', '!=', 2);
             if($request->filled('name')) $courses->where('title', 'like', '%'.$request->name.'%');
             if($request->filled('date')) $courses->whereDate('title', $request->date);
             $courses = $courses->orderBy('id','DESC')->get();
@@ -2637,7 +2638,7 @@ class SuperAdminController extends Controller
             if($request->filled('name')) $course->where('title', 'like', '%'.$request->name.'%');
             if($request->filled('status')) $course->where('course.status', $request->status);
             if($request->filled('creator')) $course->where('u.id', encrypt_decrypt('decrypt', $request->creator));
-            $course = $course->where('admin_id', '!=', '1')->select('u.first_name', 'u.last_name', 'u.profile_image', 'course.*')->orderByDesc('course.id')->paginate(10);
+            $course = $course->where('admin_id', '!=', '1')->where('course.status', '!=', 2)->select('u.first_name', 'u.last_name', 'u.profile_image', 'course.*')->orderByDesc('course.id')->paginate(10);
             $cc = Course::join('users as u', 'u.id', '=', 'course.admin_id')->select('u.first_name', 'u.last_name', 'u.id')->where('u.status', 1)->where('u.role', 2)->distinct('u.id')->get();
             return view('super-admin.content-creator-course')->with(compact('course', 'cc'));
         } catch (\Exception $e) {

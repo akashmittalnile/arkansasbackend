@@ -679,6 +679,9 @@ class ApiController extends Controller
 
             $course = Course::leftJoin('users as u', function($join) {
                 $join->on('course.admin_id', '=', 'u.id');
+            })->whereNotExists( function ($query){
+                $query->select(DB::raw(1))
+                ->from('user_courses')->where('user_courses.course_id', '=', 'course.id')->where('user_courses.is_expire', 0)->where('user_courses.user_id', auth()->user()->id);
             })->leftJoin('category as c', 'c.id', '=', 'course.category_id')->where('course.status', 1);
             if($request->filled('title')){
                 $course->where('course.title', 'like' , '%' . $request->title . '%');
@@ -688,21 +691,21 @@ class ApiController extends Controller
             }
             if($request->filled('price')){
                 if($request->price == 1) $course->orderByDesc('course.course_fee');
-                else $course->orderBy('course.course_fee');
+                else $course->orderByDesc('avg_rating')->orderBy('course.course_fee');
             } else{
-                $course->orderBy('course.id', 'DESC');
+                $course->orderByDesc('avg_rating')->orderBy('course.id', 'DESC');
             }
             if ($limit == 0) {
                 $course->limit(2);
             }
-            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status', DB::raw("(SELECT COALESCE(AVG(user_review.rating),0) FROM user_review WHERE user_review.object_id = course.id AND user_review.object_type = '1') as avg_rating"))->where('u.status', 1)->get()->sortByDesc('avg_rating');
+            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status', DB::raw("(SELECT COALESCE(AVG(user_review.rating)) FROM user_review WHERE user_review.object_id = course.id AND user_review.object_type = '1') as avg_rating"))->where('u.status', 1)->paginate(4)->sortByDesc('avg_rating');
 
             $response = array();
             if (isset($course)) {
                 foreach ($course as $keys => $item) {
-                    if($item->cc_status != 1) continue;
-                    $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $item->id)->where('is_expire', 0)->orderByDesc('id')->first();
-                    if(isset($purchasedCourse->id)) continue;
+                    // if($item->cc_status != 1) continue;
+                    // $purchasedCourse = UserCourse::where('user_id', auth()->user()->id)->where('course_id', $item->id)->where('is_expire', 0)->orderByDesc('id')->first();
+                    // if(isset($purchasedCourse->id)) continue;
 
                     $temp['id'] = $item->id;
                     $temp['admin_id'] = $item->admin_id;
@@ -758,7 +761,7 @@ class ApiController extends Controller
                     $temp['content_creator_id'] = isset($item->admin_id) ? $item->admin_id : '';
                     $temp['created_date'] = date('d/m/y,H:i', strtotime($item->created_date));
                     
-                    $temp['avg_rating'] = number_format($item->avg_rating, 1, '.', '');
+                    $temp['avg_rating'] = number_format((float)$item->avg_rating, 1, '.', '');
                     if($request->filled('rating'))
                         if($item->avg_rating < min($request->rating)) continue;
                     $response[] = $temp;
@@ -2304,66 +2307,66 @@ class ApiController extends Controller
                 $response = [];
                 if (count($orders) > 0) {
                     foreach($orders as $value){
-                        
-                        $temp['order_id'] = $value->order_id;
-                        $temp['order_date'] = date('d M, Y H:iA', strtotime($value->order_date));
-                        $temp['order_number'] = $value->order_number;
-                        $temp['id'] = $value->id ?? 0;
-                        if($request->type==1){
-                            $course_purchase = Setting::where('attribute_code','course_purchase_validity')->first();
-                            if(isset($course_purchase->id) && $course_purchase->attribute_value != '' && $course_purchase->attribute_value != 0){
-                                $valid = date('d M, Y', strtotime($value->order_date . '+' . $course_purchase->attribute_value . 'days'));
+                        if(isset($value->id)){
+                            $temp['order_id'] = $value->order_id;
+                            $temp['order_date'] = date('d M, Y H:iA', strtotime($value->order_date));
+                            $temp['order_number'] = $value->order_number;
+                            $temp['id'] = $value->id ?? 0;
+                            if($request->type==1){
+                                $course_purchase = Setting::where('attribute_code','course_purchase_validity')->first();
+                                if(isset($course_purchase->id) && $course_purchase->attribute_value != '' && $course_purchase->attribute_value != 0){
+                                    $valid = date('d M, Y', strtotime($value->order_date . '+' . $course_purchase->attribute_value . 'days'));
+                                }
+                                $value->coupon_discount_price = $value->coupon_discount_price ?? 0;
+                                $temp['price'] = $value->amount;
+                                $temp['sale_price'] = $value->amount;
+                                $temp['course_valid_date'] = $valid;
+                                $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);
+                                $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
+                                if(isset($isCourseComplete->id)){
+                                    $temp['course_completed'] = 1;
+                                    $temp['certificate'] = url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$isCourseComplete->course_id)."/".encrypt_decrypt('encrypt',$user_id);
+                                } 
+                                else{
+                                    $temp['course_completed'] = 0;
+                                    $temp['certificate'] = null;
+                                }
+                            }else{
+                                $productImg = ProductAttibutes::where('product_id', $value->id)->where('attribute_code', 'cover_image')->first();
+                                $temp['Product_image'][0] = (isset($productImg->attribute_value) && $productImg->attribute_value!="") ? uploadAssets('upload/products/'.$productImg->attribute_value):null;
+                                $temp['price'] = $value->price ?? 0;
+                                $temp['sale_price'] = $value->sale_price ?? 0;
                             }
-                            $value->coupon_discount_price = $value->coupon_discount_price ?? 0;
-                            $temp['price'] = $value->amount;
-                            $temp['sale_price'] = $value->amount;
-                            $temp['course_valid_date'] = $valid;
-                            $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);
-                            $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
-                            if(isset($isCourseComplete->id)){
-                                $temp['course_completed'] = 1;
-                                $temp['certificate'] = url('/')."/api/download-pdf/".encrypt_decrypt('encrypt',$isCourseComplete->course_id)."/".encrypt_decrypt('encrypt',$user_id);
-                            } 
-                            else{
-                                $temp['course_completed'] = 0;
-                                $temp['certificate'] = null;
+                            $temp['order_product_status_id'] = $value->order_pro_status ?? 0;
+                            $temp['order_product_status'] = orderStatus($value->order_pro_status ?? 0);
+                            $temp['item_id'] = $value->itemid ?? null;
+                            $temp['title'] = $value->title ?? "NA";
+                            $temp['description'] = $value->desc ?? "NA";
+                            $temp['total_amount_paid'] = $value->total_amount_paid ?? 0;
+                            $temp['tax'] = $value->taxes ?? 0;
+                            
+                            $temp['category_id'] = $value->catid ?? null;
+                            $temp['category_name'] = $value->catname ?? null;
+                            $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', $request->type)->avg('rating');
+                            $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
+                            $temp['order_status'] = ($value->order_status == 1) ? 'Paid' : 'Payment Pending';
+                            
+                            $ContentCreator = User::where('id', $value->added_by)->first();
+                            if (isset($ContentCreator->profile_image) && $ContentCreator->profile_image != '' && $ContentCreator->profile_image != null) {
+                                $profile_image = uploadAssets('upload/profile-image/' . $ContentCreator->profile_image);
+                            } else {
+                                $profile_image = '';
                             }
-                        }else{
-                            $productImg = ProductAttibutes::where('product_id', $value->id)->where('attribute_code', 'cover_image')->first();
-                            $temp['Product_image'][0] = (isset($productImg->attribute_value) && $productImg->attribute_value!="") ? uploadAssets('upload/products/'.$productImg->attribute_value):null;
-                            $temp['price'] = $value->price ?? 0;
-                            $temp['sale_price'] = $value->sale_price ?? 0;
+                            $temp['content_creator_image'] = $profile_image;
+                            $temp['content_creator_name'] = $ContentCreator->first_name .' '.$ContentCreator->last_name ?? '';
+                            $temp['content_creator_id'] = isset($ContentCreator->id) ? $ContentCreator->id : '';
+    
+                            $review = Review::where('object_id', $value->id)->where('object_type', $request->type)->where('userid', $user_id)->first();
+                            if(isset($review->id)) $temp['isReviewed'] = 1;
+                            else $temp['isReviewed'] = 0;
+    
+                            $response[] = $temp;
                         }
-                        $temp['order_product_status_id'] = $value->order_pro_status ?? 0;
-                        $temp['order_product_status'] = orderStatus($value->order_pro_status ?? 0);
-                        $temp['item_id'] = $value->itemid ?? null;
-                        $temp['title'] = $value->title ?? "NA";
-                        $temp['description'] = $value->desc ?? "NA";
-                        $temp['total_amount_paid'] = $value->total_amount_paid ?? 0;
-                        $temp['tax'] = $value->taxes ?? 0;
-                        
-                        $temp['category_id'] = $value->catid ?? null;
-                        $temp['category_name'] = $value->catname ?? null;
-                        $avgRating = DB::table('user_review as ur')->where('object_id', $value->id)->where('object_type', $request->type)->avg('rating');
-                        $temp['avg_rating'] = number_format($avgRating, 1, '.', '');
-                        $temp['order_status'] = ($value->order_status == 1) ? 'Paid' : 'Payment Pending';
-                        
-                        $ContentCreator = User::where('id', $value->added_by)->first();
-                        if (isset($ContentCreator->profile_image) && $ContentCreator->profile_image != '' && $ContentCreator->profile_image != null) {
-                            $profile_image = uploadAssets('upload/profile-image/' . $ContentCreator->profile_image);
-                        } else {
-                            $profile_image = '';
-                        }
-                        $temp['content_creator_image'] = $profile_image;
-                        $temp['content_creator_name'] = $ContentCreator->first_name .' '.$ContentCreator->last_name ?? '';
-                        $temp['content_creator_id'] = isset($ContentCreator->id) ? $ContentCreator->id : '';
-
-                        $review = Review::where('object_id', $value->id)->where('object_type', $request->type)->where('userid', $user_id)->first();
-                        if(isset($review->id)) $temp['isReviewed'] = 1;
-                        else $temp['isReviewed'] = 0;
-
-                        $response[] = $temp;
-
                     }
 
                     $top_category = Category::where('status', 1)->orderBy('id', 'DESC')->get(); /*Get data of category*/

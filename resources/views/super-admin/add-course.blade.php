@@ -87,7 +87,7 @@
 
                                         <div class="col-md-6">
                                             <div class="form-group">
-                                                <h4>Introduction Video (mp4 only | Size: 10MB)</h4>
+                                                <h4>Introduction Video (mp4 only | Size: 50MB)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction" accept="video/mp4"
                                                         id="UploadTrainingVideo"
@@ -195,7 +195,7 @@
                     },
                     disclaimers_introduction: {
                         required: true,
-                        filesize : 10,
+                        filesize : 50,
                     },
                 },
                 messages: {
