@@ -291,8 +291,16 @@ class HomeController extends Controller
             
             $disclaimers_introduction = $course->introduction_image;
             if ($request->disclaimers_introduction) {
-                $disclaimers_introduction = fileUpload($request->disclaimers_introduction, 'upload/disclaimers-introduction'); 
-                removeFile("upload/disclaimers-introduction/".$course->introduction_image);
+                $disclaimers_introduction = fileUpload($request->disclaimers_introduction, 'upload/disclaimers-introduction');
+                if(isset($course->introduction_image)) 
+                    removeFile("upload/disclaimers-introduction/".$course->introduction_image);
+            }
+
+            $thumbnail = $course->thumbnail;
+            if ($request->thumbnail) {
+                $thumbnail = fileUpload($request->thumbnail, 'upload/thumbnail');
+                if(isset($course->thumbnail))
+                    removeFile("upload/thumbnail/".$course->thumbnail);
             }
 
             Course::where('id', encrypt_decrypt('decrypt',$request->hide))->update([
@@ -303,6 +311,7 @@ class HomeController extends Controller
                 'valid_upto' => $request->valid_upto ?? null,
                 'tags' => serialize($request->tags),
                 'certificates' => null,
+                'thumbnail' => $thumbnail,
                 'category_id' => $request->course_category,
                 'introduction_image' => $disclaimers_introduction,
                 'status' => 2,
@@ -619,6 +628,9 @@ class HomeController extends Controller
             if ($request->disclaimers_introduction) {
                 $disclaimers_introduction = fileUpload($request->disclaimers_introduction, 'upload/disclaimers-introduction'); 
             }
+            if ($request->thumbnail) {
+                $thumbnail = fileUpload($request->thumbnail, 'upload/thumbnail');
+            }
             $course = new Course;
             $course->admin_id = Auth::user()->id;
             $course->title = $request->input('title');
@@ -630,7 +642,8 @@ class HomeController extends Controller
             $course->certificates = null;
             $course->category_id = $request->course_category;
             $course->status = 2;
-            $course->introduction_image = $disclaimers_introduction;
+            $course->thumbnail = $thumbnail ?? null;
+            $course->introduction_image = $disclaimers_introduction ?? null;
             $course->save(); 
 
             $last_id = Course::orderBy('id','DESC')->first();

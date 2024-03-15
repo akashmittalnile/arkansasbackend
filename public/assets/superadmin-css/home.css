@@ -5,6 +5,17 @@
 .pmu-overview-content h2 {color: var(--yellow); font-size: 18px; font-style: normal; font-weight: 500; line-height: 22px; margin: 0; padding: 0; } 
 .pmu-overview-content p {color: var(--lightblack, #6A6A6A); font-size: 14px; font-style: normal; font-weight: 400; line-height: 24px; text-align: justify; margin: 0; }
 
+.pmu-courses-form {padding: 1rem; }
+.pmu-courses-form .form-group {margin-bottom: 1rem; }
+.pmu-courses-form .form-group h4 {font-size: 14px; font-weight: 600; margin: 0 0 0px 0; padding: 0; color: var(--lightblack, #6A6A6A); }
+.pmu-courses-form .form-group input.form-control {background:var(--white); border-radius: 5px; font-size: 14px; font-weight: 400; height: auto; padding: 10px; box-shadow:none; outline: 0; width: 100%; display: inline-block; color: #455A64; border: 1px solid #eee; }
+.pmu-courses-form .form-group select.form-control  {background:var(--white); border-radius: 5px; font-size: 14px; font-weight: 400; height: auto; padding: 10px; box-shadow:none; outline: 0; width: 100%; display: inline-block; color: #455A64; border: 1px solid #eee; appearance: revert; }
+.pmu-courses-form .form-group textarea.form-control{background:var(--white); border-radius: 5px; font-size: 14px; font-weight: 400; height: auto; padding: 10px; box-shadow:none; outline: 0; width: 100%; display: inline-block; color: #455A64; border: 1px solid #eee; }
+.pmu-courses-form .form-group .form-control:focus {border: 1px solid var(--yellow); }
+.select2-container--default .select2-selection--multiple {
+    background: none !important;
+    border: 1px solid #eee !important;
+}
 
 a.btn-go {width: 42px; height: 42px; border: 1px solid var(--yellow); display: inline-block; text-align: center; line-height: 40px; border-radius: 5px; background: var(--yellow); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); color: var(--white, #FFF); }
 

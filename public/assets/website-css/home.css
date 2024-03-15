@@ -55,7 +55,10 @@ a.add-more {cursor: pointer; background: var(--brown); color: var(--white); text
 .pmu-courses-form .form-group select.form-control  {background:var(--white); border-radius: 5px; font-size: 14px; font-weight: 400; height: auto; padding: 10px; box-shadow:none; outline: 0; width: 100%; display: inline-block; color: #455A64; border: 1px solid #eee; appearance: revert; }
 .pmu-courses-form .form-group textarea.form-control{background:var(--white); border-radius: 5px; font-size: 14px; font-weight: 400; height: auto; padding: 10px; box-shadow:none; outline: 0; width: 100%; display: inline-block; color: #455A64; border: 1px solid #eee; }
 .pmu-courses-form .form-group .form-control:focus {border: 1px solid var(--yellow); }
-  
+.select2-container--default .select2-selection--multiple {
+    background: none !important;
+    border: 1px solid #eee !important;
+}
 
 
 .upload-signature label {width: 100%; border: 1px dashed #e0b220; border-radius: 5px; padding: 10px; color: #e0b220; text-align: center; font-size: 14px; }

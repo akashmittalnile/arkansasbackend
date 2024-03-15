@@ -123,6 +123,25 @@
                                                 </div>
                                             </div>
                                         </div> 
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <h4>Upload Video Thumbnail (jpg,jpeg,png only | Size: 5MB)</h4>
+                                                <div class="upload-signature">
+                                                    <input type="file" name="thumbnail" accept="image/png, image/jpg, image/jpeg" id="thumbnail"
+                                                        class="uploadsignature addsignature" required onchange="loadImageFile(event)">
+                                                    <label for="thumbnail">
+                                                        <div class="signature-text">
+                                                            <span id="certificates_nam"><img id="prev-img" src="{!! assets('assets/website-images/upload.svg') !!}"> <small id="prev-small-line">Click here to Upload</small></span>
+                                                        </div>
+                                                    </label>
+                                                    @if ($errors->has('thumbnail'))
+                                                        <span class="text-danger text-left">{{ $errors->first('thumbnail') }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div> 
+
                                     </div>
                                 </form>
                             </div>
@@ -206,6 +225,10 @@
                     },
                     disclaimers_introduction: {
                         filesize : 50,
+                    },
+                    thumbnail: {
+                        required: true,
+                        filesize : 5,
                     },
                 },
                 messages: {

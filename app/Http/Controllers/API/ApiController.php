@@ -51,7 +51,7 @@ class ApiController extends Controller
             $trending_courses = Course::leftJoin('users as u', function($join) {
                 $join->on('course.admin_id', '=', 'u.id');
             })->leftJoin('category as cat', 'course.category_id', '=', 'cat.id')
-            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname', 'u.profile_image', 'u.status as cc_status')->get(); /*Get data of Treanding Course*/
+            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.thumbnail', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname', 'u.profile_image', 'u.status as cc_status')->get(); /*Get data of Treanding Course*/
             $b1 = array();
             $TrendingCourses = array();
             foreach ($trending_courses as $k => $data) {
@@ -91,15 +91,15 @@ class ApiController extends Controller
 
                 $b1['tags'] = $tags;
                 $b1['valid_upto'] = $data->valid_upto;
-                if (!empty($data->certificates)) {
-                    $b1['certificates_image'] = uploadAssets('upload/course-certificates/' . $data->certificates);
+                if (!empty($data->thumbnail)) {
+                    $b1['thumbnail'] = uploadAssets('upload/thumbnail/' . $data->thumbnail);
                 } else {
-                    $b1['certificates_image'] = '';
+                    $b1['thumbnail'] = null;
                 }
                 if (!empty($data->introduction_image)) {
                     $b1['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $data->introduction_image);
                 } else {
-                    $b1['introduction_video'] = '';
+                    $b1['introduction_video'] = null;
                 }
                 $exists = Like::where('reaction_by', '=', $user_id)->where('object_id', '=', $data->id)->where('object_type', '=', 1)->first();
                 if (isset($exists)) {
@@ -184,7 +184,7 @@ class ApiController extends Controller
             $suggested_courses = Course::leftJoin('users as u', function($join) {
                 $join->on('course.admin_id', '=', 'u.id');
             })->leftJoin('category as cat', 'course.category_id', '=', 'cat.id')
-            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname', 'u.profile_image', 'u.status as cc_status')->get(); /*Get data of Suggested Course*/
+            ->where('course.status', 1)->orderBy('course.id', 'DESC')->select('course.title', 'course.description', 'course.id', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.thumbnail', 'course.introduction_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.category_id', 'cat.name as catname', 'u.profile_image', 'u.status as cc_status')->get(); /*Get data of Suggested Course*/
             $b3 = array();
             $SuggestedCourses = array();
             foreach ($suggested_courses as $k => $data) {
@@ -225,10 +225,10 @@ class ApiController extends Controller
                 $b3['tags'] = $tags;
             
                 $b3['valid_upto'] = $data->valid_upto;
-                if (!empty($data->certificates)) {
-                    $b3['certificates_image'] = uploadAssets('upload/course-certificates/' . $data->certificates);
+                if (!empty($data->thumbnail)) {
+                    $b3['thumbnail'] = uploadAssets('upload/thumbnail/' . $data->thumbnail);
                 } else {
-                    $b3['certificates_image'] = '';
+                    $b3['thumbnail'] = '';
                 }
                 if (!empty($data->introduction_image)) {
                     $b3['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $data->introduction_image);
@@ -430,10 +430,10 @@ class ApiController extends Controller
                 if(isset($purchasedCourse->id)) continue;
                 $temp['course_fee'] = $value->course_fee;
                 $temp['valid_upto'] = $value->valid_upto;
-                if (!empty($value->certificates)) {
-                    $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $value->certificates);
+                if (!empty($value->thumbnail)) {
+                    $temp['thumbnail'] = uploadAssets('upload/thumbnail/' . $value->thumbnail);
                 } else {
-                    $temp['certificates_image'] = '';
+                    $temp['thumbnail'] = '';
                 }
                 if (!empty($value->introduction_image)) {
                     $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);
@@ -539,6 +539,11 @@ class ApiController extends Controller
                             if(isset($value->id)){
                                 $temp['course_fee'] = $value->course_fee ?? null;
                                 $temp['valid_upto'] = $value->valid_upto ?? null;
+                                
+                                if(isset($value->thumbnail)){
+                                    $temp['thumbnail'] = uploadAssets('upload/thumbnail/'.$value->thumbnail);
+                                } else $temp['thumbnail'] = null;
+
                                 if (!empty($value->introduction_image)) {
                                     $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);
                                 } else {
@@ -696,7 +701,7 @@ class ApiController extends Controller
             if ($limit == 0) {
                 $course->limit(2);
             }
-            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.certificates', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status')->paginate(10);
+            $course = $course->select('course.id', 'course.admin_id','course.title', 'course.description', 'course.course_fee', 'course.tags', 'course.valid_upto', 'course.thumbnail', 'course.introduction_image', 'course.created_date', 'u.first_name', 'u.last_name', 'u.category_name', 'c.name as catname', 'c.id as catid', 'u.profile_image', 'u.status as cc_status')->paginate(10);
 
             $response = array();
             if (isset($course)) {
@@ -723,10 +728,10 @@ class ApiController extends Controller
                     }
                     $temp['tags'] = $tags;
                     $temp['valid_upto'] = $item->valid_upto;
-                    if (!empty($item->certificates)) {
-                        $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $item->certificates);
+                    if (!empty($item->thumbnail)) {
+                        $temp['thumbnail'] = uploadAssets('upload/thumbnail/' . $item->thumbnail);
                     } else {
-                        $temp['certificates_image'] = '';
+                        $temp['thumbnail'] = '';
                     }
                     if (!empty($item->introduction_image)) {
                         $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $item->introduction_image);
@@ -814,7 +819,7 @@ class ApiController extends Controller
                     $temp['course_fee'] = $item->course_fee;
                     $temp['tags'] = $item->tags;
                     $temp['valid_upto'] = $item->valid_upto;
-                    $temp['certificates_image'] = $item->certificates;
+                    $temp['thumbnail'] = $item->thumbnail;
                     $temp['introduction_video'] = $item->introduction_image;
                     $temp['status'] = $item->status;
                     $temp['rating'] = 4.6;
@@ -1115,10 +1120,10 @@ class ApiController extends Controller
                     if ($type == 1) { /* 1 stand for course ,2 for product */
                         $temp['course_fee'] = $value->course_fee;
                         $temp['valid_upto'] = $value->valid_upto;
-                        if (!empty($value->certificates)) {
-                            $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $value->certificates);
+                        if (!empty($value->thumbnail)) {
+                            $temp['thumbnail'] = uploadAssets('upload/thumbnail/' . $value->thumbnail);
                         } else {
-                            $temp['certificates_image'] = '';
+                            $temp['thumbnail'] = '';
                         }
                         if (!empty($value->introduction_image)) {
                             $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);
@@ -1302,10 +1307,10 @@ class ApiController extends Controller
                             if(isset($purchasedCourse->id)) continue;
                             $temp['course_fee'] = $value->course_fee;
                             $temp['valid_upto'] = $value->valid_upto;
-                            if (!empty($value->certificates)) {
-                                $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $value->certificates);
+                            if (!empty($value->thumbnail)) {
+                                $temp['thumbnail'] = uploadAssets('upload/thumbnail/' . $value->thumbnail);
                             } else {
-                                $temp['certificates_image'] = '';
+                                $temp['thumbnail'] = '';
                             }
                             if (!empty($value->introduction_image)) {
                                 $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);
@@ -1439,10 +1444,10 @@ class ApiController extends Controller
                     if ($type == 1) { /* 1 stand for course ,2 for product */
                         $temp['course_fee'] = $item->course_fee;
                         $temp['valid_upto'] = $item->valid_upto;
-                        if (!empty($item->certificates)) {
-                            $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $item->certificates);
+                        if (!empty($item->thumbnail)) {
+                            $temp['thumbnail'] = uploadAssets('upload/thumbnail/' . $item->thumbnail);
                         } else {
-                            $temp['certificates_image'] = '';
+                            $temp['thumbnail'] = '';
                         }
                         if (!empty($item->introduction_image)) {
                             $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $item->introduction_image);
@@ -2294,7 +2299,7 @@ class ApiController extends Controller
                 }
                 $orders = OrderDetail::leftJoin('orders as o', 'o.id', '=', 'order_product_detail.order_id')->where('order_product_detail.product_type', $request->type)->where('o.user_id', $user_id);
                 if($request->type == 1){
-                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'cat.name as catname', 'c.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.order_status as order_pro_status', 'order_product_detail.coupon_discount_price', 'order_product_detail.amount');
+                    $orders->leftJoin('course as c', 'c.id', '=', 'order_product_detail.product_id')->leftJoin('category as cat', 'cat.id', '=', 'c.category_id')->select('o.id as order_id', 'o.order_number', 'o.total_amount_paid', 'o.status as order_status', 'o.created_date as order_date', 'c.title as title', 'c.description as desc', 'c.course_fee as price', 'c.admin_id as added_by', 'c.valid_upto', 'c.id as id', 'c.introduction_image', 'c.thumbnail', 'cat.name as catname', 'c.category_id as catid', 'order_product_detail.id as itemid', 'o.taxes', 'order_product_detail.order_status as order_pro_status', 'order_product_detail.coupon_discount_price', 'order_product_detail.amount');
                     if($request->filled('title')){
                         $orders->where('c.title', 'like', '%' . $request->title . '%');
                     }
@@ -2334,6 +2339,9 @@ class ApiController extends Controller
                                 $temp['price'] = $value->amount;
                                 $temp['sale_price'] = $value->amount;
                                 $temp['course_valid_date'] = $valid;
+                                if(isset($value->thumbnail)){
+                                    $temp['thumbnail'] = uploadAssets('upload/thumbnail/'.$value->thumbnail);
+                                } else $temp['thumbnail'] = null;
                                 $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);
                                 $isCourseComplete = UserCourse::where('course_id', $value->id)->where('user_id', $user_id)->where('is_expire', 0)->where('status', 1)->orderByDesc('id')->first();
                                 if(isset($isCourseComplete->id)){
@@ -2375,8 +2383,9 @@ class ApiController extends Controller
                             $temp['content_creator_id'] = isset($ContentCreator->id) ? $ContentCreator->id : '';
     
                             $review = Review::where('object_id', $value->id)->where('object_type', $request->type)->where('userid', $user_id)->first();
-                            if(isset($review->id)) $temp['isReviewed'] = 1;
-                            else $temp['isReviewed'] = 0;
+                            if(isset($review->id)) $temp['is_reviewed'] = true;
+                            else $temp['is_reviewed'] = false;
+                            $temp['my_review'] = isset($review->id) ? $review : null;
     
                             $response[] = $temp;
                         }
@@ -2794,7 +2803,7 @@ class ApiController extends Controller
 
     public function certificates(Request $request){
         try{
-            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->leftJoin('users as u', 'c.admin_id', '=', 'u.id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->where('user_courses.is_expire', 0)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status', 'u.first_name', 'u.last_name', 'u.profile_image', 'c.introduction_image')->orderByDesc('user_courses.id')->get();
+            $data = UserCourse::join('course as c', 'c.id', '=', 'user_courses.course_id')->leftJoin('users as u', 'c.admin_id', '=', 'u.id')->where('user_courses.user_id', auth()->user()->id)->where('user_courses.status', 1)->where('user_courses.is_expire', 0)->select('c.id as course_id', 'user_courses.user_id as user_id', 'c.title', 'user_courses.status', 'u.first_name', 'u.last_name', 'u.profile_image', 'c.introduction_image', 'c.thumbnail')->orderByDesc('user_courses.id')->get();
             $res = [];
             foreach($data as $val){
                 $temp['course_id'] = $val->course_id;
@@ -2804,6 +2813,10 @@ class ApiController extends Controller
 
                 if(isset($val->profile_image)) $temp['creator_image'] = uploadAssets('upload/profile-image/'.$val->profile_image);
                 else $temp['creator_image'] = null;
+
+                if(isset($val->thumbnail)){
+                    $temp['thumbnail'] = uploadAssets('upload/thumbnail/'.$val->thumbnail);
+                } else $temp['thumbnail'] = null;
                 
                 if(isset($val->introduction_image)) $temp['video'] = uploadAssets('upload/disclaimers-introduction/'.$val->introduction_image);
                 else $temp['video'] = null;
@@ -2845,10 +2858,10 @@ class ApiController extends Controller
                     if(!in_array($request->tag, unserialize($value->tags))) continue;
                 $temp['course_fee'] = $value->course_fee;
                 $temp['valid_upto'] = $value->valid_upto;
-                if (!empty($value->certificates)) {
-                    $temp['certificates_image'] = uploadAssets('upload/course-certificates/' . $value->certificates);
+                if (!empty($value->thumbnail)) {
+                    $temp['thumbnail'] = uploadAssets('upload/thumbnail/' . $value->thumbnail);
                 } else {
-                    $temp['certificates_image'] = '';
+                    $temp['thumbnail'] = '';
                 }
                 if (!empty($value->introduction_image)) {
                     $temp['introduction_video'] = uploadAssets('upload/disclaimers-introduction/' . $value->introduction_image);

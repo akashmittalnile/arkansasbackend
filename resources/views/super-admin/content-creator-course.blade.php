@@ -63,7 +63,7 @@
             @elseif(!$course->isEmpty())
             @foreach($course as $data)
             <div class="creator-table-item">
-                <div class="creator-table-col-2">
+                <div class="creator-table-col-3">
                     <div class="creator-table-content">
                         <div class="creator-profile-info">
                             <div class="creator-profile-image">
@@ -74,8 +74,9 @@
                                 @endif
                             </div>
                             <div class="creator-profile-text">
-                                <h2>Creator Name</h2>
-                                <p>{{ $data->first_name ?? "NA" }} {{ $data->last_name ?? "" }}</p>
+                                <h2>Creator</h2>
+                                <p class="mb-1">{{ $data->first_name ?? "NA" }} {{ $data->last_name ?? "" }}</p>
+                                <p>{{ $data->email ?? "NA" }}</p>
                             </div>
                         </div>
                     </div>
@@ -88,7 +89,7 @@
                     </div>
                 </div>
 
-                <div class="creator-table-col-2">
+                <div class="creator-table-col-1">
                     <div class="creator-table-box">
                         <div class="creator-table-text">Course Fee</div>
                         <div class="creator-table-value">${{ $data->course_fee ?? 0 }}</div>

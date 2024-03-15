@@ -559,6 +559,7 @@ class SuperAdminController extends Controller
             // dd($request->all());
             $validator = Validator::make($request->all(), [
                 'disclaimers_introduction' => 'required',
+                'thumbnail' => 'required|file',
                 'title' => 'required',
                 'description' => 'required',
                 'tags' => 'required',
@@ -572,6 +573,9 @@ class SuperAdminController extends Controller
             if ($request->disclaimers_introduction) {
                 $disclaimers_introduction = fileUpload($request->disclaimers_introduction, 'upload/disclaimers-introduction');
             }
+            if ($request->thumbnail) {
+                $thumbnail = fileUpload($request->thumbnail, 'upload/thumbnail');
+            }
             // dd(1);
             
             $course = new Course;
@@ -583,6 +587,7 @@ class SuperAdminController extends Controller
             $course->category_id = $request->course_category;
             $course->tags = serialize($request->tags);
             $course->certificates = null;
+            $course->thumbnail = $thumbnail;
             $course->introduction_image = $disclaimers_introduction;
             $course->status = 1;
             $course->save();
@@ -626,7 +631,14 @@ class SuperAdminController extends Controller
             $disclaimers_introduction = $course->introduction_image;
             if ($request->disclaimers_introduction) {
                 $disclaimers_introduction = fileUpload($request->disclaimers_introduction, 'upload/disclaimers-introduction');
-                removeFile("upload/disclaimers-introduction/".$course->introduction_image);
+                if(isset($course->introduction_image))
+                    removeFile("upload/disclaimers-introduction/".$course->introduction_image);
+            }
+            $thumbnail = $course->thumbnail;
+            if ($request->thumbnail) {
+                $thumbnail = fileUpload($request->thumbnail, 'upload/thumbnail');
+                if(isset($course->thumbnail))
+                    removeFile("upload/thumbnail/".$course->thumbnail);
             }
 
             Course::where('id', encrypt_decrypt('decrypt',$request->hide))->update([
@@ -636,6 +648,7 @@ class SuperAdminController extends Controller
                 'valid_upto' => $request->valid_upto ?? null,
                 'tags' => serialize($request->tags),
                 'certificates' => null,
+                'thumbnail' => $thumbnail,
                 'category_id' => $request->course_category,
                 'introduction_image' => $disclaimers_introduction,
                 'status' => 1,
@@ -2637,7 +2650,7 @@ class SuperAdminController extends Controller
             if($request->filled('name')) $course->where('title', 'like', '%'.$request->name.'%');
             if($request->filled('status')) $course->where('course.status', $request->status);
             if($request->filled('creator')) $course->where('u.id', encrypt_decrypt('decrypt', $request->creator));
-            $course = $course->where('admin_id', '!=', '1')->where('course.status', '!=', 2)->select('u.first_name', 'u.last_name', 'u.profile_image', 'course.*')->orderByDesc('course.id')->paginate(10);
+            $course = $course->where('admin_id', '!=', '1')->where('course.status', '!=', 2)->select('u.email', 'u.first_name', 'u.last_name', 'u.profile_image', 'course.*')->orderByDesc('course.id')->paginate(10);
             $cc = Course::join('users as u', 'u.id', '=', 'course.admin_id')->select('u.first_name', 'u.last_name', 'u.id')->where('u.status', 1)->where('u.role', 2)->distinct('u.id')->get();
             return view('super-admin.content-creator-course')->with(compact('course', 'cc'));
         } catch (\Exception $e) {

@@ -51,7 +51,7 @@
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Category</h4>
-                                                <select name="course_category" id="" class="form-control">
+                                                <select name="course_category" id="" class="form-control" required>
                                                     <option value="">Select Category</option>
                                                     @foreach(getCategory(1) as $val)
                                                         <option value="{{ $val->id }}">{{ $val->name }}</option>
@@ -67,31 +67,13 @@
                                             </div>
                                         </div>
 
-                                        <!-- <div class="col-md-6">
-                                            <div class="form-group">
-                                                <h4>Upload Course Certificate (jpg,jpeg,png only | Size: 1MB)</h4>
-                                                <div class="upload-signature">
-                                                    <input type="file" name="certificates" accept="image/png, image/jpg, image/jpeg" id="PDFJPEGOrPNG"
-                                                        class="uploadsignature addsignature" required onchange="loadImageFile(event)">
-                                                    <label for="PDFJPEGOrPNG">
-                                                        <div class="signature-text">
-                                                            <span id="certificates_nam"><img id="prev-img" src="{!! assets('assets/website-images/upload.svg') !!}"> <small id="prev-small-line">Click here to Upload</small></span>
-                                                        </div>
-                                                    </label>
-                                                    @if ($errors->has('certificates'))
-                                                        <span class="text-danger text-left">{{ $errors->first('certificates') }}</span>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div> -->
-
                                         <div class="col-md-6">
                                             <div class="form-group">
                                                 <h4>Introduction Video (mp4 only | Size: 50MB)</h4>
                                                 <div class="upload-signature">
                                                     <input type="file" name="disclaimers_introduction" accept="video/mp4"
                                                         id="UploadTrainingVideo"
-                                                        class="uploadsignature addsignature" onchange="loadVideoFile(event)">
+                                                        class="uploadsignature addsignature" required onchange="loadVideoFile(event)">
                                                     <label for="UploadTrainingVideo">
                                                         <div class="signature-text">
                                                             <span id="disclaimers_introduction_nam">
@@ -107,6 +89,25 @@
                                                 </div>
                                             </div>
                                         </div> 
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <h4>Upload Video Thumbnail (jpg,jpeg,png only | Size: 5MB)</h4>
+                                                <div class="upload-signature">
+                                                    <input type="file" name="thumbnail" accept="image/png, image/jpg, image/jpeg" id="thumbnail"
+                                                        class="uploadsignature addsignature" required onchange="loadImageFile(event)">
+                                                    <label for="thumbnail">
+                                                        <div class="signature-text">
+                                                            <span id="certificates_nam"><img id="prev-img" src="{!! assets('assets/website-images/upload.svg') !!}"> <small id="prev-small-line">Click here to Upload</small></span>
+                                                        </div>
+                                                    </label>
+                                                    @if ($errors->has('thumbnail'))
+                                                        <span class="text-danger text-left">{{ $errors->first('thumbnail') }}</span>
+                                                    @endif
+                                                </div>
+                                            </div>
+                                        </div>                                     
+
                                     </div>
                                 </form>
                             </div>
@@ -162,76 +163,86 @@
         a:hover{
             color: #fff;
         }
-        .select2-container--default .select2-selection--multiple{ border: none !important; }
     </style>
 
     <!-- Include jQuery Validation -->
     <script>
         $(document).ready(function() {
             $(".select2-search__field.form-control").css('border', 'none');
+            $(".select2-container .selection .select2-selection .select2-search__field").addClass('form-control');
 
-            $.validator.addMethod('filesize', function (value, element, param) {
-                return this.optional(element) || (element.files[0].size <= param * 1000000)
-            }, 'File size must be less than {0} MB');
+            $(document).ready(function () {
+                $(".select2-container .selection .select2-selection .select2-search__field").addClass('form-control');
+                $(".select2-container .selection .select2-selection .select2-search__field").css('border', 'none');
+                
+                $.validator.addMethod('filesize', function (value, element, param) {
+                    return this.optional(element) || (element.files[0].size <= param * 1000000)
+                }, 'File size must be less than {0} MB');
 
-            $('#AddCourse').validate({
-                rules: {
-                    title: {
-                        required: true,
+                $('#AddCourse').validate({
+                    rules: {
+                        title: {
+                            required: true,
+                        },
+                        description: {
+                            required: true,
+                        },
+                        course_fee: {
+                            required: true,
+                            minlength: 1,
+                            maxlength: 6
+                        },
+                        course_category: {
+                            required:true,
+                        },
+                        "tags[]": {
+                            required: true,
+                        },
+                        disclaimers_introduction: {
+                            required: true,
+                            filesize : 50,
+                        },
+                        thumbnail: {
+                            required: true,
+                            filesize : 5,
+                        },
                     },
-                    description: {
-                        required: true,
+                    messages: {
+                        title: {
+                            required: 'Please enter title',
+                        },
+                        description: {
+                            required: 'Please enter description',
+                        },
+                        course_fee: {
+                            required: 'Please enter course fee',
+                        },
+                        course_category: {
+                            required: 'Please select course category',
+                        },
+                        "tags[]": {
+                            required: 'Please enter tags',
+                        },
                     },
-                    course_fee: {
-                        required: true,
-                        minlength: 1,
-                        maxlength: 6
+                    submitHandler: function(form) {
+                        // This function will be called when the form is valid and ready to be submitted
+                        form.submit();
                     },
-                    course_category: {
-                        required:true,
+                    errorElement: "span",
+                    errorPlacement: function(error, element) {
+                        error.addClass("invalid-feedback");
+                        element.closest(".form-group").append(error);
                     },
-                    "tags[]": {
-                        required: true,
+                    highlight: function(element, errorClass, validClass) {
+                        $(element).addClass("is-invalid");
                     },
-                    disclaimers_introduction: {
-                        required: true,
-                        filesize : 50,
+                    unhighlight: function(element, errorClass, validClass) {
+                        $(element).removeClass("is-invalid");
                     },
-                },
-                messages: {
-                    title: {
-                        required: 'Please enter title',
-                    },
-                    description: {
-                        required: 'Please enter description',
-                    },
-                    course_fee: {
-                        required: 'Please enter course fee',
-                    },
-                    course_category: {
-                        required: 'Please select course category',
-                    },
-                    "tags[]": {
-                        required: 'Please enter tags',
-                    },
-                },
-                submitHandler: function(form) {
-                    // This function will be called when the form is valid and ready to be submitted
-                    form.submit();
-                },
-                errorElement: "span",
-                errorPlacement: function(error, element) {
-                    error.addClass("invalid-feedback");
-                    element.closest(".form-group").append(error);
+                });
+            })
 
-                },
-                highlight: function(element, errorClass, validClass) {
-                    $(element).addClass("is-invalid");
-                },
-                unhighlight: function(element, errorClass, validClass) {
-                    $(element).removeClass("is-invalid");
-                },
-            });
+            
         });
 
         const loadImageFile = (event) => {

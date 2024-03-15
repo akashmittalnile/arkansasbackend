@@ -97,20 +97,6 @@
                                             </div>
                                         </div>
                                         <input type="hidden" name="hide" value="{{encrypt_decrypt('encrypt', $course->id)}}">
-                                        <!-- <div class="col-md-6">
-                                            <div class="form-group">
-                                                <h4>Upload Course Certificate (jpg,jpeg,png only | Size: 1MB)</h4>
-                                                <div class="upload-signature">
-                                                    <input type="file" name="certificates" id="certificates"
-                                                        class="uploadsignature addsignature" accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">
-                                                    <label for="certificates">
-                                                        <div class="signature-text">
-                                                            <span id="certificates_nam"><img id="prev-img" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" src="{!! uploadAssets('upload/course-certificates/'.$course->certificates) !!}"> <small id="prev-small-line">Click here to change image</small></span>
-                                                        </div>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                        </div> -->
 
                                         <div class="col-md-6">
                                             <div class="form-group">
@@ -129,6 +115,22 @@
                                                 </div>
                                             </div>
                                         </div> 
+
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <h4>Upload Video Thumbnail (jpg,jpeg,png only | Size: 5MB)</h4>
+                                                <div class="upload-signature">
+                                                    <input type="file" name="thumbnail" id="thumbnail"
+                                                        class="uploadsignature addsignature" accept="image/png, image/jpg, image/jpeg" onchange="loadImageFile(event)">
+                                                    <label for="thumbnail">
+                                                        <div class="signature-text">
+                                                            <span id="certificates_nam"><img id="prev-img" width="160" height="80" style="object-fit: cover; object-position: center; border-radius: 8px" src="{!! uploadAssets('upload/thumbnail/'.$course->thumbnail) !!}"> <small id="prev-small-line">Click here to change image</small></span>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </form>
                             </div>
@@ -218,6 +220,12 @@
                     disclaimers_introduction: {
                         filesize : 50,
                     },
+                    @if(!isset($course->thumbnail))
+                    thumbnail: {
+                        required: true,
+                        filesize : 5,
+                    },
+                    @endif
                 },
                 messages: {
                     title: {
@@ -254,7 +262,7 @@
 
         const loadImageFile = (event) => {
             $("#prev-img").attr({src: URL.createObjectURL(event.target.files[0])});
-            $("#prev-small-line").hide();
+            // $("#prev-small-line").hide();
             // $("#remove-img-btn1").removeClass('d-none');
         };
 
