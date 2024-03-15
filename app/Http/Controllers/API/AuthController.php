@@ -214,7 +214,7 @@ class AuthController extends Controller
                 $data['to_email'] = $user->email ?? 'NA';
                 sendEmail($data);
 
-                return response()->json(['status' => true, 'message' => "OTP send to your " . $msg . ". OTP is expire in 5 minutes...", 'otp' => $code]);
+                return response()->json(['status' => true, 'message' => "OTP send to your " . $msg . ". OTP will expire in 5 minutes...", 'otp' => $code]);
             }
         } else return errorMsg('Entered email address is not registered with us');
     }

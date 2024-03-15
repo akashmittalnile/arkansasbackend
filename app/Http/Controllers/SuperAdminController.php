@@ -816,7 +816,7 @@ class SuperAdminController extends Controller
                                 foreach($valueQ as $keyQVal => $valueQVal){
                                     $ChapterQuiz = new ChapterQuiz;
                                     $ChapterQuiz->title = $valueQVal['text'];
-                                    $ChapterQuiz->type = 'quiz';
+                                    $ChapterQuiz->type = 'survey';
                                     $ChapterQuiz->chapter_id = $request->chapter_id;
                                     $ChapterQuiz->course_id = $request->courseID;
                                     $ChapterQuiz->step_id = $Step['id '];
@@ -2380,7 +2380,6 @@ class SuperAdminController extends Controller
                 'date' => 'required',
             ]);
             if ($validator->fails()) {
-                dd(1);
                 return redirect()->back()->withErrors($validator)->withInput();
             } else {
                 // dd(2);

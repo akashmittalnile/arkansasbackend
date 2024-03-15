@@ -344,7 +344,7 @@ if (!function_exists('fileUpload')) {
         if($appEnv == 'prodAdmin'){
             $docsPath = $_SERVER["DOCUMENT_ROOT"];
             $newPath = str_replace("admin.permanentmakeupuniversity.com","",$docsPath);
-            $name = time().'.'.$file->extension();  
+            $name = time().rand().'.'.$file->extension();  
             $file->move($newPath.$path, $name);
             if($url == 1){
                 return public_path("https://permanentmakeupuniversity.com/$path/$name");
@@ -353,21 +353,21 @@ if (!function_exists('fileUpload')) {
         } elseif($appEnv == 'prodCC'){
             $docsPath = $_SERVER["DOCUMENT_ROOT"];
             $newPath = str_replace("contentcreator.permanentmakeupuniversity.com","",$docsPath);
-            $name = time().'.'.$file->extension();  
+            $name = time().rand().'.'.$file->extension();  
             $file->move($newPath.$path, $name);
             if($url == 1){
                 return public_path("https://permanentmakeupuniversity.com/$path/$name");
             }
             return $name;
         } elseif($appEnv == 'nile'){
-            $name = time().'.'.$file->extension();  
+            $name = time().rand().'.'.$file->extension();  
             $file->move(public_path("$path"), $name);
             if($url == 1){
                 return public_path("$path/$name");
             }
             return $name;
         } else{
-            $name = time().'.'.$file->extension();  
+            $name = time().rand().'.'.$file->extension();  
             $file->move(public_path("../../$path"), $name);
             if($url == 1){
                 return public_path("../../$path/$name");
