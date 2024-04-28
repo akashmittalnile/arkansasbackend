@@ -1,0 +1,33 @@
+.auth-form-section {height: calc(100vh - 80px); position: relative; background: url(../superadmin-images/form-bg.png); background-position: center; padding: 1rem 0; }
+.auth-form-section:before {content: ''; position: absolute; left: 0; right: 0; top: 0; bottom: 0; background: rgb(0 0 0 / 24%); }
+.auth-form{position: relative;background: rgb(38 19 19 / 90%);padding:3rem 15rem;}
+.auth-form .form-group {margin-bottom: 1rem; }
+.auth-form h2 {font-size: 24px; text-align: center; margin: 0; padding: 0; color: var(--white); }
+.auth-form p {font-size: 14px; text-align: center; margin: 0 0 1rem 0;  color: var(--white); }
+
+
+.auth-form .form-group {margin-bottom: 1rem; }
+.auth-form .form-group h4 {font-size: 13px; font-weight: 600; margin: 0 0 5px 0; padding: 0; color: var(--white); }
+
+.auth-form .form-group input.form-control {background:var(--white); border-radius: 5px; font-size: 14px; font-weight: 400; height: auto; padding: 10px; box-shadow:none; outline: 0; width: 100%; display: inline-block; color: #455A64; border: 1px solid #eee; }
+.auth-form .form-group select.form-control  {background:var(--white); border-radius: 5px; font-size: 14px; font-weight: 400; height: auto; padding: 10px; box-shadow:none; outline: 0; width: 100%; display: inline-block; color: #455A64; border: 1px solid #eee; appearance: revert; }
+.auth-form .form-group textarea.form-control{background:var(--white); border-radius: 5px; font-size: 14px; font-weight: 400; height: auto; padding: 10px; box-shadow:none; outline: 0; width: 100%; display: inline-block; color: #455A64; border: 1px solid #eee; }
+.auth-form .form-group .form-control:focus {border: 1px solid var(--white); }
+.ForgotPassword-text {font-size: 14px; text-align: center; margin: 0 0 1rem 0;  color: var(--white); text-align:center; }
+
+
+
+.auth-foot {background: rgb(255 255 255 / 83%);padding: 1.5rem;position: relative;text-align:center;}
+.auth-foot .form-group {margin-bottom: 1rem; }
+button.becomeacreator-btn {background: var(--brown); color: var(--white); text-transform: uppercase; padding: 10px 30px; border: none; display: inline-block; font-size: 14px; border-radius: 5px; box-shadow: 0 4px 28px rgb(168 91 91 / 21%); }
+.auth-foot p{font-size: 14px; text-align: center; margin: 0 0 1rem 0;  color: var(--black); }
+.auth-foot p a{ font-weight: bold; color: var(--black); }
+
+.becomeacreator-form-info{text-align: center;}
+
+.becomeacreator-form-info h2 {font-size: 24px; text-align: center; margin: 0; padding: 0; color: var(--black); }
+.becomeacreator-form-info p {font-size: 14px; text-align: center; margin: 0 0 1rem 0;  color: var(--black); }
+
+.becomeacreator-btn-action {text-align: center; }
+a.close-btn{background: var(--brown); color: var(--white); text-transform: uppercase; padding: 10px 30px; border: none; display: inline-block; font-size: 14px; border-radius: 5px; box-shadow: 0 4px 28px rgb(168 91 91 / 21%); }
+a.Login-btn{background: var(--brown); color: var(--white); text-transform: uppercase; padding: 10px 30px; border: none; display: inline-block; font-size: 14px; border-radius: 5px; box-shadow: 0 4px 28px rgb(168 91 91 / 21%); }

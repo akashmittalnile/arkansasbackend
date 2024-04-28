@@ -1,0 +1,19 @@
+.pmu-filter-section {display: flex; justify-content: space-between; margin-bottom: 1rem; }
+
+.pmu-filter-heading h2 {font-size:24px; font-weight: 600; margin: 0; padding: 0; color:var(--lightblack); }
+
+.pmu-search-filter input.form-control {background: var(--white, #FFF); border-radius: 5px; font-size: 13px; border: 1px solid var(--white, #FFF); font-weight: 400; height: auto; padding: 0.6rem 0.6rem; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; display: inline-block; color: var(--light-black, #6A6A6A); }
+.pmu-search-filter select.form-control {background: var(--white, #FFF); border-radius: 5px; font-size: 14px; border: 1px solid var(--white, #FFF); font-weight: 400; height: auto; padding: 0.8rem 0.6rem; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; color: var(--light-black, #6A6A6A); appearance: revert; }
+.pmu-search-filter textarea.form-control {background: var(--white, #FFF); border-radius: 5px; font-size: 14px; border: 1px solid var(--white, #FFF); font-weight: 400; height: auto; padding: 0.8rem 0.94rem; box-shadow: 0 5px 13px rgb(240 240 241 / 46%); outline: 0; width: 100%; display: inline-block; color: var(--light-black, #6A6A6A); }
+.pmu-search-filter .form-control:focus {border: 1px solid var(--yellow); }
+.search-form-group {position: relative; } 
+.search-form-group input.form-control {padding-right: 2rem; } 
+.search-form-group span.search-icon {position: absolute; right: 10px; top: 7px; }
+a.Create-btn {border-radius: 5px; background: var(--brown, #261313); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); padding: 15px 20px; color: var(--white, #FFF); text-align: center; font-size: 14px; font-style: normal; font-weight: 500; line-height: normal; text-transform: uppercase; width: 100%; display: inline-block; position: relative; outline: none; }
+
+
+.pmu-table-filter{margin-bottom: 1rem;}
+
+ .pmu-table-info-card h2{color: var(--lightblack, #6A6A6A); font-size: 16px; font-style: normal; font-weight: 500; line-height: normal; margin: 0 0 10px 0; padding: 0; }
+.pmu-table-value{color: var(--lightblack, #6A6A6A); font-size: 22px; font-weight: bold; line-height: 22px; margin: 0; padding: 0; }
+.download-btn {border-radius: 5px; background: var(--brown, #261313); box-shadow: 0px 4px 12px 0px rgba(182, 0, 248, 0.06); padding: 15px 20px; color: var(--white, #FFF); text-align: center; font-size: 14px; font-style: normal; font-weight: 500; line-height: normal; text-transform: uppercase; width: 100%; display: inline-block; position: relative; outline: none; }
