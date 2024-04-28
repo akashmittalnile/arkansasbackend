@@ -152,7 +152,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::post('/super-admin/my-data', 'SuperAdminController@storeMyData')->name('SA.Store.Mydata');
         Route::post('/super-admin/setting', 'SuperAdminController@storeSetting')->name('SA.Store.Setting');
         Route::post('/super-admin/change-password', 'SuperAdminController@changePassword')->name('SA.Change.Password');
-        Route::post('/super-admin/store-address', 'SuperAdminController@storeAddress')->name('SA.Store.Address');
+        Route::post('/super-admin/store-address', 'SuperAdminController@storeAddress')->name('SA.Store.Address'); 
 
         Route::get('/super-admin/addcourse', 'SuperAdminController@add_course')->name('SA.AddCourse');
         Route::get('/super-admin/addproduct', 'SuperAdminController@add_product')->name('SA.AddProduct');
