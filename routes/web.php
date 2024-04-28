@@ -156,7 +156,7 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
 
         Route::get('/super-admin/addcourse', 'SuperAdminController@add_course')->name('SA.AddCourse');
         Route::get('/super-admin/addproduct', 'SuperAdminController@add_product')->name('SA.AddProduct');
-        Route::post('/super-admin/submitcourse', 'SuperAdminController@submitcourse')->name('SA.SubmitCourse');
+        Route::post('/super-admin/submitcourse', 'SuperAdminController@submitcourse')->name('SA.SubmitCourse'); 
         Route::post('/super-admin/submitproduct', 'SuperAdminController@submitproduct')->name('SA.SubmitProduct');
 
         Route::get('/super-admin/help-support', 'SuperAdminController@help_support')->name('SA.HelpSupport');
