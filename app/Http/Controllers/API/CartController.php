@@ -266,7 +266,7 @@ class CartController extends Controller
                         $value = Course::leftJoin('users as u', function($join) {
                             $join->on('course.admin_id', '=', 'u.id');
                         })->leftJoin('category as c', 'c.id', '=', 'course.category_id')
-                        ->where('course.id', $item->object_id)->select('course.title', 'course.course_fee', 'u.profile_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.admin_id', 'course.id', 'course.introduction_image', 'c.id as catid', 'c.name as catname', 'course.description')->first();
+                        ->where('course.id', $item->object_id)->select('course.title', 'course.course_fee', 'u.profile_image', 'u.first_name', 'u.last_name', 'u.category_name', 'course.admin_id', 'course.id', 'course.thumbnail', 'course.introduction_image', 'c.id as catid', 'c.name as catname', 'course.description')->first();
                         $temp['name'] = $value->title;
                         $temp['regular_price'] = $value->course_fee;
                         $temp['total_amount'] = $value->course_fee;
@@ -281,6 +281,9 @@ class CartController extends Controller
                         $temp['category_name'] = $value->catname ?? null;
                         $temp['content_creator_image'] = $profile_image;
                         $temp['content_creator_name'] = $value->first_name.' '.$value->last_name;
+                        if(isset($value->thumbnail)){
+                            $temp['thumbnail'] = uploadAssets('upload/thumbnail/'.$value->thumbnail);  
+                        } else $temp['thumbnail'] = null;
                         if(isset($value->introduction_image)){
                             $temp['image'] = uploadAssets('upload/disclaimers-introduction/'.$value->introduction_image);  
                         } else $temp['image'] = null;

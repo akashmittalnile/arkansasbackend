@@ -1502,7 +1502,7 @@ class ApiController extends Controller
                         } else {
                             $temp['courseCompleted'] = 0;
                             $temp['course_status'] = 0;
-                            $temp['course_status_name'] = 'Not Purchased Yet';
+                            $temp['course_status_name'] = 'You need to purchase the course in order to access the contents.';
                             $temp['course_purchase_date'] = null;
                             $temp['course_expire_date'] = null;
                             $temp['certificate'] = null;
@@ -1844,7 +1844,7 @@ class ApiController extends Controller
                 $rating = $request->rating;
                 $exist = Review::where('userid', $user_id)->where('object_id', $object_id)->where('object_type', $object_type)->orderByDesc('id')->first();
                 if (isset($exist)) {
-                    Review::where('id', $exist->id)->update(['rating' => $rating, 'review' => $comment]);
+                    Review::where('id', $exist->id)->update(['rating' => $rating, 'review' => $comment, 'created_date' => date('Y-m-d H:i:s')]);
                     return response()->json(['status' => true, 'Message' => 'Review updated successfully']);
                 } else {
                     $save = Review::create([
@@ -1899,10 +1899,14 @@ class ApiController extends Controller
                         $data[$key]['profile_image'] = (isset($user_name->profile_image) && ($user_name->profile_image!="")) ? uploadAssets('upload/profile-image/' . $user_name->profile_image) : null;
                         $avg += $c->rating ?? 0;
                     }
+                    $is_reviewed = DB::table('user_review')->where('userid', auth()->user()->id)->where('object_id', $object_id)->where('object_type', $object_type)->orderByDesc('id')->first();
+
                     return response()->json([
                         "status" => true,
                         "message" => "Review List",
                         "review_list" => $data,
+                        "is_reviewed" => isset($is_reviewed->id) ? 'true' : 'false',
+                        "my_review" => isset($is_reviewed->id) ? $is_reviewed : null,
                         'avg_rating' => $avg/count($review)
                     ]);
                 } else {
