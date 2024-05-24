@@ -1008,15 +1008,10 @@ class CartController extends Controller
             CURLOPT_POSTFIELDS => '{
                 "rate_options": {
                     "carrier_ids": [
-                        "se-5451953",
-                        "se-5451955",
-                        "se-5451954"
+                        "se-123277",
+                        "se-123278",
+                        "se-123356",
                     ],
-                    "service_codes": [
-                        "usps_priority_mail",
-                        "fedex_ground",
-                        "ups_ground"
-                    ]
                 },
                 "shipment": {
                     "insurance_provider": "shipsurance",
@@ -1076,17 +1071,23 @@ class CartController extends Controller
             $selected_shipping_rate = 0;
             $temp_arr_neww = [];
             $final_temp = [];
+            // dd($jsonData);
             if (isset($jsonData) && count($jsonData) > 0) {
                 foreach ($jsonData as $key => $rate) {
-                    // return $rate['rates'];
+                    // dd($rate['rates']);
                     if (isset($rate['rates'])) {
                         foreach ($rate['rates'] as $key1 => $value1) {
-                            // return $value1['rate_details'];
+                            // dd($value1['rate_details']);
                             if (count($value1['rate_details']) > 0) {
                                 // dd($value1['service_type']);
                                 if (in_array($value1['service_type'], $fetch)) {
                                     $temp_arr_neww[$value1['shipping_amount']['amount']] = $value1;
                                     // array_push($final_temp, $temp_arr_neww);
+                                    array_push($final, $value1);
+                                }
+                            } else {
+                                if(isset($value1['shipping_amount']['amount']) && $value1['shipping_amount']['amount'] != 0){
+                                    $temp_arr_neww[$value1['shipping_amount']['amount']] =  $value1;
                                     array_push($final, $value1);
                                 }
                             }
@@ -1095,30 +1096,39 @@ class CartController extends Controller
                         continue;
                     }
                 }
-                // dd($final);
+                // dd("final" , $final);
             } else {
                 return response()->json(['status' => false, 'msg' => 'API not working!', 'final_arr' => $final]);
             }
+            // dd($temp_arr_neww);
             ksort($temp_arr_neww);
             if (isset($final) && (count($final) > 0)) {
                 $arr = reset($final);
+                // dd($temp_arr_neww);
                 $reset_temp = reset($temp_arr_neww);
-                foreach ($reset_temp['rate_details'] as  $price) {
-                    $selected_shipping_rate += $price['amount']['amount'];
+                // dd($reset_temp);
+                if (count($reset_temp['rate_details']) > 0) {
+                    foreach ($reset_temp['rate_details'] as  $price) {
+                        $selected_shipping_rate += $price['amount']['amount'];
+                    }
+                } else {
+                    $selected_shipping_rate =  $reset_temp['shipping_amount']['amount'];
                 }
+                // dd(3);
                 if ($reset_temp['estimated_delivery_date'] != NULL) {
                     $estimated_delivery_date =  date('m/d/Y h:i', strtotime($reset_temp['estimated_delivery_date']));
                 } else {
                     $estimated_delivery_date = 'NA';
                 }
                 $shipping_cost_arr[] = $selected_shipping_rate;
-                $temp = ['id' => $value->id, 'name' => $value->name, 'code' => $value->serviceCode, 'service_type' => $reset_temp['service_type'], 'service_code' => $reset_temp['service_code'], 'carrier_id' => $reset_temp['carrier_id'], 'estimated_delivery_date' => $estimated_delivery_date, 'price' => $selected_shipping_rate];
+                $temp = ['id' => $value->id, 'name' => $value->name, 'code' => $value->serviceCode, 'service_type' => $reset_temp['service_type'], 'service_code' => $reset_temp['service_code'], 'carrier_id' => $reset_temp['carrier_id'], 'estimated_delivery_date' => $estimated_delivery_date, 'price' => number_format((float)$selected_shipping_rate, 2, '.', '')];
                 array_push($new_arr, $temp);
             }
             if ($selected_shipping_rate == 0) {
                 continue;
             }
         }
+        // dd($new_arr);
         return $new_arr;
     }
 
