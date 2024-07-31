@@ -2708,4 +2708,30 @@ class SuperAdminController extends Controller
             return $e->getMessage();
         }
     }
+
+    public function add_video(Request $request){
+        try{
+            // dd($request->all());
+            if ($request->newvideo) {
+                $videoName = fileUpload($request->newvideo, 'upload/course');  
+            }
+            $step = CourseChapterStep::where('id', encrypt_decrypt('decrypt',$request->vidId))->update(['details'=> $videoName]);
+            return redirect()->back()->with('message', 'Video added successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
+
+    public function add_pdf(Request $request){
+        try{
+            // dd($request->all());
+            if ($request->newpdf) {
+                $pdfName = fileUpload($request->newpdf, 'upload/course');  
+            }
+            $step = CourseChapterStep::where('id', encrypt_decrypt('decrypt',$request->pdfId))->update(['details'=> $pdfName]);
+            return redirect()->back()->with('message', 'PDF added successfully');
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        }
+    }
 }

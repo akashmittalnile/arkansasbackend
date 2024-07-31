@@ -18,7 +18,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <select class="form-control" name="status">
-                                <option @if(request()->status=="") selected @endif value="">Select Course Type</option>
+                                <option @if(request()->status=="") selected @endif value="">Course Type</option>
                                 <option @if(request()->status=="1") selected @endif value="1">Published</option>
                                 <option @if(request()->status=="0") selected @endif value="0">Unpublished</option>
                             </select>
@@ -27,7 +27,7 @@
                     <div class="col-md-3">
                         <div class="form-group">
                             <select class="form-control" name="creator">
-                                <option @if(request()->creator=="") selected @endif value="">Select Content Creator</option>
+                                <option @if(request()->creator=="") selected @endif value="">Content Creator</option>
                                 @foreach($cc as $val)
                                 <option @if(request()->creator==encrypt_decrypt('encrypt',$val->id)) selected @endif value="{{encrypt_decrypt('encrypt',$val->id)}}">{{$val->first_name ?? "NA"}} {{$val->last_name ?? ""}}</option>
                                 @endforeach
@@ -44,6 +44,11 @@
                             <button class="add-more" style="padding: 8px 45px;" type="">Search</button>
                         </div>
                     </div>
+                    <!-- <div class="col-md-2">
+                        <div class="form-group">
+                            <a class="Accountapproval-btn" style="padding: 14.5px 20px;" href="{{ route('SA.Content-Creator.Course') }}">Draft Course</a>
+                        </div>
+                    </div> -->
                 </div>
             </form>
         </div>

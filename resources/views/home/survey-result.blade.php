@@ -17,14 +17,14 @@
 
     <style type="text/css">
         .quiz-results-section {
-    position: relative;
-    background: #261313;
-    padding: 2rem;
-    height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
+            position: relative;
+            background: #261313;
+            padding: 2rem;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
         .quiz-results-chart {
             width: 100%;
             height: 275px;

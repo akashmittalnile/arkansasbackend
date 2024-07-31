@@ -183,6 +183,9 @@ Route::group(['namespace' => 'App\Http\Controllers'], function()
         Route::get('/super-admin/update-option-list', 'SuperAdminController@updateOptionList')->name('SA.UpdateOptionList');
         Route::get('/super-admin/update-question-list', 'SuperAdminController@updateQuestionList')->name('SA.UpdateQuestionList');
 
+        Route::post('/super-admin/add-video', 'SuperAdminController@add_video')->name('SA.add.Video');
+        Route::post('/super-admin/add-pdf', 'SuperAdminController@add_pdf')->name('SA.add.pdf');
+
         Route::post('/super-admin/add-new-question', 'SuperAdminController@addNewQuestion')->name('SA.add.new.Question');
         Route::post('/super-admin/add-new-question-survey', 'SuperAdminController@addNewSurveyQuestion')->name('SA.add.new.survey.Question');
 
